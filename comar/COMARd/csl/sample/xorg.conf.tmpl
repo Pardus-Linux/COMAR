@@ -1,0 +1,97 @@
+Section "Module"
+    Load        "dbe"  	# Double buffer extension
+    SubSection  "extmod"
+      Option    "omit xfree86-dga"   # don't initialise the DGA extension
+    EndSubSection
+    Load        "type1"
+    Load        "freetype"
+    Load       "glx"
+    Load       "dri"
+EndSection
+
+Section "dri"
+	Mode 0666
+EndSection
+
+Section "Files"
+    RgbPath	"/usr/X11R6/lib/X11/rgb"
+    FontPath   "/usr/share/fonts/ttf-bitstream-vera/"
+    FontPath   "/usr/share/fonts/local/"
+    FontPath   "/usr/share/fonts/misc/"
+    FontPath   "/usr/share/fonts/75dpi/:unscaled"
+    FontPath   "/usr/share/fonts/100dpi/:unscaled"
+    FontPath   "/usr/share/fonts/Speedo/"
+    FontPath   "/usr/share/fonts/Type1/"
+    FontPath   "/usr/share/fonts/TrueType/"
+    FontPath   "/usr/share/fonts/freefont/"
+    FontPath   "/usr/share/fonts/75dpi/"
+    FontPath   "/usr/share/fonts/100dpi/"
+    FontPath   "/usr/share/fonts/corefonts"
+    FontPath   "/usr/share/fonts/CID/"
+    FontPath   "/usr/share/fonts/encodings/"
+EndSection
+
+Section "ServerFlags"
+
+EndSection
+
+Section "InputDevice"
+    Identifier	"MyKeyboard"
+    Driver	"kbd"
+    Option "AutoRepeat" "500 30"
+    Option "XkbModel"	"pc105"
+    Option "XkbLayout"	"tr"
+EndSection
+
+Section "InputDevice"
+    Identifier	"MyMouse"
+    Driver "$MOUSEDRV"
+    Option "Protocol"    "$MOUSEPROTO"
+    Option "Device"      "$MOUSEDEV"
+    Option "ZAxisMapping"	"4 5"	
+    Option "Buttons"	 "5"
+EndSection
+
+
+Section "Device"
+    Identifier  "vcard"
+    Driver      "$DRIVER"
+    Option		"RenderAccel" "true"
+EndSection
+
+Section "Screen"
+    Identifier  "MyScreen"
+    Device      "vcard"
+    Monitor     "MyMonitor"
+    DefaultDepth 24	
+    Subsection "Display"
+        Depth       8
+        Modes       $MODES
+    EndSubsection
+    Subsection "Display"
+        Depth       16
+        Modes       $MODES
+    EndSubsection
+    Subsection "Display"
+        Depth       24
+        Modes       $MODES
+    EndSubsection
+EndSection
+
+Section "ServerLayout"
+    Identifier  "Simple Layout"
+    Screen "MyScreen"
+    InputDevice "MyMouse" "CorePointer"
+    InputDevice "MyKeyboard" "CoreKeyboard"
+EndSection
+
+Section "Monitor"
+	Identifier   "MyMonitor"
+	VendorName	"PARDUS"
+	ModelName	"COMAR Auto Dedect"
+	HorizSync $HORIZMIN - $HORIZMAX # DDC-probed
+	VertRefresh $VERTMIN - $VERTMAX # DDC-probed
+	
+	$MODELINES
+	
+EndSection

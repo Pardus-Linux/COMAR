@@ -38,7 +38,7 @@ method ConfigureDisplay(dpi=90) {
 		} elif (xdrv == '"ati"') {
 			#Panel Size from BIOS: %dx%d\n
 			xout = capture(exec="/usr/X11R6/bin/X -probeonly -logfile /var/log/xlog");
-			psize = grepfirst(exec="/bin/cat /var/log/xlog", pattern="Panel Size from");
+			psize = grepfirst(exec="/bin/cat /var/log/xlog", pattern="Panel Size from BIOS:");
 			drv_flags["DDCMode"] = "on";
 
 		} elif (xdrv == '"via"') {
@@ -62,7 +62,8 @@ method ConfigureDisplay(dpi=90) {
 		resx = getnumright(string = strip(string = px[0]));
 		resy = getnumleft(string = strip(string = px[1]));
 		# Calculate Modeline..
-		modeline = me.calcModeLine(resx=resx, resy=resy, vhz = 60.0);		
+		modeline = me.calcModeLine(resx=resx, resy=resy, vhz = 60.0);
+		vals[resx] = '"' + resx + "x" + resy + '"';		
 	} else {		
 		s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="truly");
 		if ("" == s) {
@@ -271,6 +272,7 @@ method ConfigureDisplay(dpi=90) {
 							}
 						}
 						break;
+			ml[0] = me.cal
 					}
 				}
 			}

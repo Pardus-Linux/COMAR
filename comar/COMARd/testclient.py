@@ -151,8 +151,23 @@ def start():
 		rpc.makeRPCData("OMCALL")
 		rpc["name"] = "COMAR:Boot.ConfigureDisplay"
 		rpc["type"] = "method"
-
-	print "Send HTTP to localhost from:", os.getpid(), time.time()
+		if "--parameter" in sys.argv:
+			x = 0
+			for i in sys.argv:
+				if i == "--parameter":
+					j = sys.argv[x+1]
+					print j
+					key = j.split("=")[0]
+					val = j.split("=")[1]
+					print "Parameter '%s' value: %s" % (key, val)
+					try:
+						val = int(val)
+						cval = COMARValue.numeric_create(val)
+					except:
+						cval = COMARValue.string_create(val)
+					rpc.addPropertyMulti("parameter", key, cval)
+				x += 1
+	print "Send HTTP to localhost from:", os.getpid(), time.time(), rpc.xml
 	print HTTP.makeConnection(realmAddress = "127.0.0.1:8000")
 	HTTP.sendRPC(rpc = rpc)
 

@@ -126,7 +126,7 @@ class	CSLCapsule:
 		self.sessionID 		= 0
 		self.tc 			= 0
 		self.procStack 		= []
-		self.dbgf = open("csldebug", "w")
+		self.dbgf = None #open("csldebug", "w")
 		self.debugfile = None
 		self.debuglvl = 0
 
@@ -559,12 +559,14 @@ class	CSLCapsule:
 		localTbl = { 'vars':{"me":me_obj}, 'status':0, 'props':{}, 'alias':{}, 'persistent':persistent, 'instance':instance }
 		prmNames = prms.keys()
 		ptbl = localTbl['vars']
+		
 		for key in symtab["vars"]:
 			localTbl["vars"][key] = symtab["vars"][key]
 
 		for key in prmNames:
-			if prototype.has_key(key):
-				ptbl[key] = self.CSLCheckVariable(prms[key], symtab)
+			print "CSE Parameter:", key, prms[key]
+			if prototype.has_key(key):				
+				localTbl['vars'][key] = prms[key] #self.CSLCheckVariable(prms[key], symtab)
 				del prototype[key]
 			else:
 				print "Undefined parameter:", key
@@ -574,11 +576,11 @@ class	CSLCapsule:
 		for key in prmNames:
 			self.debug(DEBUG_CALL, 'Build key: "%s" from %s ' % (key, prmNames))
 			if key != "":
-				ptbl[key] = self.CSLCheckVariable(prototype[key], symtab)
+				localTbl['vars'][key] = self.CSLCheckVariable(prototype[key], symtab)
 
 		for key in persistent:
 			if key != "":
-				ptbl[key] = self.CSLPersistGet(key)
+				localTbl['vars'][key] = self.CSLPersistGet(key)
 				self.debug(DEBUG_PRST,  "PERSIST_" , key, "=", ptbl[key])
 
 
@@ -912,14 +914,17 @@ class	CSLCapsule:
 		if var.type == 'array':
 
 			print sp, "ARRAY-------------"
-			self.dbgf.write(sp + "ARRAY-------------\n" )
+			if self.dbgf:
+				self.dbgf.write(sp + "ARRAY-------------\n" )
 			for i in var.value.keys():
 				print sp, 'KEY:', i
-				self.dbgf.write(sp+"key:"+str(i)+"\n")
+				if self.dbgf:
+					self.dbgf.write(sp+"key:"+str(i)+"\n")
 				self.debugout(var.value[i], nest + 1)
 		else:
 			print sp, 'TYPE: %s VALUE: %s' % (var.type, var.value)
-			self.dbgf.write(sp + 'TYPE: %s VALUE: %s' % (var.type, var.value) +"\n")
+			if self.dbgf:
+				self.dbgf.write(sp + 'TYPE: %s VALUE: %s' % (var.type, var.value) +"\n")
 
 	def	call(self, name = "", prms = {}, symtab = {}):
 		self.debug(DEBUG_CALL, "CALL:", name, prms)
@@ -2164,11 +2169,9 @@ class	COMARObjHook:
 
 	def	_buildPrms(self, prmList):
 		prms = {}
-		if prmList != None and hasattr(prmList, "data"):
-			root = prmList.data
-			while root:
-				prms[root.Key] = root.item
-				root = root.next
+		if prmList != None:
+			for i in prmList.keys():
+				prms[i] = prmList[i]
 		#else:
 		#	prms = None
 		return prms
@@ -2237,8 +2240,8 @@ class	COMARObjHook:
 				break
 
 	def runOMNode(self, prms = {}, Type = "", name = ""):
-		prms = self._buildPrms(prms)
 		print "OM NODE CALLED:", prms, Type , name
+		prms = self._buildPrms(prms)		
 		if Type == "method":
 			return self.runenv.runMethod(name = name, prms = prms)
 		elif Type == "propertyget":

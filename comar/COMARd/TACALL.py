@@ -57,7 +57,7 @@ class TAcallSession:
 		self.runit = Lang + ":" + Code
 
 	def execute(self):
-		print "\n\nEXECUTE STARTED\n\n", OM_MGR, OM_MGR.dbhelper, OM_MGR.dbhelper.dbSocket
+		print "\n\nEXECUTE STARTED\n\n", OM_MGR, OM_MGR.dbhelper, OM_MGR.dbhelper.dbSocket, "PRMS:", self.c_prms
 		if self.mode == "OMCALL":
 			omattrs = OM_MGR.getOMProperties(self.runit)
 			if omattrs == None:
@@ -174,7 +174,7 @@ class TAcallSession:
 		global OM_MGR
 		chldPID = self.procHelper.makeChild()
 		parentrpid = os.getpid()
-		print "Executing With Container..", chldPID, self.mode, self.runit
+		print "Executing With Container..", chldPID, self.mode, self.runit, prms
 		pid = os.fork()
 		if pid:
 			self.procHelper.initForParent(chldPID)
@@ -198,7 +198,7 @@ class TAcallSession:
 					break
 
 			cmd = new_ph.getParentCommand()
-			print "XXXXXXXXXXXX Exec Session Child: ", new_ph.myPID, os.getpid(), chldPID, new_ph.myPID, new_ph.gloPPid, cmd
+			print "XXXXXXXXXXXX Exec Session Child: ", new_ph.myPID, os.getpid(), chldPID, new_ph.myPID, new_ph.gloPPid, cmd, "PRMS:", prms
 			runhook = hook[0](cAPI=ci[0], callerInfo=ci[1], chldHelper = new_ph, OMData = hook[1])
 			runhook.loadInstance(hook[2])
 			#def runOMNode(self, prms = {}, Type = "", name = "" ):

@@ -668,7 +668,7 @@ class childHelper(object):
 			# We are root
 			pass
 		print api_os.getpid(), self.myPID, "XXXXXXX Killed self. OS Parent:", self.parentppid, self.gloPPid, self.modName
-		print SESSION.stackImage(__file__)
+		#print SESSION.stackImage(__file__)
 		api_os._exit(1)
 #--------------------------------------------------------------------------------
 #	Pipe Handling

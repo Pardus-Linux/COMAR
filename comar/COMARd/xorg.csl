@@ -11,7 +11,7 @@ method ConfigureDisplay(dpi=90) {
 	xout = capture(exec="/usr/X11R6/bin/X -configure -logfile /var/log/xlog");
 	xout = xini_parse(cfgfile="/root/xorg.conf.new");
 	psize = "";
-	debugout(value=xout);
+	debugout(value="dpi="+dpi);
 
 	if (xout["S Device"]["V Driver"] != "") {
 
@@ -133,7 +133,7 @@ method ConfigureDisplay(dpi=90) {
 		}
 		ml = capture(exec="/usr/sbin/ddcxinfos", startwith="ModeLine");
 		
-		debugout(value=ml);
+		#debugout(value=ml);
 		modelin = "";
 		foreach (key=val in ml) {
 			l = split(string=val, separator=" ");

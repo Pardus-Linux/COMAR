@@ -143,9 +143,9 @@ method ConfigureDisplay(dpi=90) {
 			y = getnumleft(string=r[1]);			
 			if (arrayhaskey(array=vals, key=x) == 0) {
 				vals[x] = ""+x+" "+y;
-				#debugout(value="add res:"+x+" "+y);
+				debugout(value="add res:"+x+" "+y);
 			}
-			modelines[key]= strip(string=val);
+			modelines[key] = strip(string=val);
 			modeline = modeline + val + " ";
 		}
 	}

@@ -26,9 +26,10 @@ PATH_MODTAD	 = { "class":"DefaultTTSHandler", "path":comar_global.comar_modpath 
 PATH_MODAPI  = { "class":"CSL Library", "path":comar_global.comar_modpath + "/capi", "signature":"_APICLASS", "files":[] }
 PATH_MODOM  = { "class":"OM Driver", "path":comar_global.comar_modpath + "/om_drivers", "signature":"OM_BINDINGS", "files":[] }
 PATH_AUTH  = { "class":"Auth/Crypto/Digest/Sign Modules", "path":comar_global.comar_modpath + "/auth", "signature":"DIGEST_CLASSES", "files":[] }
+PATH_CSL  = { "class":"CSL Standart API Modules", "path":comar_global.comar_modpath + "/csl_mods", "signature":"CSLAPI_NAME", "files":[] }
 PATH_PY    =  { "class":"Standart Python Modules", "path":comar_global.comar_modpath + "/py_modules", "signature":None, "files":[], "src_path":"py_modules" }
 
-MODS = [PATH_MODLANG, PATH_MODCONN, PATH_MODTAD, PATH_MODAPI, PATH_MODOM, PATH_AUTH, PATH_PY]
+MODS = [PATH_MODLANG, PATH_MODCONN, PATH_MODTAD, PATH_MODAPI, PATH_MODOM, PATH_AUTH, PATH_PY, PATH_CSL]
 
 COMARD	= "/COMARd.py"
 COMAR_PATH = os.getcwd()

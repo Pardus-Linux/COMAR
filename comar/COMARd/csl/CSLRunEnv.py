@@ -5,9 +5,11 @@ import sys
 import os
 import cPickle
 import urlparse, gzip
+import dircache
 
-comar_dir = "/usr/lib/comard"
-csl_dir = os.path.join(comar_dir, "csl")
+import comar_global
+comar_dir = comar_global.comar_modpath
+csl_dir = os.path.join(comar_dir, "csl_mods")
 sys.path.append(csl_dir)
 
 import RPCData
@@ -129,17 +131,60 @@ class	CSLCapsule:
 		self.dbgf = None #open("csldebug", "w")
 		self.debugfile = None
 		self.debuglvl = 0
-
+		self.modpath = csl_dir 
+		self.cslAPIS = {}
+		self.cslAPIMods = []
+		self.loadCSLApimods()
+		
+		
+	def loadCSLApimods(self):
+		dl = dircache.listdir
+		is_file = os.path.isfile
+		files = dl(self.modpath)
+		for file in files:
+			fname = self.modpath + "/" + file
+			#print "CSL MOD Check FName:", file
+			if is_file(fname):
+				if file[file.rfind("."):] == ".py":
+					self.loadModule(fname)
+					
+	def loadModule(self, module = "", modType="python"):
+		""" Load a CAPI Module.. """
+		if modType == "python":			
+			mod = None			#try:
+			sys.path.insert(0, os.path.dirname(module))
+			file = os.path.basename(module)
+			file = file[:file.rfind('.')]
+			#print "Try: ", file, "over", sys.path
+			try:
+				mod = __import__(file)
+			except:
+				print "Invalid CSL API Module '%s' ignored." % (file)
+				sys.path.pop(0)
+				return None
+			sys.path.pop(0)
+			#print "Loaded Module Info:", dir(mod)
+			if "CSLAPI_NAME" in dir(mod):				
+				mod.CSLValue = CSLValue
+				mod.debug = self.debug
+				vtbl = mod.getFuncTable()
+				#print "CSL Module loader:", module
+				vtbl_names = vtbl.keys()
+				for i in vtbl_names:
+					#print "\tAdded Function '%s' from module: %s (%s)" % (i, mod.__file__, vtbl[i].__class__)
+					self.cslAPIS[i] = vtbl[i]
+				self.cslAPIMods.append(mod)
+				
 	def debug(self, level=0, *msg):
 		if (level == DEBUG_FATAL) or (level & self.debuglvl) > 0:
 			if self.debugfile:
 				f = open("cslre-%s.log" % api_os.getpid(), "a")
 				m = "%s %s %s " % (self.callerInfo.node, "--", os.getpid())
-				#print self.name, self.mode, os.getpid(),
+				print self.name, self.mode, os.getpid(),
 				for i in msg:
 					m = m + " " + str(i)
-					#print i,
-				#print
+					print i,
+				print
 				f.write(m+"\n")
 				f.close()
 			else:
@@ -606,284 +651,16 @@ class	CSLCapsule:
 			prms[item] = self.CSLCheckVariable(id = prms[item], localTbl = symtab)
 			#print prms[item]
 
-		firstc = name[0]
-		# This model is a simple hack for performance gain.
-		if firstc == "s":
-			if name == "strupper":
-				if prms.has_key("string"):
-					a = prms["string"].toString()
-					return CSLValue("string", a.upper())
-
-			elif name == "strip":
-				if prms.has_key("string"):
-					a = prms["string"].toString()
-					return CSLValue("string", a.strip())
-				self.debug(DEBUG_FATAL, "Invalid Strip:", prms)
-			elif name == "strlower":
-				if prms.has_key("string"):
-					a = prms["string"].toString()
-					return CSLValue("string", a.lower())
-			elif name == "startswith":
-				if prms.has_key("prefix") and prms.has_key("string"):
-					a = prms["string"].toString()
-					return CSLValue("string", a.startswith(prms['prefix'].toString()))
-			elif name == "split":
-				if prms.has_key("separator") and prms.has_key("string"):
-					a = prms["string"].toString()
-					arr = a.split(prms["separator"].toString())
-					ret = {}
-					x = 0
-					for i in arr:
-						if i != "":
-							ret[x] = CSLValue("string", i)
-							x += 1
-					#print "SPLIT Return:", ret, a, arr,prms["separator"].toString()
-					return CSLValue("array", ret)
-				print "Incorrect split:", prms
-			elif name == "strlen":
-				if prms.has_key("string"):
-					return CSLValue("numeric", len(prms['string'].toString()))
-
-			elif name == "strstr":
-				if prms.has_key("string") and prms.has_key("pattern"):
-					print "STRSTR:", prms
-					st = prms['string'].toString()
-					if st.find(prms['pattern'].toString()) != -1:
-						return CSLValue("numeric", 1)
-					else:
-						return CSLValue("numeric", 0)
-			
-			elif name == "substr_left":
-				if prms.has_key("string"):
-					st = prms['string'].toString()						
-					if prms.has_key("size"):
-						maxs = int(prms['size'].toNumeric());
-						
-					else:
-						maxs = len(st)
-					if maxs > len(st):
-						maxs = len(st)
-					
-					a = st[:maxs]
-					return CSLValue("string", a)
-
-			elif name == "substr_mid":
-				if prms.has_key("string"):
-					if prms.has_key("first"):
-						st = prms['string'].toString()
-					if prms.has_key("size"):
-					    maxs = size;
-					else:
-					    maxs = len(st)
-					pos = st.find(prms['first'].toString())
-					if pos == -1:
-					    return CSLValue("string", "")
-					a = st[pos+1:]
-					a = a[:maxs]
-					return CSLValue("string", a)
-		elif firstc == "a":
-			if name == "arrayhasvalue":
-				ret = ""
-				if prms.has_key("array") and prms.has_key("value"):
-					arr = prms["array"].value
-					val = prms["value"].value
-					#print "hasvalue:", prms, arr, val
-					if type(arr) != type({}):
-						return CSLValue("numeric", 0)
-					for i in arr.keys():
-						if arr[i].value == val:
-							return CSLValue("numeric", 1)
-					return CSLValue("numeric", 0)
-			if name == "arrayhaskey":
-				ret = ""
-				if prms.has_key("array") and prms.has_key("key"):
-					arr = prms["array"].value
-					val = prms["key"].value					
-					if type(arr) != type({}):
-						return CSLValue("numeric", 0)
-					#print "haskey:", prms, arr.keys(), val
-					if val in arr.keys():
-						return CSLValue("numeric", 1)
-					return CSLValue("numeric", 0)
-					
-		elif firstc == "g":
-			if name == "getbit":
-				ret = ""
-				if prms.has_key("value") and prms.has_key("bit"):
-					x = int(prms["value"].toNumeric())
-					b = int(prms["bit"].toNumeric())
-					print "GETBIT:", x, b, (2 ** b), x & (2 ** b)
-					if x & (2 ** b):
-						return CSLValue("numeric", 1)
-					else:
-						return CSLValue("numeric", 0)
-				return CSLValue("numeric", 0)
-			elif name == "getnumleft":
-				ret = ""
-				if prms.has_key("string"):
-					s = prms["string"].toString()
-					skip = 0
-					#print "GETNumLeft: '%s'" % (s)
-					for i in s:
-						if i in "0123456789.":
-							ret += i
-							skip = 1
-						elif i == " ":
-							if skip:
-								if len(ret):
-									ret = float(ret)
-								break							
-						else:
-							if len(ret):
-								ret = float(ret)
-							break
-				#print "getnumleft return:", ret
-				if int(ret) == ret:
-					ret = int(ret)
-				return CSLValue("numeric", ret)
-			elif name == "getnumright":
-				ret = ""
-			
-				if prms.has_key("string"):					
-					s = prms["string"].toString()
-					#print "GETNumRight: '%s'" % (s)
-					skip = 0
-					for i in range(len(s) - 1, -1, -1):
-						c = s[i]
-						if c in "0123456789":
-							ret = c + ret
-							skip = 1
-						elif i == " ":
-							if skip:
-								if len(ret):
-									ret = float(ret)
-								break							
-						else:
-							break
-				#print "getnumright return:", ret
-				return CSLValue("numeric", ret)
-			elif name == "getnearvalue":
-				if prms.has_key("look") and prms.has_key("values"):
-					s = prms["values"].value
-					l = prms["look"].toNumeric()
-					if s:
-						yak = {}
-						for i in s.keys():
-							x = abs(int(i) - l)
-							yak[x] = s[i]					
-						m = yak.keys()
-						m.sort()
-						return yak[m[0]]
-					
-				return CSLValue("numeric", 0)
-		elif firstc == "d":
-			if name == "debugout":
-				if prms.has_key("value"):
-					self.debugout(prms["value"])
-					return None
-
-		elif firstc == "c":
-			if name == "casestartswith":
-				if prms.has_key("prefix") and prms.has_key("string"):
-					a = prms["string"].toString()
-					a = a.lower()
-					needle = prms['prefix'].toString()
-					needle = needle.lower()
-					return CSLValue("string", a.startswith(needle))
-			elif name == "caseendswith":
-				if prms.has_key("trailer") and prms.has_key("string"):
-					a = prms["trailer"].toString()
-					a = a.lower()
-					needle = prms['trailer'].toString()
-					needle = needle.lower()
-					return CSLValue("string", a.startswith(needle))
-
-			elif name == "casefind":
-				if prms.has_key("pattern") and prms.has_key("string"):
-					a = prms["string"].toString()
-					a = a.lower()
-					needle = prms['pattern'].toString()
-					needle = needle.lower()
-					ret = CSLValue("string", a.find(needle))
-					if ret == -1:
-						return CSLValue("numeric", 0)
-					else:
-						return CSLValue("numeric", ret + 1)
-			elif name == "caserfind":
-				if prms.has_key("pattern") and prms.has_key("string"):
-					a = prms["string"].toString()
-					a = a.lower()
-					needle = prms['pattern'].toString()
-					needle = needle.lower()
-					ret = CSLValue("string", a.rfind(needle))
-					if ret == -1:
-						return CSLValue("numeric", 0)
-					else:
-						return CSLValue("numeric", ret + 1)
-				else:
-					return CSLValue("numeric", 0)
-		elif firstc == "r":
-			if name == "rfind":
-				if prms.has_key("string") and prms.has_key("pattern"):
-					a = prms["string"].toString()
-					needle = prms['pattern'].toString()
-					ret = CSLValue("string", a.rfind(needle))
-					if ret == -1:
-						return CSLValue("numeric", 0)
-					else:
-						return CSLValue("numeric", ret + 1)
-				else:
-					return CSLValue("numeric", 0)
-
-			if name == "rpart":
-				return CSLValue("string", "")
-			if name == "rnd":
-				return CSLValue("string", "")
-
-		elif firstc == "i":
-			if name == "int":
-				if prms.has_key("string"):
-					return CSLValue("numeric", int(prms["string"].toNumeric()))
-			if name == "iconv":
-				if prms.has_key("string") and prms.has_key("from") and prms.has_key("to"):
-					#FIX
-					pass
-
-			if name == "insert":
-				if prms.has_key("string") and prms.has_key("part"):
-					pos = 0
-					rep = 0
-					if prms.has_key("position"):
-						pos = prms["position"].toNumeric() - 1
-
-					if pos < 0:
-						pos = 0
-
-					if prms.has_key("replace"):
-						rep = prms["replace"].toNumeric()
-					st = prms["string"]
-					ll = st[:pos]
-					rl = st[pos + 1:]
-
-					if rep:
-						rl = rl[rep:]
-
-					return CSLValue("string", ll + prms['part'] + rl)
-
-		elif name == "join":
-			return CSLValue("string", "")
-		elif name == "endswith":
-			return CSLValue("numeric", 1)
-		elif name == "find":
-			return CSLValue("numeric", 1)
-		elif name == "part":
-			return CSLValue("string", "")
-		elif name == "hex2dec":				
+		if name == "debugout":
 			if prms.has_key("value"):
-				x = int(prms["value"].toString(), 16)					
-				return CSLValue("numeric", x)
-			return CSLValue("NULL", 0)
-
+				self.debugout(prms["value"])
+				return None
+				
+		if self.cslAPIS.has_key(name):
+			ret = self.cslAPIS[name](prms)
+			if ret:
+				return ret
+			return CSLValue("NULL", None)
 		# We not found name in CSL CAPI functions.
 		# We try COMAR CAPI functions..
 

@@ -87,7 +87,7 @@ class TAcallSession:
 						#def runOMNode(self, prms = {}, Type = "", name = "" ):
 						cn = self.c_name[self.c_name.rfind(".")+1:]
 						cv = runhook.runOMNode(prms=self.c_prms, Type = self.c_type, name = cn)
-						print os.getpid(), "Hook returned:", cv.execResult, COMARAPI.OBJ_COMARValue.CVALget(cv.returnValue)
+						#print os.getpid(), "Hook returned:", cv.execResult, COMARAPI.OBJ_COMARValue.CVALget(cv.returnValue)
 						if cv.execResult == 0:
 							rv = "%d %s" % (cv.execResult, COMARAPI.COMARValue.dump_value_xml(cv.returnValue))
 							break
@@ -108,7 +108,7 @@ class TAcallSession:
 							break
 						if pv == -2:
 							cont = 0
-					print "\tCollected retvals:", self.retVal
+					#print "\tCollected retvals:", self.retVal
 					rx = None
 					if len(self.retVal.keys()) > 1:
 						rx = COMARAPI.COMARValue.array_create()
@@ -153,7 +153,7 @@ class TAcallSession:
 	def execCmdHandler(self, From, srcpid, ppid, rfd, pkPid, pkTid, command, pkData):
 		print self.procHelper.myPID, "A exec session cmd captured:", From, srcpid, ppid, rfd, pkPid, pkTid, command #, pkData
 		if command == "TRSU_FIN":
-			print os.getpid(), self.procHelper.myPID, "A TRSU FIN Captured (ExecSession/ExecCmdHandler):", From, srcpid, ppid, rfd, pkPid, pkTid, command, pkData
+			print os.getpid(), self.procHelper.myPID, "A TRSU FIN Captured (ExecSession/ExecCmdHandler):", From, srcpid, ppid, rfd, pkPid, pkTid, command #, pkData
 			self.procHelper.sendCommand(int(srcpid), "LNTU_KILL", pkPid, pkTid, pkData)
 			if pkPid in self.waitFor.keys():
 				self.retVal[pkPid] = pkData
@@ -162,7 +162,7 @@ class TAcallSession:
 				self.procHelper.sendParentCommand(command, pkPid, pkTid, pkData)
 				#pass
 		elif command == "TRTU_TAE":
-			print self.procHelper.myPID, "A TRTU TAE Captured (ExecSession/ExecCmdHandler):", From, srcpid, ppid, rfd, pkPid, pkTid, command, pkData
+			print self.procHelper.myPID, "A TRTU TAE Captured (ExecSession/ExecCmdHandler):", From, srcpid, ppid, rfd, pkPid, pkTid, command #, pkData
 			self.procHelper.sendCommand(pkPid, command, pkPid, pkTid, pkData)
 		elif command == "TRSU_OMC":
 			self.procHelper.sendParentCommand(command, pkPid, pkTid, pkData)

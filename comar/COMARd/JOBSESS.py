@@ -12,7 +12,7 @@ import gdbm
 
 # COMAR modules
 import comar_global
-import CHLDHELPER, RPCData
+import CHLDHELPER, RPCData, SESSION
 import TACALL
 
 COMARAPI = None
@@ -163,7 +163,7 @@ class jobSessProvider:
 			print "Call Session Start With pids: ", os.getpid(), chldPID, new_ph.parentppid, new_ph.myPID, new_ph.gloPPid
 			self.procHelper = new_ph
 			self.procHelper.clearSessionCommands()
-			self.procHelper.addSessionCommand(["TRSU_OMC", "TRTU_RUN", "TRSU_TAE", "TRSU_RTA", "TRSU_FIN", "TNSU_GET", "TNSU_GSID" ])
+			self.procHelper.addSessionCommand(["TRSU_OMC", "TRTU_RUN", "TRSU_TAE", "TRSU_RTA", "TRSU_FIN", "TNSU_GET", "TNSU_GSID", "LNTU_KILL" ])
 			self.procHelper.cmdHandler = self.sessionCmdChildHandler
 			prmArray = callPrms
 			OM_MGR.setDBHelper(self.procHelper)
@@ -184,8 +184,9 @@ class jobSessProvider:
 			self.run_que.append(callSession)
 			self.procHelper.minChild = 0
 			while 1:
-				ret = self.procHelper.ProcessIO()
+				ret = self.procHelper.ProcessIO()				
 				print "STA LOOP 185", ret, self.runCmdPid, "pidof:", os.getpid(), "getppid:", os.getppid(), self.procHelper.modName
+				#print SESSION.stackImage()
 				if ret == -2:
 					#self.procHelper.exit()
 					#select.select([], [], [], 5)
@@ -208,6 +209,7 @@ class jobSessProvider:
 			else:
 				#first call...
 				self.procHelper.sendParentCommand("TRSU_TAE", self.procHelper.myPID, 0, str(pkData))
+				
 
 		elif command == "TRTU_RUN":
 			# This is a child mode
@@ -216,8 +218,15 @@ class jobSessProvider:
 				cs = self.run_que.pop(0)
 				retval = cs.execute()
 				print os.getppid(), self.procHelper.myPID,self.procHelper.modName, self.control, "CALL SESSION CHILD EXECUTE RETURNED", retval
-				self.procHelper.sendParentCommand("TRSU_FIN", self.procHelper.myPID, 0, retval)
-				#self.procHelper.exit()
+				self.procHelper.sendParentCommand("TRSU_FIN", self.procHelper.myPID, 0, retval)				
+				while 1:
+					if self.procHelper.waitForParentCmd(timeout = 2):
+						break
+
+			cmd = self.procHelper.getParentCommand()
+			print os.getpid(), "After TRTU_RUN:", cmd
+			if cmd[2] == "LNTU_KILL":
+				self.procHelper.exit()
 
 		elif command == "TRSU_OMC":
 			# This is a parent mode..
@@ -252,6 +261,7 @@ class jobSessProvider:
 			if self.callData[srcpid][6]:
 				print "Result send to:", self.callData[srcpid][6]
 				self.procHelper.sendCommand(self.callData[srcpid][6], "TRTU_TAE", self.callData[srcpid][6], pkTid, str(pkData))
+				self.procHelper.sendCommand(srcpid, "LNTU_KILL", srcpid, pkTid, None)
 				del self.callData[srcpid]
 			else:
 				#first call...
@@ -264,7 +274,7 @@ class jobSessProvider:
 			if len(self.run_que):
 				cs = self.run_que.pop(0)
 				retval = cs.execute()
-				print os.getppid(), self.procHelper.myPID,self.procHelper.modName, self.control, "CALL SESSION EXECUTE RETURNED", retval
+				print os.getppid(), self.procHelper.myPID,self.procHelper.modName, self.control, "CALL SESSION EXECUTE RETURNED" #, retval
 				self.procHelper.sendParentCommand("TRSU_FIN", self.procHelper.myPID, 0, retval)
 
 				#self.procHelper.exit()

@@ -11,19 +11,20 @@ method ConfigureDisplay(dpi=90) {
 	xout = capture(exec="/usr/X11R6/bin/X -configure -logfile /var/log/xlog");
 	xout = xini_parse(cfgfile="/root/xorg.conf.new");
 	psize = "";
-	debugout(value="dpi="+dpi);
+	#debugout(value="dpi="+dpi);
 
 	if (xout["S Device"]["V Driver"] != "") {
 
 		xdrv = xout["S Device"]["V Driver"];
 		xdrv = strip(string = xdrv);
-		debugout(value=xdrv);
+		#debugout(value=xdrv);
 		if (xdrv == '"nv"') {
 			#Panel size is %i x %i
 			psize = grepfirst(exec="/bin/cat /var/log/xlog", pattern="Panel size is");
 		}
 		elif (xdrv == '"nvidia"') {
 			#Panel size is %i x %i
+			xout = capture(exec="/usr/X11R6/bin/X -probeonly -logfile /var/log/xlog");
 			psize = grepfirst(exec="/bin/cat /var/log/xlog", pattern="Panel size is");
 
 		} elif (xdrv == '"ati"') {
@@ -44,7 +45,7 @@ method ConfigureDisplay(dpi=90) {
 	if (psize != "") {
 		debugout(value=psize);
 		px = split(string=psize, separator="x");
-		debugout(value=px);
+		#debugout(value=px);
 		resx = getnumright(string = strip(string = px[0]));
 		resy = getnumleft(string = strip(string = px[1]));
 		# Calculate Modeline..
@@ -142,13 +143,13 @@ method ConfigureDisplay(dpi=90) {
 			y = getnumleft(string=r[1]);			
 			if (arrayhaskey(array=vals, key=x) == 0) {
 				vals[x] = ""+x+" "+y;
-				debugout(value="add res:"+x+" "+y);
+				#debugout(value="add res:"+x+" "+y);
 			}
 			modelines[key]= strip(string=val);
 			modeline = modeline + val + " ";
 		}
 	}
-	debugout(value=vals);
+	#debugout(value=vals);
 	DisplayInfo = xdrv + " " + "resx="+resx+" resy="+resy+" pix="+pix+" inc="+inc;
 	if (psize == "") {
 		#vals[1600] = "1600 1200";
@@ -176,7 +177,7 @@ method ConfigureDisplay(dpi=90) {
 
 	foreach (key = val in xout) {
 		val = strip(string = val);
-		debugout(value="VAL:'"+val+"'");
+		#debugout(value="VAL:'"+val+"'");
 		if (substr_left(string = val, size = 6) == "B: EV=") {
 			ev = split(string = val, separator = "=");
 			ev = split(string = ev[1], separator = " ");

@@ -129,7 +129,7 @@ def start():
 
 	rpc = RPCData.RPCStruct()
 	op = "call"
-	cslfile = "csl/samples/xorg.csl"
+	cslfile = "csl/sample/xorg.csl"
 	omnode = "COMAR:Boot"
 	appid = "DENEME"
 	callEntry = "COMAR:Boot.ConfigureDisplay"
@@ -159,6 +159,7 @@ Global Parameters:
   --host ipAddr:port
   Host address for required COMARd daemon..
 """
+			os._exit(0)
 		elif i == "--register":
 			op = "register"
 		elif i == "--node":

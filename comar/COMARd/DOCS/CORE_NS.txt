@@ -21,12 +21,14 @@ eventSys.addTask(eventid = "eventid" [, wait='N'])
 
 	İlk çağrı formatında:
 		object	: Olayın oluşması durumunda kullanılacak nesneyi ifade eder.
-		method	: Olayın olşuması durumunda nesnenin hangi methodunun çağrılacağını ifade eder. Default değeri "eventHook" tur. Bu metod çağrılırken herhangi bir parametre kullanılmaz.
+		method	: Olayın olşuması durumunda nesnenin hangi methodunun çağrılacağını ifade eder. Default değeri "eventHook" tur.
 
 	İkinci çağrı formatında ise:
 		omnode	: NS:node.method formatında çağrılacak olan görevi ifade eder. Burada tarif edilen methoda herhangi bir parametre geçirilmez. Ayrıca, bu çağrı mutlak olarak sadece ilgili nesne'ye değil, belirtilen dala bağlı olan tüm nesnelere yapılır.
 
 	Üçüncü formatta ise, herhangi bir parametre kullanılmaz. Bu durumda, CORE, çağıran nesneyi ve metodu kullanarak görev kaydını yapar. Eğer çağrı uzak bir yerden yapılmışsa, bu durumda bir NOTIFY çağrısı uzak sisteme gönderilir.
+
+	Event sistemine kaydedilen tüm nesne/metotlar, "eventid" parametresi geçirilerek çağrılır.
 
 	Bu çağrı başarılı olması durumunda, eventSys.delTask() çağrısı ile kullanılmak üzere bir "taskKey" değeri döndürür. Bu değer, 255 karakterden kısa, 8Bit-ASCII uyumlu bir COMARString'dir.
 

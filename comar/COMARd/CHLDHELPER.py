@@ -29,6 +29,7 @@ DEBUG_DBIO = 1
 DEBUG_CMDIO = 2
 DEBUG_CHMGR = 4
 DEBUG_CMDS = 8
+DEBUG_PRC  = 16
 
 class childHelper(object):
 	"""Child Management API.
@@ -77,7 +78,8 @@ class childHelper(object):
 		self.minChild = 1
 		self.pass_cmds = [ "INSU_PID", "IRTU_PID" ]
 		self.debugfile = None
-		self.debug = 0 #DEBUG_CHMGR
+		self.debug = 0 #DEBUG_CHMGR |DEBUG_CMDS
+		self.idebug = self.debug
 
 	def setIODebug(self, PID, level, name):
 		if self.chlds.has_key(PID):
@@ -99,11 +101,20 @@ class childHelper(object):
 			else:
 				print "CH:", self.myPID, self.modName, api_os.getpid(),
 				for i in msg:
-					print i,
-				print
+					print i,				
+				print "Called From:", 
+				tb = traceback.extract_stack()	
+				rv = "\n"
+				st = 0
+				for x in range(len(tb) - 1, -1, -1):
+					i = tb[x]
+					if i[0].find("SESSION") == -1 and i[0].find("CHLDHELPER") == -1:
+						a = "%s::%s[%s]:'%s'\n" % (api_os.path.basename(i[0]), i[2], i[1], i[3])
+						print a
+						break
 
 	def dumpInfo(self):
-		traceback.print_stack()
+		#traceback.print_stack()
 		print self.myPID, "chldhelper info:", self.modName
 		print self.myPID, "Parent Info:"
 		print self.myPID, "\tParent PID:", self.gloPPid
@@ -455,8 +466,8 @@ class childHelper(object):
 		if rfd != ppid:
 			From = "P"
 		else:
-			From = "C"		
-		self.debugout(DEBUG_CMDS, "PIO Captured Command:", command, self.sessionCmds, pkPid, self.myPID)
+			From = "C"					
+		self.debugout(DEBUG_CMDS, "PIO Captured Command:", command, self.sessionCmds, pkPid, self.myPID, " goto:", str(self.cmdHandler).split(" ")[2])
 		if command in self.pass_cmds: #command[0] == "Q":
 			# By pass...
 			#print self.modName, "PIO Captured Pipe Bypass:", From, command, pkPid, self.myPID
@@ -689,14 +700,14 @@ class childHelper(object):
 		
 	def exit(self):
 		if self.gloPIO:
-			print api_os.getpid(), self.myPID, "Killed self. OS Parent:", self.parentppid, self.gloPPid, self.modName
+			self.debugout(DEBUG_PRC, "Killed self. OS Parent:", self.gloPPid) 
 			#traceback.print_stack()
 			self.gloPIO.putCommand("IRSU_DPRT", 0, 0, self.myPID.__str__())
 			api_select.select([],[],[], 0.1)
 		else:
 			# We are root
 			pass
-		print api_os.getpid(), self.myPID, "XXXXXXX Killed self. OS Parent:", self.parentppid, self.gloPPid, self.modName
+		self.debugout(DEBUG_PRC, "XXXXXXX Killed self. OS Parent", self.gloPPid)
 		#if self.modName.find("jobSessProvider->XTANewClient->COMARD/TAROOT:") != -1:
 		#	print SESSION.stackImage(__file__)
 		api_os._exit(1)

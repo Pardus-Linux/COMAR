@@ -118,6 +118,7 @@ class COMARIAPI:
 		cinfo = callerInfoObject()
 		obj = COMARValue.COMARObjectDescriptor()		
 		obj.fromXml(buf, cinfo)
+		cinfo.objid = key
 		return (obj, cinfo)
 		
 	def createNewInstance(self, name='', callerInfo = None):
@@ -143,10 +144,8 @@ class COMARIAPI:
 		followed calls with this object, use this COMARObject."""
 		ci = callerInfo
 		#print "HOOKFILE:", ci.hookFile
-		# objName = "", objClass = "", instanceKey = "", callerInfo = None):
-		
-		ret = COMARValue.COMARObjectDescriptor(objid, objType, ci.OID, ci)
-		
+		# objName = "", objClass = "", instanceKey = "", callerInfo = None):		
+		ret = COMARValue.COMARObjectDescriptor(objid, objType, ci.OID, ci)		
 		rs = ret.objectData #COMARValue.obj_setData(ret, data, oid)		 
 		fd = open(comar_global.comar_instance_data + "/instance/reginfo_" + ci.OID, "w")
 		fd.write(rs)
@@ -270,6 +269,7 @@ class OM_MANAGER:
 		self.dbhelper = None
 		self.ompath  = comar_global.comar_modpath + "/om_drivers"
 		self.omdrvs = {}
+		self.inxdb = -1
 		# OM DRVS Call Format..
 		# callInfo = OBJ_CALLINFO, objAPI = DEFAULT_CAPI, useNS = "ns.."
 		# callInfo = None, objAPI = None, useNS = ""
@@ -292,7 +292,7 @@ class OM_MANAGER:
 		print "Provided OM Drivers:", self.omdrvs.keys()
 		capiHandlers = API.CAPI.objHandlers
 		for i in capiHandlers.keys():
-			self.objHandlers[i] = capiHandlers[i]
+			self.objHandlers[i] = capiHandlers[i]		
 			
 	def getCInfo(self, node, nodeKey, user, conn, caller):
 		n = self.parseNodeName(node)
@@ -394,6 +394,7 @@ class OM_MANAGER:
 	def setDBHelper(self, helper):	
 		self.dbhelper = helper
 		#print "NAMESPACE API Initialized with", helper, self.OMS.values()
+		self.inxdb = self.dbhelper.dbOpen(comar_global.comar_om_db + "/ominxs.db")
 		for i in self.OMS.values():					
 			print i.setDBHelper
 			i.setDBHelper(self.dbhelper)
@@ -451,6 +452,85 @@ class OM_MANAGER:
 		if self.OMS.has_key(NS):
 			if hasattr(self.OMS[NS], "getOMObj"):
 				return self.OMS[NS].getOMObj(node)
+	def escapeInx(self, s):
+		st = 0
+		x = 0
+		while x > -1:
+			x = s.find("[", st)			
+			if x != -1:
+				sl = s[:x] + '['
+				quote = 0
+				inx = ""
+				esc = 0
+				if s[x+1] in '\'"':
+					quote = s[x+1]
+					print "ESCAPE QUOTED WITH:", quote
+					for i in range(x + 2, len(s)):				
+						if esc:
+							inx = inx + s[i]
+							esc = 0
+						elif s[i] == quote and esc == 0:
+							if s[i+1] == "]":
+								sr = s[i+1:]
+								x = i + 1
+								break
+							else:
+								return s
+						elif s[i] == "\\":
+							esc = 1
+						else:
+							inx += s[i]				
+				else:
+					for i in range(x + 1, len(s)):				
+						x = i + 1
+						if esc:
+							inx = inx + s[i]
+							esc = 0
+						elif s[i] == "\\":
+							esc = 1
+						elif s[i] == "]":
+							sr = s[i:]
+							break
+						else:
+							inx += s[i]				
+				ninx = ""
+				for i in inx:
+					if i in "[]%":
+						ninx += "%%%02x" % ord(i)
+					else:
+						ninx += i
+				print "NODE ESCAPE: '%s' '%s' '%s'" % ( sl, ninx, sr )
+				s = sl + ninx + sr
+				st = len(sl) + len(ninx) + 1
+			else:
+				return s
+		return s
+	def getOMNodeType(self, key):
+		n = []
+		if key.find(":") == -1:
+			print "OMMGR: Invalid OM Key", key
+			return None
+		key = self.escapeInx(key)
+		n.append(key[:key.find(":")])
+		n.append(key[key.find(":")+1:])
+		NS = n[0]
+		node = n[1]		
+		objpart   = node[:node.rfind(".")]
+		entrypart = node[node.rfind(".")+1:]		
+		print "CHECK OM NODE:", node, objpart, entrypart
+		if objpart[-1] == "]":
+			#NS:node.object[inx].entry format..
+			if entrypart.find("[") != -1:
+				return (0, "INVALID")
+			
+		elif entrypart[-1] == "]":
+			#NS:node.object[inx] Format..
+			#inxpart = 
+			pass
+		else self.OMS.has_key(NS):			
+			if hasattr(self.OMS[NS], "getOMNodeType"):
+				return (io, self.OMS[NS].getOMNodeType(node))
+			return (0, "INVALID")
 
 	def getOMProperties(self, key):
 		n = []
@@ -463,7 +543,7 @@ class OM_MANAGER:
 		node = n[1]
 		print "OM_MGR: NS/node:", NS, node
 		if self.OMS.has_key(NS):			
-			return self.OMS[NS].getOMProperties(node, "0")
+			return self.OMS[NS].getOMProperties(node) 
 
 	def getObjHook(self, langid = ""):
 		global COMARAPI
@@ -497,7 +577,37 @@ class OM_MANAGER:
 				return (API, cinfo, hook)
 
 		
+	def objectRegister(self, object, omnode, index):
+		rec = self.dbhelper.dbRead(self.inxdb, omnode)
+		if rec == None or rec == "":
+			rec = index
+		else:
+			rec += "\n" + index
+		self.dbhelper.dbWrite(self.inxdb, omnode, rec)
+		self.dbhelper.dbWrite(self.inxdb, omnode + "!" + index, object.objid)		
+	def objectUnregister(self, omnode, index):
+		rec = self.dbhelper.dbRead(self.inxdb, omnode)
+		if rec != "" and rec != None:
+			r = rec.split("\n")
+			nr = ""
+			for i in r:
+				if i != index:
+					nr += "\n" + i
+			nr = nr[1:]
+			self.dbhelper.dbWrite(self.inxdb, omnode, nr)
 		
+	def objectGetList(self, omnode):
+		rec = self.dbhelper.dbRead(self.inxdb, omnode)
+		nr = []
+		if rec != "" and rec != None:
+			nr = rec.split("\n")			
+		return nr		
+	def objectGetImmediate(self, omnode, index):
+		rec = self.dbhelper.dbRead(self.inxdb, omnode + "!" + index)
+		if rec != "" and rec != None:
+			return rec
+			
+		return ""		
 	def objectMerge(self, object, item):
 		if len(object.data):
 			object.data += "\n"
@@ -615,3 +725,4 @@ class callerInfoObject:
 		# Run environment. CSL -> CSL Interpreter. PYTHON -> PY interpreter..
 		self.runenv = "CSL"
 		self.TAData = None
+		self.objid = ""

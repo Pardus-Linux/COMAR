@@ -304,6 +304,20 @@ class OM_XML_CSL:
 		#print "OBJ_API Dir:", dir(self.obj_api)		
 		return self.obj_api.COMARValue.COMARRetVal(0, rv)
 		
+	def getOMNodeType(self, node = ""):
+		a = self.dbhelper.dbRead(self.om_db, node)
+		if not a:
+			return "INVALID"
+		nd = NodeData(a)
+		if nd.type  == NODE_METHOD:
+			return "METHOD"
+		elif nd.type  == NODE_PROPERTY:
+			return "PROPERTY"
+		elif nd.type == NODE_OBJECT:
+			return "OBJECT"
+		elif nd.type == NODE_UNKNOWN:
+			return "UNKNOWN"
+		
 	def getOMObjList(self, node = ""):
 		# find node index
 		a = self.dbhelper.dbRead(self.om_db, node)
@@ -344,7 +358,7 @@ class OM_XML_CSL:
 		return (hook, None, a[1])
 
 	def getOMProperties(self, key = "", index = ""):
-		a = self.dbhelper.dbRead(self.om_db, key + "::" + index)
+		a = self.dbhelper.dbRead(self.om_db, key) # + "::" + index)
 		print "A 'a' =", a
 		if a != None and len(str(a)) > 0:
 			return ( "usecontainer", "multicall" )

@@ -49,7 +49,13 @@ class TAcallSession:
 		self.caller = caller
 		self.retVal = {}
 		self.waitFor = {}
-
+		self.objindex = ""
+		
+	def initINXOM(self, node="", inx = ""):
+		self.mode = "INDEXEDOM"
+		self.runit = node
+		self.objindex = inx
+		
 	def initOMCALL(self, Node=""):
 		self.mode = "OMCALL"
 		self.runit = Node
@@ -69,9 +75,9 @@ class TAcallSession:
 		self.runit = Lang + ":" + Code
 
 	def execute(self):
-		print "\n\nEXECUTE STARTED\n\n", OM_MGR, OM_MGR.dbhelper, OM_MGR.dbhelper.dbSocket, "PRMS:", self.c_prms
+		print "TACALL.execute: EXECUTE STARTED", OM_MGR, OM_MGR.dbhelper, OM_MGR.dbhelper.dbSocket, "PRMS:", self.c_prms
 		if self.mode == "OBJCALL":
-			print "Execute ObjCall:", self.c_object.data, self.runit
+			print "Execute ObjCall:", self.c_object.data, self.runit, self.c_prms
 			objkeys = OM_MGR.getOBJList(self.c_object)			
 			for objkey in objkeys:
 				hnd = OM_MGR.getOBJHandler(objkey)
@@ -129,11 +135,13 @@ class TAcallSession:
 				stat = int(s[:x])						
 				if stat == 0:
 					res = s[x+1:]
-					val = COMARAPI.COMARValue.load_value_xml(res)
-					if val.type == "object":
-						retobj = val
-					else:
-						rx = val
+					print "TACALL RES BUILDER ADD: ", res, type(res)
+					if res != 'None':							
+						val = COMARAPI.COMARValue.load_value_xml(res)
+						if val.type == "object":
+							retobj = val
+						else:
+							rx = val
 			if rx or len(retobj.data) > 0:						
 				if len(retobj.data) > 0:
 					if rx:
@@ -141,8 +149,13 @@ class TAcallSession:
 					rv = "0 %s" % COMARAPI.COMARValue.dump_value_xml(retobj)
 				else:
 					rv = "0 %s" % COMARAPI.COMARValue.dump_value_xml(rx)
+			else:
+				rv = "0 %s" % COMARAPI.COMARValue.dump_value_xml(COMARAPI.COMARValue.null_create())
 			return rv				
+		elif self.mode == "INDEXEDOM":
+			return "1 <null/>"
 		elif self.mode == "OMCALL":
+
 			omattrs = OM_MGR.getOMProperties(self.runit)
 			if omattrs == None:
 				print "TACALL EXECUTE: Invalid call:", self.runit
@@ -223,6 +236,7 @@ class TAcallSession:
 						stat = int(s[:x])						
 						if stat == 0:
 							res = s[x+1:]
+							print "EXECUTE RES:", res
 							val = COMARAPI.COMARValue.load_value_xml(res)
 							if val.type == "object":
 								retobj = val
@@ -253,7 +267,7 @@ class TAcallSession:
 			pass
 
 	def execCmdHandler(self, From, srcpid, ppid, rfd, pkPid, pkTid, command, pkData):
-		print self.procHelper.myPID, "A exec session cmd captured:", From, srcpid, ppid, rfd, pkPid, pkTid, command #, pkData
+		print self.procHelper.myPID, "TACALL.execCmdHandler: A exec session cmd captured:", From, srcpid, ppid, rfd, pkPid, pkTid, command #, pkData
 		if command == "TRSU_FIN":
 			print os.getpid(), self.procHelper.myPID, "A TRSU FIN Captured (ExecSession/ExecCmdHandler):", From, srcpid, ppid, rfd, pkPid, pkTid, command #, pkData
 			self.procHelper.sendCommand(int(srcpid), "LNTU_KILL", pkPid, pkTid, pkData)
@@ -268,10 +282,15 @@ class TAcallSession:
 			self.procHelper.sendCommand(pkPid, command, pkPid, pkTid, pkData)
 		elif command == "TRSU_OMC":
 			self.procHelper.sendParentCommand(command, pkPid, pkTid, pkData)
+		elif command == "TRSU_OBJC":
+			self.procHelper.sendParentCommand(command, pkPid, pkTid, pkData)
 		elif command == "LNTU_KILL":
 			self.procHelper.exit()
 		elif command == "TRSU_SOBJ":
 			print "Register object to TA:", pkData
+			self.procHelper.sendParentCommand(command, pkPid, pkTid, pkData)
+		elif command == "TRSU_CALL":
+			print "InterTA CALL:", pkData
 			self.procHelper.sendParentCommand(command, pkPid, pkTid, pkData)
 
 	def executeOne(self, key, hook, ci, name, Type, prms):
@@ -311,6 +330,7 @@ class TAcallSession:
 			cv = runhook.runOMNode(prms=prms, Type = Type, name = cn)
 			print os.getpid(), "Hook returned:", cv.execResult, COMARAPI.COMARValue.CVALget(cv.returnValue)
 			rv = "%d %s" % (cv.execResult, COMARAPI.COMARValue.dump_value_xml(cv.returnValue))
+			print "XXXXXXXXX Exec Session RetVal:", rv
 			new_ph.sendParentCommand("TRSU_FIN", new_ph.myPID, 0, rv)
 
 			while 1:

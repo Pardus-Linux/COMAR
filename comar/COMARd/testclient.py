@@ -133,10 +133,13 @@ def start():
 	omnode = "COMAR:Boot"
 	appid = "DENEME"
 	callEntry = "COMAR:Boot.ConfigureDisplay"
+	callProperty = None
+	propVal = None
 	remoteHost = "127.0.0.1:8000"
 	objid = "test"
 	objttsid = "TEST_03" + str(time.time())
 	callttsid = "TEST_02" + str(time.time())
+	prml = {}
 	x = 0
 	skip = 0
 	for i in sys.argv:
@@ -149,20 +152,24 @@ COMARd Test Client v 0.0.1
 Usage:
 
 for register a CSL file to OM:
-  testclient.py --register [--file file][--node omnode][--appid appid]
-  filename = Filename for CSL Code. Default: $PWD/csl/sample/xorg.csl
-  node = OM Node for bind. Default: COMAR:Boot
-  appid = Application ID. Default: DENEME		
+	testclient.py --register [--file file][--node omnode][--appid appid]
+		filename = Filename for CSL Code. Default: $PWD/csl/sample/xorg.csl
+		node = OM Node for bind. Default: COMAR:Boot
+		appid = Application ID. Default: DENEME		
 for call OM Method Entry:
-  testclient.py [--method methodName]
-  method = Name of Method. Default: "COMAR:Boot.ConfigureDisplay"
+	testclient.py [--method methodName] | [--property propertyName [--setprop value]]
+		method = Name of Method. Default: "COMAR:Boot.ConfigureDisplay"
+		property = Name of Property, force Property read callEntry
+		setprop  = New value for Property.
 Global Parameters:
-  --parameter prm=val
-  Add parameter "prm" with value "val" to call.
-  --host ipAddr:port
-  Host address for required COMARd daemon..
-  --objtest objid
-  OBJCALL Mode..
+	--parameter prm=val
+		Add parameter "prm" with value "val" to call.
+	--host ipAddr:port
+		Host address for required COMARd daemon..
+	--objtest objid
+		OBJCALL Mode..
+	--objttsid ttsid
+		TTSID for Object..
 """
 			os._exit(0)
 		elif i == "--register":
@@ -181,6 +188,18 @@ Global Parameters:
 			skip = 1
 		elif i == "--method":
 			callEntry = sys.argv[x+1]
+			skip = 1
+		elif i == "--property":
+			callProperty = sys.argv[x+1]
+			skip = 1
+		elif i == "--setprop":
+			pval = sys.argv[x+1]
+			try:
+				pval = int(pval)
+				propVal = COMARValue.numeric_create(pval)
+			except:
+				propVal = COMARValue.string_create(pval)
+			
 			skip = 1
 		elif i == "--host":
 			remoteHost = sys.argv[x+1]
@@ -203,7 +222,7 @@ Global Parameters:
 				cval = COMARValue.numeric_create(val)
 			except:
 				cval = COMARValue.string_create(val)
-			rpc.addPropertyMulti("parameter", key, cval)
+			prml[key] = cval
 		elif i == "--file":
 			cslfile = sys.argv[x+1]
 			skip = 1
@@ -233,15 +252,37 @@ Global Parameters:
 		print "Setting OBJ TTSID:", 
 		rpc["ttsid"] = objttsid
 		print rpc["ttsid"]
-		rpc["object"] = cv.COMARValue(type="object", data = objid)
-		rpc["name"] = callEntry
-		rpc["type"] = "method"
+		rpc["object"] = cv.COMARValue(type="object", data = objid)		
+		if callProperty:
+			rpc["name"] = callProperty
+			rpc.addPropertyMulti("parameter", "index", propindex)
+			if propVal:
+				rpc["type"] = "propertyset"
+				rpc.addPropertyMulti("parameter", "value", propVal)
+			else:
+				
+				rpc["type"] = "propertyget"	
+		else:
+			rpc["name"] = callEntry			
+			rpc["type"] = "method"
+
 	else:
 		rpc.TTSID = callttsid
 		rpc.RPCPriority = "INTERACTIVE"
 		rpc.makeRPCData("OMCALL")
-		rpc["name"] = callEntry
-		rpc["type"] = "method"
+		if callProperty:
+			rpc["name"] = callProperty
+			if propVal:
+				rpc["type"] = "propertyset"				
+			else:
+				rpc["type"] = "propertyget"	
+		else:
+			rpc["name"] = callEntry
+			rpc["type"] = "method"
+			
+	for key in prml.keys():
+		print "ADD PRM:", key, prml[key], rpc.addPropertyMulti("parameter", key, prml[key])
+		
 	print "Send HTTP to localhost from:", os.getpid(), time.time(), rpc.xml
 	print HTTP.makeConnection(realmAddress = remoteHost)
 	HTTP.sendRPC(rpc = rpc)

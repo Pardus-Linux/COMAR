@@ -643,9 +643,9 @@ class TAManager:
 		rpc.fromString(data)
 		key = self.makettskey(rpc.TTSID, user)
 		if rpc.Type == "OMCALL":
-			omattrs = OM_MGR.getOMProperties(rpc["name"])
-			if omattrs == None:
-				print "Invalid call:", rpc["name"]
+			omtype = OM_MGR.getOMNodeType(rpc["name"])
+			if omtype[1] == "INVALID":
+				print "Invalid call:", rpc["name"], omtype
 				return None
 		elif rpc.Type == "OBJCALL":
 			# Only previously registered objects with TA created..
@@ -785,7 +785,13 @@ class TAManager:
 				#s = self.TAStack[i].IOChannel.cmdrpoll.poll(0)[0][1]
 				print "TA Checking,",i, s
 				if s & select.POLLNVAL:
-					print "TAMGR: IOChannel", TA_CHLDS.PID2io(self.TAStack[i].TAPID).name, "for", self.TAStack[i].TTSID, "is invalid.."
+					print "TAMGR: IOChannel", TA_CHLDS.PID2io(self.TAStack[i].TAPID).name, "for", self.TAStack[i].TTSID, "is invalid.."					
+					try:
+						os.close(fd)
+						os.close(self.TAStack[i].IOChannel.cmd_rfile)
+					except:
+						pass
+					
 					r = 0
 				if s & (select.POLLHUP):
 					r = 0
@@ -804,9 +810,8 @@ class TAManager:
 							os.close(self.TAStack[i].IOChannel.cmd_rfile)
 						except:
 							pass
-
 		return r
-
+		
 	def readConn(self, xPID):
 		for i in self.TAStack.keys():
 			if self.TAStack[i].TAPID == xPID:
@@ -1596,14 +1601,12 @@ class comarEvent:
 				if key[0:key.rfind("_")] != eventid:
 					break
 				evcls = tp[1][0]
-
 				if evcls == "R":
 					print "EVSYS: Remote Notify:", tp[1]
 				elif evcls == "O":
 					print "EVSYS: Object Fired:", tp[1]
 				elif evcls == "N":
 					print "EVSYS: OM NODE Fired:", tp[1]
-
 				try:
 					tp = self.eventdb.next()
 				except:

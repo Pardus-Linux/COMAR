@@ -10,6 +10,22 @@ def getFuncTable():
 	for i in dir(cls):
 		if i[:4] == "csl_":
 			vtbl[i[4:]] = getattr(cls, i)
+	s = "RX: 128 TX: 1500 MTU 250"
+	f = "TX:"
+	x = s.find(f)
+	rv = ""
+	if x != -1:
+		x = x + len(f) # skip fieldid
+		for i in range(x, len(s)):
+			x = i
+			if s[i] != " ":
+				break
+		
+		for i in range(x, len(s)):					
+			if s[i] in "\n\t ":					
+				break
+			rv += s[i]
+	print "TEST RV:", rv
 	return vtbl
 	
 def safeget(prms, prm, default):
@@ -18,6 +34,32 @@ def safeget(prms, prm, default):
 	return default
 
 class API:
+	def csl_getfieldval(self, prms):
+		""" getfieldval(string=str, field='');
+	getfieldval(string="RX: 128 TX: 1500 MTU 250", field="RX:"); #return 128 """
+		
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
+		if prms.has_key("string") and prms.has_key("field"):
+			s = prms["string"].toString()
+			f = prms["field"].toString()
+			x = s.find(f)
+			#print "Get Field:", s, "\n", f, x, 
+			rv = ""
+			if x != -1:
+				x = x + len(f) # skip fieldid
+				for i in range(x, len(s)):					
+					if s[i] != " ":
+						x = i
+						break				
+				#print "x:", x, "s[x]:", s[x:x+2],
+				for i in range(x, len(s)):					
+					if s[i] in "\n\t ":					
+						break
+					rv += s[i]
+			#print "RV: '%s'" % rv
+			return CSLValue("string", rv)
+			
 	def csl_arraygrep(self, prms):
 		"array_grep(array=arr, pattern='');"
 		if prms.has_key("$__obj"):
@@ -35,6 +77,23 @@ class API:
 				if arr.toString.find(pattern) != -1:
 					ret["%06d" % 0] = arr
 			return CSLValue("array", ret)
+		return CSLValue("NULL", "")
+	def arraytostring(self, arr):
+		ret = ""
+		arrval = arr.value
+		for i in arrval.keys():			
+			if arrval[i].type == "array":
+				tmp = self.arraytostring(arrval[i].value)
+			else:
+				tmp = arrval[i].toString()
+			ret += tmp
+		return CSLValue("string", ret)
+	def csl_array2buffer(self, prms):
+		if prms.has_key("$__obj"):
+			prms["array"] = prms["$__obj"]
+		if prms.has_key("array"):
+			arr = prms["array"]
+			return self.arraytostring(arr)
 		return CSLValue("NULL", "")
 		
 	def csl_replacetokens(self, prms):
@@ -233,6 +292,7 @@ class API:
 			return CSLValue("string", a)
 	
 	def csl_getnumleft(self, prms):
+		" return number of '12alpha' form.."
 		ret = ""
 		if prms.has_key("$__obj"):
 			prms["string"] = prms["$__obj"]
@@ -268,6 +328,7 @@ class API:
 		return CSLValue("numeric", ret)
 	
 	def csl_getnumright(self, prms):
+		" return number of 'alpha12' form.."
 		ret = ""	
 		if prms.has_key("$__obj"):
 			prms["string"] = prms["$__obj"]

@@ -85,12 +85,12 @@ class CSLParse:
 				f.write ("%s %s %s" % (a.type, "->", a.data))
 			else:
 				print "    " * this.nest,
-				print a.type, "->", a.data,
+				print a.type, "->", a.data, 
 			if a.child != None:
 				if file:
 					f.write(" GO CHILD\n")
 				else:
-					print "GO CHILD"
+					print "GO CHILD", "(", a.parent, ")"
 
 				this.nest += 1
 				this.CSLPrintTree(a.child, file, pre)
@@ -100,13 +100,13 @@ class CSLParse:
 				if file:
 					f.write(" GO NEXT\n")
 				else:
-					print "GO NEXT"
+					print "GO NEXT", "(", a.parent, ")"
 				a = a.next
 			else:
 				if file:
 					f.write(" END\n")
 				else:
-					print "END.."
+					print "END..", "(", a.parent, ")"
 				a=None
 			x += 1
 

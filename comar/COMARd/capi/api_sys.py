@@ -67,10 +67,10 @@ class APICALLS:
 			
 	def fileexist(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
 		keylist = prms.keys()
-		prg = ""			
+		prg = ""
 		for prm in keylist:
 			if prm == "file":
-				prg = prms[prm].data.value	
+				prg = prms[prm].data.value
 		try:
 			f = open(prg, "r")
 			f.close()
@@ -82,7 +82,7 @@ class APICALLS:
 		
 	def rmfile(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
 		keylist = prms.keys()
-		prg = ""			
+		prg = ""
 		for prm in keylist:
 			if prm == "file":
 				prg = prms[prm].data.value
@@ -157,7 +157,7 @@ class APICALLS:
 							if line[:len(startwith)] == startwith:
 								self.cv.array_additem(array=ret, key="%04d" % (x), arrValue=self.cv.string_create(line))
 								x += 1
-				#print "capture stdout:", self.cv.dump_value_xml(ret)
+				print "capture stdout:", self.cv.dump_value_xml(ret)
 				if x == 0:
 					ret = self.cv.string_create("")
 				return self.cv.COMARRetVal( value=ret, result=0 )
@@ -232,7 +232,7 @@ class APICALLS:
 			return self.cv.COMARRetVal(0, self.cv.string_create(results[0]))
 		return self.cv.COMARRetVal( value=self.cv.string_create(""), result=0 )
 		
-	def captureblock((self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
+	def captureblock(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
 		keylist = prms.keys()
 		prg = ""
 		begin_pattern = ""

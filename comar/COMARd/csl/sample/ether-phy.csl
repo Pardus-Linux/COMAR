@@ -1,4 +1,5 @@
 # Generic Object Provider for Ethernet Cards.
+# Bu script, donanım katmanından bağımsız olarak çalışıp, 802.x Kablolu Ethernet için PHY cihaz desteği sunar.
 # object item Provider
 # Description:
 #  PHY nesnesini sunan belirticiyi döndürür. Bu özellik NIC nesnelerinin bağlı olduğu PHY'leri handle etmesini kolaylaştırır. Sadece NIC nesneleri tarafından erişilebilir.
@@ -14,9 +15,9 @@ property Provider {
 #  PHY nesnesinin sistem çapında yeğane olan identifier'ini döndürür.
 
 property Identifier {
-	get { tmp=0;
-	}
-	set { tmp=0;
+	get { 
+		instance ethName;
+		Identifier = ethName;
 	}
 }
 
@@ -39,9 +40,32 @@ property Name {
 # Description:
 #  PHY Nesnesinin yeni ve boş bir instance'ını oluştup geri döndürür. Doğrudan kullanılamaz, sadece daha önceden alınmış bir nesne içinden kullanılmalıdır.
 
-method New() {
-	main[0]=5;
-	data = COMAR:Network.connPoint.PHY.TXSpeed[0];
+method New(over="") {
+	instance ethName;
+	if (over == "") {
+		debugout(value="Invalid EtherName..");
+		abort;
+	}
+	cap = capture(exec = "/sbin/ip link ls dev " + over);
+	read = 0;
+	foreach (key = val in cap) {
+		if (read) {
+			if (val.getfieldval(field = "link/") == "ether") {
+				ethName = over;
+				makeinstance ethobj, over;
+				
+				ret = ethobj.registerself(phyname=over);				
+				ethobj.LinkDevice = over;
+				debugout(value = ret);
+				New = ethobj;
+				break;
+			}
+		}
+		if (val.strstr(pattern = over)) {
+			read = 1;
+		}
+	}
+	abort;	
 	New = 0;
 }
 
@@ -49,8 +73,20 @@ method New() {
 # Description:
 #  PHY Nesnesinin kendini OM'a register etmesini saglar.
 
-method registerself() { tmp=0;
+method registerself(phyname = "") { 
+	instance ethName;
+	ethName = phyname;	
+	registerself = "I'm new ethernet:" + ethName;
+}
 
+method getFromLinkDev(device="") {
+	if (device == ethName) 
+		getFromLinkDev = me;
+}
+
+method getFromId(identifier = "") {
+	if (identifier == ethName) 
+		getFromId = me;	
 }
 
 # object item LinkDevice
@@ -65,6 +101,7 @@ property LinkDevice {
 	set { 
 		instance ethName;
 		ethName = LinkDevice;
+		debugout(value="Property is set to:"+ethName);
 	}
 }
 
@@ -90,8 +127,7 @@ property RemoteAccessType {
 
 property MACAddress {
 	get { 
-		instance ethName;
-		ethName = "eth0";
+		instance ethName;		
 		if (ethName != "") {
 			prg = "/sbin/ifconfig " + ethName;
 			m = grep_first(exec=prg, pattern="HWaddr");
@@ -128,19 +164,40 @@ property MACAddress {
 
 property MACisChangeable {
 	get {
-		MACisChangeable = "BUSY";
+		MACisChangeable = "FALSE";
 	}
 }
 
 method setLinkUpEvent(eventReceiverId="") {
-	tmp = 0;
+	instance event_receivers;
+	if (eventReceiverId == "ETHER_LINKUP") {
+		# Our ifplugd scripts call..
+		foreach (key = val in event_receivers) {
+			if (val == 1) 
+				CORE:eventSys.fireUp(eventid = key);
+		}
+	} else {
+		event_receivers[event_receivers] = 1;
+	}
+	event_receivers.debugout();
 }
 
 # object item setLinkDownEvent
 # Description:
 #  Fiziksel bağlantı başlatılınca (up) ve sona erince (down) bir COMAR eventi oluşturulmasını sağlar.
 
-method setLinkDownEvent(eventReceiverId="") { tmp=0;
+method setLinkDownEvent(eventReceiverId="") { 
+	instance down_event_receivers;
+	if (eventReceiverId == "ETHER_LINKDOWN") {
+		# Our ifplugd scripts call..
+		foreach (key = val in down_event_receivers) {
+			if (val == 1) 
+				CORE:eventSys.fireUp(eventid = key);
+		}
+	} else {
+		down_event_receivers[eventReceiverId] = 1;
+	}
+	down_event_receivers.debugout();
 }
 
 property RXSpeedInfo {
@@ -159,13 +216,15 @@ property RXSpeedInfo {
 #  "step" = Artış değeri.
 #  Eğer "model" STEPPED ise "speeds" adlı yeni bir array eleman ile kullanılabilir hız değerleri gösterilir. "foreach" kullanılarak bu değerler alınabilir, array_min(), array_max() fonksiyonları kullanılabilir.
 #  Eğer model "LOGICAL" ise, bağlantı tünel benzeri bir mantıksal yapıda olduğundan hız değerleri anlamsızdır.
-#  Hız parametreleri cihazın fiziksel bağlantı hızını kbit-per-second olarak ifade eder.
+#  Hız parametreleri cihazın fiziksel bağlantı hızını kbit-per-second (ondalıklı sayı) olarak ifade eder.
 
 property TXSpeedInfo {
 	get { 
 		instance ethName;
+		ethName = "eth0";
 		spd["model"]  = "STEPPED";
 		spdinfo = capture(exec="/sbin/ethtool "+ethName);
+		debugout(value=spdinfo);
 		collect = 0; 
 		data = "";
 		x = 0;		
@@ -210,9 +269,8 @@ property TXSpeedInfo {
 }
 
 property RXSpeed {
-	get { tmp=0;
-	}
-	set { tmp=0;
+	get { 
+		RXSpeed = me.TXSpeed;
 	}
 }
 
@@ -221,9 +279,10 @@ property RXSpeed {
 #  Fiziksel bağlantının hızını belirtir/tespit eder.
 
 property TXSpeed {
-	get { tmp=0;
-	}
-	set { tmp=0;
+	get { 
+		instance ethName;
+		prm = me.getifdata(ifc = ethName);
+		TXSpeed = prm["SPEED"];
 	}
 }
 
@@ -235,14 +294,19 @@ property TXSpeed {
 #	FULLDUPLEX	= Her iki yönde aynı anda akış olabilir.
 #	HALFDUPLEX	= Bir anda sadece bir tek yönde akış olabilir.
 
-
-
 property FlowMode {
-	get { 
-		
-		FlowMode = "FULLDUPLEX";
+	get { 		
+		instance ethName;		
+		prm = me.getifdata(ifc = ethName);		
+		FlowMode = prm["DUPLEX"];
 	}
-	set { tmp=0;
+	set { 
+		if (FlowMode == "HALFDUPLEX") {
+			instance ethName;
+			execute(exec="/sbin/ethtool -s " + ethName + " duplex half"); 
+		} else {
+			execute(exec="/sbin/ethtool -s " + ethName + " duplex full"); 
+		}
 	}
 }
 
@@ -296,6 +360,10 @@ method setTXTresholdEvent(eventReceiverId="") { tmp=0;
 
 property LinkStatus {
 	get { tmp=0;
+		instance ethName;
+		ethName = "eth0";
+		prm = me.getifdata(ifc = ethName);
+		LinkStatus = prm["LINKSTATUS"];
 	}
 }
 
@@ -308,10 +376,13 @@ property LinkStatus {
 #	READY	- Cihaz bağlı ve hazır. Media bağlantısı yok (DialUp çağrı, kablo takılı değil vs.)
 #	FAULT	- Cihaz bağlı değil, power off durumunda vs.
 
-
-
 property MediaStatus {
-	get { tmp=0;
+	get { 
+		if (me.LinkStatus == "UP") {
+			MediaStatus = "ONLINE";
+		} else {
+			MediaStatus = "READY";
+		}
 	}
 }
 
@@ -320,10 +391,8 @@ property MediaStatus {
 #  Bağlantı türünü belirtir:
 #
 # Possible Return Values:
-#	PTP	- Point-to-point. Bağlantı her zaman tek bir karşı cihaza erişir.
-#	PTMP	- Point-to-MultiPoint.
-
-
+#	PTP	 - Point-to-point. Bağlantı her zaman tek bir karşı cihaza erişir.
+#	PTMP - Point-to-MultiPoint.
 
 property LinkType {
 	get { 
@@ -336,7 +405,7 @@ property LinkType {
 #  Bağlantının ortam türünü belirtir.
 #  BUS
 #  TOKENRING
-#  
+#  PTP	
 
 property MediaType {
 	get { 
@@ -359,20 +428,18 @@ property securityLevel {
 #  COMAR Property Definiton kurallarına uygun olarak cihazın kabul ettiği extra property'leri döndürür.
 
 property getExtraProperties {
-	get { 
-	
-		getExtraProperties = "";
+	get { 			
+		getExtraProperties = ge;		
 	}
 }
 
-# object item setExtraProperty(property
+# object item setExtraProperty property
 # Description:
 #  Cihazın extra property'lerinden birinin değerini değiştirmek üzere kullanılır.
 
-property setExtraProperty[index] {
+property setExtraProperty[index = 0] {
 	get { tmp=0;
 	}
-	
 }
 
 property EDCTypeInfo {
@@ -392,8 +459,6 @@ property EDCTypeInfo {
 #	CRC16
 #	CRC32
 
-
-
 property EDCType {
 	get { 
 		EDCType = "CRC32";
@@ -406,10 +471,7 @@ property EDCType {
 
 property MTU {
 	get { 
-		m = getinterfacedata( ifc = "eth0" );
-		debugout(value = m);
-	}
-	set { tmp=0;
+		MTU = 1500;
 	}
 }
 
@@ -433,9 +495,13 @@ property remoteAddress {
 #	IPv4
 #	IPv6
 #   IPX
+#   802.2_LLC
+#   802.2_LLC_SNAP
+#   802.3_MAC
 
 property remoteAddressType {
-	get { tmp=0;
+	get { 
+		remoteAddressType = "802.3_MAC";
 	}
 }
 
@@ -444,9 +510,8 @@ property remoteAddressType {
 #  PHY arabiriminin operational modunu belirtir. CONNECT, LISTEN, CONNECTBACK, CONNECTFORWARD, ONLINE modlarını verir.
 
 property operMode {
-	get { tmp=0;
-	}
-	set { tmp=0;
+	get { 
+		operMode = "ONLINE";
 	}
 }
 
@@ -470,32 +535,26 @@ property totalTXBytes {
 }
 
 function getifdata(ifc = "eth0") {
-	blocks = capturetabbedblock(exec="/sbin/ip link");
-	ret = "";
-	foreach (bi = block in blocks) {
-		if (block[0].startswith(prefix = ifc + "\t")) {
-			for (li = line in block) {
-				if (line.strstr(pattern = "MTU:")) {
-					a = line.splitws();
-					for (ai = stat in a) {
-						if ( stat == "UP" ) {
-							ret["LINKSTATUS"] = "UP";
-						} elif ( stat == "DOWN" ) {
-							ret["LINKSTATUS"] = "DOWN";
-						} elif ( stat == "HWADDR" ) {
-							ret["MAC"] = a[1 + ai];						
-						} elif ( stat.startswith(prefix = "MTU:")) {
-							ret["MTU"] = stat.getnumright();
-						} elif ( stat.startswith(prefix = "Bytes:")) {
-							if ( a[ ai.int() - 1 ] == "RX") {
-								ret["RXBYTES"] = stat.getnumright();
-							} else {
-								ret["TXBYTES"] = stat.getnumright();
-							}
-						}
-					}
-				}
-			}
-		}
+	
+	block = capture(exec="/sbin/ethtool " + ifc);		
+	ret["MAC"]        = "";
+	ret["MTU"]        = 1500; #This is a fix value. MTU must change with NIC object.
+	ret["RXBYTES"]	  = 0;
+	ret["TXBYTES"]    = 0;	
+	ret["DUPLEX"]	  = "HALFDUPLEX";
+	ret["HD_SPEEDS"]  = 0;
+	ret["FD_SPEEDS"]  = 0;	
+	ret["IFSTATUS"]	  = "UP";	
+	
+	buffer = block.array2buffer();
+	spd = buffer.getfieldval(field = "Speed:");	
+	debugout(value="SPEED is " + spd);
+	ret["SPEED"] = 1000 * spd.getnumleft();
+	st = buffer.getfieldval(field = "Link detected:");
+	if (st == "yes") {
+		ret["LINKSTATUS"] = "UP";
+	} else {
+		ret["LINKSTATUS"] = "DOWN";
 	}
+	getifdata = ret;
 }

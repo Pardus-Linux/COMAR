@@ -134,7 +134,7 @@ class	CSLCapsule:
 		self.procStack 		= []
 		self.dbgf = None #open("csldebug", "w")
 		self.debugfile = None
-		self.debuglvl = 0 #DEBUG_CALL
+		self.debuglvl = DEBUG_CALL | DEBUG_TREE | DEBUG_PRST
 		self.modpath = csl_dir 
 		self.cslAPIS = {}
 		self.cslAPIMods = []
@@ -207,9 +207,68 @@ class	CSLCapsule:
 		pd = cPickle.loads(pdata)
 		self.root = pd["tree"]
 		self.Tbl  = pd["tbl"]
-		self.vtbl = pd["vtbl"]		
-		#self.printTree()
+		#self.vtbl = pd["vtbl"]		
+		self.reparent(self.root, None)
+		self.CSLTreeCoder(self.root)
+		self.makevtbl(self.root)
+		
+	def makevtbl(self, tree = None):
 
+		while tree != None:
+			tree.codeLine = self.tc
+
+			#print self.tc, "->", tree.type, tree.data
+
+			if self.ipts.has_key(tree.type):
+				# basic commands (if, for etc..)
+				# self.makevtbl(tree.child)
+				tree = tree.next
+			elif tree.type == "ROOT":
+				# go child immediately..
+				tree.data = "binded"
+				tree = tree.child
+			elif tree.type in self.decl:
+				#print "DECL: '%s' in " % ( tree.type ), tree.data
+				if tree.type == "defprop":
+					# special case. We are create name_get and
+					# name_set node.
+					tmp = copy.copy(tree)
+					tree = tree.child
+					while tree != None:
+						if tree.type == "get":
+							tmp.data[tmp.data["name"] + "_get"] = tree
+							self.vtbl["p_" + tmp.data["name"] + "_get"] = tree
+							self.makevtbl(tree.child)
+						elif tree.type == "set":
+							tmp.data[tmp.data["name"] + "_set"] = tree
+							self.vtbl["p_"+tmp.data["name"] + "_set"] = tree
+							self.makevtbl(tree.child)
+						else:
+							return None
+						tree = tree.next
+					tree = tmp.next
+				else:
+					self.vtbl[tree.type[3]+"_"+tree.data["name"]] = tree
+					self.makevtbl(tree.child)
+					tree = tree.next
+			else:
+				tree = tree.next
+	
+	def reparent(self, a, p):
+		this = self
+		while a != None:						
+			if a.child != None:
+				a.parent = p
+				this.reparent(a.child, a)
+				a = a.next
+			elif a.next != None:
+				a.parent = p
+				a = a.next
+			else:
+				a.parent = p				
+				a=None
+				
+			
 	def	LoadObject(self, fileName = ""):
 		CPO = CSLParser.CSLParse(file = fileName)
 
@@ -250,23 +309,27 @@ class	CSLCapsule:
 		self.printTreeNode(self.root)
 
 	nest = 0
+	def printArray(self, arr):
+		if arr.type == "array":
+			for i in arr.value.keys():
+				print "ARR DUMP: %s -> %s:%s" % (i, arr.value[i].type, arr.value[i].value)
 	def printTreeNode(self, a):
 		x = 0
 		this = self
-		while a != None and x < 18:
+		while a != None:
 			for i in range(0, this.nest): print "    ",
 			print a.type, "->", a.data,
 			if a.child != None:
-				print "GO CHILD"
+				print "GO CHILD (", a.parent, ")"
 				this.nest += 1
 				this.printTreeNode(a.child)
 				this.nest -= 1
 				a = a.next
 			elif a.next != None:
-				print "GO NEXT"
+				print "GO NEXT (", a.parent, ")"
 				a = a.next
 			else:
-				print "END.."
+				print "END.. (", a.parent, ")"
 				a=None
 			x += 1
 
@@ -524,8 +587,9 @@ class	CSLCapsule:
 			return self.COMARValue.numeric_create(cslVal.value)
 
 		elif cslVal.type == "array":
-			arr = self.COMARValue.array_create()
-			for key in cslVal.value.keys():				
+			arr = self.COMARValue.array_create()			
+			for key in cslVal.value.keys():
+				print "CSL_TO_COMAR: %s -> %s" % (key, cslVal.value[key])
 				self.COMARValue.array_additem(arr, key, 0, self.CSLtoCOMARValue(cslVal.value[key]))
 			return arr
 			
@@ -554,11 +618,14 @@ class	CSLCapsule:
 		index = None
 		if prmtbl.has_key("index"):
 			index = prmtbl["index"]
+		self.debug(DEBUG_CALL, "CSL PGET ENTRY:", name, index)
 		res = self.callPropertyGet(name, index)
-		self.debug(DEBUG_CALL, "CSL PGET:", res, res.type, res.value)
+		self.debug(DEBUG_CALL, "CSL PGET EXIT:", res, res.type, res.value)
 		if res.type == "NULL":
 			return self.COMARValue.COMARRetVal(1, None)
 		else:
+			#print "PGET RETVAL:",
+			#self.debugout(res)
 			return self.COMARValue.COMARRetVal(0, self.CSLtoCOMARValue(res))
 
 	def	runPropertySet(self, name = "__default", prms = {}):
@@ -570,6 +637,7 @@ class	CSLCapsule:
 			index = prmtbl["index"]
 		if prmtbl.has_key("value"):
 			value = prms["value"]
+		print "RPS:", prms, prmtbl, name, index, value
 		val = self.COMARtoCSLValue(value)		
 		res = self.callPropertySet(name, index,  val)		
 		if res == 1:
@@ -769,7 +837,7 @@ class	CSLCapsule:
 			return CSLValue(typeid = "NULL", value = None)
 
 	def	callFunction(self, name = "", prms = {}, symtab = {}):
-		self.debug(DEBUG_CALL, "FCALL ENTRY: %s ( %s )" % (name, prms))
+		self.debug(DEBUG_CALL, "FCALL ENTRY: %s ( %s ) search in %s" % (name, prms, self.vtbl.keys()))
 		fn = "f_" + name
 		if not self.vtbl.has_key(fn):
 			return CSLValue("NULL", None)
@@ -795,20 +863,13 @@ class	CSLCapsule:
 
 	def callPropertyGet(self, name = "__value", index = None):
 		""" Called from CSL Script prms is CSLValue  """
-
 		if name == 'IID':
 			return CSLValue(typeid = "string", value = self.callerInfo.IID)
-
 		Entry = self.vtbl['p_' + name + "_get"]
-
 		#localTbl = { 'vars':{}, 'status':0, 'props':{}, 'alias':{}, 'persistent':{}, 'instance':{}}
-
 		propEntry = Entry.parent
-
 		prmName = propEntry.data['prm']
-
 		localTbl = self.CSLCreateLocalTbl({}, {}, {}, copy.copy(propEntry.data['persistent']), copy.copy(propEntry.data['instance']))
-
 		if prmName != "":
 			if index == None:
 				default = propEntry.data['default']
@@ -841,12 +902,21 @@ class	CSLCapsule:
 			return 1
 
 		Entry = self.vtbl[pname]
-
-		localTbl = { 'vars':{}, 'status':0, 'props':{}, 'alias':{}, 'persistent':{}, 'instance':{}}
-
+		print "CSP: ", name, index, value, Entry, Entry.data, Entry.parent, 
+		for i in dir(Entry):
+			print "(%s = %s)" % (i, getattr(Entry, i)),
+		print 
+		self.printTreeNode(Entry)
+		#self.printTreeNode(self.root)
 		propEntry = Entry.parent
-
-		prmName = propEntry.data['prm']
+		if propEntry == None:
+			propEntry = Entry.prev
+		if propEntry:
+			prmName = propEntry.data['prm']
+			localTbl = self.CSLCreateLocalTbl({}, {}, {}, copy.copy(propEntry.data['persistent']), copy.copy(propEntry.data['instance']))
+		else:
+			prmName = ""
+			localTbl = self.CSLCreateLocalTbl()
 
 		if prmName != "":
 			if index == None:
@@ -862,21 +932,15 @@ class	CSLCapsule:
 
 		if value == None:
 			value = CSLValue(typeid = "NULL", value = None)
-
+		print "CSP BC:", localTbl, name, value, value.type, ".", value.toString(), "."
 		localTbl['vars'][name] = value
-
-		self.push(localTbl)
+		
 		self.procStack.append(pname)
 		l = self.CSLInterpreter(Entry.child, localTbl)['status']
 		self.procStack.pop()
-		self.pop()
-
 		self.debug(DEBUG_CALL, "SetProp:", l)
-
-		if l == 2:
-			return 1
-		else:
-			return 0
+		return CSLValue(typeid = "NULL", value = "")
+		
 #----------------------------------------------------------------------------
 # External calls. This cllas direction CSL -> COMARd
 #----------------------------------------------------------------------------
@@ -895,13 +959,30 @@ class	CSLCapsule:
 
 	def	callExtPropertySet(self, name = "", index = None , localTbl = {}, value = None):
 		self.debug(DEBUG_CALL, "ExtPropertySet:", name, index, value, localTbl)
-		pass
+		if name.find(":") == -1:
+			rootObj = name[:name.find(".")]
+			prop = name[name.find(".")+1:]
+			obj = localTbl['vars'][rootObj]
+			self.objCall(obj = obj, Type = "propertyset", name = prop, prms = {}, index = index, value=value, locals = localTbl)
+		else:
+			pass
 
-	def objCall(self, obj = None, Type = "propertyget", name = "", prms = {}):
+	def objCall(self, obj = None, Type = "propertyget", name = "", prms = {}, index = None, value=None, locals = None):
 		# we must use self.extObjCall()
 		# But currently don't know prms.
-		print "Obj '%s' called for '%s %s' with %s" % (obj, Type, name, prms)
-		return CSLValue(typeid = "NULL", value = None)
+		
+		plist = {}
+		for i in prms.keys():
+			plist[i] = self.CSLtoCOMARValue(self.CSLCheckVariable(prms[i], locals))
+		cobj = self.CSLtoCOMARValue(obj)
+		print "Obj '%s'->'%s' called for '%s %s' with %s" % (obj, cobj, Type, name, prms)
+		if value:
+			val = self.CSLtoCOMARValue(value)
+		else:
+			val = None
+		rv = self.ExtObjCall(obj = cobj, Type=Type, name = name, index = index, prms = plist, value = val)
+		print "OBJ RetVal:", rv
+		return self.COMARtoCSLValue(rv)
 
 #-----------------------------------------------------------------
 # Main VM
@@ -964,14 +1045,21 @@ class	CSLCapsule:
 
 			else:	# a Object property
 				if arrId.find(":") == -1:
-					rootObj = arrId[:arrId.find(".")]
+					rootObj = arrId[:arrId.find(".")]					
+					fname   = arrId[arrId.find(".")+1:]
+					#print "CALL ENTRY:", rootObj, fname
+					
 					if rootObj == "me":
 						inx = self.CSLCheckVariable(arrIndexes[0], localTbl)
 						self.callPropertySet(name = varName, index = inx, localTbl = localTbl, value = val)
 						cont = 0
 					else:
-						inx = self.CSLCheckVariable(arrIndexes[0], localTbl)
-						self.callExtPropertySet(name = varName, index = inx , localTbl = localTbl, value = val)
+						inx = self.CSLCheckVariable(arrIndexes[0], localTbl)						
+						if localTbl['vars'].has_key(rootObj):
+							obj = localTbl['vars'][rootObj]
+							if obj.type == "object":
+								print "Go ObjCall:", fname,
+								self.objCall(obj = obj, Type="propertyset", name = fname, index = inx, prms = {}, locals = localTbl, value=val)
 				else:
 					inx = self.CSLCheckVariable(arrIndexes[0], localTbl)
 					self.callExtPropertySet(name = varName, index = inx , localTbl = localTbl, value = val)
@@ -1005,7 +1093,27 @@ class	CSLCapsule:
 
 				#print "LET ->", localTbl["vars"]
 			else:	# A COMAR Property Call..
-				self.callExtPropertySet(name = varName, index = None , localTbl = localTbl, value = val)
+				arrId = varName
+				if arrId.find(":") == -1:
+					rootObj = arrId[:arrId.find(".")]					
+					fname   = arrId[arrId.find(".")+1:]
+					#print "CALL ENTRY:", rootObj, fname
+					
+					if rootObj == "me":
+						inx = self.CSLCheckVariable(arrIndexes[0], localTbl)
+						self.callPropertySet(name = varName, index = inx, localTbl = localTbl, value = val)
+						cont = 0
+					else:
+						inx = None
+						if localTbl['vars'].has_key(rootObj):
+							obj = localTbl['vars'][rootObj]
+							if obj.type == "object":
+								print "Go ObjCall:", fname, val,
+								print self.objCall(obj = obj, Type="propertyset", name = fname, index = inx, prms = {}, locals = localTbl, value=val)
+				else:
+					inx = self.CSLCheckVariable(arrIndexes[0], localTbl)
+					self.callExtPropertySet(name = varName, index = inx , localTbl = localTbl, value = val)
+
 
 		return localTbl
 
@@ -1048,11 +1156,12 @@ class	CSLCapsule:
 							#print "CSLCV - FUNC CALLER:", f["id"], f["prmlist"]
 							if rootObj == "me":
 								tmp = self.callFunction(name = fname, prms = tree.data['prm'], symtab = localTbl)
+								self.debugout(tmp)
 							else:
 								if localTbl['vars'].has_key(rootObj):
 									obj = localTbl['vars'][rootObj]
 									if obj.type == "object":
-										tmp =  self.objCall(obj = obj, Type="method", name = fname, prms = tree.data['prm'])
+										tmp =  self.objCall(obj = obj, Type="method", name = fname, prms = tree.data['prm'], locals = localTbl)
 									else:
 										tree.data['prm']["$__obj"] = obj
 										tmp = self.CAPIFunc(name = fname, prms = tree.data['prm'], symtab = localTbl)
@@ -1138,7 +1247,7 @@ class	CSLCapsule:
 				elif tree.type == "makeinstance":
 					self.debug(DEBUG_PRST, "MAKE INSTANCE:", tree.data)
 					newvar = tree.data['objname']
-					newid  = self.CSLCheckVariable(tree.data['objid']).toString()
+					newid  = self.CSLCheckVariable(tree.data['objid'], localTbl).toString()
 					localTbl['vars'][newvar] = self.nsAPI.makeinstance(newid)					
 					self.debug(DEBUG_FATAL, "new instance:", newvar)
 					self.debug(DEBUG_FATAL, "opaque data:", localTbl['vars'][newvar].value)
@@ -1413,11 +1522,12 @@ class	CSLCapsule:
 
 		return res
 
+	
 	def CSLCheckVariable(self, id = "", localTbl = None):
 		#print "check variable:", id
 		if id == None:
 			self.debug(DEBUG_FATAL, "Invalid entry !")
-			self.printTreeNode(self.root)
+			#self.printTreeNode(self.root)
 			return CSLValue("NULL", None)
 		if isinstance(id, CSLValue):
 			return id
@@ -1442,7 +1552,6 @@ class	CSLCapsule:
 					if not localTbl['props'].has_key(a + "_get"):
 						if a.find(".") == -1 and a.find(":") == -1:
 							# not a property..
-
 							localTbl['vars'][a] = CSLValue(typeid='array', value = {})
 						else:
 							# check self call:
@@ -1475,7 +1584,7 @@ class	CSLCapsule:
 						return CSLValue("NULL", None)
 					maxa = len(arrIndexes) - 1
 					x = 0
-					#print "CSL Array Search:", arrIndexes, array
+					#print "CSL Array Search:", arrIndexes, array.value
 					for ai in arrIndexes:
 						ai = self.CSLCheckVariable(ai, localTbl).toString()
 						ai = arrkeyfix(ai)
@@ -1491,6 +1600,7 @@ class	CSLCapsule:
 						array = array.value[ai]
 						x += 1
 					#print "ARRAY LOOKUP:", key, type(key), "->", array.value, haskey(array.value, key)
+					#self.printArray(array)
 					if not haskey(array.value, key):
 						array.value[key] = CSLValue("NULL", None)
 					try:
@@ -1500,7 +1610,7 @@ class	CSLCapsule:
 							arr = array.value[int(key)]
 						else:
 							arr = array.value[str(key)]
-					#print "GET ARR:", arr
+					print "GET ARR:", arr, arr.value
 					return arr
 				return localTbl['vars'][a]
 
@@ -1523,7 +1633,7 @@ class	CSLCapsule:
 								# FIX ME P:1
 								obj = localTbl['vars'][a]
 								a = a + "._default"
-								return self.objCall(obj = obj, Type="propertyget", name = a, prms = {})
+								return self.objCall(obj = obj, Type="propertyget", name = a, prms = {}, locals = localTbl)
 								pass
 						else:
 							ret = self.callExtPropertyGet(name = a, index = None)
@@ -1579,7 +1689,7 @@ class	CSLCapsule:
 							if obj == None: 
 								obj = localTbl['vars'][rootObj]
 							if obj.type == "object":
-								return self.objCall(obj = obj, Type="method", name = func, prms = f['prmlist'])
+								return self.objCall(obj = obj, Type="method", name = func, prms = f['prmlist'], locals = localTbl)
 							else:
 								f["prmlist"]["$__obj"] = obj
 								name = func[func.find(".")+1:]
@@ -1952,7 +2062,7 @@ class	COMARObjHook:
 		print "CSLRunEnv Caller Info:"
 		for i in dir(callerInfo):
 			x = getattr(callerInfo, i)
-			print i,"=", x
+			if i[0:2] != "__": print i,"=", x
 
 	def loadInstance(self, instanceid = ""):
 		self.instance = self.api.loadValue(instanceid, 'hookdata', self.callerInfo)
@@ -2079,11 +2189,17 @@ class	COMARObjHook:
 	def	_getcallpart(self, call=''):
 		return call[call.find('.')+1:]
 
-	def extCall(self, Type="", name = "", index = None, prms = {}, value = None):
+	def extCall(self, obj = None, Type="", name = "", index = None, prms = {}, value = None):
 		print "CH EXTCALL:", prms
 		rpc = RPCData.RPCStruct()
 		rpc.TTSID = ""
-		rpc.makeRPCData("OMCALL")
+		if obj:
+			rpc.makeRPCData("OBJCALL")
+			rpc["object"] = obj
+			cmd = "TRSU_OBJC"
+		else:
+			rpc.makeRPCData("OMCALL")
+			cmd = "TRSU_OMC"
 		rpc["type"] = Type
 		rpc["name"] = name
 		if Type == "method":
@@ -2097,8 +2213,8 @@ class	COMARObjHook:
 			if Type == "propertyset":
 				rpc.addPropertyMulti("parameter", "value", value)
 
-		print os.getpid(), self.procHelper.modName, self.procHelper.myPID, "CSLOBJHOOK CALL INFO:", rpc["name"]
-		self.procHelper.sendParentCommand("TRSU_OMC", self.procHelper.myPID, 0, rpc.toString())
+		print os.getpid(), self.procHelper.modName, self.procHelper.myPID, "CSLOBJHOOK CALL INFO:", rpc.xml
+		self.procHelper.sendParentCommand(cmd, self.procHelper.myPID, 0, rpc.toString())
 		while 1:
 			c = self.procHelper.waitForParentCmd(5)
 			if c:
@@ -2134,7 +2250,7 @@ class	COMARObjHook:
 			print "\t", i, "=", getattr(new, i)
 		#registerObject(self, objid  = "", objType="", callerInfo = None):
 		rv = self.api.registerObject(objid = instid, objType = "CSL:OMINSTANCE",  callerInfo=new)
-		self.procHelper.sendParentCommand(cmd = "TRSU_SOBJ", pid = self.procHelper.myPID, tid = 0, data=rv.object)
+		self.procHelper.sendParentCommand(cmd = "TRSU_SOBJ", pid = self.procHelper.myPID, tid = 0, data=rv.object)		
 		return CSLValue('object', rv.object)
 
 _HOOK			= COMARObjHook

@@ -15,8 +15,18 @@
 
 
 
+
+
+
+
+
 <object name='Network'>
 	<description>Network altsistemi, temel görev olarak veri iletimi işlevi gören cihazların yapılandırılması işlevlerini ve bunlar üzerinde kullnulabilir durumda olan network protokollerinin düzenlenmesini üstlenir. Ayrıca network üzerindeki diğer hostlara erişimin sağlanması ve erişim denetimi de bu altsistemin kapsamına girer.</description>
+
+
+
+
+
 
 
 
@@ -51,7 +61,12 @@ Bilgi alışverişini gerçekleştiren PHY bileşenleri ve taşınan bilginin OS
 
 
 
-<object name='PHY'>
+
+
+
+
+
+<acl/><object name='PHY'>
 	<description>X.200 (ISO-IEC-7498-[1,2,3]) Tariflerinde yeralan PhSAP (Physical Service-Access-Point) ve DLSAP (Data-Link Service-Access-Point) kavramlarına uygun olarak, fiziksel ortam (Physical Media, PMA) nağlantısını sağlayan düzeneklerdir. Fiziksel ortamla bağlantıyı temsil eden sanal (FR, Tunnel) ve/veya fiziksel cihazlar (Ethernet, PSTN v.b.) ile Network altsistemi arasındaki bağlantıları tarif eder. PHY bileşenleri PMA ve MAC işlevlerini üstlenirler. Haritalama yönünden, fiziksel cihazların üzerinde birden fazla PHY tarif edilebilir. Bazı durumlarda da bir fiziksel cihaz üzerinde birden fazla PHY eşzamanlı çalışabilir.</description>
 
 
@@ -191,7 +206,53 @@ Bilgi alışverişini gerçekleştiren PHY bileşenleri ve taşınan bilginin OS
 
 
 
-<method name='New'>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<acl/><method name='New'>
 	<description>PHY nesnesinin yeni ve boş bir instance&apos;ını oluşturup geri döndürür.
 Doğrudan kullanılmaz, daha önceden alınmış bir NIC nesnesi içerisinden kullanılır..</description>
 </method>
@@ -210,7 +271,7 @@ Bu, NIC nesnelerinin bağlı olduğu PHY&apos;leri handle etmesini kolaylaştır
 </property>
 <property name='LinkDevice'>
 	<description>PHY nesnesinin low level cihazının descriptor&apos;ını döndürür.</description>
-</property>
+<acl/></property>
 <property name='AvailLinkDevices'>
 	<description>PHY nesnesi için kullanılabilir olan cihazların descriptor&apos;larını ihtiva eden bir array döndürür.</description>
 </property>
@@ -395,15 +456,40 @@ ONLINE
 </property>
 <property name='totalTXBytes'>
 	<description>PHY oluşturulduğundan bu yana gönderilen veri miktarını byte cinsinden tutar.</description>
-</property>
+<acl/></property>
 <property name='clearStatistics'>
 	<description>tüm istatistik değerlerini sıfırlamak için kullanılır.</description>
-</property>
+<acl/></property>
+<method name='getFromId'><inputs><parameter name='identifier'/></inputs><acl/><description></description></method>
+<method name='getFromLinkDev'><inputs><parameter name='device'/></inputs><acl/><description></description></method>
 
 </object>
 
 <object name='NIC'>
 	<description>Bu bileşen ise PHY üzerinden veri taşınabilmesi amacuyla belirlenen protokoller için SAP görevini yerine getirir. Her zaman bir PHY üzerinde yer alırlar. Bazı cihazlar PHY ve NIC bileşenlerini birlikte sunabilirler. Bir NIC bileşeni her zaman tek bir PHY üzerinde yer alır, bir PHY de her zaman tek bir NIC ile bağlanır.</description>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -599,7 +685,9 @@ TUNNEL</description>
 
 
 
-<object name='Networks'>
+
+
+<acl/><description></description><object name='Networks'>
 	<description/>
 </object>
 
@@ -610,7 +698,9 @@ TUNNEL</description>
 
 <object name='Boot'><acl/><description/>
 
-<description></description><method name='ConfigureDisplay'><inputs/><acl/></method>
+<description/>
+
+<method name='ConfigureDisplay'><inputs/><acl/></method>
 
 </object>
 

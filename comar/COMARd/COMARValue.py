@@ -227,7 +227,10 @@ def _load_value_xml(first = None ):
 	while first:
 		if first.tagName == 'string':
 			node = first.firstChild
-			strval = node.data[:].encode(GLO_ENCODING)
+			if node:
+				strval = node.data[:].encode(GLO_ENCODING)
+			else:
+				strval = ""
 			x = 0
 			p = strval.find("%", x)
 			while p > -1:
@@ -312,8 +315,8 @@ def _dump_value_xml(value = None, doc = None, root = None):
 		root = root.firstChild
 
 		while first != None:
-			node = doc.createElement('item')
-			node.setAttribute('key', first.Key[:])
+			node = doc.createElement('item')			
+			node.setAttribute('key', first.Key.__str__()[:])
 			node.setAttribute('instance', first.Instance.__str__())
 			arrnode.appendChild(node)
 			newnode = _dump_value_xml(first.item, doc, node)

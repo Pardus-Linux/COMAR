@@ -215,11 +215,13 @@ class RPCStruct(object):
 			addPropertyMulti(propertyName, propertyIndex, propertyValue)
 		"""
 		if self.data == None:
+			print "RPCDATA: No Data Set.."
 			return None
 		if self.data.propTable.has_key(propName) == False:
+			print "RPCDATA: No Property - ", propName
 			return None
 		hnd = self.data.propTable[propName]
-		#print "ADDPM: ", hnd, hnd[3]
+		print "ADDPM: ", hnd, hnd[3]
 		if (hnd[3] != None):
 			return hnd[3](propIndex, propValue)
 		return None
@@ -446,7 +448,7 @@ class	RPCOMCall:
 
 	def	addParameter(self, name="", value=None):
 		if name=="":
-			return None
+			return None			
 		if "type" in dir(value):
 			#if self.type == "method":
 			self.prms[name] = value
@@ -594,7 +596,8 @@ class	RPCObjCall:
 			if self.type == "method":
 				self.prms[name] = value
 			else:
-				self.prms[0] = value
+				if name in ['index', 'value']:
+					self.prms[name] = value
 
 	def	delParameter(self, name=""):
 		if name=="":

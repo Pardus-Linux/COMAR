@@ -268,18 +268,74 @@ void
 csl_template(iks *x)
 {
 	GtkWidget *w;
-	iks *y;
+	iks *y, *inputs, *prm;
+	guint slen, i;
+	char *data, *ptr, optr;
+	
 
 	w = csl_edit_new();
 	if (!x) goto out;
 
-	for (y = iks_first_tag(x); y; y = iks_next(y)) {
+	for (y = iks_first_tag(x); y; y = iks_next_tag(y)) {		
+		data = iks_find_cdata(y, "description");
+		if (data) {			
+			slen = strlen(data);
+			if (slen > 1) {
+				csl_edit_append(w, "#    %s %s\n#\n", iks_name(y), iks_find_attrib(y, "name"));
+				ptr = data;					
+				for (i = 1; i < slen; i++) {
+					if (data[i-1] == '\n') {
+						csl_edit_append(w, "#");
+						optr = data[i];
+						data[i] = 0;
+						csl_edit_append(w, ptr);
+						//printf("Add: #%s", ptr);
+						data[i] = optr;
+						ptr = &data[i];		
+					}				
+				}			
+				if (ptr != data) {
+					csl_edit_append(w, "#");
+					csl_edit_append(w, ptr);
+				}
+				if (data[slen] != '\n')
+					csl_edit_append(w, "\n");
+			} else {
+				csl_edit_append(w, "#\n");
+			}
+		} else {
+			if (iks_strcmp(iks_name(y), "method") == 0 || iks_strcmp(iks_name(y), "property") == 0) 
+				csl_edit_append(w, "#    %s %s\n", iks_name(y), iks_find_attrib(y, "name"));
+		}
 		if (iks_strcmp(iks_name(y), "method") == 0) {
-			csl_edit_append(w, "method %s {\n\n}\n", iks_find_attrib(y, "name"));
+			data = NULL;
+			/* <inputs><parameter name='prm1'/><parameter name='prm2'/></inputs> */
+			inputs = iks_find(y, "inputs");			
+			prm = iks_first_tag(inputs);
+			while (prm) {
+				ptr = iks_find_attrib(prm, "name");
+				if (ptr) {
+					if (data) {
+						i = strlen(ptr) + strlen(data) + 8; // prm = "", 
+						data = realloc(data, i);
+					} else {
+						i = strlen(ptr) + 8;
+						data = calloc(i, 1);
+					}
+					sprintf(&data[strlen(data)], "%s = \"\", ", ptr);					
+				}
+				prm = iks_next_tag(prm);	
+			}
+			if (data) {
+				data[strlen(data) - 2] = 0;			
+			} else {
+				data = "";
+			}
+			csl_edit_append(w, "method %s(%s) {\n\t_tmp=0;\n}\n", iks_find_attrib(y, "name"), data);	
 		} else if (iks_strcmp(iks_name(y), "property") == 0) {
 			csl_edit_append(w, "property %s {\n", iks_find_attrib(y, "name"));
-			csl_edit_append(w, "	get {\n		\n	}\n");
-			csl_edit_append(w, "	set {\n		\n	}\n");
+			csl_edit_append(w, "\tget {\n\t\t_tmp=0;\n\t}\n");
+			csl_edit_append(w, "\tset {\n\t\t_tmp=0;\n\t}\n");
 			csl_edit_append(w, "}\n");
 		}
 		csl_edit_append (w, "\n");

@@ -80,7 +80,7 @@ class COMARIAPI:
 		
 	
 	def getDBFileKey(self, mode = 'instance', callerInfo = None):
-		print "getDBFileKey:", mode, callerInfo.mode, callerInfo.OID, callerInfo.pDB
+		#print "getDBFileKey:", mode, callerInfo.mode, callerInfo.OID, callerInfo.pDB
 		if mode != "hookdata" and callerInfo.pDB != "" and callerInfo.pDB != None:
 			return callerInfo.pDB
 		if callerInfo.mode == "tmp":
@@ -397,7 +397,7 @@ class OM_MANAGER:
 		#print "NAMESPACE API Initialized with", helper, self.OMS.values()
 		self.inxdb = self.dbhelper.dbOpen(comar_global.comar_om_db + "/ominxs.db")
 		for i in self.OMS.values():					
-			print i.setDBHelper
+			#print i.setDBHelper
 			i.setDBHelper(self.dbhelper)
 
 	def addOMCode(self, node = "", IID = "", code = "", fileName="", scriptType="CSL"):
@@ -425,7 +425,7 @@ class OM_MANAGER:
 
 	def getOMObjList(self, node = ""):
 		n = self.parseNodeName(node)
-		print n
+		#print n
 		if not n:
 			print "OMMGR: Invalid OM Node", node
 			return []
@@ -608,8 +608,8 @@ class OM_MANAGER:
 		if self.OMS.has_key(NS):
 			if hasattr(self.OMS[NS], "getOMObj"):
 				cinfo = self.OMS[NS].getCINFO(cinfo.omkey, cinfo)[1]
-				for i in dir(cinfo):
-					print "cinfo.%s -> %s" % (i, getattr(cinfo, i))
+				#for i in dir(cinfo):
+				#	print "cinfo.%s -> %s" % (i, getattr(cinfo, i))
 				hook = self.OMS[NS].getOMObj(cinfo.omkey)
 				return (API, cinfo, hook)
 

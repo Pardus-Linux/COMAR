@@ -79,7 +79,7 @@ class TAcallSession:
 		if self.mode == "OBJCALL":
 			print "Execute ObjCall:", self.c_object.data, self.runit, self.c_prms,
 			objkeys = OM_MGR.getOBJList(self.c_object)			
-			print objkeys
+			#print objkeys
 			for objkey in objkeys:
 				hnd = OM_MGR.getOBJHandler(objkey)
 				print "Return hook:", hnd
@@ -368,6 +368,7 @@ class TAcallSession:
 		if command == "TRSU_FIN":
 			print os.getpid(), self.procHelper.myPID, "A TRSU FIN Captured (ExecSession/ExecCmdHandler):", From, srcpid, ppid, rfd, pkPid, pkTid, command #, pkData
 			self.procHelper.sendCommand(int(srcpid), "LNTU_KILL", pkPid, pkTid, pkData)
+			self.procHelper.wait_pid(int(srcpid))
 			if pkPid in self.waitFor.keys():
 				self.retVal[pkPid] = pkData
 				del self.waitFor[pkPid]
@@ -431,10 +432,10 @@ class TAcallSession:
 			new_ph.sendParentCommand("TRSU_FIN", new_ph.myPID, 0, rv)
 
 			while 1:
-				print "Wait for parent LNTU_KILL"
+				print "TACALL:434 Wait for parent LNTU_KILL"
 				if new_ph.waitForParentCmd(timeout = 2):
 					cmd = new_ph.getParentCommand()
-					print cmd
+					print "TACALL:437 CMD:",cmd
 					if cmd[2] == "LNTU_KILL":						
 						break
 

@@ -94,7 +94,14 @@ property LinkDevice {
 		instance ethName;
 		LinkDevice = ethName;
 		COMAR:Network.ConnPoint.PHY["Ethernet0"].FlowMode = "FULLDUPLEX";
-		a = COMAR:Network.ConnPoint.PHY["Ethernet0"].LinkDevice;
+		a = "STEP 1" + COMAR:Network.ConnPoint.PHY["Ethernet0"].FlowMode;
+		a.debugout();
+		a = "STEP 2" + COMAR:Network.ConnPoint.PHY["Ethernet0"];
+		a.debugout();
+		a = "STEP 3" + COMAR:Network.ConnPoint.PHY["Ethernet0"].FlowMode[1];
+		a.debugout();
+		a = COMAR:Network.ConnPoint.PHY;
+		debugout(value="STEP 4");
 		a.debugout();
 	}
 	set { 

@@ -221,7 +221,7 @@ class RPCStruct(object):
 			print "RPCDATA: No Property - ", propName
 			return None
 		hnd = self.data.propTable[propName]
-		print "ADDPM: ", hnd, hnd[3]
+		#print "ADDPM: ", hnd, hnd[3]
 		if (hnd[3] != None):
 			return hnd[3](propIndex, propValue)
 		return None

@@ -351,7 +351,10 @@ def _dump_value_xml(value = None, doc = None, root = None):
 	elif value.type == "numeric":
 		node = doc.createElement('numeric')
 		#print value.data
-		txtNode = doc.createTextNode(value.data)
+		if value.data:
+			txtNode = doc.createTextNode(value.data)
+		else:
+			txtNode = doc.createTextNode("0")
 		node.appendChild(txtNode)
 		root.appendChild(node)
 	else:

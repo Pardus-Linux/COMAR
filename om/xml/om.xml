@@ -10,7 +10,17 @@
 
 
 
-<description></description><description></description><object name='Network'>
+<description/><description/>
+
+
+
+
+
+
+
+
+
+<object name='Network'>
 	<description>Network altsistemi, temel görev olarak veri iletimi işlevi gören cihazların yapılandırılması işlevlerini ve bunlar üzerinde kullnulabilir durumda olan network protokollerinin düzenlenmesini üstlenir. Ayrıca network üzerindeki diğer hostlara erişimin sağlanması ve erişim denetimi de bu altsistemin kapsamına girer.</description>
 
 
@@ -18,6 +28,16 @@
 
 
 
+
+
+
+
+
+
+
+
+
+<acl/>
 
 
 
@@ -32,6 +52,16 @@ Bilgi alışverişini gerçekleştiren PHY bileşenleri ve taşınan bilginin OS
 
 
 
+
+
+
+
+
+
+
+
+
+<acl/>
 
 
 
@@ -130,13 +160,105 @@ Bilgi alışverişini gerçekleştiren PHY bileşenleri ve taşınan bilginin OS
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<acl/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <method name='New'>
 	<description>PHY nesnesinin yeni ve boş bir instance&apos;ını oluşturup geri döndürür.
 Doğrudan kullanılmaz, daha önceden alınmış bir NIC nesnesi içerisinden kullanılır..</description>
-</method>
+<inputs/><acl/></method>
 <method name='RegisterSelf'>
 	<description>Yeni PHY nesnesinin OM&apos;a register edilmesi için cağrılır.</description>
-</method>
+<inputs/><acl/></method>
 <property name='Provider'>
 	<description>PHY nesnesini sunan belirticiyi döndürür..
 Bu, NIC nesnelerinin bağlı olduğu PHY&apos;leri handle etmesini kolaylaştırır.</description>
@@ -149,7 +271,7 @@ Bu, NIC nesnelerinin bağlı olduğu PHY&apos;leri handle etmesini kolaylaştır
 </property>
 <property name='LinkDevice'>
 	<description>PHY nesnesinin low level cihazının descriptor&apos;ını döndürür.</description>
-</property>
+<acl/></property>
 <property name='AvailLinkDevices'>
 	<description>PHY nesnesi için kullanılabilir olan cihazların descriptor&apos;larını ihtiva eden bir array döndürür.</description>
 </property>
@@ -312,10 +434,10 @@ CRC32
 </property>
 <property name='MTU'>
 	<description>PHY&apos;nin bir defada maximum kaç byte yollayabileceğini belirler.</description>
-</property>
+<acl/></property>
 <property name='remoteAddress'>
 	<description>Karşı tarafın adresini değerini tutar.</description>
-</property>
+<acl/></property>
 <property name='remoteAddressType'>
 	<description>Karşı tarafın adres türünü belirler. Sadece PTP bağlantılarda anlamlıdır.</description>
 <acl/></property>
@@ -389,59 +511,105 @@ ONLINE
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <method name='dstAddress'>
 	<description>Karşı ucun adresi. PTP end-point (hostAddrObjet)</description>
-</method>
+<inputs/><acl/></method>
 <method name='broadcastAddress'>
 	<description>Karşı ucun adresi. P-t-P Endpoint (hostAddrObject)</description>
-</method>
+<inputs/><acl/></method>
 <method name='addUnicastAddress'>
 	<description>NIC&apos;e yeni bir adres kaydı ekler. (address = hostAddrObject)</description>
-</method>
+<inputs/><acl/></method>
 <method name='delUnicastAddress'>
 	<description>NIC&apos;teki adres kayıtlarından belirtileni kaldırır.
 (address = hostAddrObject)</description>
-</method>
+<inputs/><acl/></method>
 <method name='RemoteLogin'>
 	<description>Cihazın bağlantı esnasında kullanması için generic bir COMARAuth nesnesi döndürür.</description>
-</method>
+<inputs/><acl/></method>
 <property name='Identifier'>
 	<description>NIC&apos;in tanımlayıcısını saklar.</description>
-</property>
+<acl/></property>
 <property name='Provider'>
 	<description>NIC&apos;i neyin provide ettiğini saklar.</description>
-</property>
+<acl/></property>
 <property name='PHY'>
 	<description>NIC&apos;in üzerinde çalıştığı PHY nesnesidir.</description>
-</property>
+<acl/></property>
 <property name='linkName'>
 	<description>NIC&apos;in sunduğu network cihazının adını tutar.</description>
-</property>
+<acl/></property>
 <property name='linkProto'>
 	<description>
 PPP	: PPP RFC
 FR	: Frame Ralay
 </description>
-</property>
+<acl/></property>
 <property name='linkStatus'>
 	<description>NIC durumu..
 
 UP	: Cihaz Aktif
 DOWN	: Cihaz Kapalı</description>
-</property>
+<acl/></property>
 <property name='devType'>
 	<description>NIC&apos;in cihaz durumu..
 
 STDIO	- Cihaz STDIO üzerinden veri alır.
 PIPE	- Cihaz bir PIPE dosyası üzerinden veri alışverişi yapar.
 SKBDEV	- Cihaz bir native network cihazıdır.</description>
-</property>
+<acl/></property>
 <property name='MTU'>
 	<description>Maximum Transmit Unit.</description>
-</property>
+<acl/></property>
 <property name='MRU'>
 	<description>Maximum Recieve Unit.</description>
-</property>
+<acl/></property>
 <property name='optimizedFor'>
 	<description>NIC&apos;in kendini ve PHY cihazını neye göre ayarlayacağını belirler.
 
@@ -449,10 +617,10 @@ LATENCY			- Minimum Latency.
 THROUGHPUT		- Maximum Throughput
 RELIABILITY		- Minimum veri kaybı.
 DEFAULT			- No optimizasyon.</description>
-</property>
+<acl/></property>
 <property name='acceptedProtos'>
 	<description>Cihaza uygulanabilecek protokolleri gösterir. Protokol isimleri IANA standardında belirtildiği gibidir. Uyum için versiyon ifade eden &quot;v&quot; harfi dışında tüm harfleri büyük yazılırlar.</description>
-</property>
+<acl/></property>
 <property name='currentProtos'>
 	<description>Cihzın üzerinde o anda geçerli olan protokollerdir. Protokol isimleri IANA standardında belirtildiği gibidir. Uyum için versiyon ifade eden &quot;v&quot; harfi dışında tüm harfleri büyük yazılırlar.</description>
 <acl/></property>
@@ -474,20 +642,20 @@ FDDI	- (Fiber Distributed Data Interface)
 HIPPI 	- (HIPPI)
 IRDA	- (IrLAP)
 X25 	- (generic X.25)</description>
-</property>
+<acl/></property>
 <property name='outgoingSpeed'>
 	<description>Cihazın dışarıya giden hızını gösterir.</description>
-</property>
+<acl/></property>
 <property name='incomingSpeed'>
 	<description>Cihazın içeriye giren hızını gösterir.</description>
-</property>
+<acl/></property>
 <property name='if_index'>
 	<description>NIC&apos;in sunduğu cihazın interface numarasını verir.
 
 if_index (Provided by kernel) + 1	- Cihazın kernel tarafından sunulan if_index değerinin bir fazlası (bkz &lt;net/if.h&gt; C header file)
 0 					- Cihaz aktif değil.
 </description>
-</property>
+<acl/></property>
 <property name='if_flags'>
 	<description>NIC&apos;in çeşitli özel değerlerini gösterir. Bu değerler aşağıdakilerden bir veya bir kaçı olabilir.
 
@@ -500,7 +668,7 @@ LBSLAVE			- Load Balancer Slave.
 LOOPBACK
 PROXYARP
 TUNNEL</description>
-</property>
+<acl/></property>
 
 </object>
 
@@ -513,16 +681,27 @@ TUNNEL</description>
 
 
 
+
+
+
+
 <object name='Networks'>
 	<description/>
-</object>
+<acl/><description></description><method name='deneme'><inputs><parameter name='prm1'/><parameter name='prm2'/></inputs><acl/></method>
 
 </object>
 
 
 </object>
 
-<object name='Boot'><acl/><description></description><method name='start'><inputs/><acl/></method>
+
+</object>
+
+<object name='Boot'><acl/><description/>
+
+
+
+<method name='start'><inputs/><acl/></method>
 
 </object>
 

@@ -115,9 +115,9 @@ class jobSessProvider:
 		elif c_model == "EXEC":
 			c_code = self.TARPC["code"]
 			
-		self.procHelper.addSessionCommand(["TRSU_OMC", "TRSU_OBJC","TRSU_TAE", "TRSU_RTA", "TRSU_FIN", "TNSU_GET", "TNSU_GSID", "TRSU_SOBJ" ])
+		self.procHelper.addSessionCommand(["TRSU_OMC", "TRSU_OBJC","TRSU_TAE", "TRSU_RTA", "TRSU_FIN", "TNSU_GET", "TNSU_GSID", "TRSU_SOBJ", "LNTU_KILL" ])
 		self.procHelper.cmdHandler = self.sessionCmdHandler
-		self.procHelper.debug = 0 #255
+		self.procHelper.debug = 255
 		#self.procHelper.sendParentCommand(cmd = "INSU_YTT", pid = self.procHelper.myPID, tid = 0, data=None)
 		#self.procHelper.dumpInfo()
 		#runCmd Proto: callModel, callType, callName, callPrms, callObj, callCode, caller="UI", wait_pid = 0, setvalue=None
@@ -142,7 +142,7 @@ class jobSessProvider:
 		return
 
 	def runCmd(self, callModel, callType, callName, callPrms, callObj, callCode, caller="UI", wait_pid = 0, setvalue=None):
-		print "\n\nStart Transaction:", self.procHelper.modName, self.procHelper.myPID, "\n\n"
+		print "\n\nJOBSESS:145 Start Transaction:", self.procHelper.modName, self.procHelper.myPID, "\n\n"
 		chldPID = self.procHelper.makeChild()
 		parentrpid = os.getpid()
 		self.TIDS += 1
@@ -152,6 +152,7 @@ class jobSessProvider:
 		if pid:
 			self.procHelper.setIODebug(chldPID, 0, self.procHelper.modName + "->jobSessProvider")
 			self.procHelper.initForParent(chldPID)
+			self.procHelper.debug = 0
 			#self.procHelper.registerChild(chldPID, self.procHelper.myPID)
 
 			print self.procHelper.myPID, "run Cmd...", chldPID, self.procHelper.chlds
@@ -176,7 +177,8 @@ class jobSessProvider:
 			print "Call Session Start With pids: ", os.getpid(), chldPID, new_ph.parentppid, new_ph.myPID, new_ph.gloPPid
 			self.procHelper = new_ph
 			self.procHelper.clearSessionCommands()
-			self.procHelper.addSessionCommand(["TRSU_OMC", "TRSU_OBJC", "TRTU_RUN", "TRSU_TAE", "TRSU_RTA", "TRSU_FIN", "TNSU_GET", "TNSU_GSID", "LNTU_KILL", "TRSU_SOBJ" ])
+			self.procHelper.addSessionCommand(["TRSU_OMC", "TRSU_OBJC", "TRTU_RUN", 
+						"TRSU_TAE", "TRSU_RTA", "TRSU_FIN", "TNSU_GET", "TNSU_GSID", "LNTU_KILL", "TRSU_SOBJ", "LNTU_KILL" ])
 			self.procHelper.cmdHandler = self.sessionCmdChildHandler
 			prmArray = callPrms
 			OM_MGR.setDBHelper(self.procHelper)
@@ -231,7 +233,7 @@ class jobSessProvider:
 			if len(self.run_que):
 				cs = self.run_que.pop(0)
 				retval = cs.execute()
-				print os.getppid(), self.procHelper.myPID,self.procHelper.modName, self.control, "CALL SESSION CHILD EXECUTE RETURNED", retval
+				print os.getppid(), self.procHelper.myPID,self.procHelper.modName, self.control, "CALL SESSION CHILD EXECUTE RETURNED", retval				
 				self.procHelper.sendParentCommand("TRSU_FIN", self.procHelper.myPID, 0, retval)				
 				while 1:
 					if self.procHelper.waitForParentCmd(timeout = 2):
@@ -241,7 +243,7 @@ class jobSessProvider:
 			print os.getpid(), "After TRTU_RUN:", cmd
 			if cmd[2] == "LNTU_KILL":
 				# wait for childs..
-				self.procHelper.waitchilds()
+				#self.procHelper.waitchilds()
 				self.procHelper.exit()
 
 		elif command == "TRSU_OMC":
@@ -297,61 +299,78 @@ class jobSessProvider:
 			#def runCmd(self, callModel, callType, callName, callPrms, callObj, callCode):
 
 	def sessionCmdHandler(self, From, srcpid, ppid, rfd, pkPid, pkTid, command, pkData):
-		print "JOBSESS Line 271: A Session Cmd:", self.control, self.runCmdPid, os.getpid(), From, srcpid, ppid, rfd, pkPid, pkTid, command #, pkData
-		if command == "TRSU_FIN":
-			print self.procHelper.myPID,self.procHelper.modName, "execute resulted:", pkPid, srcpid, "->", self.callData[srcpid]
-			if self.callData[srcpid][6]:
-				print "Result send to:", self.callData[srcpid][6]
-				self.procHelper.sendCommand(self.callData[srcpid][6], "TRTU_TAE", self.callData[srcpid][6], pkTid, str(pkData))
-				self.procHelper.sendCommand(srcpid, "LNTU_KILL", srcpid, pkTid, None)
-				del self.callData[srcpid]
-			else:
-				#first call...
-				self.procHelper.sendParentCommand("TRSU_TAE", self.procHelper.myPID, 0, str(pkData))
-				self.procHelper.sendCommand(srcpid, "LNTU_KILL", srcpid, pkTid, None)
-
-		elif command == "TRTU_RUN":
-			# This is a child mode
-			print self.control, self.procHelper.myPID,self.procHelper.modName, "CALL SESSION EXECUTE START"
-			if len(self.run_que):
-				cs = self.run_que.pop(0)
-				retval = cs.execute()
-				print os.getppid(), self.procHelper.myPID,self.procHelper.modName, self.control, "CALL SESSION EXECUTE RETURNED" #, retval
-				self.procHelper.sendParentCommand("TRSU_FIN", self.procHelper.myPID, 0, retval)
-
-				#self.procHelper.exit()
-
-		elif command == "TRSU_OMC" or command == "TRSU_OBJC":
-			# This is a parent mode..
-			print self.control, self.procHelper.myPID,self.procHelper.modName, "New OM Execute call reached.. From:", pkPid, srcpid, self.callData[srcpid]
-			rpc = RPCData.RPCStruct()
-			rpc.fromString(pkData)
-			print "New OMEXEC/OBJCALL Call:", rpc.xml
-			c_prms = rpc.getPropertyMulti(propName = "parameter",  all=1)
-			c_name = rpc["name"]
-			c_type = rpc["type"]
-			c_model = rpc.Type
-			c_obj = None
-			c_code = None
-			if c_model == "OBJCALL":
-				c_obj = rpc["object"]
-			elif c_model == "EXEC":
-				c_code = rpc["code"]
-			#self.procHelper.sendParentCommand(cmd = "INSU_YTT", pid = self.procHelper.myPID, tid = 0, data=None)
-			#self.procHelper.dumpInfo()
-			#self.callData[chldPID] = [ callModel, callType, callName, callPrms, callObj, callCode ]
-			print "CALLDATA FOR TA:", srcpid, self.callData
-			caller = self.callData[srcpid][2]
-			root = self.runCmd(c_model, c_type, c_name, c_prms, c_obj, c_code, caller, pkPid)
-			print "RunCmd Returned..", self.procHelper.myPID
-			self.procHelper.sendCommand(root, "TRTU_RUN", root, 0, "1")
-
-			#def runCmd(self, callModel, callType, callName, callPrms, callObj, callCode):
-		elif command == "TRSU_SOBJ":
-			print "JOBSESS 321: A Object Register Command:", pkData
-			self.procHelper.sendParentCommand(command, pkPid, pkTid, pkData)
-		elif command == "TRSU_CALL":
-			print "JOBSESS 324: A New Call Command:", pkData
+		print "JOBSESS Line 300: A Session Cmd:", self.control, self.runCmdPid, os.getpid(), From, srcpid, ppid, rfd, pkPid, pkTid, command #, pkData
+		cmdque = [ (srcpid, pkPid, pkTid, command, pkData) ]		
+		while len(cmdque):
+			srcpid, pkPid, pkTid, command, pkData = cmdque.pop()
+			if command == "TRSU_FIN":
+				print self.procHelper.myPID,self.procHelper.modName, "execute resulted:", pkPid, srcpid #, "->", self.callData[srcpid]
+				if self.callData[srcpid][6]:
+					print "Result send to:", self.callData[srcpid][6]
+					self.procHelper.sendCommand(self.callData[srcpid][6], "TRTU_TAE", self.callData[srcpid][6], pkTid, str(pkData))
+					self.procHelper.sendCommand(srcpid, "LNTU_KILL", srcpid, pkTid, None)
+					self.procHelper.wait_pid(int(srcpid))
+					del self.callData[srcpid]
+				else:
+					#first call... Our Parent is main.. 
+					print "END OF TA:", str(pkData), "from:", self.procHelper.myPID,"to ->", self.procHelper.gloPPid					
+					self.procHelper.sendCommand(int(srcpid), "LNTU_KILL", srcpid, pkTid, None)
+					self.procHelper.sendParentCommand("TRSU_TAE", self.procHelper.myPID, 0, str(pkData))
+					while 1:
+						x =  self.procHelper.wait_pid(int(srcpid))
+						if x == 2:
+							cmd = self.procHelper.getParentCommand()
+							if cmd:
+								print "REACHED TA COMMAND AFTER TRSU_TAE", cmd
+								cmdque.append(self.procHelper.gloPPid, int(cmd[0]), int(cmd[1]), cmd[2], cmd[3])
+						else:
+							break
+			elif command == "LNTU_KILL":
+				print self.procHelper.myPID, os.getpid(), "LNTU_KILL Arrived :("
+				#self.procHelper.waitchilds()
+				self.procHelper.exit()
+			elif command == "TRTU_RUN":
+				# This is a child mode
+				print self.control, self.procHelper.myPID,self.procHelper.modName, "CALL SESSION EXECUTE START"
+				if len(self.run_que):
+					cs = self.run_que.pop(0)
+					retval = cs.execute()
+					print os.getppid(), self.procHelper.myPID,self.procHelper.modName, self.control, "CALL SESSION EXECUTE RETURNED" #, retval
+					self.procHelper.sendParentCommand("TRSU_FIN", self.procHelper.myPID, 0, retval)
+	
+					#self.procHelper.exit()
+	
+			elif command == "TRSU_OMC" or command == "TRSU_OBJC":
+				# This is a parent mode..
+				#print self.control, self.procHelper.myPID,self.procHelper.modName, "New OM Execute call reached.. From:", pkPid, srcpid, self.callData[srcpid]
+				rpc = RPCData.RPCStruct()
+				rpc.fromString(pkData)
+				#print "New OMEXEC/OBJCALL Call:", rpc.xml
+				c_prms = rpc.getPropertyMulti(propName = "parameter",  all=1)
+				c_name = rpc["name"]
+				c_type = rpc["type"]
+				c_model = rpc.Type
+				c_obj = None
+				c_code = None
+				if c_model == "OBJCALL":
+					c_obj = rpc["object"]
+				elif c_model == "EXEC":
+					c_code = rpc["code"]
+				#self.procHelper.sendParentCommand(cmd = "INSU_YTT", pid = self.procHelper.myPID, tid = 0, data=None)
+				#self.procHelper.dumpInfo()
+				#self.callData[chldPID] = [ callModel, callType, callName, callPrms, callObj, callCode ]
+				print "CALLDATA FOR TA:", srcpid, self.callData
+				caller = self.callData[srcpid][2]
+				root = self.runCmd(c_model, c_type, c_name, c_prms, c_obj, c_code, caller, pkPid)
+				print "RunCmd Returned..", self.procHelper.myPID
+				self.procHelper.sendCommand(root, "TRTU_RUN", root, 0, "1")
+	
+				#def runCmd(self, callModel, callType, callName, callPrms, callObj, callCode):
+			elif command == "TRSU_SOBJ":
+				#print "JOBSESS 321: A Object Register Command:", pkData
+				self.procHelper.sendParentCommand(command, pkPid, pkTid, pkData)
+			elif command == "TRSU_CALL":
+				print "JOBSESS 324: A New Call Command:", pkData
 			
 
 	def processOMCall(self):

@@ -146,7 +146,7 @@ class DBProvider:
 class dbIO:
 	def __init__(self):
 		self.dbs = {}
-	def new(self, client, file):
+	def new(self, client, file, fds):
 		fi = hash(file)
 		if self.dbs.has_key(fi):
 			self.dbs[fi].initClient(client)
@@ -156,6 +156,7 @@ class dbIO:
 		db.open(file)
 		db.initClient(client)
 		self.dbs[fi] = db
+		fds.append(db)
 		#print "New DB File:", client, file
 		return fi
 	def __getitem__(self, index):
@@ -181,11 +182,11 @@ def db10tuple(dbstr):
 	val = dbstr[e + 1: e+dsize+1]
 	return (key, val, hnd)
 	
-def dbIOCmdProc(dbobj, conPID, PID, TID, cmd, data):
+def dbIOCmdProc(dbobj, conPID, PID, TID, cmd, data, fdtable):
 	# return (PID, TID, CMD, DATA)
 	#print "New DB Command:", conPID, PID, TID, cmd, data
 	if cmd == "QRSU_OPEN":
-		hnd = dbobj.new(PID, data)
+		hnd = dbobj.new(PID, data, fdtable)		
 		#print "DB WORKER Open:", PID, data, hnd
 		return (PID, TID, "QRTU_QDB", str(hnd))
 	elif cmd == "QRSU_GET":
@@ -208,7 +209,7 @@ def dbIOCmdProc(dbobj, conPID, PID, TID, cmd, data):
 		hnds = data[:data.find(" ")]
 		hnd = int(hnds)
 		key = data[data.find(" ")+1:]
-		res = dbobj[hnd].seek(PID)
+		res = dbobj[hnd].seek(PID, key)
 		if res:
 			return (PID, TID, "QRTU_LOC", "HANDLER=%d\x00KEY=%d %s\x00DATA=%d %s\x00"
 				% (hnd, len(res[0]), res[0], len(res[1]), res[1]))
@@ -286,6 +287,7 @@ class dbWorker:
 		self.DBIO	= dbIO()
 		self.sockName = "/tmp/comar-db"
 		self.conns = {}
+		self.fhnds = {}
 		pipe = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 		try:
 			try:
@@ -324,6 +326,7 @@ class dbWorker:
 		sockfd = self.socket.fileno()
 		pipefd = self.iochannel.cmd_rfile
 		rootfds = [ pipefd, sockfd ]
+		self.fhnds[pipefd] = []
 		self.iochannel.debug = 0 #255
 		self.iochannel.name = "DBWORKERCONN"
 		while rootfds:
@@ -363,19 +366,13 @@ class dbWorker:
 								TID = int(acc_data[1])
 								data = acc_data[3]
 								#print os.getpid(), "DB WORKER:", cmd, PID, TID
-								dTuple = dbIOCmdProc(self.DBIO, 0, PID, TID, cmd, data)								
+								dTuple = dbIOCmdProc(self.DBIO, 0, PID, TID, cmd, data, self.fhnds[rfd])								
 								if dTuple:
 									# ORIGINAL: TA_CHLDS.sendCommand(conPID, dTuple = dcmd)
 									PID = dTuple[0]
 									TID = dTuple[1]
 									command = dTuple[2]
 									data = dTuple[3]
-									if 0:
-										print command, PID, TID,
-										if data != None:
-											print len(data)
-										else:
-											print
 									#print "DBWORKER: Send",cmd, "response", command, PID, "to", self.iochannel.inodes["cw"]
 									self.iochannel.putCommand(command, PID, TID, data, 1)
 									#self.stdCmdHandler(cmd, srcpid, ppid, rfd)
@@ -387,10 +384,12 @@ class dbWorker:
 					elif rfd == sockfd:
 						# incoming şconnection..
 						sock, addr = self.conns[0].sock.accept()
-						#print "DBWORKER: New Connection:", sock, sock.fileno(), addr
+						print "DBWORKER: New Connection:", sock, sock.fileno(), addr
 						uc = UnixConn()
 						uc.sock = sock
-						self.conns[sock.fileno()] = uc
+						nsockfd = sock.fileno()
+						self.conns[nsockfd] = uc
+						self.fhnds[nsockfd] = []
 						uc.euid, uc.egid = self.getpeereid(uc.sock)
 						#print "DBWORKER UNIX peer", uc.euid, uc.egid
 					else:
@@ -403,11 +402,16 @@ class dbWorker:
 								p = select.poll()
 								p.register(sockfd)
 								s = p.poll(0)[0][1]
-								print "DBWORKER: Incorrect Connection:", rfd, "(", s, self.conns[rfd].euid, ")"
+								#print "DBWORKER: Incorrect Connection:", rfd, self.conns[rfd], self.fhnds[rfd], self.fhnds
 								#s = self.TAStack[i].IOChannel.cmdrpoll.poll(0)[0][1]
 								if s & select.POLLHUP or s & select.POLLNVAL:
-									print "DBWORKER: Socket closed:", rfd
-								del self.conns[rfd]
+									#print "DBWORKER: Socket closed:", rfd
+									pass
+								self.conns[rfd].sock.close()
+								for i in self.fhnds[rfd]:
+									i.close()
+								del self.fhnds[rfd]
+								del self.conns[rfd]					
 								continue
 							#print "DBWORKER Header From: %d '%s' %d bytes" % (rfd, data, len(data))
 							size = int(data)
@@ -427,19 +431,13 @@ class dbWorker:
 								#print "\n",os.getpid(), "DB WORKER Socket IO:", cmd, PID, TID, data, "\n"
 								#print "DBWORKER Data From: %d Total:%d Read:%d bytes" % (rfd, size, len(data))
 
-								dTuple = dbIOCmdProc(self.DBIO, 0, PID, TID, cmd, data)
+								dTuple = dbIOCmdProc(self.DBIO, 0, PID, TID, cmd, data, self.fhnds[rfd])
 								if dTuple:
 									# ORIGINAL: TA_CHLDS.sendCommand(conPID, dTuple = dcmd)
 									PID = dTuple[0]
 									TID = dTuple[1]
 									command = dTuple[2]
 									data = dTuple[3]
-									if 0:
-										print command, PID, TID,
-										if data != None:
-											print len(data)
-										else:
-											print
 									if data == None:
 										data = ""
 									cmd = "%08d%04d%s " % (PID, TID, command)

@@ -134,8 +134,9 @@ class	CSLCapsule:
 		self.procStack 		= []
 		self.dbgf = None #open("csldebug", "w")
 		self.debugfile = None
-		self.debuglvl = DEBUG_CALL | DEBUG_TREE | DEBUG_PRST
+		self.debuglvl = 0 #DEBUG_CALL | DEBUG_TREE | DEBUG_PRST
 		self.modpath = csl_dir 
+		self.tmpnest = 0
 		self.cslAPIS = {}
 		self.cslAPIMods = []
 		self.loadCSLApimods()
@@ -774,6 +775,7 @@ class	CSLCapsule:
 		if var == None:
 			return
 		sp = '   ' * nest
+		print "\033[1m",
 		if var.type == 'array':
 
 			print sp, "ARRAY-------------"
@@ -788,6 +790,7 @@ class	CSLCapsule:
 			print sp, 'TYPE: %s VALUE: %s' % (var.type, var.value)
 			if self.dbgf:
 				self.dbgf.write(sp + 'TYPE: %s VALUE: %s' % (var.type, var.value) +"\n")
+		print "\033[0m",
 
 	def	call(self, name = "", prms = {}, symtab = {}):
 		self.debug(DEBUG_CALL, "CALL:", name, prms)
@@ -836,14 +839,14 @@ class	CSLCapsule:
 			return CSLValue(typeid = "NULL", value = None)
 
 	def	callFunction(self, name = "", prms = {}, symtab = {}):
-		self.debug(DEBUG_CALL, "FCALL ENTRY: %s ( %s ) search in %s" % (name, prms, self.vtbl.keys()))
+		#self.debug(DEBUG_CALL, "FCALL ENTRY: %s ( %s ) search in %s" % (name, prms, self.vtbl.keys()))
 		fn = "f_" + name
 		if not self.vtbl.has_key(fn):
 			return CSLValue("NULL", None)
 
 		self.procStack.append(name)
 		treeEntry = self.vtbl[fn]
-		print "FCL: treeentry:", treeEntry, self.vtbl
+		#print "FCL: treeentry:", treeEntry, self.vtbl
 		fnparms = copy.copy(treeEntry.data['prmlist'])
 
 		localTbl = self.CSLCreateLocalTbl(prms, fnparms, symtab)
@@ -941,7 +944,7 @@ class	CSLCapsule:
 		return CSLValue(typeid = "NULL", value = "")
 		
 #----------------------------------------------------------------------------
-# External calls. This cllas direction CSL -> COMARd
+# External calls. This calls direction CSL -> COMARd
 #----------------------------------------------------------------------------
 	def callExtMethod(self, name = "", prms = {}, localTbl = {}):
 		plist = {}
@@ -979,7 +982,10 @@ class	CSLCapsule:
 		else:
 			cobj = None
 		if index:
-			inx = self.CSLCheckVariable(index[0])
+			if type(index) == type([]):
+				inx = self.CSLCheckVariable(index[0], locals)
+			else:
+				inx = self.CSLCheckVariable(index, locals)
 		else:
 			inx = None
 		
@@ -1004,18 +1010,26 @@ class	CSLCapsule:
 		if varName[0:2] == '$A':			
 			# Check a indexed omcall?
 			if varName.find(".") != -1:
-				print "A OBJCALL:", varName
+				print "A LET OBJCALL:", varName
 				xx = 0
 				while varName.find(".") != -1:
 					x = varName.find(".")
 					root = varName[:x]
 					entry = varName[x+1:]
 					root = self.CSLCheckVariable(root, localTbl)
-					print "INXOMCALL RESOLVE:", root, root.type, entry
-					localTbl["vars"]["tmp$$"] = root
-					varName = "tmp$$." + entry
+					print "LET INXOMCALL RESOLVE:", root, root.type, entry
+					localTbl["vars"]["tmp$$%s" % self.tmpnest] = root
+					vn = varName
+					varName = "tmp$$%s.%s" % (self.tmpnest, entry)
+					if 0:
+						tree.data["id"] = varName
+						n = self.tmpnest
+						self.tmpnest += 1
+						localTbl = self.CSLInterpreterLet(tree, localTbl)			
+						tree.data["id"] = vn
+						del localTbl["vars"]["tmp$$%s" % n]
 					break
-					
+
 		if varName[0:2] == '$A':
 			cont 		= 1
 			arrDesc 	= self.Tbl['A'][varName]
@@ -1552,7 +1566,7 @@ class	CSLCapsule:
 		return res
 
 	
-	def CSLCheckVariable(self, id = "", localTbl = None):
+	def CSLCheckVariable(self, id = "", localTbl = None, useindex = None):
 		#print "check variable:", id
 		if id == None:
 			self.debug(DEBUG_FATAL, "Invalid entry !")
@@ -1562,26 +1576,34 @@ class	CSLCapsule:
 			return id
 			
 		if id[0:2] == '$A':			
-			# Check a indexed omcall?
-			
+			# Check a indexed omcall?			
 			if id.find(".") != -1:
-				print "A OBJCALL:", id
+				print "A GETVALUE OBJCALL:", id, useindex
 				xx = 0
 				while id.find(".") != -1:
 					x = id.find(".")
 					root = id[:x]
 					entry = id[x+1:]
 					root = self.CSLCheckVariable(root, localTbl)
-					print "INXOMCALL RESOLVE:", root, root.type, entry					
-					id = "$Itmp$"
-					
-					self.Tbl['I']["$Itmp$"] = "tmp$$." + entry
+					print "CHECK INXOMCALL RESOLVE:", root, root.type, entry, useindex						
+					if useindex:
+						id = "$Atmp$"
+						self.Tbl['A']["$Atmp$"] = { "id": "tmp$$." + entry, "prmlist": [ useindex ] }
+					else:
+						id = "$Itmp$"
+						self.Tbl['I']["$Itmp$"] = "tmp$$." + entry
 					localTbl["vars"]["tmp$$"] = root
 					break
 
 		if id[0:2] == "$A":
 			# array or property value..
 			a = self.Tbl['A'][id]['id']
+			if a[0:2] == "$A":
+				if a.find(".") != -1:
+					# a object call..
+					return self.CSLCheckVariable(a, localTbl, useindex = self.Tbl['A'][id]['prmlist'][0])
+				else:
+					return self.CSLCheckVariable(a, localTbl)
 			methodName = None
 			if a[0] != '$':
 				if not localTbl["vars"].has_key(a):
@@ -1601,16 +1623,16 @@ class	CSLCapsule:
 								# rootObj.value always a COMARObjectDescriptor..
 								obj = localTbl['vars'][rootObj]
 								if obj.type == "object":								
-									return self.objCall(obj = obj, Type = "propertyget", name = a, prms = self.Tbl['A'][id]['prmlist'])
+									return self.objCall(obj = obj, Type = "propertyget", name = a, index = arrkeyfix(self.Tbl['A'][id]['prmlist'][0]), locals = localTbl)
 								else:
 									# We are require many special cases...
 									pass
 							if methodName:
 								a = a + "[" + arrkeyfix(self.Tbl['A'][id]['prmlist'][0]) + "]." + methodName
-								ret = self.callExtPropertyGet(name = a, index = arrkeyfix(self.Tbl['A'][id]['prmlist'][0]))
+								ret = self.callExtPropertyGet(name = a, index = arrkeyfix(self.Tbl['A'][id]['prmlist'][0]), locals = localTbl)
 							else:
 								#ret = self.callExtPropertyGet(name = a, index = arrkeyfix(self.Tbl['A'][id]['prmlist'][0]))
-								ret = self.objCall(obj = None, Type = "propertyget", name = a, index = self.Tbl['A'][id]['prmlist'])
+								ret = self.objCall(obj = None, Type = "propertyget", name = a, index = arrkeyfix(self.Tbl['A'][id]['prmlist'][0]), locals = localTbl)
 							return ret
 					else:
 						ret = self.callPropertyGet(name = a, index = self.Tbl['A'][id]['prmlist'][0])
@@ -1674,7 +1696,7 @@ class	CSLCapsule:
 								return self.objCall(obj = obj, Type="propertyget", name = a, prms = {}, locals = localTbl)
 								pass
 						else:
-							ret = self.callExtPropertyGet(name = a, index = None)
+							ret = self.objCall(name = a, index = None, locals = localTbl)
 							return ret
 
 				ret = localTbl['vars'][a]
@@ -1830,7 +1852,7 @@ class CSLValue:
 		elif self.type == "numeric":
 			return float(self.value)
 		elif self.type == "object":
-			if value != None:
+			if self.value != None:
 				pass
 		elif self.type == "array":
 			pass
@@ -1845,8 +1867,9 @@ class CSLValue:
 		elif self.type == "numeric":
 			return str(self.value)
 		elif self.type == "object":
-			if value != None:
-				pass
+			if self.value != None:
+				return "<object: %s>" % self.value
+				
 		elif self.type == "array":
 			pass
 			
@@ -1855,8 +1878,8 @@ class CSLValue:
 				return "Y"
 			else:
 				return "N"
-		else:
-			return ""
+		
+		return ""
 
 	def	toBoolean(self):
 		""" TODO: Language Specific "Yes" implementation """
@@ -2097,22 +2120,22 @@ class	COMARObjHook:
 			#for i in dir(cAPI):
 			#	x = getattr(cAPI, i)
 			#	print i,"=", x
-		print "CSLRunEnv Caller Info:"
-		for i in dir(callerInfo):
-			x = getattr(callerInfo, i)
-			if i[0:2] != "__": print i,"=", x
+		#print "CSLRunEnv Caller Info:"
+		#for i in dir(callerInfo):
+		#	x = getattr(callerInfo, i)
+		#	if i[0:2] != "__": print i,"=", x
 
 	def loadInstance(self, instanceid = ""):
 		self.instance = self.api.loadValue(instanceid, 'hookdata', self.callerInfo)
 		#nsAPI = None, extObjEntry = None, callerInfo = None):
 		self.runenv = CSLCapsule(instance=instanceid, nsAPI=self.cAPI, extObjEntry = self.extCall, callerInfo=self.callerInfo)
-		print "CSLRunEnv LoadInstance:", instanceid, self.instance, self.cv.gettype(self.instance), self.callerInfo.mode
+		#print "CSLRunEnv LoadInstance:", instanceid, self.instance, self.cv.gettype(self.instance), self.callerInfo.mode
 		if self.cv.gettype(self.instance) != 'null':
 			if self.callerInfo.mode == "auto":
 				# This is a new instance..
 				# Make our instance data..
 				codetype = self.cv.array_finditem(self.instance, 'code_type')
-				print "CSLRunEnv: LoadInstance:", self.cv.dump_value_xml(codetype.item), self.instance
+				#print "CSLRunEnv: LoadInstance:", self.cv.dump_value_xml(codetype.item), self.instance
 				if codetype.item.data.value == 'file':
 					cslfile = self.cv.array_finditem(self.instance, 'source')
 					self.runenv.LoadObject(cslfile.item.data.value)
@@ -2120,7 +2143,7 @@ class	COMARObjHook:
 					cslfile = self.cv.array_finditem(self.instance, 'db_file')
 					key = self.cv.array_finditem(self.instance, 'db_key')
 					db = self.procHelper.dbOpen(cslfile.item.data.value)
-					print "CSLRunEnv: Try load code tree:", cslfile.item.data.value, db, key.item.data.value
+					#print "CSLRunEnv: Try load code tree:", cslfile.item.data.value, db, key.item.data.value
 					tree = self.procHelper.dbRead(int(db), key.item.data.value)
 					tree = gzip.zlib.decompress(tree)
 					self.procHelper.dbClose(db)
@@ -2240,6 +2263,8 @@ class	COMARObjHook:
 			cmd = "TRSU_OMC"
 		rpc["type"] = Type
 		rpc["name"] = name
+		if isinstance(index, CSLValue):
+			index = self.runenv.CSLtoCOMARValue(index)
 		if Type == "method":
 			for p in prms.keys():
 				v = self.cv.dump_value_xml(prms[p])
@@ -2257,7 +2282,7 @@ class	COMARObjHook:
 						return self.cv.COMARRetVal(1, self.cv.null_create())
 					print "A INDEXED OBJ CALL CAPTURED:", name, ctype, 
 					if index != None:
-						ix = name + "[" + index.toString() + "]"
+						ix = name + "[" + self.cv.CVALget(index) + "]"
 						rpc["name"] = ix
 						print "CSLRE: Before call:", ix
 					else:
@@ -2312,8 +2337,8 @@ class	COMARObjHook:
 		new = self.api.createNewInstance(instid, self.callerInfo)
 		#self.api.saveValue(instid, self.instance, 'instance', new)
 		#objType = "", instance = "", ci = None):
-		for i in dir(new):
-			print "\t", i, "=", getattr(new, i)
+		#for i in dir(new):
+		#	print "\t", i, "=", getattr(new, i)
 		#registerObject(self, objid  = "", objType="", callerInfo = None):
 		rv = self.api.registerObject(objid = instid, objType = "CSL:OMINSTANCE",  callerInfo=new)
 		self.procHelper.sendParentCommand(cmd = "TRSU_SOBJ", pid = self.procHelper.myPID, tid = 0, data=rv.object)		

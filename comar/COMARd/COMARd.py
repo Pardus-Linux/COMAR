@@ -50,6 +50,7 @@ FILEMON = None
 PROCMON = None
 AUTHHELPER = None
 COMARHELPER = None
+mDBWorker = None
 mkfname	= SESSION._makefilename
 DB_THREAD = 0
 root_dbs = []
@@ -71,8 +72,7 @@ CHLDHELPER.api_makepid = createPID
 
 def initTAMGR():
 	""" Create TA_MGR. """
-	global TA_CHLDS, TA
-	TA_CHLDS = CHLDHELPER.childHelper(None, 0, 0, "ROOT")
+	global TA_CHLDS, TA	
 	TA = TAManager()
 
 class COMARConnector(object):
@@ -178,7 +178,7 @@ class COMARConnector(object):
 			return
 		self.connData[sid][key] = (int(int(eol) + time.time()), dta)
 		TIMER.addPeriodCall(self.cleanUData)
-		print self.connData
+		#print self.connData
 	def cleanUData(self):
 		t = int(time.time())
 		delItems = []
@@ -532,9 +532,9 @@ class TAManager:
 		self.internal = 0
 		self.usedTTS = 0
 		self.del_que = []
-		self.db_ta = gdbm.open(comar_global.comar_tadata + "/tainfo.db", "ws")
-		self.db_list = gdbm.open(comar_global.comar_tadata + "/talist.db", "ws")
-		self.db_map = gdbm.open(comar_global.comar_tadata + "/tamap.db", "ws")
+		self.db_ta = mDBWorker.dbOpen(comar_global.comar_tadata + "/tainfo.db")
+		self.db_list = mDBWorker.dbOpen(comar_global.comar_tadata + "/talist.db")
+		self.db_map = mDBWorker.dbOpen(comar_global.comar_tadata + "/tamap.db")
 		if api_path == "":
 			api_path = comar_global.comar_modpath+"/ttshandlers"
 
@@ -575,12 +575,12 @@ class TAManager:
 		return self.TAStack[key].ttskey
 
 	def mappedTTS(self, key):
-		if self.db_map.has_key(key):
+		if mDBWorker.dbSeek(self.db_map, key):
 			return self.db_map[key]
 		return key
 
 	def __destroy__(self):
-		self.db_ta.close()
+		pass
 
 	def loadFrom(self, key):
 		pass
@@ -600,7 +600,22 @@ class TAManager:
 	def createttsid(self, scope = "HOME"):
 		self.usedTTS	+= 1
 		return "%s.%08x.%08x.%d" % (scope,os.getpid(), self.usedTTS, time.time())
-
+	def cleanDeads(self):
+		que = self.del_que[:]
+		pos = 0
+		for item in que:			
+			key = item[0]			
+			self.endofTA(key, item[1])			
+			PID = self.TAStack[key].TAPID
+			print "Close finished TA:",  key, PID
+			TA_CHLDS.sendCommand(PID, "LNTU_KILL", PID , 0, None)			
+			TA_CHLDS.wait_pid(PID)
+			#TA_CHLDS.removeChild(PID)
+			del self.TAPIDIndex[PID]
+			del self.TAStack[key]
+			del self.del_que[pos]
+			pos += 1			
+		
 	def RIP(self, deadChild):
 		for key in self.TAStack.keys():
 			if self.TAStack[key].TAPID == deadChild:
@@ -612,19 +627,21 @@ class TAManager:
 				pos = 0
 				dl = -1
 				for item in self.del_que:
+					#print "Search Dead TA:", item, key
 					if item[0] == key:
 						self.endofTA(item[0], item[1])
 						dl = pos
 						break
 					pos += 1
 				if dl > -1:
-					del self.del_que[pos]					
-					print "TA Finished Normally:", item
+					del self.del_que[pos]		
+					print "TA RIPPED Normally:", deadChild, key
+					del self.TAPIDIndex[self.TAStack[key].TAPID]
 					del self.TAStack[key]
-				else:
-					TA_CHLDS.releaseChild(child=deadChild)
-					print "TODO: Try for reload transaction: ", self.TAStack[key].TTSID
-					del self.TAStack[key]
+					#TA_CHLDS.releaseChild(child=deadChild)
+					TA_CHLDS.removeChild(deadChild)
+				else:					
+					print "TODO: Try for reload transaction: ", self.TAStack[key].TTSID					
 					#self.loadFrom(key)
 
 	def	ttsid2TA(self, user, ttsid):
@@ -632,12 +649,12 @@ class TAManager:
 		if self.TAStack.has_key(key):
 			return self.TAStack[key]
 	def endofTA(self, key, value):
-		self.db_ta[key+"_st"] = "FINISHED"
-		self.db_ta[key+"_value"] = value
-		PID = self.TAStack[key].TAPID
-		TA_CHLDS.removeChild(PID)
-		del self.TAStack[key]
-		del self.TAPIDIndex[PID]
+		mDBWorker.dbWrite(self.db_ta, key+"_st", "FINISHED")
+		mDBWorker.dbWrite(self.db_ta, key+"_value", value)
+		#PID = self.TAStack[key].TAPID
+		#TA_CHLDS.removeChild(PID)
+		#del self.TAStack[key]
+		
 
 	def	create(self, PID, TID, conn, data, user):
 		global OM_MGR
@@ -697,18 +714,20 @@ class TAManager:
 			newTA.ttskey = key
 			self.TAStack[key] = newTA
 			self.TAPIDIndex[chldPID] = key
-			print "(%d) NEW TA Job Session Created:%d for %s:%s as %s" % (os.getpid(), pid, user.name+"@"+user.realm, newTA.TTSID, key)
+			print "(%d) NEW TA Job Session (%d) Created:%d for %s:%s as %s" % (os.getpid(), chldPID, pid, user.name+"@"+user.realm, newTA.TTSID, key)
 			skey = key
-
-			self.db_list[skey] = user.name+"@"+user.realm+newTA.TTSID
-			self.db_ta[skey+"_id"] = rpc.TTSID
-			self.db_ta[skey+"_usr"] = user.toString()
-			self.db_ta[skey+"_conn"] = conn.toString()
-			self.db_ta[skey+"_st"] = "NEW"
-			self.db_ta[skey+"_eol"] = str(newTA.EOL)
-			self.db_ta[skey+"_rpc"] = data
-			self.db_ta[skey+"_call"] = newTA.caller
-			self.db_ta[skey+"_objs"] = ""
+			try:
+				mDBWorker.dbWrite(self.db_list, skey, user.name+"@"+user.realm+newTA.TTSID)
+				mDBWorker.dbWrite(self.db_ta, skey+"_id",  rpc.TTSID)
+				mDBWorker.dbWrite(self.db_ta, skey+"_usr",  user.toString())
+				mDBWorker.dbWrite(self.db_ta, skey+"_conn",  conn.toString())
+				mDBWorker.dbWrite(self.db_ta, skey+"_st",  "NEW")
+				mDBWorker.dbWrite(self.db_ta, skey+"_eol",  str(newTA.EOL))
+				mDBWorker.dbWrite(self.db_ta, skey+"_rpc",  data)
+				mDBWorker.dbWrite(self.db_ta, skey+"_call",  newTA.caller)
+				mDBWorker.dbWrite(self.db_ta, skey+"_objs",  "")
+			except:
+				print "TA Registration Failed !"
 			return newTA
 		else:
 			# Child process.
@@ -725,6 +744,9 @@ class TAManager:
 
 			cmd = new_ph.waitForParentCmd(2)
 			cmd = new_ph.getParentCommand()
+			if cmd == None:
+				print "FATAL: (COMARD/TAMGR/Line 728) TA EXEC Not received"
+				new_ph.exit()
 			if cmd[2] != "TRTU_RUN":
 				print "Job Session TA Provider: Invalid command sequence !"
 				new_ph.exit()
@@ -736,6 +758,15 @@ class TAManager:
 				new_ph.exit()
 			jobSession.startTransaction(None)
 			#new_ph.sendCommand("TRTU_RUN", chldPID, 0, user.name+"@"+user.realm+"\x00"+newTA.TTSID)
+			# Wait for LNTU_KILL
+			while 1:
+				print new_ph.myPID, os.getpid(), "StartTransaction wait for parent LNTU_KILL"
+				if new_ph.waitForParentCmd(timeout = 2):
+					cmd = new_ph.getParentCommand()
+					print "TA.create:", cmd
+					if cmd[2] == "LNTU_KILL":						
+						break
+
 			print "TANewClient", os.getpid(), chldPID, "We are suicide.."
 			new_ph.exit()
 
@@ -784,7 +815,7 @@ class TAManager:
 	def fdNotHangup(self, fd):
 		r = 1
 		for i in self.TAStack.keys():
-			print "LOOK TAFD:", fd, "OVER", i, self.TAStack[i].rfds			
+			#print "LOOK TAFD:", fd, "OVER", i, self.TAStack[i].rfds			
 			if fd in self.TAStack[i].rfds:
 				s = TA_CHLDS.PID2io(self.TAStack[i].TAPID).cmdrpoll.poll(0)[0][1]
 				#s = self.TAStack[i].IOChannel.cmdrpoll.poll(0)[0][1]
@@ -922,8 +953,9 @@ class TAManager:
 			if x > -1:
 				st = int(data[:x].strip())
 				vl = data[x:].strip()
-				retVal = COMARValue.COMARRetVal(st, COMARValue.load_value_xml(vl))
-				print key, self.TAStack[key].TTSID,":TA Finished normally:", retVal
+				retVal = COMARValue.COMARRetVal(st, COMARValue.load_value_xml(vl))				
+				print key, self.TAStack[key].TTSID,":TA Finished normally:", st			
+				
 			rpc = RPCData.RPCStruct()
 			rpc.TTSID = self.TAStack[key].TTSID
 			rpc.makeRPCData("RESPONSE")
@@ -947,17 +979,19 @@ class TAManager:
 		elif cmd == "TRSU_SOBJ":  # RegisterObject			
 			key = self.TAPIDIndex[srcPid]
 			print "Save Object call:", key, srcPid, PID, TID, cmd, data
-			objs = self.db_ta[key+"_objs"]
+			objs = mDBWorker.dbRead(self.db_ta, key+"_objs")
+			if objs == None:
+				objs = ""
 			if len(objs) > 0:
 				objs += "\n"
 			objs += data
-			self.db_ta[key+"_objs"] = objs
+			mDBWorker.dbWrite(self.db_ta, key+"_objs", objs)
 			
 		elif cmd == "TRSU_RMAP": # RemapTA. CALL->TAM: Şu anki TA'değerini, yeni bir Local TTSID ile map eder. Yeni TTSID'ye gelen istekler doğrudan asıl TA'ya iletilir.
 			if clientTA:
 				nta = self.createttsid("HOME")
 				key = self.makettskey(nta, None)
-				self.db_map[key] = self.TAStack[clientTA].TTSID
+				mDBWorker.dbWrite(self.db_map, key, self.TAStack[clientTA].TTSID)
 				return (PID, TID, "TRTU_SSID", nta, user) # NewLocalTTSID
 			else:
 				return None
@@ -1011,7 +1045,7 @@ def startDBWorker():
 def start():
 	"""Starts COMARd"""
 
-	global	CONNS, TA, TA_CHLDS, OM_MGR, DBIO, TIMER, AUTHHELPER, COMARHELPER, DB_THREAD, root_dbfd
+	global	CONNS, TA, TA_CHLDS, OM_MGR, DBIO, TIMER, AUTHHELPER, COMARHELPER, DB_THREAD, root_dbfd, mDBWorker
 	print "Initializing COMARd"
 	cont = checkComardPerms()
 	if cont == 0:
@@ -1045,25 +1079,25 @@ PRE-ALPHA MESSAGE:
 	#for i in dir(CAPI):
 	#	print "CORE API:", i, "=", getattr(CAPI, i)
 	COMARAPI.API = CAPI
-
+	TA_CHLDS = CHLDHELPER.childHelper(None, 0, 0, "ROOT")
+	DB_THREAD = startDBWorker()
+	print "DB_THREAD is", DB_THREAD
+	select.select([],[],[], 0.2)
+	ldb = localDBHelper()	
+	mDBWorker = ldb
 	print "Obj Hooks: provided language modules:"
 
 	for i in CAPI.api_OBJHOOK.Interpreters:
 		print "\t%s" % (i)
 
 	initTAMGR()
+	
 	#print "COMARAPI::API :"
 	#for i in dir(COMARAPI.API):
 	#	print i, "=", getattr(COMARAPI.API, i)
 	initOM_MGR()
+	OM_MGR.setDBHelper(ldb)
 	TIMER = comarTimer()
-	DB_THREAD = startDBWorker()
-	print "DB_THREAD is", DB_THREAD
-	select.select([],[],[], 0.2)
-	TA_CHLDS.setDBWorker(DB_THREAD+0)
-	
-
-	OM_MGR.setDBHelper(localDBHelper())
 	OM_MGR.initOM("COMAR", "OM_XML_CSL", comar_global.comar_om_dtd + "/comar.xml")
 	OM_MGR.initOM("CORE", "CORE", comar_global.comar_om_dtd + "/core.xml")
 	
@@ -1114,6 +1148,9 @@ PRE-ALPHA MESSAGE:
 		readfds.extend(DBFD)
 		#print "Read FDS:", readfds
 		TIMER.checkUp()
+		if len(TA.del_que):
+			TA.cleanDeads()
+
 		err = []
 		try:
 			rfds = select.select(readfds, [], [], 10)
@@ -1136,20 +1173,20 @@ PRE-ALPHA MESSAGE:
 				if TA.fdNotHangup(i):
 					conPID = TA.readfd2PID(i)
 					acc_data = TA.readConn(conPID)
-					print "\n\nA TA Command:", i, conPID, acc_data, "\n\n",
+					#print "\n\nA TA Command:", i, conPID, acc_data, "\n\n",
 					if acc_data:
 						cmd = acc_data[2]
 						PID = int(acc_data[0])
 						TID = int(acc_data[1])
 						data = acc_data[3]
-						print "Transaction Command (%s) from PID : %s pkpid:%s cmd:%s" % (i, conPID, PID, cmd), data
+						#print "Transaction Command (%s) from PID : %s pkpid:%s cmd:%s" % (i, conPID, PID, cmd), data
 						if cmd == "IRSU_APRT":
-							print "TAM -- Register Child:", int(data), "->", PID
+							#print "TAM -- Register Child:", int(data), "->", PID
 							TA_CHLDS.registerChild(child=int(data), parent=PID)
 						elif cmd == "INSU_PID":
-							print "TA New PID Request:", PID #  child, command = "", PID = 0, TID = 0, data = None,
+							#print "TA New PID Request:", PID #  child, command = "", PID = 0, TID = 0, data = None,
 							TA.sendCommand(conPID, "IRTU_PID", PID, TID, "%08d" % createPID())
-							print "TA New PID Value Send to:", PID
+							#print "TA New PID Value Send to:", PID
 						elif cmd == "IRSU_DPRT":
 							TA_CHLDS.releaseChild(child=int(data))
 						elif cmd[0] == "Q":
@@ -1265,6 +1302,7 @@ PRE-ALPHA MESSAGE:
 								CONNS.sendTarget(rcmd[2], rcmd[0], rcmd[1], rcmd[3])
 							else:
 								CONNS.sendTarget("LNTU_KILL", PID, TID)
+								
 							print "Main: Send Complete:", rcmd
 
 						elif cmd[0] == "Q":

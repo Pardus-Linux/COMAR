@@ -202,14 +202,14 @@ class OM_XML_CSL:
 
 	def setDBHelper(self, helper):
 		self.dbhelper = helper		
-		print "CSL_XML DB Initialization:", helper
+		#print "CSL_XML DB Initialization:", helper
 		self.om_db = helper.dbOpen(comar_global.comar_om_db + "/" + self.useNS + "-om.db")
 		self.obj_db = helper.dbOpen(comar_global.comar_om_db + "/" + self.useNS + "-obj.db")
 		self.scripts_db = helper.dbOpen(comar_global.comar_om_db + "/" + self.useNS + "-scripts.db")
 		self.acl_db = helper.dbOpen(comar_global.comar_om_db + "/" + self.useNS + "-acl.db")
 		self.iid_db = helper.dbOpen(comar_global.comar_om_db + "/" + self.useNS + "-iids.db")
 		self.inx_db = helper.dbOpen(comar_global.comar_om_db + "/" + self.useNS + "-inx.db")
-		print "XML_CSL_OM: dbset:", self.om_db, self.obj_db, self.scripts_db, self.acl_db, self.iid_db, self.inx_db
+		#print "XML_CSL_OM: dbset:", self.om_db, self.obj_db, self.scripts_db, self.acl_db, self.iid_db, self.inx_db
 
 	def postInit(self):
 		# postInit called after setting dbhelper
@@ -228,7 +228,7 @@ class OM_XML_CSL:
 		IID = self.dbhelper.dbRead(self.iid_db, nodeKey + "_iid")
 		node = self.dbhelper.dbRead(self.iid_db, nodeKey + "_node")
 		fname = self.dbhelper.dbRead(self.iid_db, nodeKey + "_fname")
-		print "IID DB RECS:", nodeKey, IID, node, fname
+		#print "IID DB RECS:", nodeKey, IID, node, fname
 		if not (None in [ IID, node, fname ]):				
 			ci.IID = IID
 			ci.OID = "COMAR:" + node + "." + IID + "." + nodeKey

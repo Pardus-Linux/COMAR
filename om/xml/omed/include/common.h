@@ -42,7 +42,7 @@ extern int errno;
 #endif
 
 #include <gtk/gtk.h>
-#include <iksemel.h>
+#include "iksemel.h"
 #include "i18n.h"
 #include "om-tree.h"
 #include "om-node.h"

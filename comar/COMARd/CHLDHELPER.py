@@ -78,8 +78,16 @@ class childHelper(object):
 		self.minChild = 1
 		self.pass_cmds = [ "INSU_PID", "IRTU_PID" ]
 		self.debugfile = None
-		self.debug = 0 #DEBUG_CHMGR |DEBUG_CMDS
+		self.debug = 0 #DEBUG_CHMGR |DEBUG_CMDS|DEBUG_PRC
 		self.idebug = self.debug
+	def getcaller(self):
+		tb = traceback.extract_stack()	
+		for x in range(len(tb) - 1, -1, -1):
+			i = tb[x]
+			if i[0].find("SESSION") == -1 and i[0].find("CHLDHELPER") == -1:
+				a = "%s::%s[%s]:'%s'" % (api_os.path.basename(i[0]), i[2], i[1], i[3])
+				return a
+		return "<unknown/internal>"
 
 	def setIODebug(self, PID, level, name):
 		if self.chlds.has_key(PID):
@@ -99,19 +107,10 @@ class childHelper(object):
 				f.write(m+"\n")
 				f.close()
 			else:
-				print "CH:", self.myPID, self.modName, api_os.getpid(),
+				api_os.write(0, "CH: %s %s %s " % (self.myPID, self.modName, api_os.getpid()))
 				for i in msg:
-					print i,				
-				print "Called From:", 
-				tb = traceback.extract_stack()	
-				rv = "\n"
-				st = 0
-				for x in range(len(tb) - 1, -1, -1):
-					i = tb[x]
-					if i[0].find("SESSION") == -1 and i[0].find("CHLDHELPER") == -1:
-						a = "%s::%s[%s]:'%s'\n" % (api_os.path.basename(i[0]), i[2], i[1], i[3])
-						print a
-						break
+					api_os.write(0, str(i)+" ")				
+				api_os.write(0, "Called From: %s\n" % self.getcaller())
 
 	def dumpInfo(self):
 		#traceback.print_stack()
@@ -149,17 +148,16 @@ class childHelper(object):
 			self.dbSocket.close()
 		self.dbSocket = socket.socket(family = socket.AF_UNIX, type = socket.SOCK_STREAM)
 		self.dbSocket.connect_ex(sockFile)
-		#print "\n\n",self.modName, "DB Socket I/O:", self.dbSocket, self.dbSocket.fileno(), self.dbSocket.connect_ex(sockFile),"\n\n"
+		self.debugout(DEBUG_DBIO, "DB Socket I/O:", self.dbSocket, self.dbSocket.fileno(), self.dbSocket.connect_ex(sockFile),"\n\n")
 	def sendDBSocket(self, cmd, pid, tid, data):
 		if self.dbSocket:
 			send_cmd = "%08d%04d%s " % (pid, tid, cmd) + data
 			send_data = "%08d%s" % (len(send_cmd), send_cmd)
 			#print "\nSend DB Socket:", send_data, "\n"
 			try:
-				print self.dbSocket.sendall(send_data)
+				self.dbSocket.sendall(send_data)
 			except:
 				self.useDBSocket()
-
 				self.dbSocket.sendall(send_data)
 		else:
 			self.dbIO.putCommand(cmd, pid, tid, data)
@@ -355,7 +353,7 @@ class childHelper(object):
 			return False
 
 	def sendCommand(self, child, command = "", PID = 0, TID = 0, data = None, dTuple = None):
-		self.debugout(DEBUG_CMDS, "SCMD:", child, command, PID, TID, data)
+		self.debugout(DEBUG_CMDS, "SendCMD:", child, command, PID, TID, data)
 		if dTuple != None:
 			#(PID, TID, CMD, DATA)
 			PID = dTuple[0]
@@ -374,6 +372,8 @@ class childHelper(object):
 				return None
 		else:
 			target	= child
+		if 1==0 and command == "LNTU_KILL":
+			self.debugout(0, "SPECIAL CASE: SEND LNTU_KILL TO", PID, "FROM ", self.myPID, " OUR PARENT:", self.gloPPid)
 		ret = self.chlds[target].iochannel.putCommand(command, PID, TID, data, wait)
 		if ret == None:
 			print self.modName, self.myPID, self.gloPPid, "Can't put command to pipe:", command, PID, TID, "CW:", self.chlds[target].iochannel.inodes["cw"]
@@ -409,7 +409,19 @@ class childHelper(object):
 		#					   self.chlds[child].iochannel.cmdchannel_rx,
 		#					   self.chlds[child].iochannel.cmdchannel_tx)
 		return self.chlds[target].iochannel.getCommand()
-
+	def cmdReady(self, child):
+		if not self.chlds.has_key(child):
+			if self.subchlds.has_key(child):
+				target = self.subchlds[child]
+			else:
+				print "Invalid readCommand to Child:", child
+				return None
+		else:
+			target	= child
+		#print "read TA From: %s %s %s" % (self.chlds[child].iochannel.cmd_rfile,
+		#					   self.chlds[child].iochannel.cmdchannel_rx,
+		#					   self.chlds[child].iochannel.cmdchannel_tx)
+		return self.chlds[target].iochannel.cmdReady()	
 	def getParentCommand(self):
 		return self.gloPIO.getCommand()
 
@@ -443,6 +455,10 @@ class childHelper(object):
 				if data != None:
 					if self.subchlds.has_key(int(data)):
 						self.releaseChild(int(data))
+			elif cmd == "IRSU_DPRT":	# Remove PID Routing Table.
+				if data != None:
+					if self.subchlds.has_key(int(data)):
+						self.removeChild(int(data))
 		else:			# To Child
 			if cmd == "IRSU_APRT":
 				if data != None:
@@ -549,14 +565,14 @@ class childHelper(object):
 						if i in self.extRFDs:
 							self.ioFaultHandler(i, api_sys.exc_info())
 						else:
-							print "Warning !!! ChldHelper enter an Invalid State."
+							self.debugout(DEBUG_FATAL, "Warning !!! ChldHelper enter an Invalid State.")
 							p = self.rfd2PID(i)
-							print "\tIPC Channel for Child %d has broken." % (p)
+							self.debugout(DEBUG_FATAL, "\tIPC Channel for Child %d has broken." % (p))
 							s = api_os.waitpid(self.chlds[p].ppid, api_os.WNOHANG)
 							if api_os.WIFEXITED(s):
-								print "\t\tChild is dead !"
+								self.debugout(DEBUG_FATAL, "\t\tChild is dead !")
 							else:
-								print "\t\tChild already lived with sys_pid", self.chlds[p].ppid, "try kill it."
+								self.debugout(DEBUG_FATAL, "\t\tChild already lived with sys_pid", self.chlds[p].ppid, "try kill it.")
 								api_os.kill(self.chlds[p].ppid, signal.SIGKILL)
 								s = api_os.waitpid(self.chlds[p].ppid, 0)
 							self.removeChild(p)
@@ -582,7 +598,7 @@ class childHelper(object):
 							cmd = io.getCommand()
 							self.debugout(DEBUG_CMDS, "CH PIO:", cmd)
 							if io.cmdrpoll.poll(1)[0][1] & api_select.POLLHUP:
-								print "iochannel bad!", io.name
+								self.debugout(DEBUG_FATAL, "iochannel bad!", io.name)
 								self.removeChild(srcpid)
 							else:
 								if cmd:
@@ -627,7 +643,7 @@ class childHelper(object):
 	def getParentOfChild(self, child):
 		return self.subchlds[child]
 	def releaseChild(self, child):
-		self.debugout(DEBUG_FATAL, "Release Child:", child, str(self.subchlds))
+		self.debugout(DEBUG_CHMGR, "Release Child:", child, str(self.subchlds))
 		if self.subchlds.has_key(child):
 			del self.subchlds[child]
 
@@ -642,7 +658,7 @@ class childHelper(object):
 				api_select.select([], [], [], 0.1)
 				tc += 1
 				if tc == 30:
-					print "Parent is too BUSY !"
+					self.debugout(DEBUG_FATAL, "Parent is too BUSY !")
 					break
 			#print self.myPID, "New PID request to TAM from", self.modName
 			self.gloPIO.putCommand("INSU_PID", self.myPID)
@@ -698,7 +714,26 @@ class childHelper(object):
 			return 1
 		else:
 			return 0
-		
+	def wait_pid(self, xpid):
+		self.debugout(DEBUG_CHMGR, "WAIT PID:", xpid)
+		if self.chlds.has_key(xpid):
+			x = 0
+			while x < 25:
+				#print "WAIT FOR PID:", xpid, "over:", self.getfdName(self.chlds[xpid].iochannel.cmd_rfile), "called ", self.getcaller()
+				rd = self.cmdReady(xpid)
+				if rd:
+					rd = self.readConn(xpid)
+					if rd:
+						self.checkUpCmd(dir="P", srcpid=xpid, cmd=rd[2], pktpid=int(rd[0]), tid=int(rd[1]), data=rd[3])
+						if rd[2] == "IRSU_DPRT":
+							return 0
+				if self.gloPIO:
+					if self.gloPIO.cmdReady():
+						self.debugout(DEBUG_FATAL, "A COMMAND REACHED WHILE WAIT FOR CHILD")
+						return 2
+				
+				x += 1
+		return 1
 	def exit(self):
 		if self.gloPIO:
 			self.debugout(DEBUG_PRC, "Killed self. OS Parent:", self.gloPPid) 
@@ -747,7 +782,7 @@ class childHelper(object):
 		i = 0
 		for x in self.extRFDs:
 			if x == fd:
-				print "delete",i, x
+				self.debugout(DEBUG_CMDIO, "delete",i, x)
 				self.extRFDs.pop(i)
 			i += 1
 

@@ -157,7 +157,7 @@ class APICALLS:
 							if line[:len(startwith)] == startwith:
 								self.cv.array_additem(array=ret, key="%04d" % (x), arrValue=self.cv.string_create(line))
 								x += 1
-				print "capture stdout:", self.cv.dump_value_xml(ret)
+				#print "capture stdout:", self.cv.dump_value_xml(ret)
 				if x == 0:
 					ret = self.cv.string_create("")
 				return self.cv.COMARRetVal( value=ret, result=0 )

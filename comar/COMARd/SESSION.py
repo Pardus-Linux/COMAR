@@ -404,7 +404,7 @@ class COMARPipe(object):
 						if len(self.wquePoll):
 							self.wquePoll.pop()
 						self.debugout(DEBUG_IODATA, "XDBGetCommand pid: %s tid: %s cmd: %s inode-cr: %s" % (PID, TID, CMD, self.inodes["cr"]))
-						if CMD in ["LNTU_KILL","TRSU_FIN", "TRTU_FIN"] and self.name.find("HTTP") == -1 and 1==0:
+						if 1==0 and CMD in ["LNTU_KILL"] and self.name.find("HTTP") == -1:
 							pre = CMD + " " + str(os.getpid())
 							self.debugout(DEBUG_FATAL, "Special Condition: ", CMD," Captured ! from pipe:%s pid:%s" % (self.inodes["cr"], PID), stackImage(__file__, pre) )
 
@@ -415,7 +415,7 @@ class COMARPipe(object):
 	def putCommand(self, command, pid=0, tid=0, data=None, wait=0):
 		xtry = 5
 		self.debugout(DEBUG_IODATA, "XDBGPutCommand: pid: %s tid: %s cmd: %s cr: %s cw: %s" % (pid, tid, command, self.inodes["cr"], self.inodes["cw"]))
-		if command in ["LNTU_KILL", "TRSU_FIN", "TRTU_FIN"] and self.name.find("HTTP") == -1 and 1==0:
+		if 1==0 and command in ["LNTU_KILL"] and self.name.find("HTTP") == -1:
 			pre = command + " " + str(os.getpid())
 			self.debugout(DEBUG_FATAL, "XDBGPutCommand: pid: %s cmd: %s pipe:%s from %s" % (pid, command, self.inodes["cw"], stackImage(__file__, pre)))
 
@@ -508,7 +508,7 @@ class COMARPipe(object):
 					a = "<unknown/closed> )"
 
 				self.debugout(DEBUG_FATAL, "Pipe not ready for putCommand:", polSt[0][1], self.data_rfile, "(", a, "Our Parent pid:", os.getppid())
-				self.debugout(DEBUG_FATAL, "While Sending Command:", command, pid, tid, data)
+				self.debugout(DEBUG_FATAL, "While Sending Command:", command, pid, tid, str(data)[:20])
 				print stackImage(__file__)
 				#traceback.print_stack()
 				self.debugout(DEBUG_FATAL, "Error Return 3")

@@ -137,7 +137,7 @@ def start():
 		rpc["type"] = "method"
 		fname = cv.string_create("xorg.csl")
 		appid = cv.string_create("DENEME")
-		f = open("xorg.csl")
+		f = open("./csl/sample/xorg.csl")
 		code = cv.string_create(f.read())
 		f.close()
 		node = cv.string_create("COMAR:Boot")

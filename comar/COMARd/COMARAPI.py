@@ -8,6 +8,7 @@
 # Free Software Foundation; either version 2 of the License, or (at your
 # option) any later version. Please read the COPYING file.
 
+
 # COMARRAPI.py
 # COMAR Core API.
 
@@ -80,7 +81,7 @@ class COMARIAPI:
 	
 	def getDBFileKey(self, mode = 'instance', callerInfo = None):
 		print "getDBFileKey:", mode, callerInfo.mode, callerInfo.OID, callerInfo.pDB
-		if callerInfo.pDB != "":
+		if mode != "hookdata" and callerInfo.pDB != "" and callerInfo.pDB != None:
 			return callerInfo.pDB
 		if callerInfo.mode == "tmp":
 			db = callerInfo.pDB
@@ -107,7 +108,18 @@ class COMARIAPI:
 		#if not os.path.isdir(dbpath):
 		#	os.makedirs(dbpath)
 		return dbpath
-
+	def getObjectFromKey(self, key=""):
+		try:
+			fd = open(comar_global.comar_instance_data + "/instance/reginfo_" + key, "r")
+		except:
+			return None
+		buf = fd.read()
+		fd.close()
+		cinfo = callerInfoObject()
+		obj = COMARValue.COMARObjectDescriptor()		
+		obj.fromXml(buf, cinfo)
+		return (obj, cinfo)
+		
 	def createNewInstance(self, name='', callerInfo = None):
 		dbpath_curr = self.getDBFileKey("instance", callerInfo)
 		ncallerInfo = copy.deepcopy(callerInfo)
@@ -125,27 +137,18 @@ class COMARIAPI:
 			pass
 		return ncallerInfo
 
-	def registerObject(self, objid, objType="", callerInfo = None):
+	def registerObject(self, objid  = "", objType="", callerInfo = None):
 		""" Register temporary object (not in-memory, its persistent)
 		and return a COMARObject.
 		followed calls with this object, use this COMARObject."""
 		ci = callerInfo
-		data = { 'OID'	:ci.OID,
-			 'IID'	:ci.IID,
-			 'pDB'	:ci.pDB,
-			 'mode'	:ci.mode,
-			 'node'	:ci.node,
-			 'user'	:ci.user,
-			 'realm' :ci.realm,
-			 'group' :ci.group,
-			 'runenv' :ci.runenv,
-			 'omkey'  :ci.omkey,
-			 '_objid' :objid }
 		#print "HOOKFILE:", ci.hookFile
-		ret = COMARValue.COMARObjectDescriptor(objid)
-		oid = self.createObjDesc(objType = objType, instance = objid, ci = ci)
-		rs = COMARValue.obj_setData(ret, data, oid)
-		fd = open(comar_global.comar_instance_data + "instance/reginfo_" + oid, "w")
+		# objName = "", objClass = "", instanceKey = "", callerInfo = None):
+		
+		ret = COMARValue.COMARObjectDescriptor(objid, objType, ci.OID, ci)
+		
+		rs = ret.objectData #COMARValue.obj_setData(ret, data, oid)		 
+		fd = open(comar_global.comar_instance_data + "/instance/reginfo_" + ci.OID, "w")
 		fd.write(rs)
 		fd.close()
 		#objData = objType = "", instance = "", ci = None)
@@ -303,7 +306,8 @@ class OM_MANAGER:
 		ci = n[1]
 		# PDB. This is a pathname (relative to $comar_global.comar_data/datadb) for save persistent values.
 		# This value typically selected from profile information
-		ci.pDB = "" # Set form profile db.
+		ci.pDB = "" # Set from profile db.
+		ci.DBBase = ""
 		ci.callStack = None	#
 		ci.node = NS+":"+node
 		# User for this call
@@ -312,6 +316,7 @@ class OM_MANAGER:
 		ci.group = user.group
 		ci.caller = caller
 		# Run environment. CSL -> CSL Interpreter. PYTHON -> PY interpreter..
+		# ret: (NameSpace, CallerInfo)
 		return (n[0], ci)
 
 	def parseNodeName(self, node):
@@ -457,13 +462,47 @@ class OM_MANAGER:
 		NS = n[0]
 		node = n[1]
 		print "OM_MGR: NS/node:", NS, node
-		if self.OMS.has_key(NS):
-			return self.OMS[NS].getOMProperties(node)
+		if self.OMS.has_key(NS):			
+			return self.OMS[NS].getOMProperties(node, "0")
 
 	def getObjHook(self, langid = ""):
 		global COMARAPI
 		return OBJ_HOOKDRV.getInterpreter(langid)
+	def getOBJList(self, object):
+		lst = object.data.split("\n")
+		return lst
+	def getOBJHandler(self, key):
+		t = OBJ_IAPI.getObjectFromKey(key)
+		cinfo = t[1]		
+		obj   = t[0]
+		n = []
+		
+		omkey = cinfo.node
+		if omkey.find(":") == -1:
+			print "OMMGR: Internal error on CAPI. Invalid OM Key", omkey
+			return None		
+		
+		n.append(omkey[:omkey.find(":")])
+		n.append(omkey[omkey.find(":")+1:])
+		NS = n[0]
+		node = n[1]
+		
+		print "OBJECT ORIGIN NS/node:", NS, node
+		if self.OMS.has_key(NS):
+			if hasattr(self.OMS[NS], "getOMObj"):
+				cinfo = self.OMS[NS].getCINFO(cinfo.omkey, cinfo)[1]
+				for i in dir(cinfo):
+					print "cinfo.%s -> %s" % (i, getattr(cinfo, i))
+				hook = self.OMS[NS].getOMObj(cinfo.omkey)
+				return (API, cinfo, hook)
 
+		
+		
+	def objectMerge(self, object, item):
+		if len(object.data):
+			object.data += "\n"
+		object.data += item.data
+		return object
 	def checkAccess(self, callerInfo = None, node = ""):
 		n = self.parseNodeName(node)
 
@@ -529,7 +568,8 @@ class OBJ_HOOK_DRV:
 		if langid in self.objhooks.keys():
 			return self.objhooks[langid]
 
-	def cObjHandler(self, objClass = "", objid = "", callType = "", callName = "", prms = {}, callerInfo = None):
+	def cObjHandler(self, objid = "", callType = "", callName = "", prms = {}):
+		
 		pass
 
 
@@ -559,6 +599,7 @@ class callerInfoObject:
 		# PDB. This is a pathname (relative to $comar_global.comar_data/datadb) for save persistent values.
 		# This value typically selected from profile information
 		self.pDB = ""
+		self.DBBase = ""
 		# Object mode. "tmp" -> Temporary object. "om" -> OM Object..
 		self.mode = "tmp"		#
 		# CallStack. This is a reserved for future use.

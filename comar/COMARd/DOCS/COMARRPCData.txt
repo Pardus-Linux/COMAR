@@ -1,59 +1,61 @@
-COMARPRCData veri formatı ve COMAR-RPC Protokolü.
+COMARPRCData veri formatÄ± ve COMAR-RPC ProtokolÃ¼.
 
-COMARRPCData formatı:
+COMARRPCData formatÄ±:
 
-COMARRPCData, COMARd uygulaması ile yapılacak haberleşme için kullanılan alt düzey veri yapısıdır. Bu yapının daha üst düzey (XML with HTTP etc) tiplere çevrilip kullanılması tavsiye edilir. Buna mukabil, COMARd ve çevresindeki modüller her zaman bu veri formatını kullanırlar. Bu veri formatını kullanmak üzere COMARValue formatının anlşaılır olması gereklidir.
+COMARRPCData, COMARd uygulamasÄ± ile yapÄ±lacak haberleÅŸme iÃ§in kullanÄ±lan alt dÃ¼zey veri yapÄ±sÄ±dÄ±r. Bu yapÄ±nÄ±n daha Ã¼st dÃ¼zey (XML with HTTP etc) tiplere Ã§evrilip kullanÄ±lmasÄ± tavsiye edilir. Buna mukabil, COMARd ve Ã§evresindeki modÃ¼ller her zaman bu veri formatÄ±nÄ± kullanÄ±rlar. Bu veri formatÄ±nÄ± kullanmak Ã¼zere COMARValue formatÄ±nÄ±n anlÅŸaÄ±lÄ±r olmasÄ± gereklidir.
 
 RPCDataStructure
 	RPCVersion		:	string-ascii-8bit[8]
-						Bu yapının versiyonunu gösterir. Şu anda 1.0 olmalıdır.
+						Bu yapÄ±nÄ±n versiyonunu gÃ¶sterir. Åu anda 1.0 olmalÄ±dÄ±r.
 	RPCTTSID		:	string-ascii-8bit[255]
-						Bu çağrının transaction track ID'sini ihtiva eder. Bu değer RPC isteğini yapan sistem çapında her işlem sekansı için yeğane olmalıdır.
+						Bu Ã§aÄŸrÄ±nÄ±n transaction track ID'sini ihtiva eder. Bu deÄŸer RPC isteÄŸini yapan sistem Ã§apÄ±nda her iÅŸlem sekansÄ± iÃ§in yeÄŸane olmalÄ±dÄ±r.
 	RPCEOLTime		:	numeric
-						UNIX Time türünde bu çağrının en son hangi tarihe kadar cevaplanması gerektiğini belirtir. Eğer 0 ise, çağrıyı yapan bu işlevi polling ile sorgulayabilir, alıcı işlem sonucuna dair bilgiyi asla çağırana geri yollamaz.
+						UNIX Time tÃ¼rÃ¼nde bu Ã§aÄŸrÄ±nÄ±n en son hangi tarihe kadar cevaplanmasÄ± gerektiÄŸini belirtir. EÄŸer 0 ise, Ã§aÄŸrÄ±yÄ± yapan bu iÅŸlevi polling ile sorgulayabilir, alÄ±cÄ± iÅŸlem sonucuna dair bilgiyi asla Ã§aÄŸÄ±rana geri yollamaz.
 	RPCPriority		:	string-ascii-8bit[32]
-						Bu çağrının (recommended) işlenme önceliğini gösterir.
-						NORMAL			: Normal işlenme sırası
-						URGENT			: BU çağrı acil olarak işlenmelidir.
-						INTERACTIVE		: Bu çağrı interactive bir işlem için kullanılmaktadır.
-						DONTCARE		: Bu çağrının cevabı her hangi bir zamanda geri alınabilir.
-	RPCData			:	RPCType bağlı olarak hazırlanmış veri.
+						Bu Ã§aÄŸrÄ±nÄ±n (recommended) iÅŸlenme Ã¶nceliÄŸini gÃ¶sterir.
+						NORMAL			: Normal iÅŸlenme sÄ±rasÄ±
+						URGENT			: BU Ã§aÄŸrÄ± acil olarak iÅŸlenmelidir.
+						INTERACTIVE		: Bu Ã§aÄŸrÄ± interactive bir iÅŸlem iÃ§in kullanÄ±lmaktadÄ±r.
+						DONTCARE		: Bu Ã§aÄŸrÄ±nÄ±n cevabÄ± her hangi bir zamanda geri alÄ±nabilir.
+	RPCData			:	RPCType baÄŸlÄ± olarak hazÄ±rlanmÄ±ÅŸ veri.
 	RPCType			:	string-ascii-8bit[32]
-						OMCALL		:   RPCData içeriğinde belirtilen formatta bulunan COMAR OM çağrısının yerine getirilmesini sağlar.
+						OMCALL		:   RPCData iÃ§eriÄŸinde belirtilen formatta bulunan COMAR OM Ã§aÄŸrÄ±sÄ±nÄ±n yerine getirilmesini saÄŸlar.
 							RPCData
 								type: string-ascii-8bit[255]
 									propertyset
 									propertyget
 									method
 								name: string-ascii-8bit[255]
-									Çağrılan işlevin adı
+									Ã‡aÄŸrÄ±lan iÅŸlevin adÄ±
 								index: string-ascii-8bit[255]
-									Cağrılan işlev için index/instance değeri.
+									CaÄŸrÄ±lan iÅŸlev iÃ§in index/instance deÄŸeri.
 								parameter: array
 									name	: string-ascii-8bit[255] index/key
-										Parametrenin adı
+										Parametrenin adÄ±
 									value	: COMARValue
-										Parametrenin değeri
-									Eğer, type = propertyset ise, parameter["index"] = property'nin index'i, parameter["value"] ise property'ye atancak değeri gösterir. type = propertyget ise parameter["index"] = property'nin index'ini göstermelidir.
-						OBJCALL		:	RPCData içeriğinde belirtilen formatta bulunan nesne çağrısının yerine getirilmesini sağlar.
+										Parametrenin deÄŸeri
+									EÄŸer, type = propertyset ise, parameter["index"] = property'nin index'i, parameter["value"] ise property'ye atancak deÄŸeri gÃ¶sterir. type = propertyget ise parameter["index"] = property'nin index'ini gÃ¶stermelidir.
+						OBJCALL		:	RPCData iÃ§eriÄŸinde belirtilen formatta bulunan nesne Ã§aÄŸrÄ±sÄ±nÄ±n yerine getirilmesini saÄŸlar.
 							RPCData
 								object: COMARObject
+								ttsid: string-ascii-8bit[255]
+									OBJECT'in oluÅŸturulduÄŸu Transaction'un TTSID'si. 
 								type: string-ascii-8bit
 									propertyset
 									propertyget
 									method
 								name: string-ascii-8bit
-									Çağrılan işlevin adı
+									Ã‡aÄŸrÄ±lan iÅŸlevin adÄ±
 								parameter: array
 									name	: string-ascii-8bit index/key
-										Parametrenin adı
+										Parametrenin adÄ±
 									value	: COMARValue
-										Parametrenin değeri
-									Eğer, type = propertyset ise, parameter["index"] = property'nin index'i, parameter["value"] ise property'ye atancak değeri gösterir. type = propertyget ise parameter["index"] = property'nin index'ini göstermelidir.
-						EXEC		:	RPCData içeriğinde bulunan CSL kodunun işletilip sonucun geri döndürülmesini sağlar.
+										Parametrenin deÄŸeri
+									EÄŸer, type = propertyset ise, parameter["index"] = property'nin index'i, parameter["value"] ise property'ye atanacak deÄŸeri gÃ¶sterir. type = propertyget ise parameter["index"] = property'nin index'ini gÃ¶stermelidir.
+						EXEC		:	RPCData iÃ§eriÄŸinde bulunan CSL kodunun iÅŸletilip sonucun geri dÃ¶ndÃ¼rÃ¼lmesini saÄŸlar.
 							RPCData
 								code: string-base64[<65535]
-									Çalıştırılacak kod.
+									Ã‡alÄ±ÅŸtÄ±rÄ±lacak kod.
 								compression: string-ascii-8bit[16]
 									GZIP
 									BZIP2
@@ -63,43 +65,43 @@ RPCDataStructure
 									propertyget
 									method
 								name: string-ascii-8bit[64]
-									Kod içinden Çağrılacak işlevin adı
+									Kod iÃ§inden Ã‡aÄŸrÄ±lacak iÅŸlevin adÄ±
 								parameter: array
 									name	: string-ascii-8bit[64] index/key
-										Parametrenin adı
+										Parametrenin adÄ±
 									value	: COMARValue
-										Parametrenin değeri
-									Eğer, type = propertyset ise, parameter["index"] = property'nin index'i, parameter["value"] ise property'ye atancak değeri gösterir. type = propertyget ise parameter["index"] = property'nin index'ini göstermelidir.
-						RESPONSE	:	Daha önce CALL ile yapılmış bir çağrının cevabıdır.
+										Parametrenin deÄŸeri
+									EÄŸer, type = propertyset ise, parameter["index"] = property'nin index'i, parameter["value"] ise property'ye atancak deÄŸeri gÃ¶sterir. type = propertyget ise parameter["index"] = property'nin index'ini gÃ¶stermelidir.
+						RESPONSE	:	Daha Ã¶nce CALL ile yapÄ±lmÄ±ÅŸ bir Ã§aÄŸrÄ±nÄ±n cevabÄ±dÄ±r.
 							RPCData
 								TTSID	: string-ascii-8bit[255]
-									Cevabı verilen Transaction ID
+									CevabÄ± verilen Transaction ID
 								status	: string-ascii-8bit[32]
 									ACCEPTED			: Kabul edildi.
-									PROCESSED			: İşleniyor.
-									QUEUE				: İşlenmek üzere kuyrukta bekliyor.
-									WAIT				: İşlenirken başka bir sebepten dolayı beklemede (verification etc.)
-									RESULT				: İşlem sonlandırıldı ve returnvalue geçerli.
-									PERMISSIONDENIED	: Bu işlemi yapma hakkınız yok.
-									INVALID				: Geçersiz bir işlem çağrısı. Check your call RPCData.
-									ABORT				: İşlem CANCEL ile sonlandırıldı.
-									ERROR				: Geçersiz bir OM çağrısı yapıldı. Bu nesne/method OM üzerinde tarifli değil.
-									NOTFOUND			: BU TTSID ile bir çağrı yapılmamış.
-									FATAL				: Nesne yürütülürken oluşan bir sorun nedeniyle işlem durduruldu.
-									KILLED				: Nesnenin yürütülmesi operatör tarafından engellendi.
-									ACCESSDENIED		: Bu nesneye erişemezsiniz (OM ACL Policy).
+									PROCESSED			: Ä°ÅŸleniyor.
+									QUEUE				: Ä°ÅŸlenmek Ã¼zere kuyrukta bekliyor.
+									WAIT				: Ä°ÅŸlenirken baÅŸka bir sebepten dolayÄ± beklemede (verification etc.)
+									RESULT				: Ä°ÅŸlem sonlandÄ±rÄ±ldÄ± ve returnvalue geÃ§erli.
+									PERMISSIONDENIED	: Bu iÅŸlemi yapma hakkÄ±nÄ±z yok.
+									INVALID				: GeÃ§ersiz bir iÅŸlem Ã§aÄŸrÄ±sÄ±. Check your call RPCData.
+									ABORT				: Ä°ÅŸlem CANCEL ile sonlandÄ±rÄ±ldÄ±.
+									ERROR				: GeÃ§ersiz bir OM Ã§aÄŸrÄ±sÄ± yapÄ±ldÄ±. Bu nesne/method OM Ã¼zerinde tarifli deÄŸil.
+									NOTFOUND			: BU TTSID ile bir Ã§aÄŸrÄ± yapÄ±lmamÄ±ÅŸ.
+									FATAL				: Nesne yÃ¼rÃ¼tÃ¼lÃ¼rken oluÅŸan bir sorun nedeniyle iÅŸlem durduruldu.
+									KILLED				: Nesnenin yÃ¼rÃ¼tÃ¼lmesi operatÃ¶r tarafÄ±ndan engellendi.
+									ACCESSDENIED		: Bu nesneye eriÅŸemezsiniz (OM ACL Policy).
 								returnvalue : COMARRetVal
-									Eğer status == RESULT ise, geri dönüş değeridir. Aksi halde tanımsızdır.
-						STATUS		:	Daha önce istenen ama cevaplanmamış bir isteğin durumunu sorgulamak amacıyla kullanılır.
+									EÄŸer status == RESULT ise, geri dÃ¶nÃ¼ÅŸ deÄŸeridir. Aksi halde tanÄ±msÄ±zdÄ±r.
+						STATUS		:	Daha Ã¶nce istenen ama cevaplanmamÄ±ÅŸ bir isteÄŸin durumunu sorgulamak amacÄ±yla kullanÄ±lÄ±r.
 							RPCData
 								TTSID	: string-ascii-8bit[255]
-									Cevabı istenen Transaction ID
+									CevabÄ± istenen Transaction ID
 								
 						NOTIFY		:	Event notification
 							RPCData
 								status	: string-ascii-8bit[32]
 								eventid	: string-ascii-8bit[255]
-						CANCEL		:	Daha önceden başlatılmış bir işlevi iptal etmek için kullanılır.
+						CANCEL		:	Daha Ã¶nceden baÅŸlatÄ±lmÄ±ÅŸ bir iÅŸlevi iptal etmek iÃ§in kullanÄ±lÄ±r.
 							RPCData
 								TTSID	: string-ascii-8bit[255]
-									İptal edilecek TTS ID.
+									Ä°ptal edilecek TTS ID.

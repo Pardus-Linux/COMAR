@@ -530,7 +530,7 @@ class	CSLCapsule:
 			return arr
 			
 		elif cslVal.type == "object":
-			print "To COMAR Object:", cslVal.value, self.COMARValue.COMARValue("object", cslVal.value)
+			#print "To COMAR Object:", cslVal.value, self.COMARValue.COMARValue("object", cslVal.value)
 			return self.COMARValue.COMARValue("object", cslVal.value)
 
 		return self.COMARValue.null_create()
@@ -1958,7 +1958,7 @@ class	COMARObjHook:
 		self.instance = self.api.loadValue(instanceid, 'hookdata', self.callerInfo)
 		#nsAPI = None, extObjEntry = None, callerInfo = None):
 		self.runenv = CSLCapsule(instance=instanceid, nsAPI=self.cAPI, extObjEntry = self.extCall, callerInfo=self.callerInfo)
-		print "CSLRunEnv LoadInstance:", self.instance, self.cv.gettype(self.instance), self.callerInfo.mode
+		print "CSLRunEnv LoadInstance:", instanceid, self.instance, self.cv.gettype(self.instance), self.callerInfo.mode
 		if self.cv.gettype(self.instance) != 'null':
 			if self.callerInfo.mode == "auto":
 				# This is a new instance..
@@ -2041,11 +2041,22 @@ class	COMARObjHook:
 		self.setSourceFromBuffer(buffer)
 		return self.runenv.compileResult()
 
-	def objHandle(self, objid = "", callType = "", callName = "", prms = {}, callerInfo = None):
+	def objHandle(self, objid = "", callType = "", callName = "", prms = {}, callerInfo = None):		
 		pass
 
 	def omInsHandle(self, objid = "", callType = "", callName = "", prms = {}, callerInfo = None):
-		pass
+		
+		prm = self._buildPrms(prms)
+		if callType == "method":
+			res = self.runenv.runMethod( name, prm )
+			return res
+		else:
+			if callType == "propertyget":				
+				res = self.runenv.runPropertyGet( name, prm )
+				return res
+			if callType == "propertyset":
+				prms = self._buildPrms(prmList)
+				res = self.runenv.runPropertySet( property, prm, newValue )
 
 	def	_buildPrms(self, prmList):
 		prms = {}
@@ -2067,20 +2078,6 @@ class	COMARObjHook:
 
 	def	_getcallpart(self, call=''):
 		return call[call.find('.')+1:]
-
-	def callObjProc(self, Type="", name = "", index = None, prms = {}, value = None):
-		prm = self._buildPrms(prms)
-		if Type == "method":
-			res = self.runenv.runMethod( name, prm )
-			return res
-		else:
-			if Type == "propertyget":
-				prms = self._buildPrms(prmList)
-				res = self.runenv.runPropertyGet( name, prms )
-				return res
-			if Type == "propertyset":
-				prms = self._buildPrms(prmList)
-				res = self.runenv.runPropertySet( property, prms, newValue )
 
 	def extCall(self, Type="", name = "", index = None, prms = {}, value = None):
 		print "CH EXTCALL:", prms
@@ -2135,7 +2132,9 @@ class	COMARObjHook:
 		#objType = "", instance = "", ci = None):
 		for i in dir(new):
 			print "\t", i, "=", getattr(new, i)
-		rv = self.api.registerObject(instid, "CSL:ALL",  new)
+		#registerObject(self, objid  = "", objType="", callerInfo = None):
+		rv = self.api.registerObject(objid = instid, objType = "CSL:OMINSTANCE",  callerInfo=new)
+		self.procHelper.sendParentCommand(cmd = "TRSU_SOBJ", pid = self.procHelper.myPID, tid = 0, data=rv.object)
 		return CSLValue('object', rv.object)
 
 _HOOK			= COMARObjHook

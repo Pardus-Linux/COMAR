@@ -134,6 +134,9 @@ def start():
 	appid = "DENEME"
 	callEntry = "COMAR:Boot.ConfigureDisplay"
 	remoteHost = "127.0.0.1:8000"
+	objid = "test"
+	objttsid = "TEST_03" + str(time.time())
+	callttsid = "TEST_02" + str(time.time())
 	x = 0
 	skip = 0
 	for i in sys.argv:
@@ -158,10 +161,18 @@ Global Parameters:
   Add parameter "prm" with value "val" to call.
   --host ipAddr:port
   Host address for required COMARd daemon..
+  --objtest objid
+  OBJCALL Mode..
 """
 			os._exit(0)
 		elif i == "--register":
 			op = "register"
+		elif i == "--objtest":
+			op = "objcall"
+			objid = sys.argv[x+1]
+			if callEntry == "COMAR:Boot.ConfigureDisplay":
+				callEntry = "testEntry"
+			skip = 1
 		elif i == "--node":
 			omnode = sys.argv[x+1]
 			skip = 1
@@ -173,6 +184,12 @@ Global Parameters:
 			skip = 1
 		elif i == "--host":
 			remoteHost = sys.argv[x+1]
+			skip = 1 
+		elif i == "--ttsid":
+			callttsid = sys.argv[x+1]
+			skip = 1 
+		elif i == "--objttsid":
+			objttsid = sys.argv[x+1]
 			skip = 1 
 		elif i == "--parameter":
 			j = sys.argv[x+1]
@@ -194,7 +211,7 @@ Global Parameters:
 
 
 	if op == "register":
-		rpc.TTSID = "TEST_01" + str(time.time())
+		rpc.TTSID = callttsid
 		rpc.RPCPriority = "INTERACTIVE"
 		rpc.makeRPCData("OMCALL")
 		rpc["name"] = "CORE:om.addNodeScript"
@@ -209,8 +226,18 @@ Global Parameters:
 		rpc.addPropertyMulti("parameter", "code", code)
 		rpc.addPropertyMulti("parameter", "AppID", appid)
 		rpc.addPropertyMulti("parameter", "node", node)
+	elif op == "objcall":
+		rpc.TTSID = callttsid
+		rpc.RPCPriority = "INTERACTIVE"
+		rpc.makeRPCData("OBJCALL")
+		print "Setting OBJ TTSID:", 
+		rpc["ttsid"] = objttsid
+		print rpc["ttsid"]
+		rpc["object"] = cv.COMARValue(type="object", data = objid)
+		rpc["name"] = callEntry
+		rpc["type"] = "method"
 	else:
-		rpc.TTSID = "TEST_02" + str(time.time())
+		rpc.TTSID = callttsid
 		rpc.RPCPriority = "INTERACTIVE"
 		rpc.makeRPCData("OMCALL")
 		rpc["name"] = callEntry

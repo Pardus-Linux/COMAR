@@ -218,9 +218,12 @@ class OM_XML_CSL:
 	def destroy(self):
 		pass
 
-	def getCINFO(self, nodeKey):
-		ci = self.callInfo()	
-		omkey = nodeKey[:]		
+	def getCINFO(self, nodeKey = "", proto = None):
+		if proto == None:
+			ci = self.callInfo()	
+		else:
+			ci = proto
+		omkey = nodeKey[:]
 		nodeKey = nodeKey[nodeKey.find(":") + 1:]
 		IID = self.dbhelper.dbRead(self.iid_db, nodeKey + "_iid")
 		node = self.dbhelper.dbRead(self.iid_db, nodeKey + "_node")
@@ -340,8 +343,8 @@ class OM_XML_CSL:
 		hook = self.main.getObjHook(a[0])
 		return (hook, None, a[1])
 
-	def getOMProperties(self, key = ""):
-		a = self.dbhelper.dbRead(self.om_db, key)
+	def getOMProperties(self, key = "", index = ""):
+		a = self.dbhelper.dbRead(self.om_db, key + "::" + index)
 		print "A 'a' =", a
 		if a != None and len(str(a)) > 0:
 			return ( "usecontainer", "multicall" )

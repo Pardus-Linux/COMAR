@@ -56,15 +56,91 @@ class COMARArrayItem:
 		self.next = None
 
 class COMARObjectDescriptor:
-	def __init__(self, ObjName = "", ObjInstanceId = "", ObjDestructor = None):
-		self.name = ObjName
-		self.object = None
+	def __init__(self, objName = "", objClass = "", instanceKey = "", callerInfo = None):
+		if callerInfo == None:
+			# rebuild from xml?
+			self.name = ""
+			self.objClass = ""
+			self.key = ""
+			self.objectData = ""
+			self.object = ""
+		else:
+				
+			self.name = objName
+			self.objClass = objClass
+			self.key = instanceKey
+			dom = xml.dom.minidom.getDOMImplementation()
+			doc = dom.createDocument(None, "object", None)
+			root = doc.documentElement
+			node = doc.createElement("objClass")
+			txtNode = doc.createTextNode(self.objClass)
+			node.appendChild(txtNode)
+			root.appendChild(node)
+	
+			node = doc.createElement("name")
+			txtNode = doc.createTextNode(self.name)
+			node.appendChild(txtNode)
+			root.appendChild(node)
+	
+			node = doc.createElement("key")
+			txtNode = doc.createTextNode(self.key)
+			node.appendChild(txtNode)
+			root.appendChild(node)
+	
+			cinode = doc.createElement("callerinfo")
+			
+			for key in dir(callerInfo):
+				if key[0] != "_":
+					node = doc.createElement(key)
+					val = getattr(callerInfo, key)
+					if type(val) == type(""):
+						txtNode = doc.createTextNode(val)
+						node.appendChild(txtNode)
+						cinode.appendChild(node)
+					
+			root.appendChild(cinode)		
+			sd = doc.toxml()+""			
+			self.objectData = sd
+			self.object = instanceKey
 
-def obj_setData(obj = None, data = {}, objid = ""):
+	def fromXml(self, xmlData = "", callerInfo = None):
+		doc = xml.dom.minidom.parseString(xmlData)
+		print "XML DATA:", xmlData
+		if doc == None:
+			return none
+		#if root == None:
+		root = doc.firstChild
+		first = root.firstChild
+		data = None
+		
+		while first:
+			if first.tagName == "name":
+				d = first.firstChild.data[:].encode(GLO_ENCODING)
+				self.name = d
+			if first.tagName == "objClass":
+				d = first.firstChild.data[:].encode(GLO_ENCODING)
+				self.objClass = d
+			if first.tagName == "key":
+				d = first.firstChild.data[:].encode(GLO_ENCODING)
+				self.key = d
+			if first.tagName == "callerinfo":
+				node = first.firstChild
+				while node:
+					k = node.tagName
+					if node.firstChild:
+						d = node.firstChild.data[:].encode(GLO_ENCODING)
+						setattr(callerInfo, k, d)
+					node = node.nextSibling
+					
+			first = first.nextSibling
+
+def obj_setData(obj = None, data = None, objid = ""):
 	""" accept dictionary for data and convert it XML and store to item 'obj.object' """
 	dom = xml.dom.minidom.getDOMImplementation()
 	doc = dom.createDocument(None, "object", None)
 	root = doc.documentElement
+	node = doc.createElement("class")
+	txtNode = doc.createTextNode(data[key])
 	for key in data.keys():
 		node = doc.createElement(key)
 		txtNode = doc.createTextNode(data[key])
@@ -111,8 +187,7 @@ class COMARValue:
 			del self.data.encoding
 			del self.data.value
 		elif self.type == 'object':
-			for root, dirs, files in walk('python/Lib/email'):
-				print root, "DIRS:", dirs, "FILE:", files		
+			pass
 		else:
 			del self.type
 			del self.data

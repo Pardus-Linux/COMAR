@@ -103,6 +103,7 @@ class childHelper(object):
 				print
 
 	def dumpInfo(self):
+		traceback.print_stack()
 		print self.myPID, "chldhelper info:", self.modName
 		print self.myPID, "Parent Info:"
 		print self.myPID, "\tParent PID:", self.gloPPid

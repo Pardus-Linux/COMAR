@@ -12,6 +12,7 @@
 # COMAR Framework main VM.
 
 # standart python modules
+
 import os
 import sys
 import signal
@@ -637,22 +638,38 @@ class TAManager:
 	def	create(self, PID, TID, conn, data, user):
 		global OM_MGR
 		print "TA Create CheckPoint"
+		
 		rpc = RPCData.RPCStruct()
 		rpc.fromString(data)
+		key = self.makettskey(rpc.TTSID, user)
 		if rpc.Type == "OMCALL":
 			omattrs = OM_MGR.getOMProperties(rpc["name"])
 			if omattrs == None:
 				print "Invalid call:", rpc["name"]
 				return None
+		elif rpc.Type == "OBJCALL":
+			# Only previously registered objects with TA created..
+			objtts = self.makettskey(rpc["ttsid"], user)
+			objid = rpc["object"].data
+			if self.db_ta.has_key(objtts + "_objs"):
+				objlst = self.db_ta[objtts + "_objs"].split("\n")
+				if not (objid in objlst):
+					print "Object '%s' Not found over TTSID: '%s'" % (rpc["ttsid"], objid)
+					return None
+			else:
+				print "No registered TTSID: '%s' for object: '%s'" % (rpc["ttsid"], objid)
+				return None
+			pass
 		#*****************************
 		#
 		#   WARNING: FIXME !!!!!!!!!!!!!!!!!!!
 		#
 		#   WE MUST CHECK TTSID AND HOST
+		
 		chldPID = TA_CHLDS.makeChild()
 		print "TA Start Go Fork for accept: ", chldPID
 		parentrpid = os.getpid()
-		key = self.makettskey(rpc.TTSID, user)
+		
 		pid = os.fork()
 		if pid:
 			# Parent process
@@ -687,6 +704,7 @@ class TAManager:
 			self.db_ta[skey+"_eol"] = str(newTA.EOL)
 			self.db_ta[skey+"_rpc"] = data
 			self.db_ta[skey+"_call"] = newTA.caller
+			self.db_ta[skey+"_objs"] = ""
 			return newTA
 		else:
 			# Child process.
@@ -830,12 +848,14 @@ class TAManager:
 			# Possible Returns:
 			#	TNTU_TANF	NotFound
 			#	TRTU_TDA	TAData. Sends TA Status.
+			#   TNTU_PTA	Passed TA. Finished, but no timeout.
 			key = self.makettskey(data, user)
 			if key == None:
 				return (PID, TID, "LNTU_KILL", None, user)
 
 			key = self.mappedTTS(key)
 			print "seek for :", key, "over",self.TAStack.keys()
+			
 			if self.TAStack.has_key(key):
 				if self.TAStack[key].local:
 					return (PID, TID, "TNTU_LOC", None, user)
@@ -855,8 +875,7 @@ class TAManager:
 			print "TA CMD HND: TRSU_RTA Reached"
 			conn = CONNS.connInfo(PID, TID)
 			if conn != None:
-				print "TA CMD HND: Create New TA Entry", os.getpid()
-
+				print "TA CMD HND: Create New TA Entry", os.getpid()				
 				new_ta = self.create(PID, TID, conn, data, user)
 				print "TA CMD HND: Create New TA Exit", os.getpid()
 				if new_ta:
@@ -873,23 +892,29 @@ class TAManager:
 		elif cmd == "TRSU_FIN":	# TAFinished
 			pass
 		elif cmd == "TRSU_TAE":	# FinishTA
+			key = self.TAPIDIndex[PID]
+			print key, self.TAStack[key].TTSID,":TA Finished with data:", data, type(data)
+			if data == 'None':
+				#Null Value returned.. 
+				retVal = COMARValue.COMARRetVal(1, COMARValue.null_create())				
+				print key, self.TAStack[key].TTSID,":TA Finished Null Value:", retVal
+				
 			x = data.find(" ")
 			if x > -1:
 				st = int(data[:x].strip())
 				vl = data[x:].strip()
-				self.retVal = COMARValue.COMARRetVal(st, COMARValue.load_value_xml(vl))
-				key = self.TAPIDIndex[PID]
-				print key, self.TAStack[key].TTSID,":TA Finished normally:", self.retVal
-				rpc = RPCData.RPCStruct()
-				rpc.TTSID = self.TAStack[key].TTSID
-				rpc.makeRPCData("RESPONSE")
-				rpc["TTSID"] = self.TAStack[key].TTSID
-				rpc["status"] = "RESULT"
-				rpc["returnvalue"] = self.retVal
-				res = rpc.xml[:]
-				#print "RESULT:", res
-				self.del_que.append((key, res))
-				return (PID, TID, "TRTU_SNDR", res, user)
+				retVal = COMARValue.COMARRetVal(st, COMARValue.load_value_xml(vl))
+				print key, self.TAStack[key].TTSID,":TA Finished normally:", retVal
+			rpc = RPCData.RPCStruct()
+			rpc.TTSID = self.TAStack[key].TTSID
+			rpc.makeRPCData("RESPONSE")
+			rpc["TTSID"] = self.TAStack[key].TTSID
+			rpc["status"] = "RESULT"
+			rpc["returnvalue"] = retVal
+			res = rpc.xml[:]
+			#print "RESULT:", res
+			self.del_que.append((key, res))
+			return (PID, TID, "TRTU_SNDR", res, user)
 		elif cmd == "TRSU_SST":	# SendStatus
 			pass
 		elif cmd == "TNSU_BRK":	# AbortTA
@@ -900,6 +925,15 @@ class TAManager:
 			pass
 		elif cmd == "TRSU_GET":	# Get Value.
 			pass
+		elif cmd == "TRSU_SOBJ":  # RegisterObject			
+			key = self.TAPIDIndex[srcPid]
+			print "Save Object call:", key, srcPid, PID, TID, cmd, data
+			objs = self.db_ta[key+"_objs"]
+			if len(objs) > 0:
+				objs += "\n"
+			objs += data
+			self.db_ta[key+"_objs"] = objs
+			
 		elif cmd == "TRSU_RMAP": # RemapTA. CALL->TAM: Şu anki TA'değerini, yeni bir Local TTSID ile map eder. Yeni TTSID'ye gelen istekler doğrudan asıl TA'ya iletilir.
 			if clientTA:
 				nta = self.createttsid("HOME")
@@ -992,7 +1026,6 @@ PRE-ALPHA MESSAGE:
 	#for i in dir(CAPI):
 	#	print "CORE API:", i, "=", getattr(CAPI, i)
 	COMARAPI.API = CAPI
-
 
 	print "Obj Hooks: provided language modules:"
 

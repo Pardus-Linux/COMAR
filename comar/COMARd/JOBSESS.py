@@ -109,10 +109,11 @@ class jobSessProvider:
 		c_obj = None
 		c_code = None
 		if c_model == "OBJCALL":
+			print self.TARPC.xml
 			c_obj = self.TARPC["object"]
 		elif c_model == "EXEC":
 			c_code = self.TARPC["code"]
-		self.procHelper.addSessionCommand(["TRSU_OMC","TRSU_TAE", "TRSU_RTA", "TRSU_FIN", "TNSU_GET", "TNSU_GSID" ])
+		self.procHelper.addSessionCommand(["TRSU_OMC","TRSU_TAE", "TRSU_RTA", "TRSU_FIN", "TNSU_GET", "TNSU_GSID", "TRSU_SOBJ" ])
 		self.procHelper.cmdHandler = self.sessionCmdHandler
 		self.procHelper.debug = 0 #255
 		#self.procHelper.sendParentCommand(cmd = "INSU_YTT", pid = self.procHelper.myPID, tid = 0, data=None)
@@ -172,7 +173,7 @@ class jobSessProvider:
 			print "Call Session Start With pids: ", os.getpid(), chldPID, new_ph.parentppid, new_ph.myPID, new_ph.gloPPid
 			self.procHelper = new_ph
 			self.procHelper.clearSessionCommands()
-			self.procHelper.addSessionCommand(["TRSU_OMC", "TRTU_RUN", "TRSU_TAE", "TRSU_RTA", "TRSU_FIN", "TNSU_GET", "TNSU_GSID", "LNTU_KILL" ])
+			self.procHelper.addSessionCommand(["TRSU_OMC", "TRTU_RUN", "TRSU_TAE", "TRSU_RTA", "TRSU_FIN", "TNSU_GET", "TNSU_GSID", "LNTU_KILL", "TRSU_SOBJ" ])
 			self.procHelper.cmdHandler = self.sessionCmdChildHandler
 			prmArray = callPrms
 			OM_MGR.setDBHelper(self.procHelper)
@@ -188,8 +189,10 @@ class jobSessProvider:
 									conn = self.conn,
 									user = self.user,
 									caller = caller)
-
-			callSession.initOMCALL(callName)
+			if callModel == "OMCALL":
+				callSession.initOMCALL(callName)
+			elif callModel == "OBJCALL":
+				callSession.initOBJCALL(callObj, callName)
 			self.run_que.append(callSession)
 			self.procHelper.minChild = 0
 			while 1:
@@ -208,7 +211,7 @@ class jobSessProvider:
 			new_ph.exit()
 	passTRTUN = 0
 	def sessionCmdChildHandler(self, From, srcpid, ppid, rfd, pkPid, pkTid, command, pkData):
-		print "A Session From Children Cmd:", self.control, self.runCmdPid, os.getpid(), From, srcpid, ppid, rfd, pkPid, pkTid, command
+		print "JOBSESS Line 214: A Session From Children Cmd:", self.control, self.runCmdPid, os.getpid(), From, srcpid, ppid, rfd, pkPid, pkTid, command
 		if command == "TRSU_FIN":
 			print self.procHelper.myPID,self.procHelper.modName, "child execute resulted:", pkPid, srcpid, "->", self.callData[srcpid]
 			if self.callData[srcpid][6]:
@@ -265,7 +268,7 @@ class jobSessProvider:
 			#def runCmd(self, callModel, callType, callName, callPrms, callObj, callCode):
 
 	def sessionCmdHandler(self, From, srcpid, ppid, rfd, pkPid, pkTid, command, pkData):
-		print "A Session Cmd:", self.control, self.runCmdPid, os.getpid(), From, srcpid, ppid, rfd, pkPid, pkTid, command #, pkData
+		print "JOBSESS Line 271: A Session Cmd:", self.control, self.runCmdPid, os.getpid(), From, srcpid, ppid, rfd, pkPid, pkTid, command #, pkData
 		if command == "TRSU_FIN":
 			print self.procHelper.myPID,self.procHelper.modName, "execute resulted:", pkPid, srcpid, "->", self.callData[srcpid]
 			if self.callData[srcpid][6]:
@@ -314,6 +317,9 @@ class jobSessProvider:
 			self.procHelper.sendCommand(root, "TRTU_RUN", root, 0, "1")
 
 			#def runCmd(self, callModel, callType, callName, callPrms, callObj, callCode):
+		elif command == "TRSU_SOBJ":
+			print "JOBSESS 312: A Object Register Command:", pkData
+			self.procHelper.sendParentCommand(command, pkPid, pkTid, pkData)
 
 	def processOMCall(self):
 		pass

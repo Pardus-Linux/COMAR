@@ -41,7 +41,7 @@ property Name {
 
 method New() {
 	main[0]=5;
-	data = COMAR:Network[main[0]].connPoint.PHY["ali"].TXSpeed[0];	
+	data = COMAR:Network.connPoint.PHY["ali"].TXSpeed[0];
 	New = 0;
 }
 
@@ -96,7 +96,7 @@ property MACAddress {
 			prg = "/sbin/ifconfig " + ethName;
 			m = grep_first(exec=prg, pattern="HWaddr");
 			if (m != "") {
-				MAC = split(string=m, separator=" ");
+				MAC = m.splitws();
 				MACAddress = MAC[4];
 			}
 		} else {
@@ -122,8 +122,8 @@ property MACAddress {
 #
 # Possible Return Values:
 #	BUSY	- Cihaz kullanımda olduğundan değiştirilemez.
-#	OK			- MAC Adresi değiştirilebilir.
-
+#	OK		- MAC Adresi değiştirilebilir.
+#   FALSE	- Değiştirilemez.
 
 
 property MACisChangeable {
@@ -323,16 +323,21 @@ property MediaStatus {
 
 
 property LinkType {
-	get { tmp=0;
+	get { 
+		LinkType = "PTMP";
 	}
 }
 
 # object item MediaType
 # Description:
 #  Bağlantının ortam türünü belirtir.
+#  BUS
+#  TOKENRING
+#  
 
 property MediaType {
-	get { tmp=0;
+	get { 
+		MediaType = "BUS";
 	}
 }
 
@@ -341,7 +346,8 @@ property MediaType {
 #  COMAR Security Level belirtimine uygun olarak bağlantının fiziksel seviyedeki güvenlik derecesini gösterir.
 
 property securityLevel {
-	get { tmp=0;
+	get { 
+		securityLevel = 0;
 	}
 }
 
@@ -350,7 +356,9 @@ property securityLevel {
 #  COMAR Property Definiton kurallarına uygun olarak cihazın kabul ettiği extra property'leri döndürür.
 
 property getExtraProperties {
-	get { tmp=0;
+	get { 
+	
+		getExtraProperties = "";
 	}
 }
 
@@ -358,14 +366,15 @@ property getExtraProperties {
 # Description:
 #  Cihazın extra property'lerinden birinin değerini değiştirmek üzere kullanılır.
 
-property setExtraProperty {
+property setExtraProperty[index] {
 	get { tmp=0;
 	}
 	
 }
 
 property EDCTypeInfo {
-	get { tmp=0;
+	get { 
+		EDCTypeInfo = "";
 	}
 }
 
@@ -383,7 +392,8 @@ property EDCTypeInfo {
 
 
 property EDCType {
-	get { tmp=0;
+	get { 
+		EDCType = "CRC32";
 	}
 }
 
@@ -392,7 +402,8 @@ property EDCType {
 #  Cihazdan bir defada maximum kaç byte yollanabileceğini ifade eder.
 
 property MTU {
-	get { tmp=0;
+	get { 
+		m = grep_startif(exec="/usr/sbin/ifconfig", pattern="truly");
 	}
 	set { tmp=0;
 	}

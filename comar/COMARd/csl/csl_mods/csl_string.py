@@ -118,7 +118,7 @@ class API:
 			prms["string"] = prms["$__obj"]
 		if prms.has_key("prefix") and prms.has_key("string"):
 			a = prms["string"].toString()
-			return CSLValue("string", a.startswith(prms['prefix'].toString()))
+			return CSLValue("numeric", a.startswith(prms['prefix'].toString()))
 	def csl_splitws(self, prms):
 		if prms.has_key("$__obj"):
 			prms["string"] = prms["$__obj"]

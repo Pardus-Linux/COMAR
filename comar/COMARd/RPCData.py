@@ -403,6 +403,7 @@ class	RPCOMCall:
 						   "name":		(self.NameIO, self.NameIO, None, None, False),
 						   "index":		(self.IndexIO, self.IndexIO, None, None, False),
 						   "parameter":	(None, None, self.getParameter, self.addParameter, self.delParameter) }
+		
 		if xmlData != None:
 			self.RPCDataType = "OMCALL"
 			self.name = ""
@@ -528,13 +529,15 @@ class	RPCObjCall:
 		self.propTable = { "name":		(self.NameIO, 			self.NameIO,	None, None, None),
 						   "type":		(self.TypeIO, 			self.TypeIO,	None, None, None),
 						   "index":		(self.IndexIO, 			self.IndexIO,	None, None, None),
-						   "object":	(self.ObjectIO, 		self.ObjectIO,	None, None, None),
+						   "ttsid": (self.TTSIO, self.TTSIO,	None, None, None),
+						   "object":	(self.ObjectIO, self.ObjectIO,	None, None, None),
 						   "parameter":	(None, None, self.getParameter, self.addParameter, self.delParameter) }
 		if xmlData != None:
 			self.RPCDataType = "OBJCALL"
 			self.name	= ""
 			self.index	= ""
 			self.object = None
+			self.oldtts = ""
 			self.prms	= {}
 			x = self.initFromXml(xmlData)
 			if x != None:
@@ -548,11 +551,13 @@ class	RPCObjCall:
 			self.name	= name[:255]
 			self.index	= index[:255]
 			self.object = obj
+			self.oldtts = ""
 			self.prms	= {}
 	def	TypeIO(self, value=None):
 		if value != None:
-			if Type in ["propertyget", "propertyset", "method"]:
-				self.type = Type[:255]
+			
+			if value in ["propertyget", "propertyset", "method"]:
+				self.type = value[:]
 			else:
 				return None
 		else:
@@ -561,7 +566,14 @@ class	RPCObjCall:
 		if value != None:
 			self.object = value
 		else:
+			#print "Read Object Value:", self.object
 			return self.object
+	def	TTSIO(self, value=None):
+		if value != None:
+			print "RPCData OBJ TTSID:", value
+			self.oldtts = value
+		else:			
+			return self.oldtts
 
 	def	NameIO(self, value=None):
 		if value != None:
@@ -618,11 +630,21 @@ class	RPCObjCall:
 			elif first.tagName == "name":
 				d = first.firstChild.data[:].encode(COMARValue.GLO_ENCODING)
 				self.name = d[:255]
+			elif first.tagName == "ttsid":
+				if first.firstChild:
+					d = first.firstChild.data[:].encode(COMARValue.GLO_ENCODING)
+				else:
+					d = ""
+				self.oldtts = d[:255]
 			elif first.tagName == "index":
-				d = first.firstChild.data[:].encode(COMARValue.GLO_ENCODING)
+				if first.firstChild:
+					d = first.firstChild.data[:].encode(COMARValue.GLO_ENCODING)
+				else:
+					d = ""
 				self.index = d
 			elif first.tagName == "object":
-				self.obj = COMARValue._load_value_xml(first)
+				self.object = COMARValue._load_value_xml(first)
+				print "OBJ:", self.object, self.object.type, self.object.data
 			elif first.tagName == "parameters":
 				# Difficult point..
 				node = first.firstChild
@@ -647,6 +669,7 @@ class	RPCObjCall:
 		node.appendChild(_setNode(doc, "type", self.type))
 		node.appendChild(_setNode(doc, "name", self.name))
 		node.appendChild(_setNode(doc, "index", self.index))
+		node.appendChild(_setNode(doc, "ttsid", self.oldtts))
 		COMARValue._dump_value_xml(self.object, doc, node)
 		prms = doc.createElement("parameters")
 		k = self.prms.keys()

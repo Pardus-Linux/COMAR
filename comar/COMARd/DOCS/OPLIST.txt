@@ -17,6 +17,7 @@ TRSU_FIN				: FinishResult. CALL->JOB:Data Kanalı, COMRRetVal şeklinde geri d�
 TRSU_TAE				: TAFinished. JOB->TAM:Data Kanalı, COMRRetVal şeklinde geri dönen bilgiyi ihtiva eder.
 TRTU_SNDR				: SendTAResult. TAM->CONN:Data Kanalı CSID-RPCDATA 1.0 Formatında yollanacak veriyi ihtiva eder.
 TRTU_DTA				: TAData. XXX->XXX:Data CSID-RPCDATA 1.0 Formatında TA STATUS-RESPONSE verisini ihtiva eder.
+TRSU_SOBJ				: SaveObject. EXEC->JOB,JOB->TAM: TA'ya bir nesneyi kaydetmek için kullanılır. DATA Kanalı OBJID (string-ascii[<=255]) bilgisini ihtiva eder.
 TNSU_SST				: SendStatus. CONN->TAM:TA_MGR Bu komutu alınca, TA için STATUS çağrısı yollar.
 TNSU_BRK				: AbortTA. CONN->TAM,JOB->TAM:Şu anki transaction kesilerek session TERMINATED State'ine getirilir.
 MNTB_TERM				: SelfTerminate. TAM->PID:Bu komutu alan process kendini sonlandırır.

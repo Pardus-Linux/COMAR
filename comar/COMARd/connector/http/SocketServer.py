@@ -69,14 +69,14 @@ class BaseServer:
 							command = cmd[2]
 							#print "ACCEPT READ FROM PIPE:",rfd, ppid, str(cmd)[:20]
 							if rfd != ppid:
-								print "Send To Parent:", pkPid, command
+								#print "Send To Parent:", pkPid, command
 								self.procHelper.checkUpCmd(dir="P", srcpid=srcpid, cmd=command, pktpid=pkPid, tid=pkTid, data=pkData)
 								if cmd:
 									self.procHelper.sendParentCommand(command, pkPid, pkTid, pkData)
 							else:
 								if cmd:
 									self.procHelper.checkUpCmd(dir="C", srcpid=srcpid, cmd=command, pktpid=pkPid, tid=pkTid, data=pkData)
-									print "Send To Child:", pkPid, command
+									#print "Send To Child:", pkPid, command
 									self.procHelper.sendCommand(pkPid, command, pkPid, pkTid, pkData)
 				if xsock > 0:
 					self.handle_request()

@@ -446,7 +446,7 @@ class RPCServer(forkedHTTPServer.BaseHTTPRequestHandler):
 						if rpc.RPCModel() == "new":
 							a = rpc.toString()
 							self.debugout(self.DEBUG_IPC, "Sending TRSU_RTA to", self.procHelper.myPID,"->", self.procHelper.gloPPid)
-							self.procHelper.dumpInfo()
+							#self.procHelper.dumpInfo()
 							#cmd, tid, pkData, loop = 40
 							self.procHelper.SendRootCmd("TRSU_RTA", 0, a, 0)
 							#self.procHelper.SendRootCmd("TRSU_RTA", self.procHelper.myPID, 0, a)

@@ -50,7 +50,8 @@ class APICALLS:
 				 'getfile':self.get_file,
 				 'putfile':self.put_file,
 				 'fileexist':self.fileexist,
-				 'removefile' : self.rmfile}
+				 'removefile' : self.rmfile,
+				 'captureblock':self.captureblock}
 				 
 	def execute(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
 		keylist = prms.keys()
@@ -230,7 +231,46 @@ class APICALLS:
 			self.cv.string_create(results[0])
 			return self.cv.COMARRetVal(0, self.cv.string_create(results[0]))
 		return self.cv.COMARRetVal( value=self.cv.string_create(""), result=0 )
+		
+	def captureblock((self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
+		keylist = prms.keys()
+		prg = ""
+		begin_pattern = ""
+		block_end = "\n"
+		for prm in keylist:
+			if prm == "program" or prm == "exec":
+				prg = prms[prm].data.value
+			elif prm == "beginpattern":
+				begin_pattern = prms[prm].data.value
+			elif prm == "separator":
+				block_end = prms[prm].data.value
 
+		if checkPerms(perm = "PROCESS_EXEC", file=prg):
+			if isexecutable(prg):
+				all = self.exec_stdout(prg)
+				blocks = []
+				arr = []
+				for line in all:
+					if line == block_end:
+						blocks.append(arr)
+						arr = []
+					else:
+						arr.append(line)
+				x = 0
+				l = 0
+				ret = self.array_create()
+				for bl in blocks:
+					la = self.array_create()
+					l = 0
+					for ln in bl:
+						self.cv.array_additem(array=la, key="%04d" % (l), arrValue=self.cv.string_create(ln))
+						l += 1
+					self.cv.array_additem(array=ret, key="%04d" % (x), arrValue=la)
+					x += 1
+				return self.cv.COMARRetVal(value = ret , result=0)
+		return self.cv.COMARRetVal(arrValue = self.cv.string_create(""), result=0 )
+
+	
 	def grepstartif(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
 		"""
 		Run 'exec' and capture stdout. But, only

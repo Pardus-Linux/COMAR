@@ -481,7 +481,7 @@ class CSLParse:
 		this.pinst += 1
 		pinstance = this.pinst
 		inwhile = 0
-		#print "PARSER:",this.pinst,"\n",  code
+		print "PARSER:",this.pinst,"\n",  code
 		#print traceback.print_stack(None,5)
 		while __st < __stop:
 			if root.type != None and root.next != None:

@@ -41,7 +41,7 @@ property Name {
 
 method New() {
 	main[0]=5;
-	data = COMAR:Network.connPoint.PHY["ali"].TXSpeed[0];
+	data = COMAR:Network.connPoint.PHY.TXSpeed[0];
 	New = 0;
 }
 
@@ -133,6 +133,7 @@ property MACisChangeable {
 }
 
 method setLinkUpEvent(eventReceiverId="") {
+	tmp = 0;
 }
 
 # object item setLinkDownEvent
@@ -237,7 +238,9 @@ property TXSpeed {
 
 
 property FlowMode {
-	get { tmp=0;
+	get { 
+		
+		FlowMode = "FULLDUPLEX";
 	}
 	set { tmp=0;
 	}
@@ -403,7 +406,8 @@ property EDCType {
 
 property MTU {
 	get { 
-		m = grep_startif(exec="/usr/sbin/ifconfig", pattern="truly");
+		m = getinterfacedata( ifc = "eth0" );
+		debugout(value = m);
 	}
 	set { tmp=0;
 	}
@@ -428,8 +432,7 @@ property remoteAddress {
 #	TELNUMBER (Format: (Country Code)-AreaCode-TelNumber)
 #	IPv4
 #	IPv6
-
-
+#   IPX
 
 property remoteAddressType {
 	get { tmp=0;
@@ -463,5 +466,36 @@ property totalRXBytes {
 
 property totalTXBytes {
 	get { tmp=0;
+	}
+}
+
+function getifdata(ifc = "eth0") {
+	blocks = capturetabbedblock(exec="/sbin/ip link");
+	ret = "";
+	foreach (bi = block in blocks) {
+		if (block[0].startswith(prefix = ifc + "\t")) {
+			for (li = line in block) {
+				if (line.strstr(pattern = "MTU:")) {
+					a = line.splitws();
+					for (ai = stat in a) {
+						if ( stat == "UP" ) {
+							ret["LINKSTATUS"] = "UP";
+						} elif ( stat == "DOWN" ) {
+							ret["LINKSTATUS"] = "DOWN";
+						} elif ( stat == "HWADDR" ) {
+							ret["MAC"] = a[1 + ai];						
+						} elif ( stat.startswith(prefix = "MTU:")) {
+							ret["MTU"] = stat.getnumright();
+						} elif ( stat.startswith(prefix = "Bytes:")) {
+							if ( a[ ai.int() - 1 ] == "RX") {
+								ret["RXBYTES"] = stat.getnumright();
+							} else {
+								ret["TXBYTES"] = stat.getnumright();
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }

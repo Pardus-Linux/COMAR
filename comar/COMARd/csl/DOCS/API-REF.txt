@@ -28,11 +28,11 @@ getnearvalue
 		arr[150] = "B";
 		arr[175] = "C";
 		arr[190] = "D";
-		
+
 		val = arr.getnearvalue(value = 130); # val = "B"
 		val = arr.getnearvalue(value = 120); # val = "A"
 		val = getnearvalue(array = arr, value = 180); # val = "C"
-		
+
 int
 	Prototype:
 		val = numeric_var.int();
@@ -51,27 +51,27 @@ arraygrep
 		values = array_value.arraygrep(pattern = pattern_string);
 		values = arraygrep(array = array_value, pattern = pattern_string);
 	Description:
-		array_value'nun deðerlerinden, pattern_string'i ihtiva edenlerin keylerini yeni bir array olarak döndürür. 
+		array_value'nun deðerlerinden, pattern_string'i ihtiva edenlerin keylerini yeni bir array olarak döndürür.
 	Sample:
 		arr[0] = "foo bar";
 		arr[1] = "no bar";
 		arr[2] = "foo";
 		arr[3] = "bar";
-		
+
 		keys = arr.arraygrep(pattern = "oo"); # keys["000000"] = 0, keys["000001"] = 2
 		keys = arraygrep(array = arr, pattern = " "); # keys["000000"] = 0, keys["000001"] = 1
 	Notes:
-		CSL içinde, "000000" ile 0, "000001" ile 1 array indexi olarak birbirine eþittir. Yukarýdaki örnek için, keys[0] ile keys["000000"] ayný elemanlardýr. 
+		CSL içinde, "000000" ile 0, "000001" ile 1 array indexi olarak birbirine eþittir. Yukarýdaki örnek için, keys[0] ile keys["000000"] ayný elemanlardýr.
 
 replacetokens
 	Prototype:
 		result_buffer = source_buffer.replacetokens([tokenid = token_char], fields = fields_array);
 		result_buffer = replacetokens(buffer = source_buffer, [tokenid = token_char], fields = fields_array);
 	Description:
-		source_buffer içersindeki fields_array'ýn keyleri ile tarif edilmiþ olan fields'leri, fields_array'ýn eleman deðeri ile deðiþtirip, sonucu geri döndürür. 
-		fields_array, her eleman için, key = bakýlacak pattern, value = yeni deðer þeklinde bir arraydýr. Burada pattern deðerinde ASCII olarak A-Z arasý büyük/küçük harfler, 0-9 arasý sayýlar ve "_" iþareti kullanýlabilir.Bu kýsýtlama operasyon için yeterli olmasýna raðmen, eðer diðer karakterler kullanýlmak istenirse source_buffer içersindeki saha tanýmlamalarýnýn ${..} formatýnda yapýlmasý gerekir. Bu durumda, bilhassa UTF-8 -> ISO8859* çevrimleri gibi sorunlarýn doðabileceði gözden kaçýrýlmamalýdýr. 
+		source_buffer içersindeki fields_array'ýn keyleri ile tarif edilmiþ olan fields'leri, fields_array'ýn eleman deðeri ile deðiþtirip, sonucu geri döndürür.
+		fields_array, her eleman için, key = bakýlacak pattern, value = yeni deðer þeklinde bir arraydýr. Burada pattern deðerinde ASCII olarak A-Z arasý büyük/küçük harfler, 0-9 arasý sayýlar ve "_" iþareti kullanýlabilir.Bu kýsýtlama operasyon için yeterli olmasýna raðmen, eðer diðer karakterler kullanýlmak istenirse source_buffer içersindeki saha tanýmlamalarýnýn ${..} formatýnda yapýlmasý gerekir. Bu durumda, bilhassa UTF-8 -> ISO8859* çevrimleri gibi sorunlarýn doðabileceði gözden kaçýrýlmamalýdýr.
 		tokenid, patternlerin baþladýðýný belirten özel karakterdir. Varsayýlan deðeri "$" þeklindedir. source_buffer içersinde, bu tokenid karakteri ardý ardýna iki kere yazýlýrsa, bu noktada pattern aramasý yapýlmaz, bir tek tokenid bu pozisyona yerleþtirilir.
-		
+
 		Bir token, source_buffer içinde <tokenid>field veya <tokenid>{field} þeklinde bulunmalýdýr.
 	Sample:
 		field["height"] = 640;
@@ -93,17 +93,17 @@ strupper/strlower
 		str = "ali";
 		up  = str.strupper(); # up -> "ALÝ"
 		low = strlower(string = up); # low = "ali"
-		
+
 strip
 	Prototype:
 		new_string = string_value.strip();
 		new_string = strip(string = string_value);
 	Description:
-		string_value'nun baþýnda ve sonunda bulunan beyaz boþluklarý kaldýrýr. 
+		string_value'nun baþýnda ve sonunda bulunan beyaz boþluklarý kaldýrýr.
 	Sample:
 		str = "\t \tali\n\t";
 		str = str.strip(); # str = "ali"
-		
+
 startswith
 	Prototype:
 		bool_numeric = string_value.startswith(prefix = prefix_string);
@@ -114,7 +114,7 @@ startswith
 		str = "foo bar foobar";
 		b = str.startswith(prefix = "fo"); # b = 1
 		b = startswith(string = str, prefix = "bar"); # b = 0
-	
+
 split/splitws
 	Prototype:
 		new_string = string_value.split(separator = sep_string);
@@ -125,15 +125,15 @@ split/splitws
 		split, string_value'yu her biri sep_string ile ayrýlan bölümlere ayýrýp, bu bölümleri bir array olarak geri döndürür. splitws, separator olarak "\t", "\n" ve " " karakterlerini kullanýr. Diðer bazý dillerde, ardarda gelen separatorler için, boþ deðerler üretilirken, CSL için bu deðerler ihmal edilir.
 	Sample:
 		str = "foo bar\tfoobar\t\t  barfoo";
-		arr = str.split(separator = " "); 
+		arr = str.split(separator = " ");
 		# arr[000000] = "foo", arr[000001] = "bar\tfoobar\t\t", arr[000002] = "barfoo"
-		arr = str.splitws(); 
+		arr = str.splitws();
 		# arr[000000] = "foo", arr[000001] = "bar", arr[000002] = "foobar", arr[000003] = "barfoo"
 
 strlen
 	Prototype:
-		num = string_value.strlen();		
-		num = strlen(string = string_value);		
+		num = string_value.strlen();
+		num = strlen(string = string_value);
 	Description:
 		string_value'nun karakter cinsinden uzunluðunu verir. UTF-8 gibi bir karakterin birden fazla bayt kapladýðý durumlarda, bu tür karakterler tek karakter olarak yorumlanýr. String'in buffer olarak boyunu öðrenmek üzere, bytelen() fonksiyonu kullanýlabilir.
 	Sample:
@@ -142,6 +142,18 @@ strlen
 
 strstr/strcasestr
 	Prototype:
-		
+		bool = string_value.strstr(pattern = pattern_string);
+		bool = string_value.strcasestr(pattern = pattern_string);
+		bool = strstr(string = string_value, pattern = pattern_string);
+		bool = strcasestr(string = string_value, pattern = pattern_string);
+	Description:
+		Eðer, string_value içersinde pattern_string varsa, geriye 1 döndürürken aksi durumda 0 döndürür. strcasestr için iþlem büyük/küçük harf ayrýmý yapýlmaksýzýn gerçekleþir.
+	Sample:
+		str = "foo bar foobar barfoo";
+		x = str.strstr(pattern="foobar"); # x = 1
+		x = str.strstr(pattern="FOOBAR"); # x = 0
+		x = str.strcasestr(pattern="FOOBAR"); # x = 1
+		x = str.strstr(pattern="other"); # x = 0
 
-	
+
+

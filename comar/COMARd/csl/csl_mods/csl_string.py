@@ -30,8 +30,7 @@ class API:
 				for i in arr.keys():
 					s = arr[i].toString()
 					if s.find(pattern) != -1:
-						ret[i] = arr[i]
-					
+						ret[i] = arr[i]					
 			else:
 				if arr.toString.find(pattern) != -1:
 					ret["%06d" % 0] = arr
@@ -177,6 +176,30 @@ class API:
 				#print "=", 0
 				return CSLValue("numeric", 0)
 		return CSLValue("numeric", 0)
+	def csl_gettabbedsections(self, prms):
+		if prms.has_key("$__obj"):
+			prms["array"] = prms["$__obj"]
+		if prms.has_key("array"):
+			arr = prms['array'].value
+			ret = {}
+			if arr.type == "array":
+				keys = arr.keys()
+				keys.sort()
+				x = 0
+				data = {}
+				lin = 0
+				for i in keys:
+					if arr[i][0] in "\t ":						
+						data["%04d" % lin] = arr[i]
+						lin = lin + 1
+					else:
+						if len(data):
+							ret["%04d" % x] = data
+							lin = 0
+						data = {}
+						data["%04d" % x] = arr[i]						
+						x = x + 1				
+			return CSLValue("array", ret)
 	def csl_substr_left(self, prms):
 		if prms.has_key("$__obj"):
 			prms["string"] = prms["$__obj"]
@@ -254,7 +277,7 @@ class API:
 			skip = 0
 			for i in range(len(s) - 1, -1, -1):
 				c = s[i]
-				if c in "0123456789":
+				if c in "0123456789" or (ret != "" and c == ".") :
 					ret = c + ret
 					skip = 1
 				elif i == " ":

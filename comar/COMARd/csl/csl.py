@@ -29,12 +29,14 @@ if len(sys.argv) < 3 or mode == "":
 	print """Usage: csl <-r <method>| -p> [options] <filename>\nOptions:\n
 	-p parameter=value		Set runtime parameter to value, can be repeat..
 	-w variable				Watch variable..
+	-t 							parse only..
 	"""
 
 if mode == "run":
 	print "run:", method, prms
 
 if mode == "parse":
+	print "Parse File:", sys.argv[-1]
 	x = CSLParser.CSLParse(file = sys.argv[-1])
 	Tbl = { "A":x.ATbl, "F":x.FTbl, "I": x.ITbl, "N":x.NTbl, "O":x.OTbl, "Q":x.QTbl }
 

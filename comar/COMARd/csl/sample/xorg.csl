@@ -117,7 +117,7 @@ method ConfigureDisplay(dpi=90) {
 		}
 		modeline = "ModeLine " + int(string=resx) + " " + int(string=resy);
 		modeline =  modeline + " " + dcf + " " + int(string=resx) + " ";
-		modeline =  modeline + int(string=hfront) + " " + int(string=hsync) + " " + int(string=hfl) + " " + int(string=resy) + " " + int(string=vfront) + " " + int(string=vsync) + " " + int(string=vfl);
+		modeline =  modeline + int(string=hfront) + " " + int(string=hsync) + " " + int(string=hfl) + " " + int(string=resy) + " " + int(string=vfront) + " " + int(string=vsync) + " " + int(string=vfl) + "\n";
 	} else {
 
 		s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="truly");

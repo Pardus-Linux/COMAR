@@ -178,7 +178,21 @@ EndSection
 			elif prm == "option":
 				option = prms[prm].data.value
 			elif prm == "value":
-				value = prms[prm].data.value
+				tmp = prms[prm]
+				if tmp.type == "string":
+					value = tmp.data.value
+				elif tmp.type == "array":
+					di = self.cv.array2Dict(tmp)
+					keys=di.keys()
+					keys.sort()
+					value = ""
+					for line in keys:
+						tek = di[line][0]["value"]
+						value += tek
+					if value.find("\n") != -1:
+						value = value[:value.find("\n")]
+					if value == "":
+						value = None
 		if cfgfile == None or section == None or option == None or value == None:
 			print "xini_change_option called with missing args"
 			return self.cv.COMARRetVal( value=None, result=0 )

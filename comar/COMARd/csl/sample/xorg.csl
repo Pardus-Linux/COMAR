@@ -7,7 +7,8 @@ method ConfigureDisplay(dpi=100) {
 	#xini_change_section(cfgfile="/home/palpa/xorg.conf",section="Monitor",content=modes);
 	#xini_change_option(cfgfile="/home/palpa/xorg.conf",section="Device",option="Driver",value="nvidia");
 	# First search LCD Panel..
-
+	removefile(file="/etc/X11/xorg.conf");
+	
 	xout = capture(exec="/usr/X11R6/bin/X -configure -logfile /var/log/xlog");
 	xout = xini_parse(cfgfile="/root/xorg.conf.new");
 	psize = "";
@@ -23,6 +24,7 @@ method ConfigureDisplay(dpi=100) {
 		#debugout(value=xdrv);
 		if (xdrv == '"nv"') {
 			#Panel size is %i x %i
+			xout = capture(exec="/usr/X11R6/bin/X -probeonly -logfile /var/log/xlog");
 			psize = grepfirst(exec="/bin/cat /var/log/xlog", pattern="Panel size is");
 		}
 		elif (xdrv == '"nvidia"') {

@@ -48,7 +48,8 @@ class APICALLS:
 				 'execute':self.execute,
 				 'capture':self.capture_stdout,
 				 'getfile':self.get_file,
-				 'putfile':self.put_file }
+				 'putfile':self.put_file,
+				 'removefile' : self.rmfile}
 				 
 	def execute(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
 		if checkPerms(perm = "PROCESS_EXEC", file=prg):
@@ -62,6 +63,22 @@ class APICALLS:
 				return self.cv.COMARRetVal( value=st, result=0 )
 				
 			return self.cv.COMARRetVal(value=None, result = EBADF)
+			
+	def rmfile(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
+		keylist = prms.keys()
+		prg = ""			
+		for prm in keylist:
+			if prm == "file":
+				prg = prms[prm].data.value
+			
+		if prg != "" and checkPerms(perm = "FILE_DEL", file=prg):
+			try:
+				os.unlink(prg)
+			except:
+				pass
+			return self.cv.COMARRetVal( value=st, result=0 )
+			
+		return self.cv.COMARRetVal(value=None, result = EBADF)
 			
 	def put_file(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
 		keylist = prms.keys()

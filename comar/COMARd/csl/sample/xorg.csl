@@ -6,9 +6,10 @@ method ConfigureDisplay(dpi=90) {
 	# First search LCD Panel..
 	removefile(file="/etc/X11/xorg.conf");
 	
-	xout = capture(exec="/usr/X11R6/bin/X -configure -logfile /var/log/xlog");
+	xout = capture(exec="/usr/X11R6/bin/X -configure -logfile /var/log/xlog");	
 	
-	if (fileexist(file="/root/xorg.conf.new") == 1) {
+	# Test xorg.conf location.. 	
+	if (fileexist(file="/root/xorg.conf.new") == 1) {	
 		xout = xini_parse(cfgfile="/root/xorg.conf.new");
 	} else {
 		xout = xini_parse(cfgfile="/xorg.conf.new");

@@ -43,11 +43,13 @@ method ConfigureDisplay(dpi=90) {
 
 		} elif (xdrv == '"via"') {
 			#Detected panel size via BIOS: %d x %d
+			xout = capture(exec="/usr/X11R6/bin/X -probeonly -logfile /var/log/xlog");
 			psize = grepfirst(exec="/bin/cat /var/log/xlog", pattern="Detected panel size via");
 		} elif (xdrv == '"i810"') {
 			# For i830:
 			# "Size of device %s is %d x %d\n", displayDevices[i], pI830->displaySize[i].x2, pI830->displaySize[i].y2)
 			# %s ---> LFP (Local Flat Panel) | DFP (Digital Fanel Panel) CRT ...
+			xout = capture(exec="/usr/X11R6/bin/X -probeonly -logfile /var/log/xlog");
 			psize = grepfirst(exec="/bin/cat /var/log/xlog", pattern="Size of device LFP");
 			if (psize == "") {
 				psize = grepfirst(exec="/bin/cat /var/log/xlog", pattern="Size of device DFP");

@@ -198,7 +198,7 @@ class RPCServer(forkedHTTPServer.BaseHTTPRequestHandler):
 
 	def debugout(self, level, *msg):
 		if (level == self.DEBUG_FATAL) or (level & self.debugLevel) > 0:
-			f = open("http-%s.log" % os.getpid(), "a")
+			#f = open("http-%s.log" % os.getpid(), "a")
 			m = "%s " % (os.getpid())
 			print self.procHelper.modName, os.getpid(),
 			for i in msg:

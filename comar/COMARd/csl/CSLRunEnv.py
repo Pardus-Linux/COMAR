@@ -1001,7 +1001,7 @@ class	CSLCapsule:
 
 	def	CSLInterpreter(self, startNode, localTbl = None, tnStack = None, opStack = None):
 		""" Main CSL Executor. Return Local Variable and status Table """
-		#print "CSL Entry:", localTbl
+		print "CSL Entry:", localTbl.keys(), localTbl['vars'].keys()
 		tree = startNode
 		if localTbl == None:
 			localTbl = { 'vars':{}, 'status':0, 'props':{}, 'alias':{}, 'persistent':{}, 'instance':{}}
@@ -1170,6 +1170,8 @@ class	CSLCapsule:
 						inxs = va.keys()
 						if len(inxs):
 							inxs.sort()
+							if tree.data['rev']:
+								inxs.reverse()							
 							localTbl['status'] = 0
 							op = { 'op':'foreach', 'data':tree.data, 'loopBegin': tree.child,
 											'curinx': 0, 'index' : inxs,

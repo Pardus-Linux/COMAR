@@ -1067,7 +1067,7 @@ class CSLParse:
 			__rr = __c[__x:]
 
 			#print "data: '%s' rr: '%s'" % (__data, __rr)
-			if __data.find(' in ') != -1 and __data.find('=') != -1:
+			if (__data.find(' in ') != -1 or __data.find(' reverse ') != -1) and __data.find('=') != -1:
 				# var:instance = value in array format
 				arrayid = this.CSLParseCheckId(__data)
 				__data = __data[:len(__data) - len(arrayid)].strip()
@@ -1075,6 +1075,10 @@ class CSLParse:
 				__x = this.CSLParseCheckId(__data)
 				__data = __data[:len(__data) - len(__x)].strip()
 				#print "IN:", __x, '-', __data
+				rev = 0
+				if __x == 'reverse':
+					__x = 'in'
+					rev = 1
 				if __x == 'in':
 					valueid = this.CSLParseCheckId(__data)
 					__data = __data[:len(__data) - len(valueid)].strip()
@@ -1083,7 +1087,7 @@ class CSLParse:
 					__data = __data[len(__x):].strip()
 					#print 'X:', __x, '-', __data
 					if __data != '=':
-						print "Please read CSL Syntax manual for 'foreach' and don't repeat this line:", __c
+						print "RE Please read CSL Syntax manual for 'foreach' and don't repeat this line:", __c						
 						return None
 					keyid = __x
 					instanceid = ''
@@ -1092,7 +1096,7 @@ class CSLParse:
 							keyid = __x[:__i]
 							instanceid = __x[__i+1:]
 							break
-					__n = CSLTreeNode(None, this.IDStack[-1], { 'array': arrayid, 'instance': instanceid, 'keyid': keyid, "value": valueid } )
+					__n = CSLTreeNode(None, this.IDStack[-1], { 'array': arrayid, 'instance': instanceid, 'keyid': keyid, "value": valueid, 'rev':rev } )
 					#print __n.data
 					if __rr != "":
 						__x = this.CSLParseCode(__rr, None)
@@ -1103,7 +1107,7 @@ class CSLParse:
 					return __n
 
 				else:
-					print "Please read CSL Syntax manual for 'foreach' and don't repeat this line:", __c
+					print "RE0 Please read CSL Syntax manual for 'foreach' and don't repeat this line:", __c
 					return None
 
 			else:
@@ -1116,9 +1120,13 @@ class CSLParse:
 
 				__data = __data[:len(__data)-len(arrayid)].strip()
 
-
-
-				if this.CSLParseCheckId(__data) != "in":
+				xd = this.CSLParseCheckId(__data) 
+				rev = 0
+				if xd == "reverse":
+					xd = 'in'
+					rev = 1
+					
+				if xd != "in":
 					print "Syntax Error, really, see next line and find an 'in' on valid position:\n", __c, "\nif you can see it, send a bug report to CSL Team.."
 					return None
 
@@ -1133,7 +1141,7 @@ class CSLParse:
 				__data = __data[:len(__data)-len(arrayid)].strip()
 
 				if __data[-1] != "=":
-					print "Please read CSL Syntax manual for 'foreach' and don't repeat this line:", __c
+					print "RE1: Please read CSL Syntax manual for 'foreach' and don't repeat this line:", __c
 					return None
 
 				__data = __data[:len(__data)-1]
@@ -1148,7 +1156,7 @@ class CSLParse:
 					keyid = __data
 					instanceid = None
 
-				__n = CSLTreeNode(None, this.IDStack[-1], { 'array': arrayid, 'instance': instanceid, 'keyid': keyid, "value": valueid } )
+				__n = CSLTreeNode(None, this.IDStack[-1], { 'array': arrayid, 'instance': instanceid, 'keyid': keyid, "value": valueid, 'rev':rev} )
 
 				if __rr != "":
 					__x = this.CSLParseCode(__rr, None)

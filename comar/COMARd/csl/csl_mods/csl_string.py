@@ -107,17 +107,37 @@ class API:
 				if prms.has_key("prefix") and prms.has_key("string"):
 					a = prms["string"].toString()
 					return CSLValue("string", a.startswith(prms['prefix'].toString()))
+	def csl_splitws(self, prms):
+				if prms.has_key("string"):
+					a = prms["string"].toString()
+					fn = ""
+					x = 0
+					ret = {}
+					for i in a:
+						if i == " " or i == "\t":
+							if fn != "":
+								ret[x] = CSLValue("string", fn)								
+								x += 1
+							fn = ""
+						else:
+							fn += i
+					#print "SPLITWS Return:", ret, a, arr,prms["separator"].toString()
+					return CSLValue("array", ret)
+				print "Incorrect split:", prms
+				
 	def csl_split(self, prms):
 				if prms.has_key("separator") and prms.has_key("string"):
 					a = prms["string"].toString()
-					arr = a.split(prms["separator"].toString())
+					s = prms["separator"].toString()
+					arr = a.split(s)
 					ret = {}
 					x = 0
 					for i in arr:
 						if i != "":
 							ret[x] = CSLValue("string", i)
+							print "split:", x, "=", i,
 							x += 1
-					#print "SPLIT Return:", ret, a, arr,prms["separator"].toString()
+					print "SPLIT Return:", ret, a, arr,prms["separator"].toString()
 					return CSLValue("array", ret)
 				print "Incorrect split:", prms
 				

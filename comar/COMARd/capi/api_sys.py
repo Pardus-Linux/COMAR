@@ -49,6 +49,7 @@ class APICALLS:
 				 'capture':self.capture_stdout,
 				 'getfile':self.get_file,
 				 'putfile':self.put_file,
+				 'fileexist':self.fileexist,
 				 'removefile' : self.rmfile}
 				 
 	def execute(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
@@ -63,6 +64,23 @@ class APICALLS:
 				
 			return self.cv.COMARRetVal(value=None, result = EBADF)
 			
+	def fileexist(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
+		keylist = prms.keys()
+		prg = ""			
+		for prm in keylist:
+			if prm == "file":
+				prg = prms[prm].data.value
+			
+	
+		try:
+			f = open(prg, "r")
+			f.close()
+			return self.cv.COMARRetVal( value=self.cv.numeric_create(1), result=0 )
+		except:
+			pass
+		return self.cv.COMARRetVal( value=self.cv.numeric_create(0), result=0 )
+			
+		
 	def rmfile(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
 		keylist = prms.keys()
 		prg = ""			

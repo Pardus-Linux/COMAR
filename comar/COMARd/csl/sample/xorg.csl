@@ -1,16 +1,17 @@
 # startup script for autoconfiguring xorg
 # doesnt use COMAR:Desktop at the moment, scans hw directly
 
-method ConfigureDisplay(dpi=100) {
-
-	#modes = capture(exec="/usr/sbin/ddcxinfos -monitor");
-	#xini_change_section(cfgfile="/home/palpa/xorg.conf",section="Monitor",content=modes);
-	#xini_change_option(cfgfile="/home/palpa/xorg.conf",section="Device",option="Driver",value="nvidia");
+method ConfigureDisplay(dpi=90) {
+	debugout(value="xorg.csl started for "+dpi+" DPI Setting");
 	# First search LCD Panel..
 	removefile(file="/etc/X11/xorg.conf");
 	
 	xout = capture(exec="/usr/X11R6/bin/X -configure -logfile /var/log/xlog");
-	xout = xini_parse(cfgfile="/root/xorg.conf.new");
+	if (fileexist(file="/root/xorg.conf.new")) {
+		xout = xini_parse(cfgfile="/root/xorg.conf.new");
+	} else {
+		xout = xini_parse(cfgfile="/xorg.conf.new");
+	}
 	psize = "";
 	extra_modules = "";
 	hsync_min = 25;
@@ -123,15 +124,28 @@ method ConfigureDisplay(dpi=100) {
 		debugout(value=ml);
 		debugout(value="psize is:"+psize);
 		modeline = "";
+		maxkhz = 1000 * hsync_max;
 		foreach (key=val in ml) {
-			l = split(string=val, separator=" ");
+			
+			l = splitws(string=val);
+			pf = ""+l[2];
 			r = split(string=l[1], separator="x");
 			x = getnumright(string=r[0]);
-			y = getnumleft(string=r[1]);			
+			y = getnumleft(string=r[1]);
+			dotclk = 1000 * int(string=pf); #MHz
+			hdisp  = l[3]; 
+			hsyncstart = l[4];
+			hsyncend = l[5];
+			htotal = int(string=l[6]);
+			hsync = dotclk / htotal;
+			debugout(value="L2:"+l[2]+"MODE:"+val+" CLK:"+dotclk+"HTOT:"+htotal+" HSYNC:"+hsync);
 			if (arrayhaskey(array=vals, key=x) == 0) {
-				vals[x] = '"'+x+"x"+y+'"';
-				debugout(value="add res:"+x+" "+y);
+				if (hsync <= maxkhz) {
+					vals[x] = '"'+x+"x"+y+'"';					
+					debugout(value="add res:"+x+" "+y);
+				}
 			}
+			
 			modelines[key] = strip(string=val);			
 			modeline = modeline + val + " ";
 		}
@@ -275,8 +289,8 @@ method ConfigureDisplay(dpi=100) {
 	
 	ini_fld["DRIVER"] = xdrv ;
 	modes = DisplayInfo + " ";
-	debugout(value=vals);
-	foreach(key=val in vals) {
+	debugout(value=vals);	
+	foreach(key=val reverse vals) {
 		debugout(value="check:"+val);			
 		if (DisplayInfo != val) {
 			#debugout(value="Add:"+val);			

@@ -45,9 +45,9 @@ method ConfigureDisplay(dpi=100) {
 			# For i830:
 			# "Size of device %s is %d x %d\n", displayDevices[i], pI830->displaySize[i].x2, pI830->displaySize[i].y2)
 			# %s ---> LFP (Local Flat Panel) | DFP (Digital Fanel Panel) CRT ...
-			psize = grepfirst(exec="/bin/cat /var/log/xlog", pattern="Size of device LFP is");
+			psize = grepfirst(exec="/bin/cat /var/log/xlog", pattern="Size of device LFP");
 			if (psize == "") {
-				psize = grepfirst(exec="/bin/cat /var/log/xlog", pattern="Size of device DFP is");
+				psize = grepfirst(exec="/bin/cat /var/log/xlog", pattern="Size of device DFP");
 			}			
 		}
 	}

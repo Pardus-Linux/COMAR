@@ -1,7 +1,7 @@
 # startup script for autoconfiguring xorg
 # doesnt use COMAR:Desktop at the moment, scans hw directly
 
-method ConfigureDisplay(dpi=90) {
+method ConfigureDisplay(dpi=100) {
 
 	#modes = capture(exec="/usr/sbin/ddcxinfos -monitor");
 	#xini_change_section(cfgfile="/home/palpa/xorg.conf",section="Monitor",content=modes);
@@ -259,8 +259,8 @@ method ConfigureDisplay(dpi=90) {
 	
 					if (btn_count != 0) {
 						# We found a mouse !!
-						mtype = "PS/2";
-						mproto = "mouse";					
+						mtype = "mouse";
+						mproto = "PS/2";					
 						wheel = getbit(value=rel, bit=REL_WHEEL);
 						if (getbit(value=btn, bit=BTN_MID)) btn_count = btn_count + 1;
 						if (getbit(value=btn, bit=BTN_SIDE))
@@ -293,9 +293,10 @@ method ConfigureDisplay(dpi=90) {
 	ini_fld["MOUSEDEV"] = "/dev/input/mouse0";
 	
 	ini_fld["DRIVER"] = xdrv ;
-	modes = "";
+	modes = DisplayInfo + " ";
 	foreach(key=val in vals) {
-		modes = modes + " " + val;
+		if (val!=DisplayInfo)
+			modes = modes + " " + val;
 	}
 	ini_fld["MODES"] = modes;
 	ini_fld["HORIZMIN"] = "25";

@@ -126,18 +126,11 @@ def start():
 	AUTHHELPER = AUTHSYS.authSystem()
 	CONNS = ConnectorModules()
 	HTTP = CONNS.getModule("cxdrpc-http").object(comarHelper = comarRoot())
-	HTTP.user = "testuser"
-	#HTTP.passwd = "testpass"
-	HTTP.realm = "serdar.serdarkoylu.com"
+
 
 	 #'<COMARRPCData><RPCVersion>1.0</RPCVersion><RPCTTSID>NEWTTSDI</RPCTTSID><RPCEOLTime>1103368851.89</RPCEOLTime><RPCPriority>NORMAL</RPCPriority><RPCType>OMCALL</RPCType><RPCData><type>method</type><name>CORE:om.addNodeScript</name><index></index><parameters><parameter><name>COMAR:new.node</name><value><string encoding="utf-8">bu da bir stringdir</string></value></parameter></parameters></RPCData></COMARRPCData>'
 	rpc = RPCData.RPCStruct()
 	if "--register" in sys.argv:
-		send = 1
-	else:
-		send = 2
-
-	if send == 1:
 		rpc.TTSID = "TEST_01" + str(time.time())
 		rpc.RPCPriority = "INTERACTIVE"
 		rpc.makeRPCData("OMCALL")
@@ -153,7 +146,7 @@ def start():
 		rpc.addPropertyMulti("parameter", "code", code)
 		rpc.addPropertyMulti("parameter", "AppID", appid)
 		rpc.addPropertyMulti("parameter", "node", node)
-	elif send == 2:
+	else:
 		rpc.TTSID = "TEST_02" + str(time.time())
 		rpc.RPCPriority = "INTERACTIVE"
 		rpc.makeRPCData("OMCALL")

@@ -54,53 +54,47 @@ method ConfigureDisplay(dpi=100) {
 	
 	#debugout(value=psize);
 
-	if (psize != "") {
-		debugout(value=psize);
-		px = split(string=psize, separator="x");
-		#debugout(value=px);
+	if (psize != "") {		
+		px = split(string=psize, separator="x");		
 		resx = getnumright(string = strip(string = px[0]));
 		resy = getnumleft(string = strip(string = px[1]));
 		# Calculate Modeline..
-		modeline = calcModeLine(resx=resx, resy=resy, vhz = 60.0);
-		
-	} else {
-		
+		modeline = me.calcModeLine(resx=resx, resy=resy, vhz = 60.0);		
+	} else {		
 		s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="truly");
-		if ( s == "") {
+		if ("" == s) {
 			s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="truly");
 		}
-		if ( s == "") {
+		if ("" == s) {
 			s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="truly");
 		}		
 		if (s != "") {
 			w = split(string=s, separator=" ");
 			inc = getnumleft(string = w[4]);
 			pix = 4 * (inc / 5) * dpi;
-		}
-		
-		#30-97 kHz HorizSync
-		
+		} else {
+			inc = 14.0;
+			pix = 4 * (14.0 / 5) * dpi;
+		}		
+		#30-97 kHz HorizSync		
 		s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="Hz HorizSync");
-		if ( s == "") {
+		if ( "" == s) {
 			s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="Hz HorizSync");
 		}
-		if ( s == "") {
+		if ( "" == s) {
 			s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="Hz HorizSync");
 		}		
 		if (s != "") {
 			w = split(string=s, separator="-");
 			hsync_max = getnumleft(string = w[1]);
 			hsync_min = getnumright(string = w[0]);			
-		}
-		
-		#50-160 Hz VertRefresh
-		
-		s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="Hz VertRefresh");
-		
-		if ( s == "") {
+		}		
+		#50-160 Hz VertRefresh		
+		s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="Hz VertRefresh");		
+		if ( "" == s) {
 			s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="Hz VertRefresh");
 		}
-		if ( s == "") {
+		if ( ""== s) {
 			s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="Hz VertRefresh");
 		}
 		
@@ -111,9 +105,24 @@ method ConfigureDisplay(dpi=100) {
 		}
 		
 		ml = capture(exec="/usr/sbin/ddcxinfos", startwith="ModeLine");
-		
-		#debugout(value=ml);
-		modelin = "";
+		if ("" == ml) {
+			ml = capture(exec="/usr/sbin/ddcxinfos", startwith="ModeLine");
+		}
+		if ("" == ml) {
+			ml = capture(exec="/usr/sbin/ddcxinfos", startwith="ModeLine");
+		}		
+		if ("" == ml) {
+			ml[0] = me.calcModeLine(resx=800, resy=600, vhz=60.0);
+			ml[1] = me.calcModeLine(resx=640, resy=480, vhz=60.0);
+			ml[2] = me.calcModeLine(resx=1024, resy=768, vhz=60.0);			
+			resx = "800";
+			resy = "600";
+			psize = "fallback";
+		}
+		debugout(value="ML is:");
+		debugout(value=ml);
+		debugout(value="psize is:"+psize);
+		modeline = "";
 		foreach (key=val in ml) {
 			l = split(string=val, separator=" ");
 			r = split(string=l[1], separator="x");
@@ -124,20 +133,15 @@ method ConfigureDisplay(dpi=100) {
 				debugout(value="add res:"+x+" "+y);
 			}
 			modelines[key] = strip(string=val);			
-			modeline = modeline + val + " ";			
+			modeline = modeline + val + " ";
 		}
 	}
-	#debugout(value=vals);
-	DisplayInfo = xdrv + " " + "resx="+resx+" resy="+resy+" pix="+pix+" inc="+inc;
+	
 	if (psize == "") {
-		#vals[1600] = "1600 1200";
-		#vals[1280] = "1280 1024";
-		#vals[1152] = "1152 864";
-		#vals[1024] = "1024 768";
-		#vals[800]  = "800 600";
 		DisplayInfo = getnearvalue(look = pix, values = vals);
 	} else {
-		vals = "";
+		if (psize != "fallback") 
+			vals = "";
 		DisplayInfo = '"' + resx + "x" + resy + '"';
 	}
 
@@ -183,8 +187,7 @@ method ConfigureDisplay(dpi=100) {
 			absn = split(string = absn[1], separator = " ");
 			absn = hex2dec(value=absn[0]);
 			
-		} elif (substr_left(string = val, size = 8) == "N: Name=") {
-		
+		} elif (substr_left(string = val, size = 8) == "N: Name=") {		
 			name = split(string = val, separator = "=");
 			name = strip(string = name[1]);
 		}
@@ -260,6 +263,7 @@ method ConfigureDisplay(dpi=100) {
 	
 	ConfigureDisplay = DisplayInfo + " Mtype: " + mtype + " BTNCount: " + btn_count + " ModeLine: " + modeline;
 	
+	debugout(value="Prepare xorg file...");
 	xorg_buffer = getfile(file="/etc/X11/xorg.conf.tmpl");
 	xorg_buffer = xorg_buffer;
 	
@@ -271,11 +275,15 @@ method ConfigureDisplay(dpi=100) {
 	
 	ini_fld["DRIVER"] = xdrv ;
 	modes = DisplayInfo + " ";
-
+	debugout(value=vals);
 	foreach(key=val in vals) {
-		if (val!=DisplayInfo)
+		debugout(value="check:"+val);			
+		if (DisplayInfo != val) {
+			#debugout(value="Add:"+val);			
 			modes = modes + " " + val;
+		}
 	}
+	debugout(value="Prepare xorg file after...");
 	ini_fld["MODES"] = modes;
 	ini_fld["HORIZMIN"] = hsync_min;
 	ini_fld["HORIZMAX"] = hsync_max;
@@ -285,11 +293,10 @@ method ConfigureDisplay(dpi=100) {
 	
 	buf = replacetokens(buffer = xorg_buffer, fields = ini_fld);			
 	putfile(file="/etc/X11/xorg.conf", buffer=buf);
-
+	debugout(value="End of script...");
 }
 
 function calcModeLine(resx=800, resy=600, vhz=60.0) {
-
 		v1 = 0;
 		v2 = 0;
 		step = 10.0;
@@ -360,5 +367,4 @@ function calcModeLine(resx=800, resy=600, vhz=60.0) {
 		modeline =  modeline + " " + dcf + " " + int(string=resx) + " ";
 		modeline =  modeline + int(string=hfront) + " " + int(string=hsync) + " " + int(string=hfl) + " " + int(string=resy) + " " + int(string=vfront) + " " + int(string=vsync) + " " + int(string=vfl) + "\n";
 		calcModeLine = modeline;
-
 }

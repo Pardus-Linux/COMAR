@@ -42,7 +42,7 @@ class API:
 		if prms.has_key("buffer") and prms.has_key("fields"):
 			tokenid = safeget(prms, "tokenid", tokenid)
 			fields = prms["fields"]
-			print "Fields:", fields, fields.type, fields.value, prms
+			#print "Fields:", fields, fields.type, fields.value, prms
 			buf = prms["buffer"].toString()
 			pos = 0
 			x = buf.find(tokenid, pos)
@@ -129,12 +129,12 @@ class API:
 		if prms.has_key("string") and prms.has_key("pattern"):
 			
 			st = prms['string'].toString()
-			print "STRSTR:", prms, st, prms['pattern'].toString(),
+			#print "STRSTR:", prms, st, prms['pattern'].toString(),
 			if st.find(prms['pattern'].toString()) != -1:
-				print "=", 1
+				#print "=", 1
 				return CSLValue("numeric", 1)
 			else:
-				print "=", 0
+				#print "=", 0
 				return CSLValue("numeric", 0)
 		return CSLValue("numeric", 0)
 	def csl_substr_left(self, prms):
@@ -179,20 +179,28 @@ class API:
 				elif i == " ":
 					if skip:
 						if len(ret):
-							ret = float(ret)
+							try:
+								ret = float(ret)
+							except:
+								ret = 0
 						break							
 				else:
 					if len(ret):
-						ret = float(ret)
+						try:
+							ret = float(ret)
+						except:
+							ret = 0
+
 					break
-		#print "getnumleft return:", ret		
+		if ret == "": 
+			ret = "0"
+		#print "getnumleft return:", ret
 		if int(ret) == ret:
 			ret = int(ret)
 		return CSLValue("numeric", ret)
 	
 	def csl_getnumright(self, prms):
-		ret = ""
-	
+		ret = ""	
 		if prms.has_key("string"):					
 			s = prms["string"].toString()
 			#print "GETNumRight: '%s'" % (s)
@@ -205,11 +213,16 @@ class API:
 				elif i == " ":
 					if skip:
 						if len(ret):
-							ret = float(ret)
+							try:
+								ret = float(ret)
+							except:
+								ret = 0
 						break							
 				else:
 					break
 		#print "getnumright return:", ret
+		if ret == "": 
+			ret = "0"
 		return CSLValue("numeric", ret)
 	
 	def csl_casestartswith(self, prms):

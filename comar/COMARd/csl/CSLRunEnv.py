@@ -130,7 +130,7 @@ class	CSLCapsule:
 		self.procStack 		= []
 		self.dbgf = None #open("csldebug", "w")
 		self.debugfile = None
-		self.debuglvl = 0
+		self.debuglvl = 0 #DEBUG_CALL
 		self.modpath = csl_dir 
 		self.cslAPIS = {}
 		self.cslAPIMods = []
@@ -605,13 +605,23 @@ class	CSLCapsule:
 		prmNames = prms.keys()
 		ptbl = localTbl['vars']
 		
-		for key in symtab["vars"]:
-			localTbl["vars"][key] = symtab["vars"][key]
+		if 0:
+			for key in symtab["vars"]:
+				if prototype.has_key(key):
+					val = symtab["vars"][key];
+					if type(val) != type('') and type(val) != type(1) and val[0] == "$" and val[1] in "AQNIFO":
+						val = self.CSLCheckVariable(val, symtab)
+					localTbl["vars"][key] = val
 
 		for key in prmNames:
-			print "CSE Parameter:", key, prms[key]
+			#print "CSE Parameter:", key, prms[key]
 			if prototype.has_key(key):				
-				localTbl['vars'][key] = prms[key] #self.CSLCheckVariable(prms[key], symtab)
+				val = prms[key] #self.CSLCheckVariable(prms[key], symtab)
+				if type(val) == type('') and val[0] == "$" and (val[1] in "AQNIFO"):
+					#print "VALUE GET:", val
+					val = self.CSLCheckVariable(val, symtab)
+				#print "ADD LOCALTBL:", key, val
+				localTbl['vars'][key] = val
 				del prototype[key]
 			else:
 				print "Undefined parameter:", key
@@ -748,16 +758,17 @@ class	CSLCapsule:
 			return CSLValue(typeid = "NULL", value = None)
 
 	def	callFunction(self, name = "", prms = {}, symtab = {}):
-		self.debug(DEBUG_CALL, "FCALL: %s ( %s )" % (name, prms))
+		self.debug(DEBUG_CALL, "FCALL ENTRY: %s ( %s )" % (name, prms))
 		fn = "f_" + name
 		if not self.vtbl.has_key(fn):
 			return CSLValue("NULL", None)
 
 		self.procStack.append(name)
 		treeEntry = self.vtbl[fn]
+		print "FCL: treeentry:", treeEntry, self.vtbl
 		fnparms = copy.copy(treeEntry.data['prmlist'])
 
-		localTbl = self.CSLCreateLocalTbl(prms, fnparms, symtab, copy.copy(treeEntry.data['persistent']), copy.copy(treeEntry.data['instance']))
+		localTbl = self.CSLCreateLocalTbl(prms, fnparms, symtab)
 
 		#FIX At This point, we load persistent and instance values..
 
@@ -990,7 +1001,7 @@ class	CSLCapsule:
 
 	def	CSLInterpreter(self, startNode, localTbl = None, tnStack = None, opStack = None):
 		""" Main CSL Executor. Return Local Variable and status Table """
-		print "CSL Entry:", localTbl
+		#print "CSL Entry:", localTbl
 		tree = startNode
 		if localTbl == None:
 			localTbl = { 'vars':{}, 'status':0, 'props':{}, 'alias':{}, 'persistent':{}, 'instance':{}}
@@ -1447,6 +1458,9 @@ class	CSLCapsule:
 							return ret
 
 				ret = localTbl['vars'][a]
+				#if type(ret) == type("") and ret[0] == "$" and ret[1] in "N" and ret[2] in "0123456789":
+				#	ret = self.CSLCheckVariable(ret, localTbl)
+				#print "L['vars'][a]:", ret, "->", localTbl['vars']
 				if ret.type == "NULL" and ret.value != None:
 					try:
 						r = float(ret.value)
@@ -1480,6 +1494,7 @@ class	CSLCapsule:
 				if func.find(":") == -1:
 					rootObj = func[:func.find(".")]
 					if rootObj == "me":
+						#print "ME.FuncCall - ", func, func[func.find(".")+1:], f["prmlist"]
 						return self.callFunction(name = func[func.find(".")+1:], prms = f["prmlist"], symtab = localTbl)
 					else:
 						if localTbl['vars'].has_key(rootObj):
@@ -1592,7 +1607,7 @@ class CSLValue:
 			return 0
 
 	def	toString(self):
-		if self.type == "string":
+		if self.type == "string":			
 			return self.value
 		elif self.type == "numeric":
 			return str(self.value)

@@ -18,7 +18,7 @@ class API:
 		if prms.has_key("value") and prms.has_key("bit"):
 			x = int(prms["value"].toNumeric())
 			b = int(prms["bit"].toNumeric())
-			print "GETBIT:", x, b, (2 ** b), x & (2 ** b)
+			#print "GETBIT:", x, b, (2 ** b), x & (2 ** b)
 			if x & (2 ** b):
 				return CSLValue("numeric", 1)
 			else:

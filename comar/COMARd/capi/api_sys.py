@@ -52,13 +52,12 @@ class APICALLS:
 				 'removefile' : self.rmfile}
 				 
 	def execute(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
-		if checkPerms(perm = "PROCESS_EXEC", file=prg):
-			keylist = prms.keys()
-			prg = ""			
-			for prm in keylist:
-				if prm == "program" or prm == "exec":
-					prg = prms[prm].data.value
-			if isexecutable(prg):
+		keylist = prms.keys()
+		prg = ""			
+		for prm in keylist:
+			if prm == "program" or prm == "exec":
+				prg = prms[prm].data.value
+			if checkPerms(perm = "PROCESS_EXEC", file=prg) and isexecutable(prg):
 				self.exec_stdout(prg)
 				return self.cv.COMARRetVal( value=st, result=0 )
 				
@@ -88,19 +87,19 @@ class APICALLS:
 			if prm == "file":
 				file = prms[prm].data.value		
 			elif prm == "buffer":
-				buffer = prms[prm].data.value
+				buffer = prms[prm].data.value		
 		if file and buffer:
 			if checkPerms(perm = "FILE_WRITE", file=file):
 				fd = open(file, "w")
 				wb = fd.write(buffer)
 				fd.close()
-				return self.cv.COMARRetVal( value= self.cv.numeric_create(0), result=0 )
+				return self.cv.COMARRetVal( value= self.cv.numeric_create(0), result=0 )				
 			return self.cv.COMARRetVal( value=self.cv.numeric_create(0), result=EPERM )
 			
 	def get_file(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
 		keylist = prms.keys()
 		file = None
-		buffer = None
+		buffer = None		
 		for prm in keylist:			
 			if prm == "file":
 				file = prms[prm].data.value		
@@ -110,7 +109,7 @@ class APICALLS:
 				fd = open(file, "r")
 				wb = fd.readlines()
 				fd.close()				
-				ret = self.cv.string_create("".join(wb))
+				ret = self.cv.string_create("".join(wb))				
 				return self.cv.COMARRetVal( value = ret, result=0 )
 			return self.cv.COMARRetVal( value=self.cv.numeric_create(0), result=EPERM )
 	
@@ -142,10 +141,12 @@ class APICALLS:
 								self.cv.array_additem(array=ret, key="%04d" % (x), arrValue=self.cv.string_create(line))
 								x += 1
 				#print "capture stdout:", self.cv.dump_value_xml(ret)
+				if x == 0:
+					ret = self.cv.string_create("")
 				return self.cv.COMARRetVal( value=ret, result=0 )
 				
-			return self.cv.COMARRetVal(value=None, result = EBADF)			
-		return self.cv.COMARRetVal(value=None, result = EPERM)
+			return self.cv.COMARRetVal(value=self.cv.string_create(""), result = EBADF)			
+		return self.cv.COMARRetVal(value=self.cv.string_create(""), result = EPERM)
 		
 	def daemonize(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
 		keylist = prms.keys()
@@ -181,6 +182,7 @@ class APICALLS:
 		pipe.wait()
 		lines.extend(pipe.fromchild.readlines())
 		return lines
+		
 	def grepfirst(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
 		keylist = prms.keys()
 		prg = ""
@@ -294,7 +296,7 @@ class APICALLS:
 				self.cv.array_additem(array = ret, key = key.__str__(),  arrValue = self.cv.string_create(res))
 			return self.cv.COMARRetVal( value = ret, result=0 )
 
-		return self.cv.COMARRetVal( value=None, result=0 )
+		return self.cv.COMARRetVal(arrValue = self.cv.string_create(""), result=0 )
 
 
 	def sendsignal(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):

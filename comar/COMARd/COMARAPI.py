@@ -1,5 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+# COMARRAPI	- COMAR Core API.
+# Copyright (c) 2003-2005 TUBITAK-UEKAE. All Rights Reserved.
+
+
 # standart python modules
 import random
 import os

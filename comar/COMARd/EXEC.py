@@ -1,6 +1,8 @@
-# EXEC.PY
-#
-# EXEC SESSION PROVIDER.
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# EXEC	- COMAR Exec Session Provider.
+# Copyright (c) 2003-2005 TUBITAK-UEKAE. All Rights Reserved.
+
 
 import os, sys, select
 

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# COMARd	- COMAR Framework main VM.
+# DBWORKER	- COMAR Database Related Objects.
 # Copyright (c) 2003-2005 TUBITAK-UEKAE. All Rights Reserved.
 
 # standart python modules

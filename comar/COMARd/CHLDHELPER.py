@@ -1,6 +1,7 @@
-# CHLDHELPER.py
-#
-# Child Info Structure and utility functions...
+##!/usr/bin/python
+# -*- coding: utf-8 -*-
+# CHILDHELPER	- COMAR IPC Helper.
+# Copyright (c) 2003-2005 TUBITAK-UEKAE. All Rights Reserved.
 
 # COMAR modules
 import traceback, signal, dircache, socket, dircache

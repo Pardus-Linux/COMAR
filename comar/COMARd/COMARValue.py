@@ -1,3 +1,10 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# COMARValue	- COMAR Value Management Objects.
+# Copyright (c) 2003-2005 TUBITAK-UEKAE. All Rights Reserved.
+
+
+
 # standart python modules
 import xml.dom.minidom
 import copy

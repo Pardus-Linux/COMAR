@@ -118,7 +118,7 @@ method ConfigureDisplay(dpi=90) {
 		if ("" == ml) {
 			ml[0] = me.calcModeLine(resx=800, resy=600, vhz=60.0);
 			ml[1] = me.calcModeLine(resx=640, resy=480, vhz=60.0);
-			ml[2] = me.calcModeLine(resx=1024, resy=768, vhz=60.0);			
+			#ml[2] = me.calcModeLine(resx=1024, resy=768, vhz=60.0);			
 			resx = "800";
 			resy = "600";
 			psize = "fallback";
@@ -153,15 +153,7 @@ method ConfigureDisplay(dpi=90) {
 			modeline = modeline + val + " ";
 		}
 	}
-	
-	if (psize == "") {
-		DisplayInfo = getnearvalue(look = pix, values = vals);
-	} else {
-		if (psize != "fallback") 
-			vals = "";
-		DisplayInfo = '"' + resx + "x" + resy + '"';
-	}
-
+		
 	# Detect mouse...
 
 	xout = capture(exec="/bin/cat /proc/bus/input/devices");
@@ -279,7 +271,7 @@ method ConfigureDisplay(dpi=90) {
 		}
 	}
 	
-	ConfigureDisplay = DisplayInfo + " Mtype: " + mtype + " BTNCount: " + btn_count + " ModeLine: " + modeline;
+	ConfigureDisplay = " Mtype: " + mtype + " BTNCount: " + btn_count + " ModeLine: " + modeline;
 	
 	debugout(value="Prepare xorg file...");
 	xorg_buffer = getfile(file="/etc/X11/xorg.conf.tmpl");
@@ -299,19 +291,12 @@ method ConfigureDisplay(dpi=90) {
 	
 	ini_fld["EXTRAMODS"] = extra_modules;	
 	ini_fld["DRIVER"] = xdrv ;
-	modes = ""; #DisplayInfo + " ";
+	modes = "";
 	debugout(value=vals);
 	passed = 0;
 	foreach(key=val reverse vals) {
 		debugout(value="check:"+val);
-		#if (DisplayInfo != val) {
-			#debugout(value="Add:"+val);
-		#	if (passed == 1) {
 		modes = modes + " " + val;
-		#	}			
-		#} else {
-		#	passed = 1;
-		#}
 	}
 	debugout(value="Prepare xorg file after...");
 	ini_fld["MODES"] = modes;

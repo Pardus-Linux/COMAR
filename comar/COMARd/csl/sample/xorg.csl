@@ -297,14 +297,19 @@ method ConfigureDisplay(dpi=90) {
 	
 	ini_fld["EXTRAMODS"] = extra_modules;	
 	ini_fld["DRIVER"] = xdrv ;
-	modes = DisplayInfo + " ";
-	debugout(value=vals);	
+	modes = ""; #DisplayInfo + " ";
+	debugout(value=vals);
+	passed = 0;
 	foreach(key=val reverse vals) {
-		debugout(value="check:"+val);			
-		if (DisplayInfo != val) {
-			#debugout(value="Add:"+val);			
-			modes = modes + " " + val;
-		}
+		debugout(value="check:"+val);
+		#if (DisplayInfo != val) {
+			#debugout(value="Add:"+val);
+		#	if (passed == 1) {
+		modes = modes + " " + val;
+		#	}			
+		#} else {
+		#	passed = 1;
+		#}
 	}
 	debugout(value="Prepare xorg file after...");
 	ini_fld["MODES"] = modes;

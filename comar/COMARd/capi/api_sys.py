@@ -69,9 +69,7 @@ class APICALLS:
 		prg = ""			
 		for prm in keylist:
 			if prm == "file":
-				prg = prms[prm].data.value
-			
-	
+				prg = prms[prm].data.value	
 		try:
 			f = open(prg, "r")
 			f.close()

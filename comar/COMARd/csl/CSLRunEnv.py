@@ -1032,9 +1032,9 @@ class	CSLCapsule:
 					tree = tree.next
 
 				elif tree.type == "if":
-					#print "IF Command:", tree.data, tree.data['cond']
+					
 					tree.data['stat'] = self.CSLCheckVariable(tree.data["cond"], localTbl).toBoolean()
-
+					print "IF Command:", tree.data, tree.data['cond'], tree.data['stat']
 					if tree.data['stat']:
 						tnStack.append(tree.next)
 						opStack.append({ 'op': 'if', 'loopBegin': tree.child })

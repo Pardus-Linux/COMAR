@@ -1111,7 +1111,7 @@ class CSLParse:
 					return None
 
 			else:
-				# foreach (array; keyid; instanceid; valueid) format
+				# foreach (array; keyid; valueid; [reverse;]) format
 				arrayid = this.CSLParseCheckId(__data)
 
 				if arrayid == None:

@@ -12,8 +12,10 @@
 ** access control list editor widget header
 */
 
-#ifndef OM_ACL_H
-#define OM_ACL_H
+#ifndef NODE_ACL_H
+#define NODE_ACL_H
+
+#include "om-node.h"
 
 #define OM_TYPE_ACL (om_acl_get_type ())
 #define OM_ACL(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), OM_TYPE_ACL , OMAcl))
@@ -41,6 +43,7 @@ struct _OMAclClass {
 GType om_acl_get_type(void);
 GtkWidget *node_acl_new(void);
 void node_acl_edit(GtkWidget *w, iks *x);
+struct OMNodeEditor *node_acl_get_editor(void);
 
 
-#endif	/* OM_ACL_H */
+#endif	/* NODE_ACL_H */

@@ -26,24 +26,18 @@ om_node_class_init(OMNodeClass *class)
 }
 
 static void
-add_editor(OMNode *obj, GtkWidget *w, gboolean expand, int types, OMNodeEditFunc *edit_func)
+add_editor(OMNode *obj, struct OMNodeEditor *ed)
 {
-	struct OMNodeEditor *ed;
-
-	ed = g_malloc0(sizeof(struct OMNodeEditor));
 	ed->next = obj->editors;
-	ed->w = w;
-	ed->types = types;
-	ed->edit_func = edit_func;
 	obj->editors = ed;
-
-	gtk_box_pack_start(GTK_BOX(obj->edit_area), w, expand, expand, 0);
+	gtk_box_pack_start(GTK_BOX(obj->edit_area), ed->w, ed->expand, ed->expand, 0);
 }
 
 static void
 om_node_init(OMNode *obj)
 {
 	GtkWidget *hb;
+	struct OMNodeEditor *ed;
 
 	hb = gtk_hbox_new(FALSE, 3);
 	gtk_widget_show(hb);
@@ -64,31 +58,11 @@ om_node_init(OMNode *obj)
 	gtk_widget_show(obj->edit_area);
 	gtk_box_pack_start(GTK_BOX(obj), obj->edit_area, TRUE, TRUE, 0);
 
-	add_editor(obj, node_desc_new(),
-		TRUE,
-		1 << OM_NAMESPACE | 1 << OM_OBJECT | 1 << OM_METHOD | 1 << OM_PROPERTY,
-		node_desc_edit
-	);
-	add_editor(obj, node_acl_new(),
-		TRUE,
-		1 << OM_NAMESPACE | 1 << OM_OBJECT | 1 << OM_METHOD | 1 << OM_PROPERTY,
-		node_acl_edit
-	);
-	add_editor(obj, node_prop_new(),
-		FALSE,
-		1 << OM_PROPERTY,
-		node_prop_edit
-	);
-	add_editor(obj, node_param_new(),
-		TRUE,
-		1 << OM_METHOD,
-		node_param_edit
-	);
-	add_editor(obj, node_oper_new(),
-		FALSE,
-		1 << OM_METHOD | 1 << OM_PROPERTY,
-		node_oper_edit
-	);
+	add_editor(obj, node_desc_get_editor());
+	add_editor(obj, node_acl_get_editor());
+	add_editor(obj, node_prop_get_editor());
+	add_editor(obj, node_param_get_editor());
+	add_editor(obj, node_oper_get_editor());
 }
 
 GType

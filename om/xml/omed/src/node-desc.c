@@ -113,3 +113,17 @@ node_desc_edit(GtkWidget *w, iks *x)
 		gtk_text_buffer_set_text(obj->desc_buf, "", 0);
 	}
 }
+
+struct OMNodeEditor *
+node_desc_get_editor(void)
+{
+	struct OMNodeEditor *ed;
+
+	ed = g_malloc0(sizeof(struct OMNodeEditor));
+	ed->w = node_desc_new();
+	ed->expand = TRUE;
+	ed->types = 1 << OM_NAMESPACE | 1 << OM_OBJECT | 1 << OM_METHOD | 1 << OM_PROPERTY;
+	ed->edit_func = node_desc_edit;
+
+	return ed;
+}

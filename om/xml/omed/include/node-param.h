@@ -15,6 +15,8 @@
 #ifndef NODE_PARAM_H
 #define NODE_PARAM_H
 
+#include "om-node.h"
+
 #define NODE_TYPE_PARAM (node_param_get_type())
 #define NODE_PARAM(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), NODE_TYPE_PARAM , NodeParam))
 #define NODE_PARAM_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), NODE_TYPE_PARAM , NodeParamClass))
@@ -38,6 +40,7 @@ struct _NodeParamClass {
 GType node_param_get_type(void);
 GtkWidget *node_param_new(void);
 void node_param_edit(GtkWidget *w, iks *x);
+struct OMNodeEditor *node_param_get_editor(void);
 
 
 #endif	/* NODE_PARAM_H */

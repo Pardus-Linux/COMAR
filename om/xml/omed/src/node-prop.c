@@ -87,3 +87,17 @@ node_prop_edit(GtkWidget *w, iks *x)
 
 	gtk_combo_box_set_active(GTK_COMBO_BOX(obj->combo), 0);
 }
+
+struct OMNodeEditor *
+node_prop_get_editor(void)
+{
+	struct OMNodeEditor *ed;
+
+	ed = g_malloc0(sizeof(struct OMNodeEditor));
+	ed->w = node_prop_new();
+	ed->expand = FALSE;
+	ed->types = 1 << OM_PROPERTY;
+	ed->edit_func = node_prop_edit;
+
+	return ed;
+}

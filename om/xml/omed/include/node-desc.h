@@ -15,6 +15,8 @@
 #ifndef NODE_DESC_H
 #define NODE_DESC_H
 
+#include "om-node.h"
+
 #define NODE_TYPE_DESC (node_desc_get_type())
 #define NODE_DESC(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), NODE_TYPE_DESC , NodeDesc))
 #define NODE_DESC_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), NODE_TYPE_DESC , NodeDescClass))
@@ -35,6 +37,7 @@ struct _NodeDescClass {
 GType node_desc_get_type(void);
 GtkWidget *node_desc_new(void);
 void node_desc_edit(GtkWidget *w, iks *x);
+struct OMNodeEditor *node_desc_get_editor(void);
 
 
 #endif	/* NODE_DESC_H */

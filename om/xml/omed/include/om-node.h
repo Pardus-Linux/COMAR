@@ -27,6 +27,7 @@ typedef void (OMNodeEditFunc)(GtkWidget *w, iks *x);
 struct OMNodeEditor {
 	struct OMNodeEditor *next;
 	GtkWidget *w;
+	gboolean expand;
 	int types;
 	OMNodeEditFunc *edit_func;
 };

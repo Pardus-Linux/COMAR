@@ -188,3 +188,17 @@ node_param_edit(GtkWidget *w, iks *x)
 		}
 	}
 }
+
+struct OMNodeEditor *
+node_param_get_editor(void)
+{
+	struct OMNodeEditor *ed;
+
+	ed = g_malloc0(sizeof(struct OMNodeEditor));
+	ed->w = node_param_new();
+	ed->expand = TRUE;
+	ed->types = 1 << OM_METHOD;
+	ed->edit_func = node_param_edit;
+
+	return ed;
+}

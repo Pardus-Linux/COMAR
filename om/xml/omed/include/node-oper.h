@@ -15,6 +15,8 @@
 #ifndef NODE_OPER_H
 #define NODE_OPER_H
 
+#include "om-node.h"
+
 #define NODE_TYPE_OPER (node_oper_get_type())
 #define NODE_OPER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), NODE_TYPE_OPER , NodeOper))
 #define NODE_OPER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), NODE_TYPE_OPER , NodeOperClass))
@@ -36,6 +38,7 @@ struct _NodeOperClass {
 GType node_oper_get_type(void);
 GtkWidget *node_oper_new(void);
 void node_oper_edit(GtkWidget *w, iks *x);
+struct OMNodeEditor *node_oper_get_editor(void);
 
 
 #endif	/* NODE_OPER_H */

@@ -367,3 +367,17 @@ node_acl_edit(GtkWidget *w, iks *x)
 		}
 	}
 }
+
+struct OMNodeEditor *
+node_acl_get_editor(void)
+{
+	struct OMNodeEditor *ed;
+
+	ed = g_malloc0(sizeof(struct OMNodeEditor));
+	ed->w = node_acl_new();
+	ed->expand = TRUE;
+	ed->types = 1 << OM_NAMESPACE | 1 << OM_OBJECT | 1 << OM_METHOD | 1 << OM_PROPERTY;
+	ed->edit_func = node_acl_edit;
+
+	return ed;
+}

@@ -158,7 +158,7 @@ class	CSLCapsule:
 		pd = cPickle.loads(pdata)
 		self.root = pd["tree"]
 		self.Tbl  = pd["tbl"]
-		self.vtbl = pd["vtbl"]
+		self.vtbl = pd["vtbl"]		
 		#self.printTree()
 
 	def	LoadObject(self, fileName = ""):
@@ -518,8 +518,8 @@ class	CSLCapsule:
 			index = prmtbl["index"]
 		if prmtbl.has_key("value"):
 			value = prms["value"]
-		val = self.COMARtoCSLValue(value)
-		res = self.callPropertySet(name, index,  val)
+		val = self.COMARtoCSLValue(value)		
+		res = self.callPropertySet(name, index,  val)		
 		if res == 1:
 			return self.COMARValue.COMARRetVal(1, None)
 		else:
@@ -535,7 +535,7 @@ class	CSLCapsule:
 
 		if localTbl["status"] == 2:
 			return self.COMARValue.COMARRetVal(1, None)
-		else:
+		else:			
 			ret = self.CSLtoCOMARValue(res)
 			self.debug(DEBUG_CALL, "RETS:", res, '(%s)->' % (res.type), ret)
 			return self.COMARValue.COMARRetVal(0, ret)
@@ -554,10 +554,13 @@ class	CSLCapsule:
 			return self.COMARValue.COMARRetVal(0, self.CSLtoCOMARValue(res))
 
 	def CSLCreateLocalTbl(self, prms = {}, prototype = {}, symtab = {}, persistent = [], instance = []):
-
-		localTbl = { 'vars':{}, 'status':0, 'props':{}, 'alias':{}, 'persistent':persistent, 'instance':instance }
+		obj_desc = self.COMARAPI.createObjDesc(objType = "CSL:OMINSTANCE", instance = self.instance, ci = self.callerInfo)
+		me_obj = CSLValue(typeid = "object", value = obj_desc)
+		localTbl = { 'vars':{"me":me_obj}, 'status':0, 'props':{}, 'alias':{}, 'persistent':persistent, 'instance':instance }
 		prmNames = prms.keys()
 		ptbl = localTbl['vars']
+		for key in symtab["vars"]:
+			localTbl["vars"][key] = symtab["vars"][key]
 
 		for key in prmNames:
 			if prototype.has_key(key):
@@ -1547,7 +1550,7 @@ class	CSLCapsule:
 		if id == None:
 			self.debug(DEBUG_FATAL, "Invalid entry !")
 			self.printTreeNode(self.root)
-
+			
 		if id[0:2] == "$A":
 			# array or property value..
 			if id.find(".") != -1:
@@ -1742,7 +1745,9 @@ class CSLValue:
 		elif typeid == "numeric":
 			self.op = CSLTmpNumeric(value)
 			self.value = value
-
+		elif typeid == "object":
+			self.op = None
+			self.value = value
 		elif typeid == "boolean":
 			value = int(value != 0)
 			self.value = value
@@ -2046,10 +2051,14 @@ class	COMARObjHook:
 			self.instance = None
 			self.instanceid = "" #instanceid
 			self.omdata = OMData
-		#print "CSLRunEnv Caller Info:"
-		#for i in dir(callerInfo):
-		#	x = getattr(callerInfo, i)
-		#	print i,"=", x
+			print "CSLRunEnv CAPI Info:"
+			for i in dir(cAPI):
+				x = getattr(cAPI, i)
+				print i,"=", x
+		print "CSLRunEnv Caller Info:"
+		for i in dir(callerInfo):
+			x = getattr(callerInfo, i)
+			print i,"=", x
 
 	def loadInstance(self, instanceid = ""):
 		self.instance = self.api.loadValue(instanceid, 'hookdata', self.callerInfo)

@@ -124,5 +124,4 @@ class genericObjHook:
 			else:
 				return ret
 
-
 OM_BINDINGS = { "CORE":OM_CORE }

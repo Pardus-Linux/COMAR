@@ -49,7 +49,9 @@ class COMARIAPI:
 		self.cio_path = comar_global.comar_basic_data # '/var/lib/comard/datadb/'
 		self.ns_path = comar_global.comar_instance_data #'/var/lib/comard/nsdata/'
 		self.api = API
-
+	def createObjDesc(self, objType = "", instance = "", ci = None):
+		obj = objType + ";" + ci.omkey + ";" + instance
+		return obj
 	def makePDB(self, rawkey):		
 		pdb = rawkey.split(":")
 		#print "RAWKEY:", rawkey, pdb
@@ -76,12 +78,9 @@ class COMARIAPI:
 			except:
 				pass
 
-
 		#print "Instance dir:", dbpath
-		
 		#if not os.path.isdir(dbpath):
 		#	os.makedirs(dbpath)
-
 		return dbpath
 
 	def createNewInstance(self, name='', callerInfo = None):

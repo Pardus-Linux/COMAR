@@ -497,6 +497,7 @@ class COMARPipe(object):
 
 				self.debugout(DEBUG_FATAL, "Pipe not ready for putCommand:", polSt[0][1], self.data_rfile, "(", a, "Our Parent pid:", os.getppid())
 				self.debugout(DEBUG_FATAL, "While Sending Command:", command, pid, tid, data)
+				print stackImage(__file__)
 				#traceback.print_stack()
 				self.debugout(DEBUG_FATAL, "Error Return 3")
 				return None

@@ -336,6 +336,7 @@ class OM_XML_CSL:
 
 	def getOMObj(self, key = ""):
 		a = key.split(":")
+		print "\n\nGetOMObj Key:", key, a
 		hook = self.main.getObjHook(a[0])
 		return (hook, None, a[1])
 

@@ -667,6 +667,7 @@ class childHelper(object):
 			# We are root
 			pass
 		print api_os.getpid(), self.myPID, "XXXXXXX Killed self. OS Parent:", self.parentppid, self.gloPPid, self.modName
+		print SESSION.stackImage(__file__)
 		api_os._exit(1)
 #--------------------------------------------------------------------------------
 #	Pipe Handling
@@ -693,7 +694,6 @@ class childHelper(object):
 			#	api_os.read(self.chlds[PID].iochannel.cmd_rfile,128)
 			if self.gloPIO:		# if we are not root for tree..
 				self.debugout(DEBUG_CHMGR, "New Child Register self with :", PID, "to ->", self.myPID, "( informed:", self.gloPPid, ")")
-
 			else:
 				self.debugout(DEBUG_CHMGR, "root: ADD CHILD ENTRY:", PID, "->", self.gloPPid, self.subchlds)
 

@@ -185,9 +185,11 @@ class TAcallSession:
 			# Child..
 			gloPIO = self.procHelper.PID2io(chldPID)
 			gloPPid = self.procHelper.myPID + 0
-			new_ph = CHLDHELPER.childHelper(gloPIO, gloPPid, chldPID, "ExecSession->TASession")
+			new_ph = CHLDHELPER.childHelper(gloPIO, gloPPid, chldPID, "ExecSession->TASession(x1)")			
 			new_ph.parentppid = parentrpid
 			new_ph.initForChild(gloPPid)
+			new_ph.setIODebug(gloPPid, 0, "ExecSession->TASession(X2)")
+			new_ph.modName = "ExecSession->TASession(X3)"
 			new_ph.waitForParentCmd(1)
 			new_ph.useDBSocket()
 
@@ -214,7 +216,7 @@ class TAcallSession:
 					if cmd[2] == "LNTU_KILL":
 						break
 
-			self.procHelper.exit()
+			new_ph.exit()
 
 api_COMARAPI = None
 api_CAPI = None

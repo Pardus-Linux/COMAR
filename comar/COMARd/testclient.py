@@ -128,19 +128,82 @@ def start():
 	HTTP = CONNS.getModule("cxdrpc-http").object(comarHelper = comarRoot())
 
 	rpc = RPCData.RPCStruct()
+	op = "call"
+	cslfile = "csl/samples/xorg.csl"
+	omnode = "COMAR:Boot"
+	appid = "DENEME"
+	callEntry = "COMAR:Boot.ConfigureDisplay"
+	remoteHost = "127.0.0.1:8000"
+	x = 0
+	skip = 0
+	for i in sys.argv:
+		if skip:
+			skip = 0			
+		elif i == "--help":
+			print """
+COMARd Test Client v 0.0.1
 
-	if "--register" in sys.argv:
+Usage:
+
+for register a CSL file to OM:
+  testclient.py --register [--file file][--node omnode][--appid appid]
+  filename = Filename for CSL Code. Default: $PWD/csl/sample/xorg.csl
+  node = OM Node for bind. Default: COMAR:Boot
+  appid = Application ID. Default: DENEME		
+for call OM Method Entry:
+  testclient.py [--method methodName]
+  method = Name of Method. Default: "COMAR:Boot.ConfigureDisplay"
+Global Parameters:
+  --parameter prm=val
+  Add parameter "prm" with value "val" to call.
+  --host ipAddr:port
+  Host address for required COMARd daemon..
+"""
+		elif i == "--register":
+			op = "register"
+		elif i == "--node":
+			omnode = sys.argv[x+1]
+			skip = 1
+		elif i == "--appid":
+			appid = sys.argv[x+1]
+			skip = 1
+		elif i == "--method":
+			callEntry = sys.argv[x+1]
+			skip = 1
+		elif i == "--host":
+			remoteHost = sys.argv[x+1]
+			skip = 1 
+		elif i == "--parameter":
+			j = sys.argv[x+1]
+			skip = 1
+			print j
+			key = j.split("=")[0]
+			val = j.split("=")[1]
+			print "Parameter '%s' value: %s" % (key, val)
+			try:
+				val = int(val)
+				cval = COMARValue.numeric_create(val)
+			except:
+				cval = COMARValue.string_create(val)
+			rpc.addPropertyMulti("parameter", key, cval)
+		elif i == "--file":
+			cslfile = sys.argv[x+1]
+			skip = 1
+		x += 1
+
+
+	if op == "register":
 		rpc.TTSID = "TEST_01" + str(time.time())
 		rpc.RPCPriority = "INTERACTIVE"
 		rpc.makeRPCData("OMCALL")
 		rpc["name"] = "CORE:om.addNodeScript"
 		rpc["type"] = "method"
-		fname = cv.string_create("xorg.csl")
-		appid = cv.string_create("DENEME")
-		f = open("./csl/sample/xorg.csl")
+		fname = cv.string_create(os.path.basename(cslfile))
+		appid = cv.string_create(appid)
+		f = open(cslfile)
 		code = cv.string_create(f.read())
 		f.close()
-		node = cv.string_create("COMAR:Boot")
+		node = cv.string_create(omnode)
 		rpc.addPropertyMulti("parameter", "fileName", fname)
 		rpc.addPropertyMulti("parameter", "code", code)
 		rpc.addPropertyMulti("parameter", "AppID", appid)
@@ -149,26 +212,10 @@ def start():
 		rpc.TTSID = "TEST_02" + str(time.time())
 		rpc.RPCPriority = "INTERACTIVE"
 		rpc.makeRPCData("OMCALL")
-		rpc["name"] = "COMAR:Boot.ConfigureDisplay"
+		rpc["name"] = callEntry
 		rpc["type"] = "method"
-		if "--parameter" in sys.argv:
-			x = 0
-			for i in sys.argv:
-				if i == "--parameter":
-					j = sys.argv[x+1]
-					print j
-					key = j.split("=")[0]
-					val = j.split("=")[1]
-					print "Parameter '%s' value: %s" % (key, val)
-					try:
-						val = int(val)
-						cval = COMARValue.numeric_create(val)
-					except:
-						cval = COMARValue.string_create(val)
-					rpc.addPropertyMulti("parameter", key, cval)
-				x += 1
 	print "Send HTTP to localhost from:", os.getpid(), time.time(), rpc.xml
-	print HTTP.makeConnection(realmAddress = "127.0.0.1:8000")
+	print HTTP.makeConnection(realmAddress = remoteHost)
 	HTTP.sendRPC(rpc = rpc)
 
 def stio2dict(strn):

@@ -15,9 +15,40 @@
 #include "common.h"
 #include "node-retval.h"
 
+static char *val_types[] = {
+	"none",
+	"string",
+	"integer",
+	"array",
+	"object",
+	NULL
+};
+
 static void
 node_retval_class_init(NodeRetvalClass *class)
 {
+}
+
+static void
+cb_type(GtkComboBox *combo, NodeRetval *obj)
+{
+	int act;
+	iks *x, *y;
+
+	act = gtk_combo_box_get_active(combo);
+
+	x = iks_find(obj->x, "retval");
+	if (!x) x = iks_insert(obj->x, "retval");
+
+	y = iks_find(x, "type");
+	if (!y) {
+		iks_insert_cdata(iks_insert(x, "type"), val_types[act], 0);
+	} else {
+		if (iks_strcmp(iks_cdata(iks_child(y)), val_types[act]) != 0) {
+			iks_hide(y);
+			iks_insert_cdata(iks_insert(x, "type"), val_types[act], 0);
+		}
+	}
 }
 
 static void
@@ -40,6 +71,7 @@ node_retval_init(NodeRetval *obj)
 	gtk_combo_box_append_text(GTK_COMBO_BOX(obj->combo), _("Array"));
 	gtk_combo_box_append_text(GTK_COMBO_BOX(obj->combo), _("Object"));
 	gtk_widget_show(obj->combo);
+	g_signal_connect(G_OBJECT(obj->combo), "changed", G_CALLBACK(cb_type), obj);
 	gtk_box_pack_start(GTK_BOX(hb), obj->combo, FALSE, FALSE, 0);
 
 	obj->rw_label = gtk_label_new(_("access:"));
@@ -100,13 +132,30 @@ node_retval_edit(GtkWidget *w, iks *x)
 
 	gtk_combo_box_set_active(GTK_COMBO_BOX(obj->combo), 0);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(obj->rw_combo), 0);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(obj->loc), FALSE);
 
-	if (iks_strcmp(iks_name(x), "method") == 0) {
-		gtk_widget_hide(obj->rw_combo);
-		gtk_widget_hide(obj->rw_label);
-	} else {
-		gtk_widget_show(obj->rw_combo);
-		gtk_widget_show(obj->rw_label);
+	if (x) {
+		iks *y;
+		char *t;
+
+		if (iks_strcmp(iks_name(x), "method") == 0) {
+			gtk_widget_hide(obj->rw_combo);
+			gtk_widget_hide(obj->rw_label);
+		} else {
+			gtk_widget_show(obj->rw_combo);
+			gtk_widget_show(obj->rw_label);
+		}
+
+		y = iks_find(x, "retval");
+		t = iks_find_cdata(y, "type");
+		if (t) {
+			int i;
+			for (i = 0; val_types[i]; i++) {
+				if (strcmp(val_types[i], t) == 0) {
+					gtk_combo_box_set_active(GTK_COMBO_BOX(obj->combo), i);
+				}
+			}
+		}
 	}
 }
 

@@ -199,12 +199,17 @@ add_nodes(OMTree *obj, GtkTreeIter *parent, iks *node)
 
 	// split node and its information from child nodes
 	x = iks_copy(node);
-	for (y = iks_first_tag(x); y; y = iks_next_tag(y)) {
-		t = iks_name(y);
-		if (iks_strcmp(t, "object") == 0
-			|| iks_strcmp(t, "method") == 0
-			|| iks_strcmp(t, "property") == 0) {
-				iks_hide(y);
+	for (y = iks_child(x); y; y = iks_next(y)) {
+		if (iks_type(y) == IKS_TAG) {
+			t = iks_name(y);
+			if (iks_strcmp(t, "object") == 0
+				|| iks_strcmp(t, "method") == 0
+				|| iks_strcmp(t, "property") == 0) {
+					iks_hide(y);
+			}
+		} else {
+			// also remove unnecessary whitespace
+			iks_hide(y);
 		}
 	}
 	y = iks_copy(x);
@@ -257,9 +262,10 @@ get_nodes(OMTree *obj, GtkTreeIter *parent, iks *x)
 		gtk_tree_model_get(model, &iter, COL_NODE, &y, -1);
 		z = iks_copy_within(y, iks_stack(x));
 		z = iks_insert_node(x, z);
+		iks_insert_cdata(z, "\n", 1);
 		if (gtk_tree_model_iter_has_child(model, &iter)) {
 			get_nodes(obj, &iter, z);
-			iks_insert_cdata(x, "\n", 1);
+			iks_insert_cdata(z, "\n", 1);
 		}
 		iks_insert_cdata(x, "\n", 1);
 		go = gtk_tree_model_iter_next(model, &iter);

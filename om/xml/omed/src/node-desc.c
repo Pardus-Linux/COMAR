@@ -31,8 +31,8 @@ cb_change_desc(GtkWidget *w, GdkEventFocus *ev, NodeDesc *obj)
 	text = gtk_text_buffer_get_text(obj->desc_buf, &iter1, &iter2, FALSE);
 	if (obj->x) {
 		y = iks_find(obj->x, "description");
-		old = iks_cdata(iks_child(y));
-		if (old) {
+		if (y) {
+			old = iks_cdata(iks_child(y));
 			if (iks_strcmp(old, text) == 0) goto out;
 			iks_hide(y);
 		}

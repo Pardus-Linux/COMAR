@@ -20,6 +20,8 @@ def safeget(prms, prm, default):
 class API:
 	def csl_arraygrep(self, prms):
 		"array_grep(array=arr, pattern='');"
+		if prms.has_key("$__obj"):
+			prms["array"] = prms["$__obj"]
 		if prms.has_key("array") and prms.has_key("pattern"):
 			arr = prms["array"].value
 			pattern = safeget(prms, "pattern", "")
@@ -39,6 +41,8 @@ class API:
 	def csl_replacetokens(self, prms):
 		tokenid = "$"
 		valid_chars = "0123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+		if prms.has_key("$__obj"):
+			prms["buffer"] = prms["$__obj"]
 		if prms.has_key("buffer") and prms.has_key("fields"):
 			tokenid = safeget(prms, "tokenid", tokenid)
 			fields = prms["fields"]
@@ -88,64 +92,80 @@ class API:
 		return CSLValue("NULL", "")
 		
 	def	csl_strupper(self, prms):
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
 		if prms.has_key("string"):
 			a = prms["string"].toString()
 			return CSLValue("string", a.upper())
 			
 	def csl_strip(self, prms):
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
 		if prms.has_key("string"):
 			a = prms["string"].toString()
 			return CSLValue("string", a.strip())
 		debug(DEBUG_FATAL, "Invalid Strip:", prms)
 		
 	def csl_strlower(self, prms):
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
 		if prms.has_key("string"):
 			a = prms["string"].toString()
 			return CSLValue("string", a.lower())
 			
 	def csl_startswith(self, prms):
-				if prms.has_key("prefix") and prms.has_key("string"):
-					a = prms["string"].toString()
-					return CSLValue("string", a.startswith(prms['prefix'].toString()))
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
+		if prms.has_key("prefix") and prms.has_key("string"):
+			a = prms["string"].toString()
+			return CSLValue("string", a.startswith(prms['prefix'].toString()))
 	def csl_splitws(self, prms):
-				if prms.has_key("string"):
-					a = prms["string"].toString()
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
+		if prms.has_key("string"):
+			a = prms["string"].toString()
+			fn = ""
+			x = 0
+			ret = {}
+			for i in a:
+				if i == " " or i == "\t":
+					if fn != "":
+						ret[x] = CSLValue("string", fn)								
+						x += 1
 					fn = ""
-					x = 0
-					ret = {}
-					for i in a:
-						if i == " " or i == "\t":
-							if fn != "":
-								ret[x] = CSLValue("string", fn)								
-								x += 1
-							fn = ""
-						else:
-							fn += i
-					#print "SPLITWS Return:", ret, a, arr,prms["separator"].toString()
-					return CSLValue("array", ret)
-				print "Incorrect split:", prms
+				else:
+					fn += i
+			#print "SPLITWS Return:", ret, a, arr,prms["separator"].toString()
+			return CSLValue("array", ret)
+		print "Incorrect split:", prms
 				
 	def csl_split(self, prms):
-				if prms.has_key("separator") and prms.has_key("string"):
-					a = prms["string"].toString()
-					s = prms["separator"].toString()
-					arr = a.split(s)
-					ret = {}
-					x = 0
-					for i in arr:
-						if i != "":
-							ret[x] = CSLValue("string", i)
-							#print "split:", x, "=", i,
-							x += 1
-					#print "SPLIT Return:", ret, a, arr,prms["separator"].toString()
-					return CSLValue("array", ret)
-				print "Incorrect split:", prms
-				
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
+		if prms.has_key("separator") and prms.has_key("string"):
+			a = prms["string"].toString()
+			s = prms["separator"].toString()
+			arr = a.split(s)
+			ret = {}
+			x = 0
+			for i in arr:
+				if i != "":
+					ret[x] = CSLValue("string", i)
+					#print "split:", x, "=", i,
+					x += 1
+			#print "SPLIT Return:", ret, a, arr,prms["separator"].toString()
+			return CSLValue("array", ret)
+		print "Incorrect split:", prms
+		
 	def csl_strlen(self, prms):
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
 		if prms.has_key("string"):
 			return CSLValue("numeric", len(prms['string'].toString()))
 	
 	def csl_strstr(self, prms):
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
 		if prms.has_key("string") and prms.has_key("pattern"):
 			
 			st = prms['string'].toString()
@@ -158,11 +178,12 @@ class API:
 				return CSLValue("numeric", 0)
 		return CSLValue("numeric", 0)
 	def csl_substr_left(self, prms):
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
 		if prms.has_key("string"):
 			st = prms['string'].toString()						
 			if prms.has_key("size"):
-				maxs = int(prms['size'].toNumeric());
-				
+				maxs = int(prms['size'].toNumeric());				
 			else:
 				maxs = len(st)
 			if maxs > len(st):
@@ -172,6 +193,8 @@ class API:
 			return CSLValue("string", a)
 	
 	def csl_substr_mid(self, prms):
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
 		if prms.has_key("string"):
 			if prms.has_key("first"):
 				st = prms['string'].toString()
@@ -188,6 +211,8 @@ class API:
 	
 	def csl_getnumleft(self, prms):
 		ret = ""
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
 		if prms.has_key("string"):
 			s = prms["string"].toString()
 			skip = 0
@@ -221,6 +246,8 @@ class API:
 	
 	def csl_getnumright(self, prms):
 		ret = ""	
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
 		if prms.has_key("string"):					
 			s = prms["string"].toString()
 			#print "GETNumRight: '%s'" % (s)
@@ -246,6 +273,8 @@ class API:
 		return CSLValue("numeric", ret)
 	
 	def csl_casestartswith(self, prms):
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
 		if prms.has_key("prefix") and prms.has_key("string"):
 			a = prms["string"].toString()
 			a = a.lower()
@@ -254,6 +283,8 @@ class API:
 			return CSLValue("string", a.startswith(needle))
 			
 	def csl_caseendswith(self, prms):
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
 		if prms.has_key("trailer") and prms.has_key("string"):
 			a = prms["trailer"].toString()
 			a = a.lower()
@@ -262,6 +293,8 @@ class API:
 			return CSLValue("string", a.startswith(needle))
 	
 	def csl_casefind(self, prms):
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
 		if prms.has_key("pattern") and prms.has_key("string"):
 			a = prms["string"].toString()
 			a = a.lower()
@@ -274,6 +307,8 @@ class API:
 				return CSLValue("numeric", ret + 1)
 	
 	def csl_caserfind(self, prms):
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
 		if prms.has_key("pattern") and prms.has_key("string"):
 			a = prms["string"].toString()
 			a = a.lower()
@@ -288,6 +323,8 @@ class API:
 			return CSLValue("numeric", 0)
 	
 	def csl_rfind(self, prms):
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
 		if prms.has_key("string") and prms.has_key("pattern"):
 			a = prms["string"].toString()
 			needle = prms['pattern'].toString()
@@ -300,6 +337,8 @@ class API:
 			return CSLValue("numeric", 0)
 	
 	def csl_insert(self, prms):
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
 		if prms.has_key("string") and prms.has_key("part"):
 			pos = 0
 			rep = 0
@@ -320,6 +359,8 @@ class API:
 			return CSLValue("string", ll + prms['part'] + rl)
 			
 	def csl_hex2dec(self, prms):
+		if prms.has_key("$__obj"):
+			prms["value"] = prms["$__obj"]
 		if prms.has_key("value"):
 			x = int(prms["value"].toString(), 16)					
 			return CSLValue("numeric", x)

@@ -15,6 +15,8 @@ def getFuncTable():
 class API:	
 	def csl_arrayhasvalue(self, prms):
 		ret = ""
+		if prms.has_key("$__obj"):
+			prms["array"] = prms["$__obj"]
 		if prms.has_key("array") and prms.has_key("value"):
 			arr = prms["array"].value
 			val = prms["value"].value
@@ -27,6 +29,8 @@ class API:
 			return CSLValue("numeric", 0)
 	def csl_arrayhaskey(self, prms):
 		ret = ""
+		if prms.has_key("$__obj"):
+			prms["array"] = prms["$__obj"]
 		if prms.has_key("array") and prms.has_key("key"):
 			arr = prms["array"].value
 			val = prms["key"].value					
@@ -39,6 +43,8 @@ class API:
 			
 	def csl_arraysort(self, prms):
 		var = None
+		if prms.has_key("$__obj"):
+			prms["variable"] = prms["$__obj"]
 		if prms.has_key("var"):
 			var = prms["var"]
 		if prms.has_key("variable"):
@@ -58,6 +64,8 @@ class API:
 			
 	def csl_typeof(prms):
 		var = None
+		if prms.has_key("$__obj"):
+			prms["variable"] = prms["$__obj"]
 		if prms.has_key("var"):
 			var = prms["var"]
 		if prms.has_key("variable"):

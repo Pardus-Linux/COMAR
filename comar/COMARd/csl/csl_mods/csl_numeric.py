@@ -15,6 +15,8 @@ def getFuncTable():
 class API:
 	def csl_getbit(self, prms):
 		ret = ""
+		if prms.has_key("$__obj"):
+			prms["value"] = prms["$__obj"]
 		if prms.has_key("value") and prms.has_key("bit"):
 			x = int(prms["value"].toNumeric())
 			b = int(prms["bit"].toNumeric())
@@ -25,6 +27,8 @@ class API:
 				return CSLValue("numeric", 0)
 		return CSLValue("numeric", 0)
 	def csl_getnearvalue(self, prms):
+		if prms.has_key("$__obj"):
+			prms["values"] = prms["$__obj"]
 		if prms.has_key("look") and prms.has_key("values"):
 			s = prms["values"].value
 			l = prms["look"].toNumeric()
@@ -38,5 +42,7 @@ class API:
 				return yak[m[0]]	
 		return CSLValue("numeric", 0)
 	def csl_int(self, prms):
+		if prms.has_key("$__obj"):
+			prms["string"] = prms["$__obj"]
 		if prms.has_key("string"):
 			return CSLValue("numeric", int(prms["string"].toNumeric()))

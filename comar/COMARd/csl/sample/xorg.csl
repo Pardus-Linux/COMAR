@@ -9,7 +9,7 @@ method ConfigureDisplay(dpi=90) {
 	xout = capture(exec="/usr/X11R6/bin/X -configure -logfile /var/log/xlog");	
 	
 	# Test xorg.conf location.. 	
-	if (fileexist(file="/root/xorg.conf.new") == 1) {	
+	if (fileexist(file="/root/xorg.conf.new")) {	
 		xout = xini_parse(cfgfile="/root/xorg.conf.new");
 	} else {
 		xout = xini_parse(cfgfile="/xorg.conf.new");
@@ -45,6 +45,7 @@ method ConfigureDisplay(dpi=90) {
 			#Detected panel size via BIOS: %d x %d
 			xout = capture(exec="/usr/X11R6/bin/X -probeonly -logfile /var/log/xlog");
 			psize = grepfirst(exec="/bin/cat /var/log/xlog", pattern="Detected panel size via");
+			
 		} elif (xdrv == '"i810"') {
 			# For i830:
 			# "Size of device %s is %d x %d\n", displayDevices[i], pI830->displaySize[i].x2, pI830->displaySize[i].y2)
@@ -74,10 +75,16 @@ method ConfigureDisplay(dpi=90) {
 		if ("" == s) {
 			s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="truly");
 		}		
-		if (s != "") {
-			w = split(string=s, separator=" ");
-			inc = getnumleft(string = w[4]);
-			pix = 4 * (inc / 5) * dpi;
+		debugout(value="S IS:"+s);
+		if (s != "") {		
+			debugout(value="S PROCESSOR:"+s);
+			w = s.split(separator = " "); 
+			#split(string=s, separator=" ");
+			w.debugout();
+			inc = w[4].getnumleft(); #getnumleft(string = w[4]);
+			debugout(value="W4:" + w[4] + "INC:" + inc);
+			pix = 4 * (inc / 5) * dpi;			
+			#delete w[5];
 		} else {
 			inc = 14.0;
 			pix = 4 * (14.0 / 5) * dpi;
@@ -125,9 +132,9 @@ method ConfigureDisplay(dpi=90) {
 			resy = "600";
 			psize = "fallback";
 		}
-		debugout(value="ML is:");
-		debugout(value=ml);
-		debugout(value="psize is:"+psize);
+		#debugout(value="ML is:");
+		#debugout(value=ml);
+		#debugout(value="psize is:"+psize);
 		modeline = "";
 		maxkhz = 1000 * hsync_max;
 		foreach (key=val in ml) {

@@ -54,11 +54,12 @@ class CSLParse:
 			#print "FILE:", code
 
 		__code = self.CSLPreProcess(code)
-		print "Preparsed Code:", __code
+		#print "Preparsed Code:", __code
 		a = CSLTreeNode(None, "ROOT", None)
 		#print 'NEW CODE:', __code
 		self.__tree = self.CSLParseCode(__code, a)
 		self.tree = a
+		self.tree.data = { "profile": self.Profiles }
 		self.nest = 0
 		#self.CSLPrintTree(a)
 		#buf = cPickle.dumps(a)
@@ -152,9 +153,14 @@ class CSLParse:
 
 						__rr = __rr[len(ov):]
 						__rr = __rr[this.CSLSkipSpaces(__rr, 0):]
-
-
-						__n = __rr.split(",")
+						x = __rr.find(" ")
+						if x != -1:
+							__rn = __rr[:x]
+							__desc = __rr[x+1:]
+						else:
+							__rn = __rr
+							__desc = ""
+						__n = __rn.split(",")
 						__a = []
 
 						for __i in __n:
@@ -164,8 +170,11 @@ class CSLParse:
 								print "Invalid Profile - invalid profile name:", __id, __rr
 								return None
 							__a.append(__j)
-						print "Profile", __x ,"over:", __a
-						this.Profiles[__x] = __a
+						if len(__a) > 1:
+							print "Warning: Multiple Profile Values Ignored:", __id, __a[1:]
+							
+						print "Profile", __x ,"over:", __a[0], "DESC:", __desc
+						this.Profiles[__x] = { 'var':__a[0], 'desc': __desc }
 						del __a
 						del __j
 						#print "ALIAS: ", __x, "->", __n
@@ -498,7 +507,7 @@ class CSLParse:
 				__ll = ""
 				__rr = ""
 				__id = this.CSLParseCheckIdRight(_l.data)
-				#print "Code Line: %d -> '%s' %s in %s" % (_l.ptr, _l.data, __id, code[__st:__st+100])
+				#print "Code Line: %d -> '%s' %s in %s" % (_l.ptr, _l.data, __id, code[__st:__st+50])
 				#this.CSLPrintTree(__retnode)
 				if __id != None:
 					__rr = _l.data[len(__id):]
@@ -921,6 +930,23 @@ class CSLParse:
 						__st = _l.ptr
 						__lp = 0
 						pass
+						
+					elif __id == "delete":
+						if __rr == "":
+							print "Invalid Delete Command - invalid name:", __id, __rr
+						else:
+							__a = this.CSLParseExpression(__rr)
+							print "Delete __rr=", __rr
+						__p = CSLTreeNode(None, __id, None)
+						__p.data = { 'var': copy.deepcopy(__a) }						
+						#print "DESTROY INSTANCE: ", __x, "->", __n
+						root.next = __p
+						__p.prev = root
+						__p.parent = root.parent
+						root = __p
+						__st = _l.ptr
+						__lp = 0
+						pass
 
 					else:
 						# possible ID = EXPRESSION call ? (Not cond.cmd)
@@ -974,17 +1000,17 @@ class CSLParse:
 									# print "CHK P:", __i
 									__x = __i.find("=")
 									if __i == "":
-										print "Invalid parameter - no parameter"
-										return None
+										print "WARNING: Invalid parameter - no parameter"
+										#__po = {}
 									elif __x == -1:
 										print "Invalid parameter - use var=value notation"
 										return None
-
-									__pl = __i[:__x]
-									__pr = __i[__x + 1:]
-									# print "PRMSET: PL: ", __pl, " PR:", __pr
-
-									__po[__pl] = this.CSLParseExpression(__pr)
+									else:
+										__pl = __i[:__x]
+										__pr = __i[__x + 1:]
+										# print "PRMSET: PL: ", __pl, " PR:", __pr
+	
+										__po[__pl] = this.CSLParseExpression(__pr)
 
 								#print "METHOD: ", __id, "PRM = ", __po, "RR:", __rr
 								__n = CSLTreeNode(root, "CALL", { "method": __id, "prm": __po }) #self, parent, type, nodedata

@@ -67,6 +67,7 @@ class	CSLCapsule:
 	# Persistency values restore		: SUCCESS
 	# MakeInstance 						: SUCCESS
 	# Array Values						: Success, not well tested..
+	# Profile Management				: Parsed only..
 	# COMAR->CSL Numeric				: SUCCESS
 	# COMAR->CSL String					: SUCCESS
 	# COMAR->CSL Array					: SUCCESS
@@ -103,6 +104,9 @@ class	CSLCapsule:
 	# register implementation			: Parsed only
 	# "me" implementation				: SUCCESS
 	# Garbage Collection				: N/A
+	# obj.function() type func call		: SUCCESS, but not well tested..
+	# select/case implementation		: N/A
+	# delete implementation				: SUCCESS, but not well tested..
 
 	def	__init__(self, instance = "", nsAPI = None, extObjEntry = None, callerInfo = None):
 		self.Obj = None				# Code block.
@@ -486,7 +490,8 @@ class	CSLCapsule:
 				#if oldkey != '':
 				#	nkey = oldkey + "\\" + key
 				#else:
-				#	nkey = key
+				#	nkey = key				
+				key = arrkeyfix(key)
 				val = self.COMARtoCSLValue(comarArrItem.item, root)
 				if val != None:
 					ret.value[key] = val
@@ -520,7 +525,7 @@ class	CSLCapsule:
 
 		elif cslVal.type == "array":
 			arr = self.COMARValue.array_create()
-			for key in cslVal.value.keys():
+			for key in cslVal.value.keys():				
 				self.COMARValue.array_additem(arr, key, 0, self.CSLtoCOMARValue(cslVal.value[key]))
 			return arr
 		elif cslVal.type == "object":
@@ -662,7 +667,9 @@ class	CSLCapsule:
 			#print prms[item]
 
 		if name == "debugout":
-			if prms.has_key("value"):
+			if prms.has_key("value") or prms.has_key("$__obj"):
+				if prms.has_key("$__obj"):
+					prms["value"] = prms["$__obj"]
 				self.debugout(prms["value"])
 				return None
 				
@@ -680,7 +687,7 @@ class	CSLCapsule:
 			keys = prms.keys()
 			keys.sort()
 			callPrm = {}
-			for key in keys:
+			for key in keys:				
 				callPrm[key] = self.CSLtoCOMARValue(prms[key])
 			#print "Call CAPI:", name, callPrm
 			ret = self.CAPI.call(method = name, prms = callPrm, callerInfo = self.callerInfo)
@@ -718,6 +725,7 @@ class	CSLCapsule:
 		func = name
 		if func.find(":") == -1 and func.find(".") == -1:
 			# API/CAPI Function call..
+			#print "API/CAPI CALL:", name, prms
 			return self.CAPIFunc(name = name, prms = copy.copy(prms), symtab = symtab)
 		else:
 			if func.find(":") == -1:
@@ -948,8 +956,7 @@ class	CSLCapsule:
 					#print "AFTER LET:", localTbl['vars'][arrId].value
 					if arrId in localTbl['persistent']:
 						self.CSLPersistSet(arrId, localTbl['vars'][arrId])
-
-					if arrId in localTbl['instance']:
+					elif arrId in localTbl['instance']:
 						self.CSLInstanceSet(arrId, localTbl['vars'][arrId])
 
 			else:	# a Object property
@@ -1001,7 +1008,7 @@ class	CSLCapsule:
 
 	def	CSLInterpreter(self, startNode, localTbl = None, tnStack = None, opStack = None):
 		""" Main CSL Executor. Return Local Variable and status Table """
-		print "CSL Entry:", localTbl.keys(), localTbl['vars'].keys()
+		#print "CSL Entry:", localTbl.keys(), localTbl['vars'].keys()
 		tree = startNode
 		if localTbl == None:
 			localTbl = { 'vars':{}, 'status':0, 'props':{}, 'alias':{}, 'persistent':{}, 'instance':{}}
@@ -1028,13 +1035,35 @@ class	CSLCapsule:
 					tree = tree.next
 
 				elif tree.type == "CALL":
-					self.call(name = tree.data['method'], prms = tree.data['prm'], symtab = localTbl)
+					m = tree.data['method']
+					#print "CALL:", m, tree.data['prm']
+					if m.find(":") == -1 and m.find(".") != -1:
+						rootObj = m[:m.find(".")]
+						fname   = m[m.find(".")+1:]
+						#print "CALL ENTRY:", rootObj, fname
+						if fname.find(".") == -1:							
+							#print "CSLCV - FUNC CALLER:", f["id"], f["prmlist"]
+							if rootObj == "me":
+								tmp = self.callFunction(name = fname, prms = tree.data['prm'], symtab = localTbl)
+							else:
+								if localTbl['vars'].has_key(rootObj):
+									obj = localTbl['vars'][rootObj]
+									if obj.type == "object":
+										tmp =  self.objCall(obj = obj, Type="method", name = fname, prms = tree.data['prm'])
+									else:
+										tree.data['prm']["$__obj"] = obj
+										tmp = self.CAPIFunc(name = fname, prms = tree.data['prm'], symtab = localTbl)
+					else:
+						self.call(name = tree.data['method'], prms = tree.data['prm'], symtab = localTbl)
 					tree = tree.next
 
 				elif tree.type == "if":
-					
-					tree.data['stat'] = self.CSLCheckVariable(tree.data["cond"], localTbl).toBoolean()
-					#print "IF Command:", tree.data, tree.data['cond'], tree.data['stat']
+					cnd = tree.data['cond']
+					ifv = self.CSLCheckVariable(cnd, localTbl)
+					tree.data['stat'] = ifv.toBoolean()
+					if cnd[:2] == "$O":
+						cnd = self.Tbl["O"][cnd]
+					#print "IF Command:", tree.data, cnd, tree.data['stat'], ifv.type, ifv.value
 					if tree.data['stat']:
 						tnStack.append(tree.next)
 						opStack.append({ 'op': 'if', 'loopBegin': tree.child })
@@ -1152,7 +1181,39 @@ class	CSLCapsule:
 
 				elif tree.type == "destroy":
 					tree = tree.next
+				elif tree.type == "delete":
+					v = tree.data['var']
+					if v[:2] == "$A":
+						p = self.Tbl['A'][v]
+						#print "Delete:", p
+						i = p["id"]
+						if localTbl['vars'].has_key(i):
+							v = localTbl['vars'][i]
+							ls = ""							
+							if v.type == "array":
+								a = v.value
+								#print "Delete item:", v, a, i, p["prmlist"]
+								x = 0
+								mx = len(p["prmlist"]) - 1
+								for k in p["prmlist"]:								
+									l = self.CSLCheckVariable(k, localTbl)
+									lv = l.toString()
+									lv = arrkeyfix(lv)
+									if a.has_key(lv):
+										if x == mx:
+											# Delete Point:
+											del a[lv]
+										else:
+											a = a[lv].value
+									x += 1	
+								if i in localTbl['persistent']:
+									self.CSLPersistSet(i, localTbl['vars'][i])
+								elif i in localTbl['instance']:
+									self.CSLInstanceSet(i, localTbl['vars'][i])
+							else:
+								del localTbl['vars'][i]
 
+					tree = tree.next
 				elif tree.type == "foreach":
 					valuevar = tree.data['value']
 					keyvar = tree.data['keyid']
@@ -1354,12 +1415,14 @@ class	CSLCapsule:
 		if id == None:
 			self.debug(DEBUG_FATAL, "Invalid entry !")
 			self.printTreeNode(self.root)
-			
+			return CSLValue("NULL", None)
+		if isinstance(id, CSLValue):
+			return id
 		if id[0:2] == "$A":
 			# array or property value..
 			if id.find(".") != -1:
 				methodPart = id[id.find(".")+1:]
-				id = id[:id.find(".")]
+				#id = id[:id.find(".")]
 			else:
 				methodPart = None
 			a = self.Tbl['A'][id]['id']
@@ -1388,7 +1451,11 @@ class	CSLCapsule:
 								# This is a temporary object
 								# rootObj.value always a COMARObjectDescriptor..
 								obj = localTbl['vars'][rootObj]
-								return self.objCall(obj = obj, Type = "propertyget", name = a, prms = self.Tbl['A'][id]['prmlist'])
+								if obj.type == "object":								
+									return self.objCall(obj = obj, Type = "propertyget", name = a, prms = self.Tbl['A'][id]['prmlist'])
+								else:
+									# We are require many special cases...
+									pass
 							if methodName:
 								a = a + "[" + arrkeyfix(self.Tbl['A'][id]['prmlist'][0]) + "]." + methodName
 								ret = self.callExtPropertyGet(name = a, index = arrkeyfix(self.Tbl['A'][id]['prmlist'][0]))
@@ -1499,11 +1566,24 @@ class	CSLCapsule:
 						#print "ME.FuncCall - ", func, func[func.find(".")+1:], f["prmlist"]
 						return self.callFunction(name = func[func.find(".")+1:], prms = f["prmlist"], symtab = localTbl)
 					else:
-						if localTbl['vars'].has_key(rootObj):
+						obj = None
+						if rootObj[0] == "$":
+							obj = self.CSLCheckVariable(rootObj, localTbl)
+							
+						if obj != None or localTbl['vars'].has_key(rootObj):
 							# This is a temporary object
 							# rootObj.value always a COMARObjectDescriptor..
-							obj = localTbl['vars'][rootObj]
-							return self.objCall(obj = obj, Type="method", name = func, prms = f['prmlist'])
+							if obj == None: 
+								obj = localTbl['vars'][rootObj]
+							if obj.type == "object":
+								return self.objCall(obj = obj, Type="method", name = func, prms = f['prmlist'])
+							else:
+								f["prmlist"]["$__obj"] = obj
+								name = func[func.find(".")+1:]
+								if name.find(".") == -1:
+									return self.CAPIFunc(name=name, prms = copy.copy(f["prmlist"]), symtab = localTbl)
+								else:
+									return self.objCall(obj = obj, Type="method", name = func, prms = f['prmlist'])
 						else:
 							return self.callExtMethod(name = func, prms = f["prmlist"], localTbl = localTbl)
 				else:
@@ -1643,7 +1723,10 @@ class CSLValue:
 			return self.value
 
 		elif self.type == "numeric":
-			return self.value != 0
+			try:
+				return int(self.value) != 0
+			except:
+				return 0
 
 		elif self.type == "object":
 			if value != None:

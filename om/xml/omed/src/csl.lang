@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<language _name="CSL" version="1.0" _section="Scripts" mimetypes="text/x-csl;text/x-cslscript">
+	
+	<string _name = "String" style = "String" end-at-line-end = "TRUE">
+		<start-regex>&quot;</start-regex>
+		<end-regex>&quot;</end-regex>
+	</string>
+
+	<string _name = "String 2" style = "String" end-at-line-end = "TRUE">
+		<start-regex>&apos;</start-regex>
+		<end-regex>&apos;</end-regex>
+	</string>
+
+	<line-comment _name = "Line Comment" style= "Comment">
+		<start-regex>#</start-regex>
+	</line-comment>
+
+	<keyword-list _name = "Primitives" style = "Data Type" case-sensitive="TRUE">
+		<keyword>register</keyword>
+		<keyword>makeinstance</keyword>
+		<keyword>instance</keyword>
+		<keyword>persistent</keyword>
+		<keyword>over</keyword>
+		<keyword>in</keyword>
+		<keyword>reverse</keyword>
+	</keyword-list>
+	
+	
+	<keyword-list _name = "Declarations" style = "Keyword" case-sensitive="TRUE">
+		<keyword>method</keyword>
+		<keyword>property</keyword>
+		<keyword>function</keyword>
+		<keyword>get</keyword>
+		<keyword>set</keyword>
+	</keyword-list>
+
+
+	<keyword-list _name = "Flow" style = "Keyword" case-sensitive="TRUE">
+		<keyword>break</keyword>
+		<keyword>case</keyword>
+		<keyword>continue</keyword>
+      		<keyword>else</keyword>
+		<keyword>for</keyword>
+		<keyword>foreach</keyword>
+		<keyword>goto</keyword>
+		<keyword>if</keyword>
+		<keyword>elif</keyword>
+		<keyword>return</keyword>
+		<keyword>try</keyword>
+	</keyword-list>
+
+	<keyword-list _name = "Memory" style = "Others" case-sensitive="TRUE">
+		<keyword>me</keyword>
+	</keyword-list>
+
+	<!-- FIXME -->
+	<pattern-item _name = "Numeric" style = "Decimal">
+		<regex>&lt;(?i0[X][\\dA-F]+|\\d+(\\.\\d*)?(?:E[+-]?[\\d]+)?F?|\\.\\d+(?:E[+-]?[\\d]+)?F?|[\\d]+[LF]?))</regex>
+	</pattern-item>
+
+</language>

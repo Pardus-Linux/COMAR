@@ -1,7 +1,7 @@
 # startup script for autoconfiguring xorg
 # doesnt use COMAR:Desktop at the moment, scans hw directly
 
-method New(dpi=80) {
+method ConfigureDisplay(dpi=80) {
 
 	#modes = capture(exec="/usr/sbin/ddcxinfo-knoppix -monitor");
 	#xini_change_section(cfgfile="/home/palpa/xorg.conf",section="Monitor",content=modes);
@@ -228,5 +228,5 @@ method New(dpi=80) {
 			}
 		}
 	}
-	New = New + " " + mtype + " " + btn_count + modeline;
+	ConfigureDisplay = New + " " + mtype + " " + btn_count + modeline;
 }

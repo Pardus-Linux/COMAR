@@ -127,9 +127,8 @@ def start():
 	CONNS = ConnectorModules()
 	HTTP = CONNS.getModule("cxdrpc-http").object(comarHelper = comarRoot())
 
-
-	 #'<COMARRPCData><RPCVersion>1.0</RPCVersion><RPCTTSID>NEWTTSDI</RPCTTSID><RPCEOLTime>1103368851.89</RPCEOLTime><RPCPriority>NORMAL</RPCPriority><RPCType>OMCALL</RPCType><RPCData><type>method</type><name>CORE:om.addNodeScript</name><index></index><parameters><parameter><name>COMAR:new.node</name><value><string encoding="utf-8">bu da bir stringdir</string></value></parameter></parameters></RPCData></COMARRPCData>'
 	rpc = RPCData.RPCStruct()
+
 	if "--register" in sys.argv:
 		rpc.TTSID = "TEST_01" + str(time.time())
 		rpc.RPCPriority = "INTERACTIVE"
@@ -141,7 +140,7 @@ def start():
 		f = open("xorg.csl")
 		code = cv.string_create(f.read())
 		f.close()
-		node = cv.string_create("COMAR:Network.ConnPoint.PHY")
+		node = cv.string_create("COMAR:Boot")
 		rpc.addPropertyMulti("parameter", "fileName", fname)
 		rpc.addPropertyMulti("parameter", "code", code)
 		rpc.addPropertyMulti("parameter", "AppID", appid)
@@ -150,9 +149,9 @@ def start():
 		rpc.TTSID = "TEST_02" + str(time.time())
 		rpc.RPCPriority = "INTERACTIVE"
 		rpc.makeRPCData("OMCALL")
-		rpc["name"] = "COMAR:Network.ConnPoint.PHY.New"
+		rpc["name"] = "COMAR:Boot.ConfigureDisplay"
 		rpc["type"] = "method"
-	#print "call:", rpc.xml
+
 	print "Send HTTP to localhost from:", os.getpid(), time.time()
 	print HTTP.makeConnection(realmAddress = "127.0.0.1:8000")
 	HTTP.sendRPC(rpc = rpc)

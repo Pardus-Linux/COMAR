@@ -10,8 +10,18 @@
 
 
 
-<description></description><description></description><object name='Network'>
+<description/><description/>
+
+
+
+
+<object name='Network'>
 	<description>Network altsistemi, temel görev olarak veri iletimi işlevi gören cihazların yapılandırılması işlevlerini ve bunlar üzerinde kullnulabilir durumda olan network protokollerinin düzenlenmesini üstlenir. Ayrıca network üzerindeki diğer hostlara erişimin sağlanması ve erişim denetimi de bu altsistemin kapsamına girer.</description>
+
+
+
+
+
 
 
 
@@ -36,8 +46,59 @@ Bilgi alışverişini gerçekleştiren PHY bileşenleri ve taşınan bilginin OS
 
 
 
+
+
+
+
+
 <object name='PHY'>
 	<description>X.200 (ISO-IEC-7498-[1,2,3]) Tariflerinde yeralan PhSAP (Physical Service-Access-Point) ve DLSAP (Data-Link Service-Access-Point) kavramlarına uygun olarak, fiziksel ortam (Physical Media, PMA) nağlantısını sağlayan düzeneklerdir. Fiziksel ortamla bağlantıyı temsil eden sanal (FR, Tunnel) ve/veya fiziksel cihazlar (Ethernet, PSTN v.b.) ile Network altsistemi arasındaki bağlantıları tarif eder. PHY bileşenleri PMA ve MAC işlevlerini üstlenirler. Haritalama yönünden, fiziksel cihazların üzerinde birden fazla PHY tarif edilebilir. Bazı durumlarda da bir fiziksel cihaz üzerinde birden fazla PHY eşzamanlı çalışabilir.</description>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -389,6 +450,29 @@ ONLINE
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <method name='dstAddress'>
 	<description>Karşı ucun adresi. PTP end-point (hostAddrObjet)</description>
 </method>
@@ -513,6 +597,8 @@ TUNNEL</description>
 
 
 
+
+
 <object name='Networks'>
 	<description/>
 </object>
@@ -522,7 +608,9 @@ TUNNEL</description>
 
 </object>
 
-<object name='Boot'><acl/><description></description><method name='start'><inputs/><acl/></method>
+<object name='Boot'><acl/><description/>
+
+<description></description><method name='ConfigureDisplay'><inputs/><acl/></method>
 
 </object>
 

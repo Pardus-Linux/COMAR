@@ -12,7 +12,8 @@ method ConfigureDisplay(dpi=90) {
 	xout = xini_parse(cfgfile="/root/xorg.conf.new");
 	psize = "";
 	#debugout(value="dpi="+dpi);
-
+	#xout["S Device"]["V Driver"] = "nv";
+	
 	if (xout["S Device"]["V Driver"] != "") {
 
 		xdrv = xout["S Device"]["V Driver"];
@@ -250,7 +251,7 @@ method ConfigureDisplay(dpi=90) {
 	ConfigureDisplay = DisplayInfo + " Mtype: " + mtype + " BTNCount: " + btn_count + " ModeLine: " + modeline;
 	
 	xorg_buffer = getfile(file="/home/evreniz/xorg.conf.tmpl");
-	xorg_buffer = xorg_buffer + "\n";
+	xorg_buffer = xorg_buffer;
 	
 	ini_fld["MOUSEDRV"] = mtype;
 	ini_fld["MOUSEPROTO"] = "mouse";

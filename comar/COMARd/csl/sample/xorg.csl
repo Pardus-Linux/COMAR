@@ -117,7 +117,7 @@ method ConfigureDisplay(dpi=90) {
 		if ("" == ml) {
 			ml[0] = me.calcModeLine(resx=800, resy=600, vhz=60.0);
 			ml[1] = me.calcModeLine(resx=640, resy=480, vhz=60.0);
-			ml[2] = me.calcModeLine(resx=1024, resy=768, vhz=60.0);			
+			#ml[2] = me.calcModeLine(resx=1024, resy=768, vhz=60.0);			
 			resx = "800";
 			resy = "600";
 			psize = "fallback";

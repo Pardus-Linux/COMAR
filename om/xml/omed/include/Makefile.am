@@ -8,7 +8,7 @@ noinst_HEADERS = \
 	om-node.h \
 	node-desc.h \
 	node-acl.h \
-	node-prop.h \
+	node-retval.h \
 	node-oper.h \
 	node-param.h \
 	csl-edit.h \

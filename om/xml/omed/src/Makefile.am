@@ -20,9 +20,9 @@ omed_SOURCES = \
 	om-node.c \
 	node-desc.c \
 	node-acl.c \
-	node-prop.c \
 	node-oper.c \
 	node-param.c \
+	node-retval.c \
 	ui-util.c \
 	csl-edit.c \
 	export.c \

@@ -17,8 +17,8 @@
 #include "node-desc.h"
 #include "node-acl.h"
 #include "node-param.h"
-#include "node-prop.h"
 #include "node-oper.h"
+#include "node-retval.h"
 
 static void
 om_node_class_init(OMNodeClass *class)
@@ -37,7 +37,6 @@ static void
 om_node_init(OMNode *obj)
 {
 	GtkWidget *hb;
-	struct OMNodeEditor *ed;
 
 	hb = gtk_hbox_new(FALSE, 3);
 	gtk_widget_show(hb);
@@ -59,10 +58,10 @@ om_node_init(OMNode *obj)
 	gtk_box_pack_start(GTK_BOX(obj), obj->edit_area, TRUE, TRUE, 0);
 
 	add_editor(obj, node_desc_get_editor());
-	add_editor(obj, node_acl_get_editor());
-	add_editor(obj, node_prop_get_editor());
+	add_editor(obj, node_retval_get_editor());
 	add_editor(obj, node_param_get_editor());
 	add_editor(obj, node_oper_get_editor());
+	add_editor(obj, node_acl_get_editor());
 }
 
 GType

@@ -1,7 +1,15 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# COMARRPCData	- COMAR-RPC Data Management Objects and Structures.
-# Copyright (c) 2003-2005 TUBITAK-UEKAE. All Rights Reserved.
+#
+# Copyright (c) 2004, TUBITAK/UEKAE
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version. Please read the COPYING file.
+
+# RPCData.py 
+# COMAR-RPC Data Management Objects and Structures.
 
 
 import time, xml.dom.minidom, copy, COMARValue, zlib, bz2, base64, cPickle

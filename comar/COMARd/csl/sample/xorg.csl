@@ -180,6 +180,8 @@ method ConfigureDisplay(dpi=90) {
 	REL_WHEEL = 8;
 	absn = 0;
 	mproto = "mouse";
+	
+	mtype = "";
 	mopts = "";
 	foreach (key = val in xout) {
 		val = strip(string = val);
@@ -214,26 +216,27 @@ method ConfigureDisplay(dpi=90) {
 			# All data collected..
 			subtype = "";
 			if (strstr(string=name, pattern="SynPS/2")) {
+				debugout(value="SYNAPTIC FOUND");
 				mtype = "synaptics";
 				subtype = "touch";
 				mproto = "auto-dev";
 				extra_modules = extra_modules + 'Load "synaptics"\n';
 				wheel = 0;
-				btn_count = 1;
-			} elif (strstr(string = name, pattern = "Microsoft Mouse") {
+				btn_count = 1;				
+			} elif (strstr(string = name, pattern = "Microsoft Mouse")) {
 				mtype = "mouse";
 				subtype = "serial";
 				mproto = "microsoft";				
 				wheel = 0;
 				btn_count = 2;
-			} elif (strstr(string = name, pattern = "Mouse Systems Mouse") {
+			} elif (strstr(string = name, pattern = "Mouse Systems Mouse")) {
 				mtype = "mouse";
 				subtype = "serial";
 				mproto = "microsoft";				
 				wheel = 0;
 				btn_count = 2;
 			
-			} else {
+			} elif  (mtype == "") {
 				if ( absn != 0) {
 					# We found a touchpad !!
 					mtype = "PS/2";
@@ -256,8 +259,8 @@ method ConfigureDisplay(dpi=90) {
 	
 					if (btn_count != 0) {
 						# We found a mouse !!
-						mtype = "mouse";
-						mproto = "PS/2";					
+						mtype = "PS/2";
+						mproto = "mouse";					
 						wheel = getbit(value=rel, bit=REL_WHEEL);
 						if (getbit(value=btn, bit=BTN_MID)) btn_count = btn_count + 1;
 						if (getbit(value=btn, bit=BTN_SIDE))

@@ -78,30 +78,30 @@ method ConfigureDisplay(dpi=90) {
 		debugout(value="S IS:"+s);
 		if (s != "") {		
 			debugout(value="S PROCESSOR:"+s);
-			w = s.split(separator = " "); 
+			w = s.split(separator = " ");
 			#split(string=s, separator=" ");
 			w.debugout();
 			inc = w[4].getnumleft(); #getnumleft(string = w[4]);
 			debugout(value="W4:" + w[4] + "INC:" + inc);
-			pix = 4 * (inc / 5) * dpi;			
+			pix = 4 * (inc / 5) * dpi;
 			#delete w[5];
 		} else {
 			inc = 14.0;
 			pix = 4 * (14.0 / 5) * dpi;
-		}		
-		#30-97 kHz HorizSync		
+		}
+		#30-97 kHz HorizSync
 		s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="Hz HorizSync");
 		if ( "" == s) {
 			s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="Hz HorizSync");
 		}
 		if ( "" == s) {
 			s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="Hz HorizSync");
-		}		
+		}
 		if (s != "") {
 			w = split(string=s, separator="-");
 			hsync_max = getnumleft(string = w[1]);
-			hsync_min = getnumright(string = w[0]);			
-		}		
+			hsync_min = getnumright(string = w[0]);
+		}
 		#50-160 Hz VertRefresh		
 		s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="Hz VertRefresh");		
 		if ( "" == s) {
@@ -114,7 +114,7 @@ method ConfigureDisplay(dpi=90) {
 		if (s != "") {
 			w = split(string=s, separator="-");
 			vsync_max = getnumleft(string = w[1]);
-			vsync_min = getnumright(string = w[0]);			
+			vsync_min = getnumright(string = w[0]);
 		}
 		
 		ml = capture(exec="/usr/sbin/ddcxinfos", startwith="ModeLine");
@@ -280,8 +280,6 @@ method ConfigureDisplay(dpi=90) {
 		}
 	}
 	
-	ConfigureDisplay = " Mtype: " + mtype + " BTNCount: " + btn_count + " ModeLine: " + modeline;
-	
 	debugout(value="Prepare xorg file...");
 	xorg_buffer = getfile(file="/etc/X11/xorg.conf.tmpl");
 	xorg_buffer = xorg_buffer;
@@ -318,6 +316,8 @@ method ConfigureDisplay(dpi=90) {
 	buf = replacetokens(buffer = xorg_buffer, fields = ini_fld);			
 	putfile(file="/etc/X11/xorg.conf", buffer=buf);
 	debugout(value="End of script...");
+	makeinstance new, "deneme";
+	ConfigureDisplay = new;
 }
 
 function calcModeLine(resx=800, resy=600, vhz=60.0) {

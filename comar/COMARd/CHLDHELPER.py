@@ -576,7 +576,10 @@ class childHelper(object):
 								if cmd:
 									if cmd[2] in ["LNTU_KILL","TRSU_FIN", "TRTU_FIN"]:
 										self.debugout(DEBUG_CMDS, "Special Event: '%s' captured from pipe:%s, can be send to '%s'" % (cmd[2], io.inodes["cr"], self.cmdHandler))
-									self.stdCmdHandler(cmd, srcpid, ppid, rfd)
+									if self.stdCmdHandler:
+										self.stdCmdHandler(cmd, srcpid, ppid, rfd)
+									else:
+										return (cmd, srcpid, ppid, rfd)
 								else:
 									print "Invalid command readed.."
 									print "\tRead FD SET:", self.ReadFDs
@@ -665,7 +668,24 @@ class childHelper(object):
 			for i in self.subchlds.keys():
 				if self.subchlds[i] == PID or i == PID:
 					del	self.subchlds[i]
-
+	def waitchilds(self):
+		save = self.stdCmdHandler
+		tout = self.sel_timeout
+		self.stdCmdHandler = None
+		self.timeout = 0.2
+		x = 0
+		while x < 25:		
+			r = self.ProcessIO()
+			if len(self.chlds) <= 2:
+				break
+			x += 1
+		self.stdCmdHandler = save
+		self.sel_timeout = tout
+		if x < 26:
+			return 1
+		else:
+			return 0
+		
 	def exit(self):
 		if self.gloPIO:
 			print api_os.getpid(), self.myPID, "Killed self. OS Parent:", self.parentppid, self.gloPPid, self.modName
@@ -676,7 +696,8 @@ class childHelper(object):
 			# We are root
 			pass
 		print api_os.getpid(), self.myPID, "XXXXXXX Killed self. OS Parent:", self.parentppid, self.gloPPid, self.modName
-		#print SESSION.stackImage(__file__)
+		#if self.modName.find("jobSessProvider->XTANewClient->COMARD/TAROOT:") != -1:
+		#	print SESSION.stackImage(__file__)
 		api_os._exit(1)
 #--------------------------------------------------------------------------------
 #	Pipe Handling

@@ -219,7 +219,6 @@ class jobSessProvider:
 				#first call...
 				self.procHelper.sendParentCommand("TRSU_TAE", self.procHelper.myPID, 0, str(pkData))
 				
-
 		elif command == "TRTU_RUN":
 			# This is a child mode
 			print self.control, self.procHelper.myPID,self.procHelper.modName, "CALL SESSION CHILD EXECUTE START"
@@ -235,6 +234,8 @@ class jobSessProvider:
 			cmd = self.procHelper.getParentCommand()
 			print os.getpid(), "After TRTU_RUN:", cmd
 			if cmd[2] == "LNTU_KILL":
+				# wait for childs..
+				self.procHelper.waitchilds()
 				self.procHelper.exit()
 
 		elif command == "TRSU_OMC":

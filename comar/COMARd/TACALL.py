@@ -221,7 +221,7 @@ class TAcallSession:
 				if new_ph.waitForParentCmd(timeout = 2):
 					cmd = new_ph.getParentCommand()
 					print cmd
-					if cmd[2] == "LNTU_KILL":
+					if cmd[2] == "LNTU_KILL":						
 						break
 
 			new_ph.exit()

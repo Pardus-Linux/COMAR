@@ -61,17 +61,27 @@ class COMARIAPI:
 		self.cio_path = comar_global.comar_basic_data # '/var/lib/comard/datadb/'
 		self.ns_path = comar_global.comar_instance_data #'/var/lib/comard/nsdata/'
 		self.api = API
+		
 	def createObjDesc(self, objType = "", instance = "", ci = None):
 		obj = objType + ";" + ci.omkey + ";" + instance
 		return obj
+		
 	def makePDB(self, rawkey):		
 		pdb = rawkey.split(":")
-		#print "RAWKEY:", rawkey, pdb
-		rt = "/"+pdb[0]+"/"+"/".join(pdb[1].split(".")[0:-2])
-		return rt
+		print "RAWKEY:", rawkey, pdb
+		if len(pdb) > 1:		
+			p = pdb[1].split(".")
+			del p[-1]
+			rt = "/"+pdb[0]+"/"+"/".join(p)
+			return rt
+		else:
+			return "/instance/" + pdb[0]
 		
 	
 	def getDBFileKey(self, mode = 'instance', callerInfo = None):
+		print "getDBFileKey:", mode, callerInfo.mode, callerInfo.OID, callerInfo.pDB
+		if callerInfo.pDB != "":
+			return callerInfo.pDB
 		if callerInfo.mode == "tmp":
 			db = callerInfo.pDB
 			if db == "":
@@ -81,7 +91,10 @@ class COMARIAPI:
 			dbpath = dbroot + "/" + mode + "/"
 		else:
 			dbroot = comar_global.comar_instance_data + self.makePDB(callerInfo.OID)
-			dbpath = dbroot + "/" + callerInfo.OID.split(".")[-2] + "."
+			if mode != "instance":
+				dbpath = dbroot + "/" + callerInfo.OID.split(".")[-2] + "."
+			else:
+				dbpath = dbroot + "/"
 		
 		if not os.path.isdir(dbroot):
 			try:
@@ -100,11 +113,19 @@ class COMARIAPI:
 		ncallerInfo = copy.deepcopy(callerInfo)
 		new = "tmp%08x_%s" % (random.random() * id(callerInfo), name)
 		ncallerInfo.OID = new
-		dbpath_new = self.getDBFileKey("instance", callerInfo)
-		shutil.copytree(dbpath_curr, dbpath_new)
+		dbpath_new = self.getDBFileKey("instance", ncallerInfo)
+		ncallerInfo.pDB = dbpath_new
+		#dbpath_new = os.path.dirname(dbpath_new)
+		#dbpath_curr = os.path.dirname(dbpath_curr)
+		print "FOR: '%s' curr_path: '%s' dest_path: '%s'" % (new, dbpath_curr, dbpath_new)
+		try:
+			shutil.copytree(dbpath_curr, dbpath_new)
+		except:
+			# If persist variables is not defined, paths not exist.
+			pass
 		return ncallerInfo
 
-	def registerObject(self, objid, callerInfo = None):
+	def registerObject(self, objid, objType="", callerInfo = None):
 		""" Register temporary object (not in-memory, its persistent)
 		and return a COMARObject.
 		followed calls with this object, use this COMARObject."""
@@ -118,10 +139,16 @@ class COMARIAPI:
 			 'realm' :ci.realm,
 			 'group' :ci.group,
 			 'runenv' :ci.runenv,
+			 'omkey'  :ci.omkey,
 			 '_objid' :objid }
 		#print "HOOKFILE:", ci.hookFile
 		ret = COMARValue.COMARObjectDescriptor(objid)
-		COMARValue.obj_setData(ret, data)
+		oid = self.createObjDesc(objType = objType, instance = objid, ci = ci)
+		rs = COMARValue.obj_setData(ret, data, oid)
+		fd = open(comar_global.comar_instance_data + "instance/reginfo_" + oid, "w")
+		fd.write(rs)
+		fd.close()
+		#objData = objType = "", instance = "", ci = None)
 		return ret
 
 	def destroyObject(self, objid, callerInfo = None):
@@ -135,7 +162,7 @@ class COMARIAPI:
 		# require a simple format.
 		if profile:
 			pass
-			
+		
 		dbpath = self.getDBFileKey(mode, callerInfo)
 		dbkey = dbpath + name
 

@@ -60,7 +60,7 @@ class COMARObjectDescriptor:
 		self.name = ObjName
 		self.object = None
 
-def obj_setData(obj = None, data = {}):
+def obj_setData(obj = None, data = {}, objid = ""):
 	""" accept dictionary for data and convert it XML and store to item 'obj.object' """
 	dom = xml.dom.minidom.getDOMImplementation()
 	doc = dom.createDocument(None, "object", None)
@@ -70,8 +70,12 @@ def obj_setData(obj = None, data = {}):
 		txtNode = doc.createTextNode(data[key])
 		node.appendChild(txtNode)
 		root.appendChild(node)
-
-	obj.object = doc.toxml()+""
+	obj.object = objid
+	sd = doc.toxml()+""	
+	return sd
+	
+def obj_setInstance(obj = None, insstr = ""):
+	obj.object = insstr
 
 def obj_getData(obj = None):
 	doc = xml.dom.minidom.parseString(obj.object)
@@ -123,7 +127,6 @@ def null_create():
 	
 def string_create(str = '', encoding = 'utf-8'):
 	return COMARValue(type='string', data = COMARString(encoding=encoding, value = str))
-
 
 def numeric_create(number = 0):
 	return COMARValue(type='numeric', data = number.__str__())
@@ -185,16 +188,9 @@ def _load_value_xml(first = None ):
 			node = first.firstChild
 			return COMARValue(type='null')
 		elif first.tagName == "object":
-			obj = COMARObjectDescriptor(first.getAttribute('name'))
+			#self.COMARValue.COMARValue("object", cslVal.value)
 			node = first.firstChild
-			tmp = {}
-			while node:
-				txt = node.firstChild
-				if txt:
-					tmp[node.tagName] = txt.data[:].encode(GLO_ENCODING)
-				node = node.nextSibling
-			obj_setData(obj, tmp)
-			return COMARValue(type = 'object', data = obj)
+			return COMARValue(type = 'object', data = node.data)
 
 		first = first.nextSibling
 
@@ -265,16 +261,11 @@ def _dump_value_xml(value = None, doc = None, root = None):
 		root.appendChild(node)
 
 	elif value.type == 'object':
-		objdata = obj_getData(value.data)
 		node = doc.createElement('object')
-		node.setAttribute('name', value.data.name)
+		print "\tToXML:", value, value.type, value.data
+		txtNode = doc.createTextNode(value.data)
+		node.appendChild(txtNode)
 		root.appendChild(node)
-		root = root.firstChild
-		for key in objdata.keys():
-			node = doc.createElement(key)
-			txtNode = doc.createTextNode(objdata[key])
-			node.appendChild(txtNode)
-			root.appendChild(node)
 
 	elif value.type == "numeric":
 		node = doc.createElement('numeric')

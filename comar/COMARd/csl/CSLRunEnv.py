@@ -528,7 +528,9 @@ class	CSLCapsule:
 			for key in cslVal.value.keys():				
 				self.COMARValue.array_additem(arr, key, 0, self.CSLtoCOMARValue(cslVal.value[key]))
 			return arr
+			
 		elif cslVal.type == "object":
+			print "To COMAR Object:", cslVal.value, self.COMARValue.COMARValue("object", cslVal.value)
 			return self.COMARValue.COMARValue("object", cslVal.value)
 
 		return self.COMARValue.null_create()
@@ -587,7 +589,7 @@ class	CSLCapsule:
 			return self.COMARValue.COMARRetVal(1, None)
 		else:			
 			ret = self.CSLtoCOMARValue(res)
-			self.debug(DEBUG_CALL, "RETS:", res, '(%s)->' % (res.type), ret)
+			self.debug(DEBUG_FATAL, "RETS:", res, '(%s)->' % (res.type), ret)
 			return self.COMARValue.COMARRetVal(0, ret)
 
 	def runFunction(self, name = "__value", prms = {}):
@@ -761,6 +763,7 @@ class	CSLCapsule:
 		#print "GetMethod:", l['status'], l
 
 		if l['vars'] != None and l['vars'].has_key(name):
+			print "return:", l['vars'][name], l['vars'][name].type, l['vars'][name].value
 			return copy.deepcopy(l['vars'][name])
 		else:
 			return CSLValue(typeid = "NULL", value = None)
@@ -1006,7 +1009,7 @@ class	CSLCapsule:
 
 		return localTbl
 
-	def	CSLInterpreter(self, startNode, localTbl = None, tnStack = None, opStack = None):
+	def	CSLInterpreter(self, startNode, localTbl = None, tnStack = None, opStack = None, contFrom = None):
 		""" Main CSL Executor. Return Local Variable and status Table """
 		#print "CSL Entry:", localTbl.keys(), localTbl['vars'].keys()
 		tree = startNode
@@ -1136,9 +1139,9 @@ class	CSLCapsule:
 					self.debug(DEBUG_PRST, "MAKE INSTANCE:", tree.data)
 					newvar = tree.data['objname']
 					newid  = self.CSLCheckVariable(tree.data['objid']).toString()
-					localTbl['vars'][newvar] = self.nsAPI.makeinstance(newid)
-					self.debug(DEBUG_PRST, "new instance:", localTbl['vars'][newvar].value)
-					self.debug(DEBUG_PRST, "opaque data:", localTbl['vars'][newvar].value.object)
+					localTbl['vars'][newvar] = self.nsAPI.makeinstance(newid)					
+					self.debug(DEBUG_FATAL, "new instance:", newvar)
+					self.debug(DEBUG_FATAL, "opaque data:", localTbl['vars'][newvar].value)
 					tree = tree.next
 
 				elif tree.type == "persistent":
@@ -1942,10 +1945,10 @@ class	COMARObjHook:
 			self.instance = None
 			self.instanceid = "" #instanceid
 			self.omdata = OMData
-			print "CSLRunEnv CAPI Info:"
-			for i in dir(cAPI):
-				x = getattr(cAPI, i)
-				print i,"=", x
+			#print "CSLRunEnv CAPI Info:"
+			#for i in dir(cAPI):
+			#	x = getattr(cAPI, i)
+			#	print i,"=", x
 		print "CSLRunEnv Caller Info:"
 		for i in dir(callerInfo):
 			x = getattr(callerInfo, i)
@@ -2128,8 +2131,11 @@ class	COMARObjHook:
 
 	def	makeinstance(self, instid = ''):
 		new = self.api.createNewInstance(instid, self.callerInfo)
-		self.api.saveValue(instid, self.instance, 'hookdata', new)
-		rv = self.api.registerObject(instid, new)
-		return CSLValue('object', rv)
+		#self.api.saveValue(instid, self.instance, 'instance', new)
+		#objType = "", instance = "", ci = None):
+		for i in dir(new):
+			print "\t", i, "=", getattr(new, i)
+		rv = self.api.registerObject(instid, "CSL:ALL",  new)
+		return CSLValue('object', rv.object)
 
 _HOOK			= COMARObjHook

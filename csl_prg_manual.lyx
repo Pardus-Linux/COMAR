@@ -589,7 +589,7 @@ Karþýlaþtýrmalar
 \begin_inset Quotes eld
 \end_inset 
 
-and
+and (&&)
 \begin_inset Quotes erd
 \end_inset 
 
@@ -597,7 +597,7 @@ and
 \begin_inset Quotes eld
 \end_inset 
 
-or
+or (||)
 \begin_inset Quotes erd
 \end_inset 
 
@@ -688,6 +688,44 @@ Atamalar
 \layout Subsection
 
 Deyimler
+\layout Subsubsection*
+
+globals
+\layout Standard
+
+Tüm betik için geçerli olan tanýmlarýn yapýldýðý bölümdür.
+ Bu bölümde komut kullanýlmaz.
+ Sadece aþaðýdaki formdaki belirtimler yapýlýr.
+\layout Subparagraph*
+
+profile <id> over <Variable> [
+\begin_inset Quotes erd
+\end_inset 
+
+Variable için Tanýmlayýcý Açýklama
+\begin_inset Quotes erd
+\end_inset 
+
+];
+\layout Standard
+
+<Variable> üzerinde tanýmlý <id> Profilini tarif eder.
+\layout Subparagraph*
+
+instance [over <profileid>] <variable> [, <variable> [, variable] ....
+ ];
+\layout Standard
+
+<variable>'ý tüm script boyunca geçerli bir instance olarak alýr.
+ Eðer 
+\begin_inset Quotes eld
+\end_inset 
+
+over <profile>
+\begin_inset Quotes erd
+\end_inset 
+
+ belirtilmiþse, bu deðiþkenlerin deðerleri belirtilen profil üzerinde saklanýr.
 \layout Subsubsection*
 
 method
@@ -908,7 +946,7 @@ select (deðiþken) {
     ...
 \layout LyX-Code
 
-    else:
+    caseelse:
 \layout LyX-Code
 
        ...
@@ -948,6 +986,10 @@ break
 \end_inset 
 
  benzeri bir deyim kullanýlmadýðýna dikkat edilmelidir.
+\layout Standard
+
+FIXME: Not implemented.
+ 
 \layout Subsubsection*
 
 while
@@ -1031,6 +1073,82 @@ deðer1
 \layout LyX-Code
 
    ...
+\layout LyX-Code
+
+foreach (anahtar_adý = deðer_adý reverse dizi)
+\layout LyX-Code
+
+   # eðer dizi[
+\begin_inset Quotes erd
+\end_inset 
+
+eleman1
+\begin_inset Quotes erd
+\end_inset 
+
+] = 
+\begin_inset Quotes eld
+\end_inset 
+
+deðer1
+\begin_inset Quotes erd
+\end_inset 
+
+ ise:
+\layout LyX-Code
+
+   #     anahtar_adý = 
+\begin_inset Quotes eld
+\end_inset 
+
+eleman1
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout LyX-Code
+
+   #     deðer_adý = 
+\begin_inset Quotes eld
+\end_inset 
+
+deðer1
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout LyX-Code
+
+   # olur.
+\layout LyX-Code
+
+   ...
+\layout Standard
+
+Arraya elemanlar hangi sýrada eklenmiþ olursa olsun, her zaman küçükten
+ büyüðe doðru sýrayla iþlenirler.
+ 'reverse' kullanýlmasý durumunda array'ýn elemanlarý büyükten küçüðe doðru
+ iþlenir.
+ 
+\layout Subsubsection*
+
+delete
+\layout Standard
+
+Bir deðiþkeni veya array'ýn elemanýný silmek için kullanýlýr.
+ Biçimi:
+\layout LyX-Code
+
+delete array[key];
+\layout LyX-Code
+
+....
+\layout LyX-Code
+
+delete array[key_1][key_2];
+\layout LyX-Code
+
+....
 \layout Subsubsection*
 
 pass
@@ -1043,6 +1161,201 @@ break
 \layout Standard
 
 Ýçinde bulunulan döngüden çýkar.
+\layout Section
+
+CSL ve Fonksiyonlar.
+\layout Standard
+
+Fonksiyon (ve diðer nesnelerdeki metotlar) çaðrýlarýnda parametreler her
+ zaman 
+\begin_inset Quotes eld
+\end_inset 
+
+var=value
+\begin_inset Quotes erd
+\end_inset 
+
+ notasyonunda geçirilir.
+ Parametre sayýsý ve prototip ile uyumluluk kontrolü yapýlmaz.
+ 
+\layout LyX-Code
+
+var = function(parametre=value);
+\layout LyX-Code
+
+other_var = function(parametre=value1, other_prm=var);
+\layout Section
+
+Nesne Modeli
+\layout Standard
+
+CSL Nesne modeli, nesnelerin dil üzerinde deðil OM üzerinde tarif edilmiþ
+ olmalarý nedeniyle, standart programlama dillerinden farklýlýk gösterir.
+ Bir nesneyi oluþturan 'class' kodu, her zaman tek bir CSL kod buffer'i
+ ile tanýmlanýr.
+ Bu sonuç, pratikte bir CSL nesnesine tekabül eden kodun tek bir dosya olmasý
+ anlamýný taþýr.
+ Nesne oluþturma iþlevleri CSL tarafýndan deðil, altyapýdaki COMAR tarafýndan
+ saðlanýr.
+ Bu nedenle, nesneler baþka bir nesnenin kopyasýný oluþturamaz.
+ Bir nesne sadece kendisinin yeni bir 
+\begin_inset Quotes eld
+\end_inset 
+
+instance
+\begin_inset Quotes erd
+\end_inset 
+
+ ýný oluþturup kullanabilir.
+ Oluþturulan yeni deðer geri döndürülebilir.
+\layout Standard
+
+Nesneler için inheritance söz konusu deðildir.
+ COMAR altyapýsý, gerek duyulan yerlerde kendi OM tanýmlarýna bakarak nesneleri
+ inherit edebilir.
+ Bu yazýlan nesne kodu için tamamen transparent bir iþlevdir.
+ 
+\layout Standard
+
+Nesne kodu içersinde 
+\begin_inset Quotes eld
+\end_inset 
+
+me
+\begin_inset Quotes erd
+\end_inset 
+
+ deðiþkeni, öntanýmlý olarak nesnenin kendisini gösterir.
+ 
+\layout Standard
+
+Nesneye yönelik yaklaþýmla uyumluluk açýsýndan uygun fonksiyonlar sýradan
+ deðiþkenlerle nesne metotlarý gibi iþlenebilir.
+ Buradaki nesne kavramý tamamen yazým ve kodlama kolaylýðý olarak kabul
+ edilmelidir.
+\layout LyX-Code
+
+var = 
+\begin_inset Quotes eld
+\end_inset 
+
+abc
+\begin_inset Quotes erd
+\end_inset 
+
+;
+\layout LyX-Code
+
+\layout LyX-Code
+
+uppervar = var.ascii_ucase(); 
+\layout LyX-Code
+
+# Equivalent to uppervar = ascii_ucase(string=var);
+\layout Standard
+
+Bir nesne, kendinin yeni bir kopyasýný oluþturmak üzere 
+\begin_inset Quotes eld
+\end_inset 
+
+makeinstance
+\begin_inset Quotes erd
+\end_inset 
+
+ komutunu kullanýr:
+\layout LyX-Code
+
+property test {
+\layout LyX-Code
+
+get { 
+\layout LyX-Code
+
+    instance testVar;
+\layout LyX-Code
+
+    test = testVar;
+\layout LyX-Code
+
+    }
+\layout LyX-Code
+
+set {
+\layout LyX-Code
+
+    instance testVar;
+\layout LyX-Code
+
+    testVar = test;
+\layout LyX-Code
+
+    }
+\layout LyX-Code
+
+}
+\layout LyX-Code
+
+method instanceCreate() {
+\layout LyX-Code
+
+    instance testVar;
+\layout LyX-Code
+
+    testVar = 
+\begin_inset Quotes eld
+\end_inset 
+
+Main code
+\begin_inset Quotes erd
+\end_inset 
+
+;
+\layout LyX-Code
+
+    makeinstance new, 
+\begin_inset Quotes eld
+\end_inset 
+
+newinstance
+\begin_inset Quotes erd
+\end_inset 
+
+;
+\layout LyX-Code
+
+    new.test = 
+\begin_inset Quotes eld
+\end_inset 
+
+New Value
+\begin_inset Quotes erd
+\end_inset 
+
+;
+\layout LyX-Code
+
+    debugout(value=new.test);
+\layout LyX-Code
+
+    # Display / log output: 
+\layout LyX-Code
+
+    # TYPE: string VALUE: New Value
+\layout LyX-Code
+
+    debugout(value=me.test); 
+\layout LyX-Code
+
+    # Display / log output: 
+\layout LyX-Code
+
+    # TYPE: string VALUE: Main Code
+\layout LyX-Code
+
+    instanceCreate = new;
+\layout LyX-Code
+
+}
 \layout Section
 
 CSL BNF

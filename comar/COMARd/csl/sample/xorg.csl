@@ -146,7 +146,9 @@ method ConfigureDisplay(dpi=90) {
 				debugout(value="add res:"+x+" "+y);
 			}
 			modelines[key] = strip(string=val);
+			
 			modeline = modeline + val + " ";
+			xini_change_section(cfgfile="/home/evreniz/xorg.conf", section="Monitor", content=modeline);
 		}
 	}
 	#debugout(value=vals);

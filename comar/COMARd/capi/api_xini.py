@@ -266,7 +266,7 @@ EndSection
 						mode = 1
 						lines2.append(content)
 			elif mode == 1:
-				if line[:10] == "EndSection":
+				if line.find("EndSection") != -1:
 					lines2.append(line)
 					mode = 2
 			elif mode == 2:

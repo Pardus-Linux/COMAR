@@ -14,6 +14,7 @@
 
 #include "common.h"
 #include "csl-edit.h"
+#include <gtksourceview/gtksourcelanguagesmanager.h>
 
 static GtkSourceTagTable *tag_table;
 
@@ -45,6 +46,7 @@ csl_edit_class_init(CSLEditClass *class)
 	keys = g_slist_prepend (keys, "persistent");
 	keys = g_slist_prepend (keys, "instance");
 	keys = g_slist_prepend (keys, "makeinstance");
+	keys = g_slist_prepend (keys, "register");
 	keys = g_slist_prepend (keys, "exit");
 	keys = g_slist_prepend (keys, "abort");
 	keys = g_slist_prepend (keys, "if");
@@ -59,6 +61,9 @@ csl_edit_class_init(CSLEditClass *class)
 	keys = g_slist_prepend (keys, "and");
 	keys = g_slist_prepend (keys, "or");
 	keys = g_slist_prepend (keys, "not");
+	keys = g_slist_prepend (keys, "&&");
+	keys = g_slist_prepend (keys, "||");
+	keys = g_slist_prepend (keys, "globals");
 	tag = gtk_keyword_list_tag_new ("CSLFunction", "CSLFu", keys,
 		TRUE, TRUE, TRUE, NULL, NULL);
 	style = gtk_source_tag_style_new ();
@@ -67,8 +72,8 @@ csl_edit_class_init(CSLEditClass *class)
 	gtk_source_tag_set_style (GTK_SOURCE_TAG (tag), style);
 	tag_list = g_slist_prepend (tag_list, tag);
 
-	tag_table = gtk_source_tag_table_new ();
-	gtk_source_tag_table_add_tags (tag_table, tag_list);
+	//tag_table = gtk_source_tag_table_new ();
+	//gtk_source_tag_table_add_tags (tag_table, tag_list);
 }
 
 static void
@@ -165,8 +170,10 @@ csl_edit_init(CSLEdit *obj)
 	GtkAccelGroup *agrp;
 	gint n = sizeof (menus) / sizeof (menus[0]);
 	GtkWindow *w;
-	GtkWidget *vb, *menu, *sw;
+	GtkWidget *vb, *menu, *sw, *toolbar;
 	GtkSourceBuffer *sbuf;
+	GtkSourceLanguage *lang;
+	GtkSourceLanguagesManager *lmgr;
 
 	w = &obj->window;
 	gtk_window_set_title (w, _("CSL Editor"));
@@ -185,6 +192,15 @@ csl_edit_init(CSLEdit *obj)
 	menu = gtk_item_factory_get_widget (factory, "<main>");
 	gtk_widget_show (menu);
 	gtk_box_pack_start (GTK_BOX (vb), menu, FALSE, FALSE, 0);
+	// Toolbar
+	
+	toolbar = gtk_toolbar_new ();
+	gtk_widget_ref (toolbar);
+	gtk_object_set_data_full (GTK_OBJECT (w), "ToolBar", toolbar,
+                            (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (toolbar);
+	gtk_box_pack_start (GTK_BOX (vb), toolbar, FALSE, FALSE, 0);
+
 
 	// edit alanı
 	sw = gtk_scrolled_window_new (NULL, NULL);
@@ -192,10 +208,11 @@ csl_edit_init(CSLEdit *obj)
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (sw), GTK_SHADOW_ETCHED_IN);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw), GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
 	gtk_box_pack_start (GTK_BOX (vb), sw, TRUE, TRUE, 0);
-
-	sbuf = gtk_source_buffer_new (tag_table);
+	lmgr = gtk_source_languages_manager_new();
+	lang = gtk_source_languages_manager_get_language_from_mime_type(lmgr, "text/x-csl");	
+	sbuf = gtk_source_buffer_new_with_language (lang);
 	obj->sbuf = sbuf;
-	gtk_source_buffer_set_escape_char (sbuf, '\\');
+	//gtk_source_buffer_set_escape_char (sbuf, '\\');
 	gtk_source_buffer_set_highlight (sbuf, TRUE);
 
 {

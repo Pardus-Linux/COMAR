@@ -26,8 +26,9 @@ PATH_MODTAD	 = { "class":"DefaultTTSHandler", "path":comar_global.comar_modpath 
 PATH_MODAPI  = { "class":"CSL Library", "path":comar_global.comar_modpath + "/capi", "signature":"_APICLASS", "files":[] }
 PATH_MODOM  = { "class":"OM Driver", "path":comar_global.comar_modpath + "/om_drivers", "signature":"OM_BINDINGS", "files":[] }
 PATH_AUTH  = { "class":"Auth/Crypto/Digest/Sign Modules", "path":comar_global.comar_modpath + "/auth", "signature":"DIGEST_CLASSES", "files":[] }
+PATH_PY    =  { "class":"Standart Python Modules", "path":comar_global.comar_modpath + "/py_modules", "signature":None, "files":[], "src_path":"py_modules" }
 
-MODS = [PATH_MODLANG, PATH_MODCONN, PATH_MODTAD, PATH_MODAPI, PATH_MODOM, PATH_AUTH]
+MODS = [PATH_MODLANG, PATH_MODCONN, PATH_MODTAD, PATH_MODAPI, PATH_MODOM, PATH_AUTH, PATH_PY]
 
 COMARD	= "/COMARd.py"
 COMAR_PATH = os.getcwd()
@@ -75,7 +76,8 @@ def collectPyFiles(root = ""):
 	for i in dl:
 		ai = root + "/" + i
 		if os.path.isfile(ai):
-			if ai[-3:] == ".py":
+			ex = ai[-3:]
+			if  ex == ".py" or ex == ".so":
 				dirlist.append(ai)
 		elif os.path.isdir(ai):
 			if i[0] != ".":
@@ -151,7 +153,14 @@ def main():
 			for l in lines:
 				for mod in MODS:
 					see = mod["signature"]
-					if l[:len(see)] == see:
+					if see == None:
+						dh = file.split("/")
+						if dh[-2] == mod["src_path"]:
+						    mod["files"].append(file[:])				
+						    bit = 1
+						    break
+						
+					elif l[:len(see)] == see:
 						depends = collectDepends(os.path.basename(file), lines, os.path.dirname(file))
 						mod["files"].append(file[:])
 						mod["files"].extend(depends)
@@ -159,6 +168,7 @@ def main():
 						break
 				if bit == 1:
 					break
+					
 	fd = open(COMAR_PATH + COMARD, "r")
 	lines = fd.readlines()
 
@@ -179,7 +189,6 @@ def main():
 
 	print "Creating Data Directories:"
 	for var in dir(comar_global):
-		#print var
 		if var[0:2] != '__':
 			attr = getattr(comar_global, var)
 			p = attr

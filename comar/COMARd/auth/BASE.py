@@ -10,6 +10,10 @@
 
 # auth/BASE	- COMAR Authentication Functions (Draft).
 
+import sys
+import comar_global
+sys.path.insert(0, comar_global.comar_modpath + "/py_modules")
+print sys.path
 # standart python modules
 import md5
 import sha

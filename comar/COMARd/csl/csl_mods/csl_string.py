@@ -18,6 +18,24 @@ def safeget(prms, prm, default):
 	return default
 
 class API:
+	def csl_arraygrep(self, prms):
+		"array_grep(array=arr, pattern='');"
+		if prms.has_key("array") and prms.has_key("pattern"):
+			arr = prms["array"].value
+			pattern = safeget(prms, "pattern", "")
+			ret = {}
+			if arr.type == "array":
+				for i in arr.keys():
+					s = arr[i].toString()
+					if s.find(pattern) != -1:
+						ret[i] = arr[i]
+					
+			else:
+				if arr.toString.find(pattern) != -1:
+					ret["%06d" % 0] = arr
+			return CSLValue("array", ret)
+		return CSLValue("NULL", "")
+		
 	def csl_replacetokens(self, prms):
 		tokenid = "$"
 		valid_chars = "0123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
@@ -167,7 +185,7 @@ class API:
 					if len(ret):
 						ret = float(ret)
 					break
-		#print "getnumleft return:", ret
+		#print "getnumleft return:", ret		
 		if int(ret) == ret:
 			ret = int(ret)
 		return CSLValue("numeric", ret)

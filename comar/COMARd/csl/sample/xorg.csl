@@ -14,7 +14,10 @@ method ConfigureDisplay(dpi=100) {
 	extra_modules = "";
 	#debugout(value="dpi="+dpi);
 	#xout["S Device"]["V Driver"] = "nv";
-	
+	hsync_min = 25;
+	hsync_max = 75;
+	vsync_min = 50;
+	vsync_max = 60;
 	if (xout["S Device"]["V Driver"] != "") {
 
 		xdrv = xout["S Device"]["V Driver"];
@@ -103,7 +106,7 @@ method ConfigureDisplay(dpi=100) {
 
 			v1 = int(string = rr * 1000.0);
 			v2 = int(string = s_rr * 1000.0);
-			debugout(value="V1 V2 STEP = "+v1+" "+v2+" "+step);
+			#debugout(value="V1 V2 STEP = "+v1+" "+v2+" "+step);
 			if ( v1 == v2 ) {
 				cont = 0;
 
@@ -121,7 +124,7 @@ method ConfigureDisplay(dpi=100) {
 		modeline =  modeline + " " + dcf + " " + int(string=resx) + " ";
 		modeline =  modeline + int(string=hfront) + " " + int(string=hsync) + " " + int(string=hfl) + " " + int(string=resy) + " " + int(string=vfront) + " " + int(string=vsync) + " " + int(string=vfl) + "\n";
 	} else {
-
+		
 		s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="truly");
 		if ( s == "") {
 			s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="truly");
@@ -134,6 +137,39 @@ method ConfigureDisplay(dpi=100) {
 			inc = getnumleft(string = w[4]);
 			pix = 4 * (inc / 5) * dpi;
 		}
+		
+		#30-97 kHz HorizSync
+		
+		s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="Hz HorizSync");
+		if ( s == "") {
+			s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="Hz HorizSync");
+		}
+		if ( s == "") {
+			s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="Hz HorizSync");
+		}		
+		if (s != "") {
+			w = split(string=s, separator="-");
+			hsync_max = getnumleft(string = w[1]);
+			hsync_min = getnumright(string = w[0]);			
+		}
+		
+		#50-160 Hz VertRefresh
+		
+		s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="Hz VertRefresh");
+		
+		if ( s == "") {
+			s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="Hz VertRefresh");
+		}
+		if ( s == "") {
+			s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="Hz VertRefresh");
+		}
+		
+		if (s != "") {
+			w = split(string=s, separator="-");
+			vsync_max = getnumleft(string = w[1]);
+			vsync_min = getnumright(string = w[0]);			
+		}
+		
 		ml = capture(exec="/usr/sbin/ddcxinfos", startwith="ModeLine");
 		
 		#debugout(value=ml);
@@ -148,8 +184,7 @@ method ConfigureDisplay(dpi=100) {
 				debugout(value="add res:"+x+" "+y);
 			}
 			modelines[key] = strip(string=val);			
-			modeline = modeline + val + " ";
-			
+			modeline = modeline + val + " ";			
 		}
 	}
 	#debugout(value=vals);
@@ -163,6 +198,7 @@ method ConfigureDisplay(dpi=100) {
 		DisplayInfo = getnearvalue(look = pix, values = vals);
 	} else {
 		vals[0] = psize;
+		DisplayInfo = psize;
 	}
 
 	# Detect mouse...
@@ -294,15 +330,16 @@ method ConfigureDisplay(dpi=100) {
 	
 	ini_fld["DRIVER"] = xdrv ;
 	modes = DisplayInfo + " ";
+
 	foreach(key=val in vals) {
 		if (val!=DisplayInfo)
 			modes = modes + " " + val;
 	}
 	ini_fld["MODES"] = modes;
-	ini_fld["HORIZMIN"] = "25";
-	ini_fld["HORIZMAX"] = "100";
-	ini_fld["VERTMIN"] = "50";
-	ini_fld["VERTMAX"] = "85";
+	ini_fld["HORIZMIN"] = hsync_min;
+	ini_fld["HORIZMAX"] = hsync_max;
+	ini_fld["VERTMIN"] = vsync_min;
+	ini_fld["VERTMAX"] = vsync_max;
 	ini_fld["MODELINES"] = modeline;
 	
 	buf = replacetokens(buffer = xorg_buffer, fields = ini_fld);			

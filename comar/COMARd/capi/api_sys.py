@@ -77,7 +77,7 @@ class APICALLS:
 				fd = open(file, "w")
 				wb = fd.write(buffer)
 				fd.close()
-				return self.cv.COMARRetVal( value= self.cv.numeric_create(0), result=0 )				
+				return self.cv.COMARRetVal( value= self.cv.numeric_create(0), result=0 )
 			return self.cv.COMARRetVal( value=self.cv.numeric_create(0), result=EPERM )
 			
 	def get_file(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):

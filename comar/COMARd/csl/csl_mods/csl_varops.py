@@ -36,6 +36,26 @@ class API:
 			if val in arr.keys():
 				return CSLValue("numeric", 1)
 			return CSLValue("numeric", 0)
+			
+	def csl_arraysort(self, prms):
+		var = None
+		if prms.has_key("var"):
+			var = prms["var"]
+		if prms.has_key("variable"):
+			var = prms["variable"]
+		if var:
+			arr = var.value
+			x = arr.keys()
+			x.sort()
+			ret = {}
+			p = 0
+			for i in x:
+				ret["%06d"%p] = i
+			
+			return CSLValue("array", ret)
+		else:
+			return CSLValue("NULL", "")
+			
 	def csl_typeof(prms):
 		var = None
 		if prms.has_key("var"):

@@ -76,7 +76,7 @@ class APICALLS:
 				os.unlink(prg)
 			except:
 				pass
-			return self.cv.COMARRetVal( value=st, result=0 )
+			return self.cv.COMARRetVal( value=None, result=0 )
 			
 		return self.cv.COMARRetVal(value=None, result = EBADF)
 			

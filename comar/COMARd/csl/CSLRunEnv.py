@@ -685,7 +685,7 @@ class	CSLCapsule:
 				if prms.has_key("array") and prms.has_key("value"):
 					arr = prms["array"].value
 					val = prms["value"].value
-					print "hasvalue:", prms, arr, val
+					#print "hasvalue:", prms, arr, val
 					if type(arr) != type({}):
 						return CSLValue("numeric", 0)
 					for i in arr.keys():
@@ -694,8 +694,16 @@ class	CSLCapsule:
 					return CSLValue("numeric", 0)
 			if name == "arrayhaskey":
 				ret = ""
-				if prms.has_key("string") and prms.has_key("key"):
-					pass
+				if prms.has_key("array") and prms.has_key("key"):
+					arr = prms["array"].value
+					val = prms["key"].value					
+					if type(arr) != type({}):
+						return CSLValue("numeric", 0)
+					#print "haskey:", prms, arr.keys(), val
+					if val in arr.keys():
+						return CSLValue("numeric", 1)
+					return CSLValue("numeric", 0)
+					
 		elif firstc == "g":
 			if name == "getbit":
 				ret = ""
@@ -713,7 +721,7 @@ class	CSLCapsule:
 				if prms.has_key("string"):
 					s = prms["string"].toString()
 					skip = 0
-					print "GETNumLeft: '%s'" % (s)
+					#print "GETNumLeft: '%s'" % (s)
 					for i in s:
 						if i in "0123456789.":
 							ret += i
@@ -727,7 +735,7 @@ class	CSLCapsule:
 							if len(ret):
 								ret = float(ret)
 							break
-				print "getnumleft return:", ret
+				#print "getnumleft return:", ret
 				if int(ret) == ret:
 					ret = int(ret)
 				return CSLValue("numeric", ret)
@@ -736,7 +744,7 @@ class	CSLCapsule:
 			
 				if prms.has_key("string"):					
 					s = prms["string"].toString()
-					print "GETNumRight: '%s'" % (s)
+					#print "GETNumRight: '%s'" % (s)
 					skip = 0
 					for i in range(len(s) - 1, -1, -1):
 						c = s[i]
@@ -750,19 +758,20 @@ class	CSLCapsule:
 								break							
 						else:
 							break
-				print "getnumright return:", ret
+				#print "getnumright return:", ret
 				return CSLValue("numeric", ret)
 			elif name == "getnearvalue":
 				if prms.has_key("look") and prms.has_key("values"):
 					s = prms["values"].value
 					l = prms["look"].toNumeric()
-					yak = {}
-					for i in s.keys():
-						x = abs(int(i) - l)
-						yak[x] = s[i]					
-					m = yak.keys()
-					m.sort()
-					return yak[m[0]]
+					if s:
+						yak = {}
+						for i in s.keys():
+							x = abs(int(i) - l)
+							yak[x] = s[i]					
+						m = yak.keys()
+						m.sort()
+						return yak[m[0]]
 					
 				return CSLValue("numeric", 0)
 		elif firstc == "d":

@@ -1,9 +1,9 @@
 # startup script for autoconfiguring xorg
 # doesnt use COMAR:Desktop at the moment, scans hw directly
 
-method ConfigureDisplay(dpi=80) {
+method ConfigureDisplay(dpi=90) {
 
-	#modes = capture(exec="/usr/sbin/ddcxinfo-knoppix -monitor");
+	#modes = capture(exec="/usr/sbin/ddcxinfos -monitor");
 	#xini_change_section(cfgfile="/home/palpa/xorg.conf",section="Monitor",content=modes);
 	#xini_change_option(cfgfile="/home/palpa/xorg.conf",section="Device",option="Driver",value="nvidia");
 	# First search LCD Panel..
@@ -125,21 +125,37 @@ method ConfigureDisplay(dpi=80) {
 		}
 		if ( s == "") {
 			s = grepfirst(exec="/usr/sbin/ddcxinfos", pattern="truly");
-		}
+		}		
 		if (s != "") {
 			w = split(string=s, separator=" ");
 			inc = getnumleft(string = w[4]);
 			pix = 4 * (inc / 5) * dpi;
 		}
+		ml = capture(exec="/usr/sbin/ddcxinfos", startwith="ModeLine");
+		
+		debugout(value=ml);
+		modelin = "";
+		foreach (key=val in ml) {
+			l = split(string=val, separator=" ");
+			r = split(string=l[1], separator="x");
+			x = getnumright(string=r[0]);
+			y = getnumleft(string=r[1]);			
+			if (arrayhaskey(array=vals, key=x) == 0) {
+				vals[x] = ""+x+" "+y;
+				debugout(value="add res:"+x+" "+y);
+			}
+			modelines[key]= strip(string=val);
+			modeline = modeline + val + " ";
+		}
 	}
-
+	debugout(value=vals);
 	DisplayInfo = xdrv + " " + "resx="+resx+" resy="+resy+" pix="+pix+" inc="+inc;
 	if (psize == "") {
-		vals[1600] = "1600 1200";
-		vals[1280] = "1280 1024";
-		vals[1152] = "1152 864";
-		vals[1024] = "1024 768";
-		vals[800]  = "800 600";
+		#vals[1600] = "1600 1200";
+		#vals[1280] = "1280 1024";
+		#vals[1152] = "1152 864";
+		#vals[1024] = "1024 768";
+		#vals[800]  = "800 600";
 		DisplayInfo = getnearvalue(look = pix, values = vals);
 	}
 

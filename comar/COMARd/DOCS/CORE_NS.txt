@@ -158,24 +158,25 @@ om.delACL(node="NS:node", position=pos)
 om.setNodeProfile(node="NS:node", profile="profile_name", default="")
 	OM düğümünün kalıcı verilerinin hangi profilde tutulacağını belirler. Profile değişiminde, eski veriler yeni profilin bahsedilen değerine taşınır.
 
-om.addNewInstance(index="")
+om.addNewInstance(object=obj_value, index="")
 	Sadece OM düğümleri tarafından çağrılabilir. Bu çağrıyı yapan OM düğümünün belirtilen indexle yeni bir instance'ı oluşturulur. Böylece, nesne çağrılırken bu index kullanılarak seçim yapılabilir.
 	from COMAR:Network.connPoint.PHY:
-		CORE:om.addNewInstance(index = "ethernet0");
+		makeinstance new_eth, 'newlycreated';
+		CORE:om.addNewInstance(object=new_eth, index = "ethernet0");
 	from any other:
 		phy = COMAR:Network.connPoint.PHY["ethernet0"];
 		phy.TXSpeed = 100000;
 	veya:
-		phys = COMAR:Network.connPoint.PHY; 
+		phys = COMAR:Network.connPoint.PHY;
 		# phys is:
 		#   phys[0] = "ethernet0"
 		#   phys[1] = "ethernet1"
 		#   phys[2] = "serial0"
 		#   phys[3] = "serial1"
-		
+
 om.delInstance(index="")
 	Sadece OM düğümleri tarafından çağrılabilir. om.addNewInstance ile hazırlanmış olan instance değerini kaldırmayı sağlar..
-	
+
 CORE Profile Management:
 	COMAR Profile yönetimi CORE tarafından sağlanır. COMAR ortamı bazı profilleri standart olarak sunar. Bunun yanında OM düğümlerindeki scriptler kendileri yeni profiller tanımlayabilirler. COMAR-OM'daki her nesnenin persistent/instance değerleri belli bir profil içinde tutulur. Bu sayede uygulamaların sistemin yeni durumuna göre ek bir işlem gerektirmeden yapılandırılmaları imkanı sağlanabilir.
 

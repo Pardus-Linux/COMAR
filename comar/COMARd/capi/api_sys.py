@@ -64,21 +64,30 @@ class APICALLS:
 	def capture_stdout(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
 		keylist = prms.keys()
 		prg = ""
+		startwith = None
 		for prm in keylist:
 			filter = 1
 			if prm == "program" or prm == "exec":
 				prg = prms[prm].data.value
 			elif prm == "ignoreblanklines":
 				filter = prms[prm].toBoolean()
+			elif prm == "startwith":
+				startwith = prms[prm].data.value
+			
 		if checkPerms(perm = "PROCESS_EXEC", file=prg):
 			if isexecutable(prg):
 				lines = self.exec_stdout(prg)
 				ret = self.cv.array_create()
 				x = 0
 				for line in lines:			
-					if len(line) > 1 or filter:				
-						self.cv.array_additem(array=ret, key="%04d" % (x), arrValue=self.cv.string_create(line))
-						x += 1
+					if len(line) > 1 or filter:
+						if startwith == None:
+							self.cv.array_additem(array=ret, key="%04d" % (x), arrValue=self.cv.string_create(line))
+							x += 1
+						else:
+							if line[:len(startwith)] == startwith:
+								self.cv.array_additem(array=ret, key="%04d" % (x), arrValue=self.cv.string_create(line))
+								x += 1
 				#print "capture stdout:", self.cv.dump_value_xml(ret)
 				return self.cv.COMARRetVal( value=ret, result=0 )
 				
@@ -190,7 +199,7 @@ class APICALLS:
 			if checkPerms(perm = "PROCESS_EXEC", file=exe):
 				pipe = popen2.Popen3(exe)
 				while 1:
-					line = pipe.fromchild.readline()
+					line = pipe.fromchild.readline()					
 					if line == "":
 						break
 
@@ -199,16 +208,16 @@ class APICALLS:
 							logical_line += line
 							for e in end_pattern:
 								if line[-len(e):] == e:
-								    line_ok = 1
-								    break
+									line_ok = 1
+									break
 						else:
 							for b in begin_pattern:
 								if line[:len(b)] == b:
 									logical_line += line
 									for e in end_pattern:
 										if line[-len(e):] == e:
-										    line_ok = 1
-										    break
+											line_ok = 1
+											break
 									break
 					else:
 						line_ok = 0
@@ -219,17 +228,17 @@ class APICALLS:
 								logical_line = line
 								for e in end_pattern:
 									if line[-len(e):] == e:
-									    line_ok = 1
-									    break
+										line_ok = 1
+										break
 				if logical_line != "":
 					results.append(logical_line)
 
 		if len(results) > 0:
-			ret = COMARValue.array_create()
+			ret = self.cv.array_create()
 			key = 0
 			for res in results:
-				key += 1
-				self.cv.array_additem(array = ret, key = key.__str__(),  arrValue = COMARValue.COMARValue(type='string', data=res))
+				key += 1				
+				self.cv.array_additem(array = ret, key = key.__str__(),  arrValue = self.cv.string_create(res))
 			return self.cv.COMARRetVal( value = ret, result=0 )
 
 		return self.cv.COMARRetVal( value=None, result=0 )

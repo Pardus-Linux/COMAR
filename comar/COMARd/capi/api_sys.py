@@ -46,7 +46,9 @@ class APICALLS:
 				 'grepfirst':self.grepfirst,
 				 'createdaemon': self.daemonize,
 				 'execute':self.execute,
-				 'capture':self.capture_stdout}
+				 'capture':self.capture_stdout,
+				 'getfile':self.get_file,
+				 'putfile':self.put_file }
 				 
 	def execute(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
 		if checkPerms(perm = "PROCESS_EXEC", file=prg):
@@ -60,6 +62,7 @@ class APICALLS:
 				return self.cv.COMARRetVal( value=st, result=0 )
 				
 			return self.cv.COMARRetVal(value=None, result = EBADF)
+			
 	def put_file(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
 		keylist = prms.keys()
 		file = None
@@ -74,9 +77,26 @@ class APICALLS:
 				fd = open(file, "w")
 				wb = fd.write(buffer)
 				fd.close()
-				return self.cv.COMARRetVal( value=wb, result=0 )
-			return self.cv.COMARRetVal( value=0, result=EPERM )
+				return self.cv.COMARRetVal( value= self.cv.numeric_create(0), result=0 )				
+			return self.cv.COMARRetVal( value=self.cv.numeric_create(0), result=EPERM )
 			
+	def get_file(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
+		keylist = prms.keys()
+		file = None
+		buffer = None
+		for prm in keylist:			
+			if prm == "file":
+				file = prms[prm].data.value		
+				break
+		if file:
+			if checkPerms(perm = "FILE_READ", file=file):
+				fd = open(file, "r")
+				wb = fd.readlines()
+				fd.close()				
+				ret = self.cv.string_create("".join(wb))
+				return self.cv.COMARRetVal( value = ret, result=0 )
+			return self.cv.COMARRetVal( value=self.cv.numeric_create(0), result=EPERM )
+	
 	def capture_stdout(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
 		keylist = prms.keys()
 		prg = ""

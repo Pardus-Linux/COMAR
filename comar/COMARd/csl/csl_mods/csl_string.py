@@ -109,13 +109,16 @@ class API:
 	
 	def csl_strstr(self, prms):
 		if prms.has_key("string") and prms.has_key("pattern"):
-			print "STRSTR:", prms
+			
 			st = prms['string'].toString()
+			print "STRSTR:", prms, st, prms['pattern'].toString(),
 			if st.find(prms['pattern'].toString()) != -1:
+				print "=", 1
 				return CSLValue("numeric", 1)
 			else:
+				print "=", 0
 				return CSLValue("numeric", 0)
-			
+		return CSLValue("numeric", 0)
 	def csl_substr_left(self, prms):
 		if prms.has_key("string"):
 			st = prms['string'].toString()						

@@ -196,7 +196,7 @@ method ConfigureDisplay(dpi=100) {
 		DisplayInfo = getnearvalue(look = pix, values = vals);
 	} else {
 		vals = "";
-		DisplayInfo = "" + resx + "x" + resy;
+		DisplayInfo = '"' + resx + "x" + resy + '"';
 	}
 
 	# Detect mouse...

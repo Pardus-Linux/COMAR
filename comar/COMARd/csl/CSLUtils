@@ -1,0 +1,7 @@
+def	findlast(str, q_open, q_close, start = 0, stop = 0):
+
+	if stop = 0: 
+	
+		
+	__x = 0
+	__nest = 0

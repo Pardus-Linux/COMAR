@@ -1,0 +1,2 @@
+<COMARRPCData><RPCVersion>1.0</RPCVersion><RPCTTSID>NEWTTSDI</RPCTTSID><RPCEOLTime>1103368851.89</RPCEOLTime><RPCPriority>NORMAL</RPCPriority><RPCType>OMCALL</RPCType><RPCData><type>method</type><name>COMAR:test.node.x</name><index></index><parameters><parameter><name>prm1</name><value><string encoding="utf-8">bu da bir stringdir</string></value></parameter></parameters></RPCData></COMARRPCData>
+

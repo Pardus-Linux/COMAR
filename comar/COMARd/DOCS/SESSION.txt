@@ -1,0 +1,21 @@
+COMAR Session Management Object..
+
+COMAR Session Management a simple container for session data. You can insert COMARValues with key and standart Session properties to this object. Your modifications saved transparently and if you create this object with same parameters, your session variables automatically loaded.
+
+A COMAR Session:
+
+Any COMAR session can have thus properties:
+
+StartTime
+TTL
+Status
+OriginInfo
+user
+group
+adminGroups
+callerObject
+carrier
+sessData
+
+COMAR Session Objects provide this utility methods:
+

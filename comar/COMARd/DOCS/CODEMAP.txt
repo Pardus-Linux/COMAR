@@ -1,0 +1,40 @@
+CODE MAP FOR COMARD
+
+RPC_HTTP.py			- RPC over HTTP driver.
+	class	RPCServer		: RPC Class. Possibly Conn Session Provider.
+					  symlink to $COMAR_MOD_PATH/connector/ dir.
+
+RPC_UDP.py			- RPC over UDP driver.
+	class	RPCServer		: RPC Class. Possibly Conn Session Provider.
+					  symlink to $COMAR_MOD_PATH/connector/ dir.
+
+RPCData.py			- RPCStruct object. Used for RPCData handling.
+	class	RPCStruct		: RPCStruct object.
+	class	RPC* Family		: RPCData formats.
+
+SESSION.py			- Session Tracking and internal IPC.
+	class	COMARPipe		: Session - Session Pipe Helper.
+	class	TTSDriver		: Transaction data struct, transaction object.
+
+COMARAPI.py			- CAPI Functions, Dynamic Module Loader.
+	class	callerInfoObject : Struct for caller info.
+	class	COMARIAPI		: IAPI. Persistent value management and general Functions.
+	class	COMARCAPI		: CAPI Driver. Function calls for CSL and other objHooks.
+	class	COMARAPI		: API Entry Table object.
+
+COMARValue.py				: COMARValue and related utility functions.
+	COMAR* 			- COMARValue family objects.
+
+OMDRIVER.py			- OM Management functions and Container class
+	class	NSContainer		: COMAR OBJECT CONTAINER. OBJ Session Provider.
+	class	IIDManager		: IID Management functions.
+	class	OMDriver		: EXEC Session Provider.
+
+COMARd.py			- Main code.
+
+STDTA.py			- Standart Default TTSID Handlers.
+				  symlink to $COMAR_MOD_PATH/ttshandlers/ dir.
+
+-----------------------
+api_sys.py			- Standart API, system calls. Used with COMARAPI.COMARCAPI
+				  symlink to $COMAR_MOD_PATH/capi/ dir.

@@ -1,0 +1,105 @@
+COMARPRCData veri formatý ve COMAR-RPC Protokolü.
+
+COMARRPCData formatý:
+
+COMARRPCData, COMARd uygulamasý ile yapýlacak haberleþme için kullanýlan alt düzey veri yapýsýdýr. Bu yapýnýn daha üst düzey (XML with HTTP etc) tiplere çevrilip kullanýlmasý tavsiye edilir. Buna mukabil, COMARd ve çevresindeki modüller her zaman bu veri formatýný kullanýrlar. Bu veri formatýný kullanmak üzere COMARValue formatýnýn anlþaýlýr olmasý gereklidir.
+
+RPCDataStructure
+	RPCVersion		:	string-ascii-8bit[8]
+						Bu yapýnýn versiyonunu gösterir. Þu anda 1.0 olmalýdýr.
+	RPCTTSID		:	string-ascii-8bit[255]
+						Bu çaðrýnýn transaction track ID'sini ihtiva eder. Bu deðer RPC isteðini yapan sistem çapýnda her iþlem sekansý için yeðane olmalýdýr.
+	RPCEOLTime		:	numeric
+						UNIX Time türünde bu çaðrýnýn en son hangi tarihe kadar cevaplanmasý gerektiðini belirtir. Eðer 0 ise, çaðrýyý yapan bu iþlevi polling ile sorgulayabilir, alýcý iþlem sonucuna dair bilgiyi asla çaðýrana geri yollamaz.
+	RPCPriority		:	string-ascii-8bit[32]
+						Bu çaðrýnýn (recommended) iþlenme önceliðini gösterir.
+						NORMAL			: Normal iþlenme sýrasý
+						URGENT			: BU çaðrý acil olarak iþlenmelidir.
+						INTERACTIVE		: Bu çaðrý interactive bir iþlem için kullanýlmaktadýr.
+						DONTCARE		: Bu çaðrýnýn cevabý her hangi bir zamanda geri alýnabilir.
+	RPCData			:	RPCType baðlý olarak hazýrlanmýþ veri.
+	RPCType			:	string-ascii-8bit[32]
+						OMCALL		:   RPCData içeriðinde belirtilen formatta bulunan COMAR OM çaðrýsýnýn yerine getirilmesini saðlar.
+							RPCData
+								type: string-ascii-8bit[255]
+									propertyset
+									propertyget
+									method
+								name: string-ascii-8bit[255]
+									Çaðrýlan iþlevin adý
+								index: string-ascii-8bit[255]
+									Caðrýlan iþlev için index/instance deðeri.
+								parameter: array
+									name	: string-ascii-8bit[255] index/key
+										Parametrenin adý
+									value	: COMARValue
+										Parametrenin deðeri
+									Eðer, type = propertyset ise, parameter["index"] = property'nin index'i, parameter["value"] ise property'ye atancak deðeri gösterir. type = propertyget ise parameter["index"] = property'nin index'ini göstermelidir.
+						OBJCALL		:	RPCData içeriðinde belirtilen formatta bulunan nesne çaðrýsýnýn yerine getirilmesini saðlar.
+							RPCData
+								object: COMARObject
+								type: string-ascii-8bit
+									propertyset
+									propertyget
+									method
+								name: string-ascii-8bit
+									Çaðrýlan iþlevin adý
+								parameter: array
+									name	: string-ascii-8bit index/key
+										Parametrenin adý
+									value	: COMARValue
+										Parametrenin deðeri
+									Eðer, type = propertyset ise, parameter["index"] = property'nin index'i, parameter["value"] ise property'ye atancak deðeri gösterir. type = propertyget ise parameter["index"] = property'nin index'ini göstermelidir.
+						EXEC		:	RPCData içeriðinde bulunan CSL kodunun iþletilip sonucun geri döndürülmesini saðlar.
+							RPCData
+								code: string-base64[<65535]
+									Çalýþtýrýlacak kod.
+								compression: string-ascii-8bit[16]
+									GZIP
+									BZIP2
+									NONE
+								type: string-ascii-8bit[32]
+									propertyset
+									propertyget
+									method
+								name: string-ascii-8bit[64]
+									Kod içinden Çaðrýlacak iþlevin adý
+								parameter: array
+									name	: string-ascii-8bit[64] index/key
+										Parametrenin adý
+									value	: COMARValue
+										Parametrenin deðeri
+									Eðer, type = propertyset ise, parameter["index"] = property'nin index'i, parameter["value"] ise property'ye atancak deðeri gösterir. type = propertyget ise parameter["index"] = property'nin index'ini göstermelidir.
+						RESPONSE	:	Daha önce CALL ile yapýlmýþ bir çaðrýnýn cevabýdýr.
+							RPCData
+								TTSID	: string-ascii-8bit[255]
+									Cevabý verilen Transaction ID
+								status	: string-ascii-8bit[32]
+									ACCEPTED			: Kabul edildi.
+									PROCESSED			: Ýþleniyor.
+									QUEUE				: Ýþlenmek üzere kuyrukta bekliyor.
+									WAIT				: Ýþlenirken baþka bir sebepten dolayý beklemede (verification etc.)
+									RESULT				: Ýþlem sonlandýrýldý ve returnvalue geçerli.
+									PERMISSIONDENIED	: Bu iþlemi yapma hakkýnýz yok.
+									INVALID				: Geçersiz bir iþlem çaðrýsý. Check your call RPCData.
+									ABORT				: Ýþlem CANCEL ile sonlandýrýldý.
+									ERROR				: Geçersiz bir OM çaðrýsý yapýldý. Bu nesne/method OM üzerinde tarifli deðil.
+									NOTFOUND			: BU TTSID ile bir çaðrý yapýlmamýþ.
+									FATAL				: Nesne yürütülürken oluþan bir sorun nedeniyle iþlem durduruldu.
+									KILLED				: Nesnenin yürütülmesi operatör tarafýndan engellendi.
+									ACCESSDENIED		: Bu nesneye eriþemezsiniz (OM ACL Policy).
+								returnvalue : COMARRetVal
+									Eðer status == RESULT ise, geri dönüþ deðeridir. Aksi halde tanýmsýzdýr.
+						STATUS		:	Daha önce istenen ama cevaplanmamýþ bir isteðin durumunu sorgulamak amacýyla kullanýlýr.
+							RPCData
+								TTSID	: string-ascii-8bit[255]
+									Cevabý istenen Transaction ID
+								
+						NOTIFY		:	Event notification
+							RPCData
+								status	: string-ascii-8bit[32]
+								eventid	: string-ascii-8bit[255]
+						CANCEL		:	Daha önceden baþlatýlmýþ bir iþlevi iptal etmek için kullanýlýr.
+							RPCData
+								TTSID	: string-ascii-8bit[255]
+									Ýptal edilecek TTS ID.

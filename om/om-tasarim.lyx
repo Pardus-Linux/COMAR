@@ -1,0 +1,837 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass article
+\begin_preamble
+\tolerance 10000
+\usepackage{hyperref}
+\end_preamble
+\language turkish
+\inputencoding auto
+\fontscheme pslatex
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+COMAR Nesne Modeli Tasarým Klavuzu
+\layout Author
+
+Serdar Köylü, A.
+ Murat Eren, Gürer Özen
+\layout Date
+
+29 Kasým 2004
+\layout Standard
+\pagebreak_bottom 
+
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset 
+
+
+\layout Section
+
+Genel Kurallar
+\layout Standard
+
+Tasarlayacaðýmýz nesne modeli, Ulusal Daðýtým iþletim sistemimizin yapýlandýrma
+ haritasýný oluþturacaktýr.
+ COMAR mimari gereksinimleri, uzun ve kýsa vadeli proje planýmýz, ve vizyonumuz
+ doðrultusunda en iyi tasarýmý yapabilmek için, bu kurallarý ve nesneleri
+ belirlerken uygulayacaðýmýz çalýþma metotlarýný çýkardýk.
+\layout Standard
+
+Temel olarak dikkat edeceðimiz noktalar:
+\layout Enumerate
+
+COMAR'ýn, API deðil yapýlandýrma çerçevesi, görev uygulamasý deðil yönetim
+ uygulamasý olduðu akýldan çýkarýlmamalýdýr.
+\layout Enumerate
+
+Belli uygulamalarýn deðil, bu uygulamalarýn yaptýðý görevlerin yapýlandýrýlmasý
+ gözetilmeli, modelin genelliði yitirilmemelidir.
+\layout Enumerate
+
+Ayný þekilde, Linux kavramlarý yerine genel kavramlar ile gidilmeli, ilerde
+ farklý mimarilerin ortak yönetiminin söz konusu olabileceði unutulmamalýdýr.
+\layout Enumerate
+
+Modelin geliþen teknolojilerle birlikte eskiyip, kullanýþsýz hale gelmemesi
+ için, geniþlemeye açýk olmasý gözetilmelidir.
+\layout Enumerate
+
+Bununla birlikte, ucu açýk, tanýmlanmamýþ bilgi ve görevler modele sokulmamalýdý
+r.
+\layout Enumerate
+
+Burda ayrýmý doðru yapabilmek için, görev ve bilgilerin genel kullanýma
+ mý, yoksa özel kullanýma mý yönelik olduðu bir kriterdir.
+ Bir nesnenin bir görevi eðer üst katmandaki her nesne tarafýndan kullanýlabiliy
+orsa geneldir, açýkça ve kesin olarak tanýmlanmalýdýr.
+ Eðer görevin kullanýmý sadece özel bir üst nesne tarafýndan yapýlabiliyorsa,
+ özeldir ve bunun bilgisi tanýmlanmaya çalýþýlmak yerine, üst nesneye hedef
+ olarak verilip, kendi aralarýndaki iliþkileri kendilerinin kurmalarý desteklenm
+elidir.
+\layout Enumerate
+
+Model, kullanýcý ve görev tabanlý tasarlanmakla birlikte, ister istemez
+ görev uygulamalarýnýn ihtiyaçlarýna yönelik bilgiler de taþýyacaktýr.
+ Bu durumlarýn modelde açýkça belirtilmesi önemlidir.
+\layout Section
+
+Görev Analizi
+\layout Standard
+
+Bu analiz, "sistem yapýlandýrmasý" için gerekli olan 
+\series bold 
+görev
+\series default 
+lerin nesnel ifadesini içerecek OM nesneleri çýkarýlýrken dikkat edilmesi
+ gereken noktalarý aydýnlatmayý ve kontrol mekanizmasý için bir yöntem ortaya
+ koymayý amaçlar.
+\layout Subsection
+
+Proje Nesne Modeli (User View Objects, PDC):
+\layout Standard
+
+Bu model, projenin temel yapýtaþý olan nesneleri, kodlaþtýrmadan, kavramsal
+ olarak modeller.
+ Bu nesneleri çýkarmak için 'anahtar soru yöntemi' uygun olabilir.
+ Nesne modelindeki nesneler ortaya çýkarýlýrken "Yapýlandýrma ihtiyacý gösteren
+ en küçük, ihtiyaca yönelik olaraksa en geniþ veriyi tutan" nesnelerin tespit
+ edilmesi gereklidir.
+ Bu süreç boyunca tanýmlanacak nesnelerin her birisi için þu bilgiler mevcut
+ olmalýdýr:
+\layout Itemize
+
+Nesnenin adý
+\layout Itemize
+
+Nesnenin ana (major) attribute'leri
+\layout Itemize
+
+Kýsa bir taným cümlesi
+\layout Standard
+
+Uygulanacak yol ise kýsaca þu adýmlardan ibaret olabilir:
+\layout Itemize
+
+Candidate PDC object (CO)'leri belirlenmelidir.
+ Burada candidate nesnenin gerçekten bir nesne olarak deðerlendirilebilmesi
+ için þu kurallarý yerine getirmesi gerekmektedir: 
+\begin_deeper 
+\layout Description
+
+Necessary\SpecialChar ~
+Remembrance: Her objenin hatýrlamasý gereken bir veri olduðundan
+ emin olunmalýdýr.
+\layout Description
+
+More\SpecialChar ~
+Than\SpecialChar ~
+One\SpecialChar ~
+Attribute: Eðer bir nesnenin bir tek özelliði ya da metodu varsa,
+ bu nesne büyük ihtimalle tek baþýna bir nesne olmak yerine baþka bir nesnenin
+ bir özelliði ya da metodu olmalýdýr.
+\layout Description
+
+Needed\SpecialChar ~
+Functionality: Nesne sadece veri anlamýna gelmemeli, bu veriyle en
+ az bir iþlev gerçekleþtiriliyor olmalýdýr.
+\layout Description
+
+Essential\SpecialChar ~
+Functionality: Limitler ve implementasyon yöntemleri düþünülmeden,
+ nesneden nasýl bir iþlevi yerine getirmesinin beklendiði üzerinden gidilerek
+ nesneler ve metodlarý tespit edilmelidir.
+\layout Description
+
+Common\SpecialChar ~
+Attributes: Her instance ayný attribute'leri kullanmalýdýr.
+ Belirli instance'lar için belirli attribute setleri tasarým içine sokulmamalýdý
+r.
+\layout Description
+
+Common\SpecialChar ~
+Functionality: Her instance için ayný fonksiyonelite saðlanmalýdýr.
+ Nesne tanýmý gerçekten bir nesne olmalýdýr, bir metod ya da özellikten
+ ibaret olmamalýdýr.
+\end_deeper 
+\layout Itemize
+
+Nesneler mümkünse özet nesne sýnýflarý þekline getirilmelidir.
+\layout Itemize
+
+Bu nesneler arasýndaki statik baðýntýlar (relationship) belirlenmelidir.
+ Bu iliþkilerin tahmini sayýsý genellikle 
+\begin_inset Formula $(n\, x\,(n-1))/2$
+\end_inset 
+
+ formülü ile hesaplanýr.
+ Sonuçta nesneler arttýkça aralarýndaki baðlantýlarda bu formüle istinaden
+ artacaktýr.
+ Bunu engellemenin kesin bir yolu yoktur.
+ Fakat bu baðlantýlar bilhassa nesneleri kullanacak olan kullanýcý için
+ önem taþýmaktadýr.
+ Þöyleki, baðlantý iki nesne arasýnda yapýlan iþlemin fiilini tanýmlamaktadýr:
+ "Müþteri (nesnesi) ürün (nesnesi) alýyor" ise, baðýntý "almak" eylemidir.
+ Bu durumda bizim uygulamamýz özelinde, düþündüðümüz nesnenin fiili kabiliyetler
+i baðýntýlarý gösterecektir: "Ekle, sil, gönder, oku, ara..." gibi.
+ Tipik OO modellerindeki, Derived, N-Array, Recursive gibi baðlantýlar OM
+ içerisindeki nesnelerin arasýndaki baðlantýlar için makul yöntemler deðillerdir.
+ Ek olarak, eðer iki nesne arasýnda bir baðlantý tarif edilmiþse, bu baðlantýnýn
+ cardinality'si de tarif edilmelidir (Yön, [1:N|N:N|N:1] ve Min/Max deðerleri).
+\layout Standard
+
+Candidate Object'lerin sayýsý ile ortaya çýkacak nesne modelinin kalitesi
+ ve iþlevselliði arasýnda bir orantý kurmak pek mümkün deðildir.
+\layout Standard
+
+Nesnenin özellikleri belirlenirken, özellikle bu nesneyi ana hatlarý ile
+ anlamayý ve diðerlerinden ayýrmayý saðlayan bileþenlerin seçilmesi gerekli
+ ve yeterlidir.
+\layout Standard
+
+Statik baðlantýlarýn keþfedilmesi için en uygun yöntem, nesnenin diðer nesne
+ tarafýndan çaðrýlmasýný ifade eden cümleler kurmaktýr.
+ Bu cümlelerin yüklemleri bize statik baðýntý noktasýný kolayca gösterecektir.
+ Burada, unutulmamasý gereken husus bunun bir uygulama data yapýsý olmadýðý,
+ tanýmýn "real-world" yapýsý içinde tarifinin yeterli olduðudur.
+\layout Standard
+
+Tanýmlanan candidate obje'lerin kararlýlýklarý ve iþlevselliklerinin tatminkarlý
+ðý konusunda emin olabilmek için aþaðýdaki kontrol sorularýnýn her birine
+ yanýt verebiliyor olmalarý gereklidir:
+\layout Itemize
+
+Tarif edilen nesneler problem çerçevesi (scope) içinde tanýmlanýyor mu?
+\layout Itemize
+
+Bu nesneler hizmetlerini ifade eder þekilde adlandýrýlmýþ mý?
+\layout Itemize
+
+Herhangi bir nesne diðerinin sahasýnýn üzerine giriyor mu?
+\layout Itemize
+
+Ayný iþi yapan birden fazla nesne var mý?
+\layout Itemize
+
+Nesneler arasýndaki baðýmlýlýklar tarif edilmiþ mi?
+\layout Itemize
+
+Nesneler arasýndaki baðlantýlar tespit edilmiþ mi?
+\layout Itemize
+
+Baðlantýnýn yönü, diðer baðlantýlarla kesiþmeleri doðru mu?
+\layout Itemize
+
+Her baðlantý düzgünce adlandýrýlmýþ mý, "cardinality" ve "enumeration" tespit
+ edilmiþ mi?
+\layout Itemize
+
+Kullanýcýya (uygulama geliþtirici, son kullanýcý v.s.) yönelik özellikler
+ tespit edilmiþ mi?
+\layout Subsection
+
+Nesnelerin hayat döngüsü
+\layout Standard
+
+Hayat döngüsü, bir nesnenin yaþamaya baþladýðý andan itibaren diðer nesnelerle
+ olan etkileþimlerini, bu etkileþimler sonucunda oluþan durum (state) deðiþimler
+ini, bu deðiþimlerin oluþturduðu olaylarý ve elde edilen sonuçlarý diyagram
+ olarak tarif etmeyi hedefler.
+\layout Standard
+
+Saðlýklý bir hayat döngüsü diyagramý ortaya konulabilmesi için, nesnelerin
+ aþaðýdaki kontrol listesi göz önünde bulundurularak tasarlanmýþ olmasý
+ gereklidir:
+\layout Itemize
+
+Her yeni duruma geçiþ için alýnacak event belirlenmiþ mi?
+\layout Itemize
+
+Her durumda event'lara verilecek yanýtlar belirlenmiþ mi?
+\layout Itemize
+
+Nesnenin tüm durumlarý mutual olarak tanýmlanmýþ mý?
+\layout Itemize
+
+Her bir durum düzgünce adlandýrýlýp tarif edilmiþ mi ?
+\layout Itemize
+
+Durum deðiþiklikleri düzgün þekilde, diðer nesnelere göre iþaretlenmiþ mi?
+\layout Itemize
+
+Her durum için nesnenin alabileceði event'lar belirlenmiþ mi?
+\layout Itemize
+
+Her bir geçiþte, sonuç durumu gerçekten istenen durum mu?
+\layout Standard
+
+Hayat döngüsü, nesnelerin hangi zamanda hangi durumda olduðunu anlamayý
+ kolaylaþtýrýr.
+ Bir nesnenin ne zaman çaðýralacaðý, sistem yapýlandýrmasýnda son derece
+ bulanýk bir yapý oluþturur fakat, bazý belirli fazlar net bir þekilde çýkarýlab
+ilir.
+ Örneðin nesneyi sunan uygulamanýn ilk kurulum aný, çalýþtýrýlma aný ya
+ da sonlandýrýlmasý aný gibi.
+ Burada gerekli olan diagram aslen öncelikle bir nesnenin iþlendiði süreç
+ olacaktýr.
+ Bu süreç, uygun instance'ýn elde edilmesi, uygun parametrelerle iþlenmesi
+ gibi daha ziyade tek bir nesneye yönelik olacaktýr.
+\layout Standard
+
+Bu diagramýn bir çizimle somut hale getirilmesi anlaþýlmasýný kolaylaþtýracaktýr.
+ Bu noktada aþaðýdaki adýmlarýn takip edilmesi kolaylýk saðlayabilir:
+\layout Itemize
+
+Bu nesnenin bir state modeli var mý? (her nesne belirli bir state'e sahip
+ olmak zorunda deðildir; transient olabilen nesneler de bulunabilir.
+ Bu durumda nesnenin life-cycle modelini çýkarmaya gerek olmayacaktýr)
+\layout Itemize
+
+Nesnenin ilk state'i nedir?
+\layout Itemize
+
+Nesnenin ilk state'ini deðiþtirerek instance oluþturmasý veya ilk durumuna
+ geçmesi için gereken event/mesaj nasýl tanýmlanabilir?
+\layout Itemize
+
+Hangi olaylar bu nesnenin state'ini deðiþtirebilir?
+\layout Itemize
+
+Nesnenin durumundaki deðiþiklik hangi özellikleri tarafýndan ifade edilebilir?
+\layout Itemize
+
+Nesne ne zaman ortadan kalkacaktýr, bu hangi özellikleri etkiler ?
+\layout Subsection
+
+Kullaným süreci
+\layout Standard
+
+Kullaným süreci, uygulamalarýn, uygulama programcýlarýnýn ya da kullanýcýlarýn
+ bu sistemi beklendiði þekilde kullanabilmeleri için tasarým aþamasýnda
+ nelere dikkat edilmesi gerektiðininin göz önünde bulundurulmasýný garantilemeyi
+ hedefler.
+\layout Standard
+
+Sistem, kullaným zamanýnda bir giriþ bilgisi alýp kullanýcýya elde edebildiði
+ diðer bilgiyi de kullanarak bir sonuç üretmelidir.
+ Bu süreç bazý durumlarda nesnelerin durumlarýný deðiþtirebilecektir.
+ Kullaným sürecinin belirlenmesi, nesneler bazýnda teker teker deðil, bir
+ örnek amaç için hangi nesneden elde edilecek veri ile istenen deðeri elde
+ etmek üzere hangi nesnelerin nasýl iþletileceðini belirlemek þeklinde olacaktýr.
+ Hayat döngüsündeki durumlar arasýnda geçiþler için seçilecek örnek süreç
+ ve bunlardan çýkarýlacak alt süreçler, baðýntýlarýn tespiti, öngörülmemiþ
+ yeni durumlarýn tespiti gibi faydalar getirecektir.
+ Bu sayede, "Proje nesne modeli" ve "Nesnelerin hayat döngüsü" çalýþmalarýnýn
+ bu süreçler ile birlikte iteratif olarak yürütülmesi, her adýmda elde edilen
+ yeni yapýlarýn uygun checklistler ile kontrol edilerek geniþletilmesi,
+ "sistem gerekleri"ne baþlamak üzere gereken bilgiyi saðlayacaktýr.
+\layout Standard
+
+OM modelinde belirli bir süreç akýþ modeli olmadýðý göz önünde bulundurulduðunda
+, bu adýmýn gerekli nesneleri çeþitli use-case'ler aracýlýðýyla anlamaya,
+ nesneler arasýndaki iliþkileri tanýmlamaya yardýmcý bir adým olduðu görülebilir.
+\layout Itemize
+
+Tarif edilen süreç, bir veya bir kaç giriþ bilgisi alýp, kullanýcýya bir
+ çýktý sunuyor mu?
+\layout Itemize
+
+Bu süreç, nesne modelinde hangi event sekansýný baþlatýyor?
+\layout Itemize
+
+Hayat döngüsünde doðru bir sekans giriþi var mý?
+\layout Itemize
+
+Bir süreçler dizisi belirlenmiþse, farklý diziler için farklý event sekansý
+ tarif edilmiþ mi?
+\layout Itemize
+
+Süreç için belirli bir nesne state'i zorunluluðu varmý (varsa temizlenmeli)?
+\layout Itemize
+
+Bir süreç nesnelerde durum geçiþlerine yol açmadan sonuçlanabiliyor mu?
+ (eðer bir transient nesne deðilse, süreç geçersizdir, kaldýrmak gerekir).
+\layout Section
+
+Sistem gerekleri (Esas Nesne Modelinin Çýkarýlmasý)
+\layout Standard
+
+Sistem gerekleri, görev analizine bakarak bu sistem için hangi bileþenler
+ gerekiyor listesinin çýkarýlmasýdýr.
+ Standart programlama modellerinde süreçler ve bunlarýn alt süreçleri bir
+ aktiviteye tekabül eder.
+ Örneðin, fatura kesilmesi, bir satýþ aktivitesidir.
+ Bu aktivitede stok nesneleri, cari nesneleri, yazdýrma nesneleri v.s.
+ uygun noktada devreye girerler.
+ Halbuki yapýlandýrma modelinin getirdiði sistem nesnelerinin ne zaman baþlayýp
+ biteceði, hangi nesneden interaction ile baþlatýlacaðý kestirilememektedir.
+\layout Standard
+
+Hazýrlanmýþ olan alt sistemler ve sistem modeli dökümanlarý üzerinden Görev
+ analizi yeterince saðlýklý yapýlabildiði gibi, nesnelerin olasý kullaným
+ durumlarý göz önüne alýnarak alt sistem bazýnda gereken bileþenler çýkarýlabili
+r.
+\layout Standard
+
+Sistem gerekleri ile elde edilecek olan sonuç, gerekli olan Object Model'in
+ tam bir ifadesi olacaktýr.
+\layout Standard
+
+Temel olarak bu süreç aþaðýdaki alt baþlýklar ile özetlenebilir.
+\layout Subsection
+
+System Transaction Sequence Diagrams:
+\layout Standard
+
+Ýþlem sekanslarýnýn çerçevesi (scope'u), temel olarak "Kullaným Süreci"nde
+ tarif edilen bir girdiye tekabül eder.
+ Bu çerçeve yönetilemeyecek kadar geniþ olmamalýdýr.
+ Diðer yandan, bir KGA yazarýnýn bu tür bir süreç tarif etmesi durumunda,
+ kullanýlacak entity objects'leri kolayca tespit edebilmesi önemlidir.
+ Bu yüzden Jacobsen'in aktörlere yönelik yaklaþýmý ve eventler üzerinden
+ elde edilmeye çalýþýlan sekanslarýn her ikiside mümkün olduðunca sekans
+ diyagramýna yansýtýlabilmelidir.
+ Bu sayede kullanýcýnýn actor-based veya event-based düþünmesi halinde modelin
+ zayýf kalmasý önlenebilir.
+\layout Itemize
+
+Kullaným sürecine bakarak iþlem sekanslarýný tanýmlamak.
+\begin_deeper 
+\layout Itemize
+
+Gereken iþlem sekansýný tanýmlama
+\layout Itemize
+
+Aktörler tanýmlayýp bunlarýn baþlatacaðý sekanslarý simüle etmek.
+\begin_deeper 
+\layout Itemize
+
+Aktörün ana görevi nedir?
+\layout Itemize
+
+Bu aktör hangi bileþenlere eriþir?
+\layout Itemize
+
+Bu aktör nasýl bir veriyi getirebilir?
+\layout Itemize
+
+Aktör sürecin sonucundan nasýl haberdar edilebilir?
+\layout Itemize
+
+Aktör beklenmedik deðiþikliklerden nasýl haberdar edilebilir ?
+\end_deeper 
+\layout Itemize
+
+Eventler üzerinden giderek sekanslar tanýmlabilir.
+\begin_deeper 
+\layout Itemize
+
+Bir kabul edilecek event listesi çýkarýlýr.
+\layout Itemize
+
+Bu listeye tekabül eden iþlem sekanslarý ve sonuçlarý çýkarýlýr.
+\layout Itemize
+
+Sekanslarýn benzerliði üzerinden eventler ayýklanýr.
+\layout Itemize
+
+Bir event birden fazla sonuç çýkarabilir.
+\layout Itemize
+
+Bu durumda sonuçlarýn elde edildiði farklý ve baðýmsýz iþlem sekanslarý
+ tanýmlanmýþ olmalýdýr.
+ Bu durumda iþlem sekansýný yönlendiren event ile birlikte sunulan veri
+ olacaktýr.
+\end_deeper 
+\end_deeper 
+\layout Standard
+
+Elde edilen sekanslar diagram haline getirilir.
+ Sonuçta elde edilen diagram þu checklist'i karþýlamalýdýr:
+\layout Itemize
+
+Tarif edilen aktörler hiyerarþik olarak olasý tüm aktörlerin sahasýný kapsýyor
+ mu?
+\layout Itemize
+
+Bu aktörler mantýksal olarak temiz þekilde tarif edilip adlandýrýlmýþlar
+ mý?
+\layout Itemize
+
+Tüm iþlem sekanslarý tanýmlanmýþ mý?
+\layout Itemize
+
+Bu sekanslar kabul edilebilir seviyede sistem gerekliliklerini kapsýyor
+ mu?
+\layout Itemize
+
+Tüm aktörler bir iþlem sekansýyla eþleþiyor mu?
+\layout Itemize
+
+Tüm ortak sekanslar tanýnýyor mu?
+\layout Itemize
+
+Bu sekanslar düzgün ve kolay anlaþýlýr isimlendirilmiþ mi?
+\layout Itemize
+
+Ýþlem sekansýnda belirlenen yol, exception'lar ile beklenmeyen yollara sapýyor
+ mu?
+\layout Subsection
+
+Discovering Entity Objects
+\layout Standard
+
+Entity Objects, daha önceden gerekliliði tespit edilen nesnelerin geniþletilmesi
+ ile elde edilen "code-oriented" nesnelerdir.
+ Bu süreçte elde edilen nesne tanýmlarý temel olarak, "User View Objects"
+ in açýlmasý ve iþlem sekans diyagramýndan çýkarýlan property/method listesine
+ göre olacaktýr.
+ Bir önceki adým olan "System Transaction Sequence Diagrams" çalýþmasý,
+ OM'un gerektirdiði fonksiyoneliteyi dökümanlaþtýrabilmeyi saðlayacaktýr.
+ Bu adýmda yapýlan analiz sonunda bulunan nesneler ise bu fonksiyoneliteyi
+ destekleyecek yapýyý gösterecektir.
+\layout Standard
+
+Aktörler, sistemi kullanacak uygulama, kullanýcý vs.
+ olarak tarif edilir.
+ Ýdeal durumda, event'larýn geliþleri ardý ardýna belirli bir sekans oluþturur
+ ve aktörün ne yapmak istediðine dair süreci tarif eder.
+ Böylece sekans diyagramýna bakarak iþ akýþýný gösteren yol tarif edilebilir.
+ Sekanslarýn gidiþ yönünde bazý alternatif yollar olmasý mümkündür.
+ Bunlarýn belirlenmesi faydalý olacaktýr.
+\layout Standard
+
+Entity Objects'in belirlenmesi (bulunmasý) aþamasýnda, Candidate Objects
+ için uygulanan yöntemler faydalý olacaðý gibi, nesneleri aramak için bir
+ kaç farklý perspektif tanýmlanabilir:
+\layout Description
+
+Veri\SpecialChar ~
+(DATA)\SpecialChar ~
+Prespektifi: Pek çok uygulamada veriler sistemin baskýn karakteristiði
+ni oluþtururlar.
+ Verilere doðru açýdan bakýlabilirse, gerekli nesneleri tespit etmek daha
+ kolay olacaktýr.
+ Shlaer ve Mellor "bu açýdan nasýl doðru bakýlýr?" konusunda önemli tezler
+ geliþtirmiþlerdir.
+ Fakat tezlerinde öngörülen, "Generic Objects / Industry Specific / Environment
+ Specific" domainlerinin yapýlandýrma sistemi açýsýndan çok da kritik deðildir.
+ Buna göre, eðer yapýlandýrýlacak uygulamalarýn (yapýlandýrma aracý deðil)
+ nasýl bir "veri" iþlediðine dair elle tutulur bir taným ortaya konabilirse,
+ bu verinin bir nesne olarak modellenmesi mümkün olabilir.
+ Örneðin, MTA'lar, POP3/IMAP sunucular, MUA'lar vs.
+ hepsi esasen "message" türünde bir veri iþleyen araçlardýr.
+ Burada modelin merkezine bu veri tipi konulabilir.
+ Elbette "veri" basitçe "integer/string" gibi vurgulanabilen bir yapýda
+ olmayacaktýr.
+ Ama "veriyi" ifade eden nesnenin hayat sürecinin çýkarýlmasý, gerekli olan
+ sistem nesnelerini gösterebilecektir.
+\layout Description
+
+Fonksiyonel\SpecialChar ~
+Perspektif: Apple'ýn bu konuda bazý çalýþmalarý olmuþtur.
+ Bunun çalýþmalar sonucunda öncelikle sistemin fonksiyonel bir tanýmýnýn
+ yapýlmasý gerekliliði ortaya çýkmýþtýr (System Transaction Sequence Diagrams).
+ Bu yöntem, "iþlem sekanslarýný yerine getirmek üzere ne yapýlmalýdýr?"
+ sorusunun cevabý aranarak gerçekleþtirilebilir.
+ Ardýndan,
+\layout Itemize
+
+Ortak noktalarý (input, output...) birer nesne olarak tarif edebilir.
+\layout Itemize
+
+Bir durum deðiþikliðine yolaçan sekansta, birden fazla veri gereksinimi
+ olan noktalar belirlenir.
+\layout Itemize
+
+Benzer fonksiyonelite gösteren sekans ve durumlar ortaya çýkarýlýr.
+\layout Itemize
+
+Ayný verilere gereksinimi olan noktalar belirlenir.
+\begin_deeper 
+\layout Standard
+
+Kabaca elde edilen nesnelerin kendilerinden beklenenleri yerine getirebilmesini
+ saðlamak üzere gerekli olacaðý düþünülen özellik (attribute) listesi de
+ benzer þekilde elde edilir.
+ Attribute nesnenin nihai deðer bileþeni deðil, nesneye gerekli olan bilgileri
+ ifade eder.
+\layout Standard
+
+Süreç þu þekilde özetlenebilir: Ýlgili dökümaný alýp okuyan programcý, buradaki
+ bir cümleden bir nesne çýkarmaya uðraþýr.
+ Programcý, örneðin dökümanda geçen, "Kedi fareyi yer" cümlesinden ilk bakýþta
+ "noun" olan kediyi bir nesne olarak görme eðilimine girer.
+ Bu modelde, bu kötü bir yaklaþýmdýr, model, "verb" e bakýnýz "yer" kavramýndan
+ yola çýkýnýz der.
+ Böylece "yemek" fiili ihtiva eden, timsah, köpek, kaplan gibi diðer cümlelerde
+ ortaya çýkýnca, buradan bakýþla "Hayvan" gibi bir ana nesne veya "Aðýz,
+ dil, diþler, mide vs." gibi bir sekans/hiyerarþi gösteren bir nesne veya
+ nesne dizisi elde edilebilir.
+ 
+\layout Standard
+
+Bu perspektiften bakýþta dikkat edilmesi gereken en kritik husus, komple
+ fonksiyonel bir model elde edilmesinden kaçýnýlmasýdýr.
+ Bu, nesnel bir yapý yerine structural /functional bir yapý çýkarýr ve nesne
+ yaklaþýmýna uydurmak zorlaþýr.
+\layout Standard
+
+Sekansýn etkilediði nesneleri geniþleterek, koda yönelik yeni nesneler (entity
+ objects) elde edilir.
+ Bu aþama temel nesnelerin ve buna baðlý olarak problem domain nesnelerinin
+ belirlenmesini saðlar.
+ Bu süreçte, Ýþlem sekanslarýna bakarak Mevcut yapýlandýrma sistemlerine
+ bakarak fikir edinilebilir.
+\layout Standard
+
+Genel olarak, sisteme yeni bir nesne eklendiðine, buna baðlý bir diðer nesne
+ kendini gösterecektir.
+ Bu yüzden iterasyonlar doðru nesne yapýsýný çýkarmak için en geçerli yöntem
+ olacaktýr.
+\end_deeper 
+\layout Description
+
+Behavior\SpecialChar ~
+Perspektifi: Bu bakýþ açýsýnda, kritik soru "nesneler nasýl haberleþiyor
+?" olmalýdýr.
+ Bu sorunun cevaplandýrýlmasý esnasýnda "hangi sýklýkta, hangi þekilde,
+ hangi cevaplarla..." gibi detaylarýn da göz önünde bulundurulmasý gerekecektir.
+ Burada elde edilen cevaplarýn içindeki fiil ve özneler gerekli olacak nesneler
+ kadar event/mesaj modelinin çýkarýlmasýný da saðlayacaktýr.
+\begin_deeper 
+\layout Standard
+
+Perspektiflerden bakýþ, her zaman ve her durumda en iyi olmayabilir.
+ Fakat sisteme bu bakýþ açýlarýnýn hepsinden birden bakýlarak en tutarlý
+ modelin çýkarýlmasý mümkün olabilir.
+ Özellikle, Candidate Objects'lere bu perspektiflerin herbirinin uygulanmasý
+ makul olacaktýr.
+\layout Standard
+
+Bu aþamadan sonra elde sistem gereklerini ifade eden ham bir nesne modeli
+ olacaktýr.
+\end_deeper 
+\layout Subsection
+
+Entity objects için structure modelini belirlemek.
+\layout Standard
+
+Bu, sistem modelinden faydalanarak sisteme gerekli olan nesnelerin çýkarýlýp
+ abstract/detailed nesne modelinin oluþturulmasýdýr.
+ Bu durumda, nesneler arasýndaki baðlantýlar, nesnelerin sistem gereksinimleri,
+ overlapped/duplicated nesneler belirlenmiþ olur.
+\layout Standard
+
+Elde edilen Entity Object's için þu checklist kullanýlabilir:
+\layout Itemize
+
+Nesneler, temiz ve anlaþýlýr þekilde adlandýrýlmýþ, doðalarýný ifade eden
+ bir kýsa taným yapýlmýþ mý?.
+\layout Itemize
+
+"User-View Objects" üzerinde (PDC) tarif edilen nesnelerle entity nesneleri
+ karþýlaþtýrýldýðýnda bir veya bir kaç entity object bir PDC nesnesini birebir
+ örtüyor mu? (örtmelidir).
+\layout Itemize
+
+Bir entity nesnesi birden fazla PDC nesnesine tekabül ediyor mu? (etmemelidir,
+ ettiði durumda bu sonucun ikna edici þekilde izahý gerekir)
+\layout Itemize
+
+Nesnelerin inheritance ihtiyaçlarýnýn içiçe, çok fazla seviyede olmasý engellenm
+iþ mi? (Arzu edilen 1 seviyeli inheritance, kabul edilebilir seviye ise
+ 2-3 aþamalý inheritance olabilir).
+\layout Itemize
+
+OM modeline özel olarak, bir nesnenin sadece bir tek nesneden inheritance
+ alacaðý doðrulanýyor mu? (Herhangi bir nesne iki farklý nesneden inherit
+ etmemelidir).
+\layout Itemize
+
+Aggregation nesneler (kombine nesneler) tarif edilmediðinden emin olundu
+ mu?
+\layout Itemize
+
+Tek bir attribute'a (property veya method) sahip olan nesneler var mý? (Bunlarýn
+ aslýnda baþka bir nesnenin parçasý olmasý ihtimalini iyice incelenmelidir).
+\layout Itemize
+
+Her bir attribute için (tüm nesneler veya sub sistemi ifade eden nesne grubunda)
+ tekrar eden deðerler varmý? (Bunlar yeni bir nesneyi gösteriyor olabilirler).
+\layout Itemize
+
+Nesnenin tüm attribute'lerinin hayat döngüsündeki her adým için efektif
+ olduðunu (iþleme girdiði) doðrulandý mý? (Aksi durum bunlarýn yeni bir
+ nesnede toplanmasý ihtiyacýný gösterebilir).
+\layout Itemize
+
+Çeþitli senaryolar ile olasý baðýntýlarý kontrol ettiniz mi? (Many-to-Many
+ baðýntýlardan uzak durmaya çalýþýrken, bazý baðýntýlarýn circular olarak
+ nesneleri döngüye sokmayacaklarýndan emin olun).
+\layout Itemize
+
+Baðýntýlarý kontrol ederek her birinin temiz ve anlaþýlýr olarak adlandýrýldýkla
+rýna emin oldunuz mu?
+\layout Subsection
+
+Modelin partisyonlara ayrýlmasý
+\layout Standard
+
+Partisyonlar, modelin baðýmsýz bileþenlere ayrýlmasý sürecidir.
+ Bu sayede modelin her parçasý ayrý ayrý dizayn edilebilir.
+ Partisyonlar iki þekilde gerçeklenebilir.
+\layout Description
+
+Yatay\SpecialChar ~
+Partisyonlar\SpecialChar ~
+(Layering): Bunlar sistemin katmanlarýný çýkaran tipik
+ layer modelini sunar.
+ Alttaki katman bir üsttekine hizmet eder.
+ Yukarýya gidildikçe kullaným süreçlerine, aþaðýya gidildikçe sistem çaðrýlarýna
+ doðru yaklaþýlýr.
+ Bu model mimari dizayný çýkarýrken son derece kullanýþlý olur.
+\layout Description
+
+Dikey\SpecialChar ~
+Partisyonlar\SpecialChar ~
+(Partitioning): Burada sistem fonksiyonelitesi yönünden
+ ayrýma gidilir.
+ Bu fonksiyonelite birbirine baðýmlý olmayan bileþenleri ifade eder.
+ Her partisyon kendi içinde bütünlük saðlar, diðer bileþenlere görünür bir
+ baðýmlýlýðý yoktur.
+ Dikey partisyonlar özellikle sistem gereklerini çýkarmada kullanýþlýdýr.
+\layout Standard
+
+OM özelinde, sistemin partitioning haline çekilmesi anlamsýzdýr.
+ Fakat, OM'un dizayný yapýlýrken bu husus gözönüne alýnmalýdýr.
+ Özellikle belli bir fonksiyonelite grubunun katmanlar halinde nesneye dökülmesi
+ kritiktir.
+ Böylece üst katmanlarda kalanlarýn alt katmanlardaki nesneleri gerçekten
+ verimli kullanabilmeleri mümkün olabilir.
+ Partitioning ise alt sistem bazýnda doðal olarak yerine getirilmektedir.
+\layout Section
+
+Genel olarak OO Dizayn Kýlavuzu
+\layout Standard
+
+McMenamin, Palmer, Booch, Jacobsen, Yourdon gibi OOP üzerine ciddi çalýþmalar
+ yapmýþ kiþilerin bilhassa satýr aralarýnda sunduðu bazý kritik noktalardan
+ derlenen aþaðýdaki bilgiler iyi bir nesne modeli dizayn etmek üzere faydalý
+ olacaktýr:
+\layout Description
+
+Information\SpecialChar ~
+Hiding: Nesnenin içerdiði tüm verilere, nesneyi kullananlar tarafýnda
+n kesinlikle ulaþýlamamalýdýr.
+\layout Description
+
+Demeter\SpecialChar ~
+Kanunu: Bu kural Lieberherr tarafýndan ortaya konmuþtur.
+ Kural, bir nesnenin hangi nesneleri çaðýrabileceðini tarif eder.
+ Burada "A" nesnesinin "m" methodundan sadece þu kurallara uyan çaðrýlar
+ yapýlabilir:
+\begin_deeper 
+\layout Itemize
+
+m'e parametre olarak geçirilecek olan herhangi bir nesneyi.
+\layout Itemize
+
+Kendi nesnesindeki diðer method/property'leri
+\layout Itemize
+
+Yapýsý mutlak olarak bilinen diðer nesneleri.
+\layout Itemize
+
+m metodu içinde oluþturulan nesneleri.
+\layout Itemize
+
+Global deðiþken olarak tarif edilen nesneleri.
+\end_deeper 
+\layout Standard
+
+
+\begin_inset Graphics
+	filename meren.png
+	rotateOrigin center
+
+\end_inset 
+
+
+\layout Standard
+
+Yukarýdaki þekilde, B ve C tarif edilmiþ nesnelerdir.
+ B1 ve C1 ise sadece B ve C tarafýndan bilinen nesnelerdir.
+ Demeter kanunu, implementation'larý yapacak olan kullanýcý tarafýndan bilinemey
+ebilir.
+ Bu nedenle, nesneleri iþletecek ortamýn bu kanuna uymayý zorlamasý gerekmektedi
+r.
+ Bu kural, bilgiyi gizleme ve yerelleþtirme (localization) kabiliyetini
+ artýran, iþlem karmaþýklýðýný ve çevrimsel çaðrýlarý (nested messages)
+ azaltan bir prensip olarak kabul görmektedir.
+ Bununla beraber, operasyon sayýsý ile metodlara gereken parametre sayýsýný
+ artýrma gibi bir dezavantaja da sahiptir.
+ Prensip olarak, durumlarý iyi belirlenmiþ olan nesneler arasýnda direk
+ çaðrýlar yapýlmasý makul olabilir.
+ Fakat bu durumun ikna edici þekilde dökümantize edilmesi gereklidir.
+\layout Description
+
+Ortak\SpecialChar ~
+Kod\SpecialChar ~
+Üretimini\SpecialChar ~
+Dýþlamak: Bir nesnenin alt nesneleri tarafýndan paylaþýlmasý
+ ihtimali olan kodlarýn abstract olarak býrakýlmayarak, alt nesnelerden
+ yapýlacak çaðrýlarýn bulanýk olmasý engellenmelidir.
+ Kýsaca, A nesnesinden türeyen B ve C nesnelerinin kendilerine göre birer
+ "C.A.m" ve "B.A.m" metodu implement etmeleri gerekliliði engellenmeli, A nesnesi
+ "m" kodunu mutlak ihtiva etmelidir.
+\layout Description
+
+"Implementation\SpecialChar ~
+Inheritance"\SpecialChar ~
+Engellenmelidir: Eðer bir nesne bir diðerindeki
+ uyarlamayý (implementation) bir parçasý olarak kullanmak istiyorsa, o nesneden
+ türemek (inherit) yerine o nesneyi kapsayan bir "aggregation" veya "delegation"
+ kullanmayý tercih etmelidir.
+ Örnek olarak elimizde bir "list" nesnesi olsun.
+ "first, last, add, delete" metotlarý list'in metotlarý olsun.
+ Bu nesneden bir "stack" nesnesi türetirsek, gereksiz olan "first/last"
+ metodlarý yeni nesne içersinde de olacaktýr.
+ Bu metodlarýn doðrudan açýk olmasý encapsulation'u zedeleyecektir.
+ Bunun yerine stack nesnesinin içeriðinde bulunacak olan bir List elemaný,
+ bunlarý olmasý gerektiði þekilde kapsülleyecektir.
+\layout Description
+
+Dizaynýn\SpecialChar ~
+Temizliðine\SpecialChar ~
+Odaklanýlmasý: Nesne/method/property isimlerinde yanlýþ
+ anlaþýlma veya farklý anlamlar çýkarýlmasý engellenmeli; nesnelerin ifade
+ ettiði görevlerin bulanýk olmamasý gözetilmeli ve nesneler arasý iletiþimde
+ bulanýk protokoller kullanýlmamalýdýr.
+\layout Standard
+
+Bu prensiplerin akýlda tutulmasý, nesne modelinin daha saðlýklý olmasýný
+ kolaylaþtýracaktýr.
+ Ayrýca nesneleri iþletecek olan uygulamanýn bu prensipleri kontrol edebilecek
+ mekanizmalara sahip olmasý faydalý olacaktýr.
+\the_end

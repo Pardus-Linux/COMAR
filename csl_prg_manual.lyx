@@ -1,0 +1,1073 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass article
+\begin_preamble
+\tolerance 10000
+\usepackage{hyperref}
+\end_preamble
+\language turkish
+\inputencoding auto
+\fontscheme pslatex
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize a4paper
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+CSL Programlama Klavuzu
+\layout Author
+
+Serdar Köylü, A.
+ Murat Eren, Gürer Özen
+\layout Section
+
+Gereksinimler
+\layout Subsection
+
+Çomar Mimari Gereksinimleri
+\layout Standard
+
+Çomar mimarisi belgesinde aþaðýda özetlediðimiz gereksinimler ortaya konulmuþtur
+:
+\layout Enumerate
+
+Ýterasyon, karar verme, karþýlaþtýrma özellikleri olan bir dil gereklidir.
+\layout Enumerate
+
+Dil nesne kavramýna sahip olmalýdýr.
+\layout Enumerate
+
+Geniþleme mekanizmalarý taþýmamalýdýr.
+\layout Enumerate
+
+Tüm durumunu (state) içinde taþýyabilen bir script dili olmalýdýr.
+\layout Enumerate
+
+Basit olmalý, araçlarla iþlenebilmelidir.
+\layout Enumerate
+
+Uzak iþlemler, transaction, profil yönetimi ve asenkron çalýþmaya uygun
+ olmalýdýr.
+\layout Subsection
+
+Nesne Modeli Gereksinimleri
+\layout Standard
+
+Bu dili bir COMAR nesne modeli üzerinde düþündüðümüzde yeni gereksinimler
+ ortaya çýkmaktadýr:
+\layout Enumerate
+
+Bu dildeki betiklerin görevleri, nesne modeli üzerinden istenen görev ve
+ bilgilerin uygulamalara taþýnmasýný saðlamaktýr.
+ Bir tür yapýþtýrýcý iþlevi görecek, ve özel bir problem alanýna yönelik
+ bir dil olacaktýr.
+\layout Enumerate
+
+Modeldeki nesneler farklý uygulamalarýn farklý betikleri tarafýndan saðlan\SpecialChar \-
+mak\SpecialChar \-
+tad
+ýr.
+ Model bir API olarak deðil, birbirleriyle iletiþen nesneler olarak görülmelidir.
+ Paralel ve asenkron çalýþma durumlarýný da göz önüne alýrsak, dilin koþutzamanl
+ý (concurrent) programlama paradigmasýna sahip olmasý gereklidir.
+\layout Enumerate
+
+Tanýmlama dilleri, fonksiyonel diller ya da mantýk dilleri bu iþe uygun
+ görülmemiþtir.
+ Bu dillerdeki kural dizilerinin analizi programcý açýsýndan zordur.
+ Ayrýca koþutzamanlý çalýþma için gereken belirli iþletim sýrasý özelliðinin
+ saðlanmasý problem olacaktýr.
+ Nesneleri metot ve özellikleriyle birer tanýmlama olarak görüp, bunlarý
+ iþletmek için gereken komut dizilerinin yordamsal (procedural) olarak verileceð
+i bir yapý uygun olacaktýr.
+\layout Enumerate
+
+Bu yönden baktýðýmýzda dilin nesnelerle ilgili olarak saðlamasý gerekenler;
+ metot tanýmlama, öznitelik tanýmlama, metot çaðýrma, öznitelik okuma ve
+ yazma, nesneden bir instance yaratma ve yoketme ile sýnýrlýdýr.
+\layout Enumerate
+
+Tasarladýðýmýz nesne modelinde karþýmýza veri tipi olarak tam sayý, karakter
+ dizisi (string) tipleri, bu tiplerin dizileri (array) ve nesne tipi çýkmýþtýr.
+ Dilin bu veri tiplerini desteklemesi yeterli olacaktýr.
+\layout Enumerate
+
+Özellikle karakter dizileri ve bunlarla yapýlacak iþlemler aðýrlýkta olacaðý
+ için, bunlarýn karþýlaþtýrma ve düzenleme iþlemleri için bazý sentaks kolaylýkl
+arý ve yeterli sayýda yardýmcý fonksiyon gereklidir.
+\layout Enumerate
+
+Tek bir karaktere karþý gelen veri tipi karþýmýza çýkmamýþtýr.
+ Gerektiðinde tek karakter uzunluðundaki karakter dizisi ile ifade edilebileceði
+ için gerek olmayacaktýr.
+\layout Enumerate
+
+Yerel deðiþken ve fonksiyonlara gerek olacaktýr.
+\layout Enumerate
+
+Bazý deðiþkenlerin kalýcý (persistant) olarak belirtilebilmesi gereklidir.
+ Bunlarýn saklanmasý ve profil yönetimi Çomar tarafýndan yürütülecek, betikleri
+ ilgilendirmeyecektir.
+\layout Enumerate
+
+Metotlara parametre geçirirken, metoda ait tüm parametrelerin doldurulmayabilece
+ði durumlar görülmüþtür.
+ Bunlar öntanýmlý deðerler, ya da deðiþken sayýda parametreler olabilir.
+ Ýstenen görevin nesnelerden yalnýzca biri tarafýndan iþletilmesinin yeterli
+ olduðu durumlarda, verilen parametrelerden en çoðunu destekleyen nesnenin
+ metodunu çaðýrmanýn iyi bir seçim yolu olacaðý, her nesnenin her parametreyi
+ desteklemeyebileceði de göz önüne alýnýrsa, metotlara parametrelerin isim-deðer
+ çiftleri olarak geçirilmesinin iyi olacaðý görülür.
+ Bu okunaklýlýðý da arttýracak ve yanlýþlýklarý önleyecektir.
+\layout Subsection
+
+Etkileþim Gereksinimleri
+\layout Standard
+
+Kullanýcýlar ve sistem ile etkileþim gereksinimleri þunlardýr:
+\layout Enumerate
+
+COMAR otonom olarak çalýþabilecek bir sistem olarak tasarlanmýþtýr.
+ Gömülü sistemlerde çalýþabilmesi, kullanýcý arayüzlerinden baðýmsýz olmasý
+ istenmektedir.
+ Bu nedenle, dilin arayüz desteði vermesine ya da kullanýcý için giriþ /
+ çýkýþ iþlevleri içermesine gerek yoktur.
+\layout Enumerate
+
+Ayný nedenlerden dolayý çalýþma esnasýnda (runtime) hata vermemesi gereklidir.
+ Betiklerdeki tüm hatalarý önceden yakalamak mümkün olmayabilir (örneðin
+ sýfýra bölme hatasý), böyle durumlarda iþleme öntanýmlý deðer ile devam
+ edilip, hata durumuyla ilgili bilgiler iþletici tarafýndan bir kenara kaydedilm
+elidir.
+\layout Enumerate
+
+Betiklerin kendileri tarafýndan kullanýlacak iki dönüþ durumu vardýr; iþlemin
+ baþarýlý ya da baþarýsýz olmasý.
+ Detaylý hata bilgileri metodu çaðýran kiþinin bir iþine yaramayacak ve
+ enkapsülasyonu bozacaktýr.
+ Bununla birlikte betik hata detaylarýný bir yere kayýt etmeyi ya da nesne
+ modelinden tanýmlý hata olaylarýný oluþturmayý kendi içinde yapabilir.
+\layout Enumerate
+
+Ayar dosyalarýný okumak, deðiþtirmek ve alt düzey sistem iþlemlerini yürütmek
+ için bir CSL kitaplýðý gereklidir.
+\layout Subsection
+
+Diðer Gereksinimler
+\layout Standard
+
+Betik dilimizin, mimari, model ve etkileþim gereksinimleri yanýnda, kolay
+ öðrenilebilmesi ve kullanýþlý olmasý için baþka bir takým tasarým gereksinimler
+i de öngörmekteyiz:
+\layout Enumerate
+
+Dilimiz zaten belli bir problem alanýna yönelik olacaðý ve gerekli sentaks
+ yapýlarýný içereceði için, makro desteðine gerek yoktur.
+ Makrolar kodu incelemeyi güçleþtirecek, hatalarýn gerçek yerinin bulunmasýný
+ zorlaþtýracaktýr.
+\layout Enumerate
+
+Kod bloklarýný girintili yazým ile belirtmek kod yazmayý hýzlandýrmakta
+ ve dili sadeleþtirmektedir.
+ Ancak uzun vadede hatalara yol açacaðý, bloklarýn yanlýþ belirtilmesinin
+ kolay olduðu düþünüldüðünde bloklarý özel iþaretler ile belirtmek ve serbest
+ yazýma izin vermek daha uygun görülmektedir.
+\layout Enumerate
+
+Sentaksta farklý öðeler birbirinden yeterince farklý tutularak, ufak yazým
+ hatalarýnýn derhal açýða çýkmasý saðlanmalý, bir uyarý vermeden beklenenden
+ farklý davranýþta bulunmasý önlenmelidir.
+\layout Section
+
+Tanýmlama
+\layout Standard
+
+Bir CSL betiði, implemente ettiði nesne modeli arabirimindeki metot ve öznitelik
+leri tanýmlayan bir dizi bloktan oluþur.
+\layout Subsection
+
+Veri Tipleri
+\layout Subsubsection*
+
+Numeric
+\layout Standard
+
+Her türlü (tam sayý, float) sayýsal deðerdir.
+ Bir sayýsal karakterle baþlar, sayý ve ondalýk noktasý karakterlerinden
+ oluþur.
+ Üzerlerinde aritmetik iþlemler yapýlabilir.
+ String baðlamý içinde eriþildiklerinde otomatik olarak karakter dizilerine
+ çevrilirler.
+\layout Standard
+
+Koþul cümlelerinde sýfýr yanlýþ, diðer sayý deðerleri doðru olarak alýnýr.
+ Deðer atanmamýþ deðiþkenler sayýsal sýfýr deðeriyle baþlar.
+\layout Standard
+
+Örnek sayýsal sabitler: 5, 1.7, 10, 10000
+\layout Subsubsection*
+
+String
+\layout Standard
+
+CSL içinde UTF-8 kodlamasýyla yazýlan karakter dizileridir.
+ Yerelleþtirmeleri otomatik olarak CSL tarafýndan halledilir.
+ Yazýlýrken baþlarýna ve sonlarýna 
+\begin_inset Quotes eld
+\end_inset 
+
+ ya da ' karakterlerinden yalnýzca biri konur.
+ Kullanýlmayan ayýrýcý karakter dizi içerisinde diziye dahil olarak yazýlabilir.
+ Dizi içinde 
+\begin_inset Quotes eld
+\end_inset 
+
+
+\backslash 
+
+\begin_inset Quotes erd
+\end_inset 
+
+ kaçýþ karakteridir ve diziye metin düzenleyici içinde eklenmesi zor karakterler
+i koymak için kullanýlýr.
+ Bunlar:
+\layout Itemize
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+
+\backslash 
+n
+\begin_inset Quotes erd
+\end_inset 
+
+ : Yeni satýr (ASCII 10)
+\layout Itemize
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+
+\backslash 
+r
+\begin_inset Quotes erd
+\end_inset 
+
+ : Dönüþ (ASCII 13)
+\layout Itemize
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+
+\backslash 
+t
+\begin_inset Quotes erd
+\end_inset 
+
+ : Tab (ASCII 9)
+\layout Itemize
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+
+\backslash 
+
+\backslash 
+
+\begin_inset Quotes erd
+\end_inset 
+
+ : 
+\begin_inset Quotes eld
+\end_inset 
+
+
+\backslash 
+
+\begin_inset Quotes erd
+\end_inset 
+
+ karakterinin kendisi
+\layout Itemize
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+
+\backslash 
+xxxH
+\begin_inset Quotes erd
+\end_inset 
+
+ : xxx hexadecimal kodlu unicode karakteri.
+\layout Standard
+
+Koþul cümlelerinde 
+\begin_inset Quotes eld
+\end_inset 
+
+yes
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+y
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+true
+\begin_inset Quotes erd
+\end_inset 
+
+ doðru, diðer stringler yanlýþ deðer taþýr.
+ Eðer string dýþardan gelmiþse, taþýdýðý yerel ayarýna göre olan olumlu
+ cevaplar (örneðin tr için 
+\begin_inset Quotes eld
+\end_inset 
+
+evet
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+e
+\begin_inset Quotes erd
+\end_inset 
+
+) doðru, diðerleri yanlýþtýr.
+ Buna bakýlýrken küçük büyük harf ayýrýmý yapýlmaz.
+ Deðer atanmamýþ deðiþkenler boþ string deðeriyle baþlar.
+\layout Standard
+
+Örnek karakter dizisi sabitler: 
+\begin_inset Quotes eld
+\end_inset 
+
+
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+Merhaba
+\begin_inset Quotes erd
+\end_inset 
+
+, '123', 'Ahmet
+\backslash 
+t42
+\backslash 
+tÝstanbul', 
+\begin_inset Quotes eld
+\end_inset 
+
+CSL'i öðreniyorum
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Subsubsection*
+
+Object
+\layout Standard
+
+CSL yeni bir nesne tanýmlamasý yapamaz, ancak OM üzerinde ve CSL kitaplýðýnda
+ tanýmlanmýþ nesneleri kullanabilir.
+\layout Subsubsection*
+
+Array
+\layout Standard
+
+Diðer veri tiplerini bir arada tutabilen bir dizidir.
+ Her elemaný array de dahil olmak üzere herhangi bir veri tipi olabilir.
+\layout Standard
+
+(FIXME: key mantýðý anlat)
+\layout Subsection
+
+Sözdizimi
+\layout Standard
+
+CSL küçük-büyük harf ayrýmý yapan bir dildir.
+ Dilin kendi deyimleri tamamen küçük harfle, OM çaðrýlarýndaki nesne, metot
+ ve öznitelik isimleri baþ harfleri büyük olacak biçimde yazýlýr.
+\layout Standard
+
+Kullanýcý tanýmlý deðiþken ve fonksiyon adlarý mutlaka abecesel 'a-Z' arasý
+ bir karakterle baþlar.
+ Adýn içerisinde alfasayýsal karakterler ve altçizgi kullanýlabilir.
+\layout Standard
+
+Kod içerisinde programcýlara yönelik açýklamalar 
+\begin_inset Quotes eld
+\end_inset 
+
+#
+\begin_inset Quotes erd
+\end_inset 
+
+ karakteri ile belirtilir.
+ Bu karakterden satýr sonuna kadar olan kýsým CSL yorumlayýcýsý tarafýndan
+ göz ardý edilir ve iþletilmez.
+\layout Standard
+
+Komutlar 
+\begin_inset Quotes eld
+\end_inset 
+
+;
+\begin_inset Quotes erd
+\end_inset 
+
+ karakteri ile sonlanýr ve birbirlerinden ayrýlýr.
+ Kod bloklarý 
+\begin_inset Quotes eld
+\end_inset 
+
+{
+\begin_inset Quotes erd
+\end_inset 
+
+ ile baþlar ve 
+\begin_inset Quotes eld
+\end_inset 
+
+}
+\begin_inset Quotes erd
+\end_inset 
+
+ ile biter.
+ Boþluk beklenen yerlerde birden fazla boþluk, yeni satýr ve tab kullanýlabilir.
+ Böylece, C/C++, Javascript, PHP dillerindeki gibi bir serbest yazým tarzý
+ kullanýr.
+\layout Subsection
+
+Operatörler
+\layout Standard
+
+Dört iþlem 
+\begin_inset Quotes eld
+\end_inset 
+
++
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+-
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+*
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+/
+\begin_inset Quotes erd
+\end_inset 
+
+ operatörleri ile yapýlýr.
+ String baðlamýnda toplama iki string'i peþpeþe ekler.
+\layout Standard
+
+Bunlardan baþka modular aritmetik 
+\begin_inset Quotes eld
+\end_inset 
+
+%
+\begin_inset Quotes erd
+\end_inset 
+
+, ve üs alma 
+\begin_inset Quotes eld
+\end_inset 
+
+^
+\begin_inset Quotes erd
+\end_inset 
+
+ iþlemleri de tanýmlýdýr.
+\layout Standard
+
+Karþýlaþtýrmalar 
+\begin_inset Quotes eld
+\end_inset 
+
+==
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+!=
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+<
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+>
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+<=
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+>=
+\begin_inset Quotes erd
+\end_inset 
+
+ operatörleriyle yapýlýr.
+ Koþul cümlelerinde 
+\begin_inset Quotes eld
+\end_inset 
+
+and
+\begin_inset Quotes erd
+\end_inset 
+
+ ve 
+\begin_inset Quotes eld
+\end_inset 
+
+or
+\begin_inset Quotes erd
+\end_inset 
+
+ mantýksal iþlemiyle birleþtirilebilir.
+ (FIXME: not, xor?)
+\layout Standard
+
+Ýþlem önceliði diðer dillerden farklý olarak operatörlere baðlý deðildir.
+ Daima 
+\begin_inset Quotes eld
+\end_inset 
+
+*
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+/
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
++
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+-
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+%
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+^
+\begin_inset Quotes erd
+\end_inset 
+
+ sýrasý iþletilirler (FIXME: Ýlerki versiyonlarda deðiþebilir mi?).
+ Öncelikleri deðiþtirmek gerektiðinde 
+\begin_inset Quotes eld
+\end_inset 
+
+(
+\begin_inset Quotes eld
+\end_inset 
+
+ ve 
+\begin_inset Quotes eld
+\end_inset 
+
+)
+\begin_inset Quotes erd
+\end_inset 
+
+ ile iþlemler gruplanýr.
+ (FIXME: kontrol et)
+\layout Standard
+
+Atamalar 
+\begin_inset Quotes eld
+\end_inset 
+
+=
+\begin_inset Quotes erd
+\end_inset 
+
+ ile yapýlýr.
+ Koþul cümleleri içerisinde atama yapýlamaz.
+\layout Subsection
+
+Deyimler
+\layout Subsubsection*
+
+method
+\layout Standard
+
+Betiðin implemente ettiði nesneye ait bir metodu tanýmlar.
+ Biçimi
+\layout LyX-Code
+
+method ad (parametre=deðer, ...)
+\layout LyX-Code
+
+    kod bloðu
+\layout Standard
+
+þeklindedir.
+ Nesne modelinden tanýmlandýðý üzere geriye deðer döndürmezler.
+ Parametre listesindeki deðerler, çaðrý sýrasýnda verilmeyen parametreler
+ için öntanýmlý deðerleri belirtir.
+\layout Subsubsection*
+
+property
+\layout Standard
+
+Betiðin implemente ettiði nesneye ait bir özniteliði tanýmlar.
+ Biçimi
+\layout LyX-Code
+
+property ad {
+\layout LyX-Code
+
+    get {
+\layout LyX-Code
+
+        ...
+\layout LyX-Code
+
+        ad = deðer;
+\layout LyX-Code
+
+    }
+\layout LyX-Code
+
+    set {
+\layout LyX-Code
+
+        ...
+ 
+\layout LyX-Code
+
+        deðer = ad;
+\layout LyX-Code
+
+    }
+\layout LyX-Code
+
+}
+\layout Standard
+
+þeklindedir.
+ Eðer öznitelik salt okunur ise 
+\begin_inset Quotes eld
+\end_inset 
+
+set
+\begin_inset Quotes erd
+\end_inset 
+
+ bloðu, salt yazýlýr ise 
+\begin_inset Quotes eld
+\end_inset 
+
+get
+\begin_inset Quotes erd
+\end_inset 
+
+ bloðu kullanýlmaz.
+ Geri döndürülecek deðer özniteliðin adýna atanarak belirtilir.
+ 
+\layout Subsubsection*
+
+exit
+\layout Standard
+
+Bir metot yada öznitelik içinden, kodun normal akýþý bitmeden çýkmak için
+ kullanýlýr.
+ Bu deyimle ya da kodun akýþý sonlanarak çýkýldýðýnda iþlemin baþarýyla
+ tamamlandýðý kabul edilir.
+\layout Subsubsection*
+
+abort
+\layout Standard
+
+Bir metot yada öznitelik içinden, iþlemin baþarýsýz olduðunu belirterek
+ çýkmak için kullanýlýr.
+\layout Subsubsection*
+
+persistent
+\layout Standard
+
+Bu deyim ile belirtilen deðiþkenler, kalýcý olarak saklanýr ve oturum (session)
+ deðiþtiðinde tekrar eriþilebilir.
+ Sadece tanýmlandýklarý yordam içinden eriþilebilirler.
+\layout Subsubsection*
+
+instance 
+\layout Standard
+
+Bu deyim ile belirtilen deðiþkenler, persistent olmalarý yanýnda nesnedeki
+ diðer tüm yordamlardan eriþilebilirler.
+\layout Subsubsection*
+
+makeinstance 
+\layout Standard
+
+Bu deyim çalýþan nesnenin bir kopyasýný (instance) oluþturur.
+ CSL içinde nesne oluþturmanýn yeðane yoludur.
+ Oluþturulan nesne geri döndürülebilir ve kullanýlabilir.
+ Fakat bu nesnenin bir baþka deðiþkene eþitlenmesi mümkün deðildir.
+ YeniNesne deðiþkeni, oluþturulacak yeni kopyanýn hangi deðiþkene konacaðýný
+ belirtir.
+ Bu deðiþken daha önceden tanýmlý olmak zorunda deðildir.
+ Tanýtýcý, deðiþken isimlerine uygun yapýda hazýrlanmýþ herhangi bir string
+ olabilir.
+ Tanýtýcý özellikle LOG çýktýlarýný incelerken faydalý olacaktýr.
+ Otomatik_Silinme ise, deðiþkenin kullanýmý bitince otomatik silinip silinmeyece
+ðini belirtir, varsayýlan deðeri doðru'dur.
+\layout LyX-Code
+
+makeinstance yeniNesne, 
+\begin_inset Quotes eld
+\end_inset 
+
+tanýtýcý
+\begin_inset Quotes erd
+\end_inset 
+
+, otomatik_silinme;
+\layout LyX-Code
+
+yeniNesne.property = deðer;
+\layout LyX-Code
+
+yeniNesne.method(param=deðer);
+\layout LyX-Code
+
+deðiþken = yeniNesne;             # HATA ! deðiþken her zaman 
+\begin_inset Quotes eld
+\end_inset 
+
+Null
+\begin_inset Quotes erd
+\end_inset 
+
+ olur.
+\layout LyX-Code
+
+...
+\layout Subsubsection*
+
+if
+\layout Standard
+
+Bir koþul cümlesine baðlý olarak farklý iþlemler arasýndan seçim yapmak
+ için kullanýlýr.
+ Biçimi:
+\layout LyX-Code
+
+if (koþul)
+\layout LyX-Code
+
+    ...
+\layout LyX-Code
+
+elif (koþul2)
+\layout LyX-Code
+
+    ...
+\layout LyX-Code
+
+...
+\layout LyX-Code
+
+else
+\layout LyX-Code
+
+    ...
+\layout Standard
+
+þeklindedir.
+ Alternatif koþullar (elif) birden fazla olabilir ve 
+\begin_inset Quotes eld
+\end_inset 
+
+else
+\begin_inset Quotes erd
+\end_inset 
+
+ ile birlikte tamamen opsiyoneldir.
+\layout Subsubsection*
+
+select
+\layout Standard
+
+Bir deðiþkenin farklý deðerlerine göre farklý iþlemler yapmak için kullanýlýr.
+ Biçimi:
+\layout LyX-Code
+
+select (deðiþken) {
+\layout LyX-Code
+
+    case koþul:
+\layout LyX-Code
+
+        ...
+\layout LyX-Code
+
+    ...
+\layout LyX-Code
+
+    else:
+\layout LyX-Code
+
+       ...
+\layout LyX-Code
+
+}
+\layout Standard
+
+Koþullar birden fazla olabilir.
+ Eðer deðiþken birden fazla koþula uyuyorsa, her uyan koþula ait kod bloðu
+ sýrasýyla iþletilir.
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+else
+\begin_inset Quotes erd
+\end_inset 
+
+ kýsmý opsiyoneldir.
+ C/C++ ve benzeri dillerden farklý olarak kod iþleyiþinin peþpeþe gelen
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+case
+\begin_inset Quotes erd
+\end_inset 
+
+ bloklarý ile devam etmediðine, yalnýzca doðru olan koþullarýn iþletildiðine
+ ve 
+\begin_inset Quotes eld
+\end_inset 
+
+break
+\begin_inset Quotes erd
+\end_inset 
+
+ benzeri bir deyim kullanýlmadýðýna dikkat edilmelidir.
+\layout Subsubsection*
+
+while
+\layout Standard
+
+Bir koþul cümlesi doðru olduðu sürece verilen kod bloðunu iþletir.
+ Biçimi:
+\layout LyX-Code
+
+while (koþul)
+\layout LyX-Code
+
+   ...
+\layout Subsubsection*
+
+for
+\layout Standard
+
+Sýralý döngüler için kullanýlýr.
+ Biçimi:
+\layout LyX-Code
+
+for (baþlangýç; koþul; iþlem)
+\layout LyX-Code
+
+   ...
+\layout Subsubsection*
+
+foreach
+\layout Standard
+
+Bir iþlemin bir array'in tüm elemanlarýna uygulanmasýný saðlar.
+ Biçimi:
+\layout LyX-Code
+
+foreach (anahtar_adý = deðer_adý in dizi)
+\layout LyX-Code
+
+   # eðer dizi[
+\begin_inset Quotes erd
+\end_inset 
+
+eleman1
+\begin_inset Quotes erd
+\end_inset 
+
+] = 
+\begin_inset Quotes eld
+\end_inset 
+
+deðer1
+\begin_inset Quotes erd
+\end_inset 
+
+ ise:
+\layout LyX-Code
+
+   #     anahtar_adý = 
+\begin_inset Quotes eld
+\end_inset 
+
+eleman1
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout LyX-Code
+
+   #     deðer_adý = 
+\begin_inset Quotes eld
+\end_inset 
+
+deðer1
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout LyX-Code
+
+   # olur.
+\layout LyX-Code
+
+   ...
+\layout Subsubsection*
+
+pass
+\layout Standard
+
+Ýçinde bulunulan döngüde bir sonraki adýma gidilmesini saðlar.
+\layout Subsubsection*
+
+break
+\layout Standard
+
+Ýçinde bulunulan döngüden çýkar.
+\layout Section
+
+CSL BNF
+\layout Standard
+
+(FIXME: bnf ile csl tanýmlamasý yazýlacak)
+\layout Section
+
+Standart Kitaplýk
+\layout Standard
+
+String iþlemleri
+\layout Standard
+
+Temel mat fonksiyonlar (min, max, vs gibi)
+\layout Standard
+
+Tarih/Saat parse&iþleme fonksiyonlarý (FIXME: lazým olur gibi geliyor?)
+\layout Standard
+
+Config parserlar
+\layout Standard
+
+Sistem iþlemleri (sinyaller, process yönetimi)
+\layout Standard
+
+Log/Debug
+\the_end

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE COMARRPCData [
+  <!ELEMENT COMARRPCData    	(RPCVersion, RPCTTSID, RPCEOLTime, RPCPriority, RPCType, RPCData)>
+  <!ELEMENT RPCVersion		(#CDATA)>
+  <!ELEMENT RPCTTSID		(#CDATA)>
+  <!ELEMENT RPCEOLTime		(#CDATA)>
+  <!ELEMENT RPCPriority		(#CDATA)>
+  <!ELEMENT RPCType		(#CDATA)>
+  <!ELEMENT RPCData		(type, name, index, parameters, object, code, compression, TTSID, status, returnvalue, eventid)>
+  <!ELEMENT type		(#CDATA)>
+  <!ELEMENT name		(#CDATA)>
+  <!ELEMENT index		(#CDATA)>
+  <!ELEMENT object		(#CDATA)>
+  <!ELEMENT code		(#CDATA)>
+  <!ELEMENT compression		(#CDATA)>
+  <!ELEMENT TTSID		(#CDATA)>
+  <!ELEMENT status		(#CDATA)>
+  <!ELEMENT returnvalue		(#CDATA)>
+  <!ELEMENT eventid		(#CDATA)>
+  <!ELEMENT parameters		(parameter+)>
+  <!ELEMENT parameter		(name, value)>
+  <!ELEMENT value		(array | string | numeric | object)>
+  <!ELEMENT array		(item+)>
+  <!ELEMENT item		(string)>
+  <!ATTLIST item
+		instance CDATA	#REQUIRED 
+		key CDATA 	#REQUIRED>
+  <!ELEMENT string		(#CDATA)>
+  <!ATTLIST string
+		encoding (utf-8) #REQUIRED>
+  <!ELEMENT numeric		(#CDATA)>
+  <!ELEMENT object		(#CDATA)>
+]>
+

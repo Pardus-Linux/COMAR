@@ -1,0 +1,346 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass article
+\begin_preamble
+\usepackage{hyperref}
+\tolerance 10000
+\end_preamble
+\language turkish
+\inputencoding auto
+\fontscheme pslatex
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+OM Network Tasarýmý
+\layout Author
+
+Serdar Köylü, A.
+ Murat Eren, Gürer Özen
+\layout Date
+
+29 Kasým 2004
+\layout Section
+
+Kapsam
+\layout Standard
+
+Ýletiþim cihazlarýnýn, bunlar üzerindeki aðlarýn, aðlar arasý geçiþ yollarýnýn,
+ geçiþ denetiminin, veri akýþý önceliklerinin, iletiþim uygulamalarýnýn,
+ ve bunlar üzerindeki her türlü adreslendirmenin yapýlandýrýlmasý, yönetilmesi,
+ ve denetlenmesini kapsar.
+\layout Section
+
+Gereksinimler
+\layout Standard
+
+Tasarýma baþlamak için en iyi yol kullanýcý gereksinimlerinin tanýmlanmasý
+ ile baþlamaktýr.
+ Bir að yönetim sistemininden kullanýcýlarýn bekledikleri
+\begin_inset LatexCommand \cite{Stallings}
+
+\end_inset 
+
+:
+\layout Itemize
+
+Ayarlama: Að bileþenlerinin yapýlandýrýlmasý, parametrelerinin ayarlanmasý,
+ iliþkilerinin tanýmlanmasý.
+\layout Itemize
+
+Kullaným: Çalýþma veriminin gözlenmesi, hesaplama ve ücretlendirme iþlemleri.
+\layout Itemize
+
+Bakým: Sorunlarýn fark edilip, düzeltilmesi.
+\layout Itemize
+
+Yetkilendirme: Eriþim yetkileri ve önceliklerinin tanýmlanmasý.
+\layout Itemize
+
+Planlama: Kapasite kullanýmýnýn ölçülmesi, ihtiyaçlarýn saptanmasý.
+\layout Standard
+
+Bu gereksinimleri karþýlayabilmek için, bu iþlemleri gerçekleþtirecek uygulamala
+rýn iþlevsel bir ayrýmýnýn yapýlmasý gereklidir.
+ Böyle bir ayrým ISO tarafýndan, OSI yönetim standartlarýnýn bir parçasý
+ olarak yapýlmýþtýr.
+ OSI, yönetim iþlevlerini beþ ana bölüme ayýrýr
+\begin_inset LatexCommand \cite{ISO X.700}
+
+\end_inset 
+
+.
+ Önem derecesine göre bu bölümler:
+\layout Enumerate
+
+Hata yönetimi: Hatalarýn tesbiti, izolasyonu ve düzeltilmesi.
+\layout Enumerate
+
+Ayar yönetimi: Yönetilen nesnelerin parametre ve iliþkilerinin deðiþtirilmesi.
+\layout Enumerate
+
+Performans yönetimi: Nesnelerin davranýþlarýnýn ve iletiþim aktivitelerinin
+ verimliliðinin deðerlendirilmesi.
+\layout Enumerate
+
+Güvenlik yönetimi: Nesnelerin güvenliði ve aðýn düzgün çalýþmasý için gerekli
+ korunma.
+\layout Enumerate
+
+Hesaplama yönetimi: Nesnelerin kullanýmýnýn ücretlendirilmesi ve kullaným
+ maliyetinin ölçülmesi.
+\layout Standard
+
+Bizi COMAR açýsýndan ilgilendiren, bu yönetim hizmetlerinin saðlanabilmesi
+ için gerekli olan yapýlandýrma alt yapýsýný saðlamak ve hizmet uygulamalarýnýn
+ birbirleriyle uyumlu çalýþmasýný saðlamak.
+ Gereksinimlerimizi, OSI yönetim modelinin genel mimarisinin ve beþ ana
+ bölümünün iþlevsel gereksinimleri
+\begin_inset LatexCommand \cite{NMReqs,Stallings}
+
+\end_inset 
+
+ üzerinden bizi ilgilendiren kýsýmlarý ayýrarak saptayacaðýz.
+\layout Subsection
+
+Yapýlandýrma Gereksinimleri
+\layout Subsubsection
+
+Mimari
+\layout Standard
+
+Bir að ortamýndaki cihaz ve protokoller, halihazýrda bir modele sahip (OSI
+ referans modeli
+\begin_inset LatexCommand \cite{OSI X.200}
+
+\end_inset 
+
+) olduðu için, bunlarý yönetecek bir sistemin de bununla uyumlu bir modele
+ sahip olmasý doðal olacaktýr.
+ Çok sayýdaki iletiþim cihazý ve protokolününden bazýlarýný dýþarda unutmamak
+ ve gelecekte ortaya çýkacak yeni teknolojileri destekleyebilmek için yapýlandýr
+ma çerçevemiz de OSI referans modeli etrafýnda tasarlanmalýdýr.
+\layout Subsubsection
+
+Ayar Yönetimi
+\layout Standard
+
+Yapmak istediðimiz iþlemlerin hedeflerini belirtebilmek için, að üzerindeki
+ aðlarý, makinalarý, ve kaynaklarý isimlendirebilmeliyiz.
+ Bu isimlendirmeler için kullanýlan her tür protokol numaralandýrmasýný
+ soyutlayabilecek, ve diðer iþlemlerin kullanabileceði biçime taþýyacak
+ nesneler gerekli.
+\layout Standard
+
+Að bileþenlerinin çalýþtýrýlýp durdurulmasý özel olarak yapýlandýrma sisteminin
+ bir görevidir.
+ Her bileþen için bu görevleri saðlamak gerekli.
+ Bileþenlerin otomatik yapýlandýrýlabilmesi desteklenmeli.
+\layout Standard
+
+Bileþenler arasý iliþkiler içinde en önemli kullanýcý gereksinimi olan trafik
+ yönlendirme kolayca tanýmlanabilmeli.
+\layout Subsubsection
+
+Hata Yönetimi
+\layout Standard
+
+Hata yönetimi uygulamalarý, bileþenlerden gelen olaylar, hata ve bilgi kayýtlarý
+ üzerinde çalýþýrlar.
+ Bileþen ve yöneticilerin bu kayýtlarý nerde ve nasýl tutacaðý, hangi kayýtlarýn
+ tutulacaðý, olaylar üzerine hangi iþlemlerin yapýlacaðý, kullanýcý tarafýndan
+ politikalar olarak belirlenebilmeli, ayar yönetim sistemi bu politikalarý
+ bileþenlere uygulatabilmelidir.
+\layout Standard
+
+Bileþenlerin kendi oluþturacaklarý olay ve kayýtlar dýþýnda, bileþenlerin
+ saðlýk durumlarýný dýþardan ve içerden denetleyip olay ve kayýtlar oluþturabile
+cek nesneler gereklidir.
+\layout Standard
+
+Özellikle hattaki gürültü nedeniyle belli bir kayýpla iletiþim saðlayabilen
+ bileþenlerin, hata oranýný bildirebilmesi istenmektedir.
+ Böylece gürültü normal düzeyin üstüne çýktýðýnda, bunun bildirilmesi, iletiþim
+ ayarlarýnda deðiþiklik yapýlarak aþýlmaya çalýþýlmasý mümkün olacaktýr.
+\layout Subsubsection
+
+Güvenlik Yönetimi
+\layout Standard
+
+Bileþenlere kimin baðlanacaðý (kimlik doðrulama) ve neler yapabilecekleri
+ (yetki denetimi) ayarlanabilmelidir.
+\layout Standard
+
+Bir iletiþimin güvenliði, bulunulan OSI katmaný ve altýnda, bir katmanda
+ veya birden fazla katmanda ayrý ayrý ayarlanabilir.
+ Ayný þekilde kimlik doðrulama ve yetki kontrolü de katmanlarda ayrý ayrý
+ uygulanabilir.
+\layout Standard
+
+Hata yönetimindeki olay ve kayýt gereksinimleri benzer þekilde saðlanmalýdýr.
+\layout Standard
+
+Trafik yönetimi ile belli iletiþimler önlenebilmelidir.
+\layout Subsubsection
+
+Performans Yönetimi
+\layout Standard
+
+Ýletiþim hýzýný belirleyebilecek parametrelerin yönetilebilmesi gereklidir.
+ Hýzlý iletiþim yolu seçebilmek için, bileþenlerin aktarým hýzlarý, geri
+ dönüþ süreleri ile ilgili bilgiler modelde sunulmalýdýr.
+\layout Standard
+
+Özellikle asimetrik veri hatlarýnýn (ADSL, vb) verimli kullanýmý için, trafik
+ yönetimi politikalarý kolayca hazýrlanýp, bileþenler üzerinde uygulatýlabilmeli
+dir.
+ Týpký güvenlik gibi her OSI katmanýnda ayrý trafik yönetimi uygulanabilir.
+\layout Subsubsection
+
+Hesap Yönetimi
+\layout Standard
+
+Baðlantý sürelerinin hesabý için, baðlantýlarýn oluþturulmasý ve bitirilmesi
+ olaylarý oluþturulabilmeli.
+\layout Standard
+
+Trafik yönetimi ile, kullanýcý veya að/makina bazýnda iletiþim limitleri
+ tanýmlanabilmeli.
+\layout Section
+
+Tasarým
+\layout Standard
+
+Olay, kayýt, kimlik doðrulama ve yetki denetimi, yalnýzca að yapýlandýrmasýna
+ ait olmadýklarý için OM'un diðer bacaklarýnda bulunacak nesnelerdir.
+ Að nesnelerinde bu ayarlar, asýl nesnelere verilen referanslarla yapýlacaktýr.
+ Gereksinimlerin ýþýðýnda ve varolan iletiþim protokolleri ve uygulamalarýný
+ göz önüne aldýðýmýzda að yapýlandýrmasý için dört alt kýsým öngörüyoruz:
+\layout Subsection
+
+Baðlantý Noktalarý
+\layout Standard
+
+Baðlantýyý saðlayan cihaz, uygulama, protokol ve benzeri bileþenleri kapsar.
+ PHY ve NIC olmak üzere iki ana bileþeni vardýr.
+ Bunlar OSI referans modelinin en alt iki katmanýný kaplamakla birlikte,
+ tam olarak örtüþmezler.
+\layout Description
+
+PHY: X.200
+\begin_inset LatexCommand \cite{OSI X.200}
+
+\end_inset 
+
+ tariflerinde yer alan PhSAP (Fiziksel Servis-Eriþim-Noktasý) ve DLSAP (Veri-Hat
+tý Servis-Eriþim-Noktasý) kavramlarýna uygun olarak, fiziksel ortam baðlantýsýný
+ saðlayan düzeneklerdir.
+ Sanal (tünel, vs) ve/veya fiziksel cihazlardýr (ethernet, modem, vs).
+ Gerçek cihazlarýn üzerinde birden fazla PHY tarif edilebilir.
+ Bazý durumlarda ise bir gerçek cihaz üzerinde birden fazla PHY çalýþabilir.
+\layout Description
+
+NIC: PHY üzerinde veri taþýnabilmesi amacýyla, belirli protokoller için
+ SAP görevini görürler.
+ Bir NIC, her zaman bir yada birden fazla PHY üzerinde yer alýr.
+\layout Standard
+
+PHY aslen OM'un donaným bölümüne ait gözükmekle birlikte, bazý cihazlar
+ (pppd, vs) her iki bileþeni birlikte sunduklarý, tünel uygulamalarý (ssh,
+ vs) ise alt iletiþimi protokol düzeyinde olan PHY cihazlarý oluþturabildikleri
+ için bu katmanda tutulmaktadýr.
+\layout Standard
+
+Að sisteminin dýþýnda kalan bazý Fax/Voice uygulamalarý da PHY nesnelerini
+ tarayarak kullanabilecekleri uygun cihazlarý bulup kendilerini yapýlandýrabilir
+ler.
+\layout Subsection
+
+Protokol
+\layout Standard
+
+Bu alt katman OSI 3-4 katmanlarýna karþýlýk gelen Protocol ve Transport
+ nesnelerini içermektedir.
+ Trafik yönlendirme ayarlarýnýn büyük bölümü bu katmanlarda yapýlmaktadýr.
+\layout Standard
+
+Burdaki bir sorun NIC'lere protokol adresi atanýrken çýkmaktadýr.
+ Aslýnda NIC üzerinde özel bir iþlem ile yapýlan, ama Protocol nesnesine
+ ait adres bilgisi kullanýlan bu atama iþlemi iki nesne arasýndaki enkapsülasyon
+u bozduðu için üçüncü bir PBinder nesnesine gerek gördük.
+\layout Standard
+
+Bu nesne, bir NIC'e protokol ayarlarý yapmayý bilen uygulamalar (ifconfig,
+ vb) tarafýndan saðlanacak ve Protocol nesnesinin NIC üzerinde adres atama
+ ve kaldýrma, ARP ayarlarý gibi iþleri NIC'in alt yapýsýný bilmeden yapabilmesin
+i saðlayacaktýr.
+\layout Subsection
+
+Ýsim Tablolarý
+\layout Standard
+
+Bu alt kýsým, aðlar üzerindeki makina, að ve bunlarýn çeþitli gruplarýný
+ isimlendirmek için gereken nesneleri içermektedir.
+ Diðer kýsýmlarda direk olarak protokol adresleri kullanýlmayýp, burdaki
+ nesnelere referans verilecektir.
+ Böylece isimlendirmelerin ve adreslerin dinamik olmasý, ve kolayca yönetilebilm
+esi saðlanacaktýr.
+\layout Standard
+
+Að tanýmlamalarý için Network nesneleri, að üzerindeki bir makinayý tanýmlamak
+ için Host nesneleri ve bir adresi tanýmlamak için Addr nesnelerini içerir.
+\layout Subsection
+
+Uygulamalar
+\layout Standard
+
+Að uygulamalarýný OSI 5 katmanýna karþý gelen Session ve 6-7 katmanlarýna
+ karþýlýk gelen Server olarak ayýrdýk.
+ TCP/IP de olmayan Session katmanýný özel olarak ayýrmamýzýn nedeni, kendi
+ içinde yönlendirme, port paylaþýmý yapabilen uygulamalar ile Proxy uygulamalarý
+ný modelde koyabileceðimiz bir nokta olmasý.
+\layout Standard
+
+En üstteki nesneler hemen bütün ihtiyaçlarýný alt katmanlardaki nesnelere
+ referanslarla bulabileceklerdir.
+ Böylece sunucular, þu isimdeki aða, þu bilgileri þu eriþim denetimi ile
+ sun biçiminde basit isteklerle çalýþtýrýlabileceklerdir.
+\layout Bibliography
+\bibitem {Stallings}
+
+William Stallings, Network Management, IEEE Computer Society Press, 1993.
+\layout Bibliography
+\bibitem {ISO X.700}
+
+ISO/IEC JTC1/SC21/WG4 N571, OSI: Systems Management Overview, 1988.
+\layout Bibliography
+\bibitem {NMReqs}
+
+Network Management Functional Requirements, R.
+ Aronoff et al (NIST Special Publication 500-175, Management of Networks
+ Based on Open Systems Interconnection (OSI): Functional Requirements and
+ Analysis, Nov 1989, pp.
+ 24-52)
+\layout Bibliography
+\bibitem {OSI X.200}
+
+ISO/IEC 7498/1-2-3 OSI: Basic Reference Model, 1994.
+\the_end

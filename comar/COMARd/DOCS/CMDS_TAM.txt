@@ -1,0 +1,44 @@
+to       CONN, TNTU_DATA  ReadData          : Bu komutu alan child (generally a Connector Module) elindeki TA bilgisini TA_MGR'ye geri yollar.
+to       CONN, TNTU_ARTA  TARemote          : Bu bir uzak çağrı.
+to       CONN, TNTU_TANF  TANotFound        : CheckTA'nın cevabıdır. TA Sistemde yoktur.
+to       CONN, TNTU_LOC   TALocal           : Bu bağlantı yerel bir TTS'e ait.
+to        JOB, TRSU_RTA   RegisterTA        : TA_MGR yeni bir TA kaydı oluşturur, Job Session'a yeni bir TA Başlattırır.
+to        JOB, TNTU_STP   StartTA (Processing): TA_MGR bu mesajla birlikte Job Session'un yeni bir session/TA başlattığını farzeder. Job Session bu işlevi yerine getiremezse, uygun StateSet komutuyla TA_MGR'yi bilgilendirir. Data, CSID-RPCDATA 1.0 formatında Session bilgisini ihtiva eder. TID, gerekiyorsa, Bu connection için gerekli olan TID bilgisini ihtiva eder.
+to       CONN, INTU_AUTH  GetAuthData       : TA, gerekli görürse, connector'den authentication bilgisini ister.
+to       CONN, TRTU_SNDR  SendTAResult      : Data Kanalı CSID-RPCDATA 1.0 Formatında yollanacak veriyi ihtiva eder.
+to        PID, MNTB_TERM  SelfTerminate     : Bu komutu alan process kendini sonlandırır.
+to       CALL, TRTU_SSID  NewLocalTTSID     : Oluşturulan yerel TTSID'yi gönderir.
+to       CONN, TRSU_ACC   AcceptResult      : Data kanalı, CSID-RPCDATA 1.* Formatında alınan veriyi ihtiva eder. LocalTA icin istenen cevap geldiğinde, konnektörden alınan bilgi bu komutla JOB'a iletilir.
+to        JOB, TNTU_RDY   ResultReady       : Bu sinyali alan süreç, oluşturduğu yerel TA'ya gelen işlem cevabını TA_MGR'den ister.
+to        JOB, TNTU_ERR   ResponseIsNone    : Eğer, yerel TA içinde yapılan istek, hata cevabı almışsa, TNTU_RDY yerine bu komut alıcıya yollanır.
+to        ANY, IRTU_GTD   GetTASessionData  : Uygulamaya Önceden saklanmış olan TA değeri geri gönderilir. Data kanalında "<session_id> <key> <data...> verisi bulunur..
+to        ANY, IRTU_PID   GetUniquePID      : TA_MGR sistemde yeğane olan PID değerini istemciye yollar. Data kanalında 8 bayt uzunlukta PID bulunur.
+to        ALL, LNSU_MCL   MissionComplete   : İstenen görev tamamlandı. TID = Cevaplanan TID
+to       CONN, LNSU_ERR   InvalidCall       : İstenen görev geçersiz.
+to        ALL, LNSU_KILL  KillSelf          : COMARd, alt süreçlerinin kapanması için bu mesajı göderir.
+to       CONN, INTU_COK   ConnectionAccepted: Bir bağlantı için connection kabul edilmiş ise, TA_MGR Bu komut gönderir.
+from     CONN, TRSU_CKTA  CheckTA           : TA-MGR tarafından bu TA' bilgisi teyit edilir. NEW/UNKNOWN/INVALID state'leri için kullanılır. Data Format: TTSID
+from     CONN, TRTU_DATA  ReachedTAData     : TNTU_DATA Cevabı için kullanılır. Data, CSID-RPCDATA 1.0 formatındadır.
+from     CONN, IRSU_AUTH  SetAuthData       : TA'nın istemiş olduğu auth bilgisini connector TA'ya yollar. DC üzerinde CSID USERINFO 1.0 formatlı bilgi bulunur.
+from      JOB, TRSU_TAE   TAFinished        : Data Kanalı, COMRRetVal şeklinde geri dönen bilgiyi ihtiva eder.
+from     CONN, TNSU_SST   SendStatus        : TA_MGR Bu komutu alınca, TA için STATUS çağrısı yollar.
+from     CONN, TNSU_BRK   AbortTA           : Şu anki transaction kesilerek session TERMINATED State'ine getirilir.
+from      JOB, TNSU_BRK   AbortTA           : Şu anki transaction kesilerek session TERMINATED State'ine getirilir.
+from      JOB, TNSU_GSID  GetLocalTTSID     : Yeni bir Yerel TTSID oluşturur.
+from     CALL, TRSU_RMAP  RemapTA           : Şu anki TA'değerini, yeni bir Local TTSID ile map eder. Yeni TTSID'ye gelen istekler doğrudan asıl TA'ya iletilir.
+from      JOB, TNSU_GET   GetValue          : TA için gelen RESULT bu işlevle geri alınır.
+from     CONN, TRSU_OFFL  Off Line          : JOB Conn thread'lerinin offline durumuna geçtiklerini belirtmeye yarar. Temel olarak, bu komuttan sonra sistemden yokolurlar.
+from      ANY, IRSU_STD   SetTASessionData  : Bir uygulama, TA özel olarak saklanmasını istediği datayı bu komutla TA_MGR'ye yollar. Data kanalında "<session_id[<=32]> <key[<=32]> <eol> <data[...]>" formatında saklanmak istenen değer bulunur. <data> değeri içeriğinde boşluklar da bulunabilen tipik bir buffer olarak işlev görür. <eol>, bu değerin maksimum saklanacağı süreyi gösterir, 0 = okununcaya kadar.
+from      ANY, IRSU_RTD   ReqTASessionData  : Uygulama Önceden saklanmış olan TA değerini geri ister. Data kanalında "<session_id> <key>" bilgileri bulunur. Bu bilgiler, SetTASessionData ile kullanılan değerler ile aynı olmalıdır.
+from      ANY, IRSU_PTD   PopTASessionData  : Uygulamaya Önceden saklanmış olan TA değeri geri gönderilir. Data kanalında "<session_id> <key>" verisi bulunur. Bir sessiondata, bu komutla okunduktan sonra silinir.
+from      ANY, INSU_PID   ReqUniquePID      : TA_MGR'den sistemde yeğane olan bir PID almak için kullanılır.
+from     CONN, IRSU_CONN  NewConnection     : RPC Modülleri, yeni bağlantıları bu komutla TA'ya bildirir. Bu, TA Connection tablosunda ilgili PID için online bir connection girdisi oluşmasını sağlar. DC, CSID-CONNINFO 1.0 (COMAR Serialized Internal Data) formatında bağlantı verisi ihtiva eder. Bu komut TTS bilgisi taşımaz. Bu komut tipik olarak CXDRPC-HTTP bağlantısı benzeri çağrılarda kullanılır. Bu komutu alan TA, eğer bağlantı üzerinden yeni bir session başlatılır veya mevcut bir session'a sorgulama isteği alırsa, response'ları bu bağlantı üzerinden yönlendirebilir. Diğer taraftan, IRTU_CONN TID Değeri ile PID değeri kombine tutulur. Bu sayede tek bir PID (child) içinden birden fazla bağlantı takip edilebilir.
+from     CONN, INSU_CONN  NewTmpConnection  : Bu komut connector'lerden TAM'a gnderilerek conninfo'ya sahip olmayan bir balant oluturur. Bu tr bir balant sadece CONNECTOR Tablosuna eklenir.
+from     CONN, INSU_OFF   ConnOffline       : IRSU_CONN ile belirtilen bağlantının kesildiğini belirtir.
+from      ANY, SNSU_QUE   TAStateQUEUE      : .
+from      ANY, SNSU_ACC   TAStateACCEPTED   : .
+from      ANY, SNSU_FIN   TAStateFIN        : .
+from      ANY, SNSU_NEW   TAStateNEW        : .
+from      ANY, SNSU_PRC   TAStatePROCESSED  : .
+from      ANY, SNSU_DENY  TAStatDENIED      : .
+from      ANY, SNSU_FTL   TAStateFATAL      : .

@@ -1,0 +1,353 @@
+<model name='Sistem Modeli'>
+<author>Dürtücü Teknolociler Araşt. &amp; Gelişt. Labs</author>
+<draft/>
+
+<namespace name='COMAR'>
+
+<collection name='Hardware'>
+<desc>Fiziksel düzey donanım yapılandırılması.</desc>
+<class name='Device'>
+	<desc>Kullanılabilen bir donanım parçası ya da bus'ı tanımlayan nesneleri içerir.</desc>
+	<attributes>
+		<attr name='enum'></attr>
+		<attr name='power'>
+			<desc>off, standby, on</desc>
+		</attr>
+		<attr name='class'>
+			<desc>yazıcı, v4l, capture, vs</desc>
+		</attr>
+		<attr name='dap'>
+			<desc>Device Access Point (/dev/...)</desc>
+		</attr>
+		<attr name='inode'>
+		</attr>
+		<attr name='caps'>
+		</attr>
+		<attr name='status'>
+			<desc>online, offline</desc>
+		</attr>
+	</attributes>
+	<methods>
+		<method name='start'></method>
+		<method name='stop'></method>
+	</methods>
+</class>
+<class name='PUS'>
+	<desc>Fiziksel tarayıcılar (kudzu, discover, vb). Bus'ları tarayarak, ya da gelen hotplug olayları üzerinden fiziksel cihazları bulan, gerekli modüllerin yüklenmesini sağlayarak cihaz bilgilerini LUS'a aktaran nesneler.</desc>
+</class>
+<class name='LUS'>
+	<desc>Mantıksal tarayıcılar (udev, vb). PUS'tan gelen bilgilere göre fiziksel cihazlara ait Device nesnelerini oluşturan ve cihazların erişim (/dev/...) noktalarını belirleyen nesneler.</desc>
+</class>
+</collection>
+
+<collection name='Storage'>
+<desc>Depo birimleri hazırlanması ve yönetimi.</desc>
+<class name='Storage'>
+	<desc>Depolama kabiliyeti olan Hardware nesnelerinden oluşturulur. Harddisk, cdrom gibi bir birimi ifade eder.</desc>
+	<attributes>
+		<attr name='type'>
+			<desc>removable/fixed</desc>
+		</attr>
+		<attr name='media'>
+			<desc>harddisk, cd, disket, camera, vs</desc>
+		</attr>
+		<attr name='rw'>
+			<desc>Okumayabilme/Yazabilme durumu.</desc>
+		</attr>
+		<attr name='size'>
+			<desc>Boyut.</desc>
+		</attr>
+		<attr name='diğer:'>
+			<desc>caching, buffer, block_size, vs</desc>
+		</attr>
+	</attributes>
+	<methods>
+		<method name='eject'>
+			<desc>Destekleyen nesnelerde birimi çıkartır.</desc>
+		</method>
+		<method name='sync'>
+			<desc>Buffer'ları yazılmaya iter.</desc>
+		</method>
+	</methods>
+</class>
+<class name='Volume'>
+	<desc>Bir veya birden fazla storage üzerinde, bir dosya sistemine sunulabilen bir alanı temsil eder.</desc>
+	<attributes>
+		<attr name='size'>
+			<desc>Boyut.</desc>
+		</attr>
+	</attributes>
+	<methods>
+	</methods>
+</class>
+<class name='FS'>
+	<desc>Dosya sistemlerini tanımlayan nesneleri içerir.</desc>
+	<attributes>
+		<attr name='name'>
+			<desc>Dosya sisteminin adı (ext2, fat, reiserfs, vb)</desc>
+		</attr>
+	</attributes>
+	<methods>
+		<method name='format'>
+			<desc>Volume'ü biçimlendirir.</desc>
+		</method>
+		<method name='fsck'>
+			<desc>Hata denetlemesi yapar.</desc>
+		</method>
+		<method name='check'>
+			<desc>Verilen Volume'de bu dosya sistemi mevcut mu?</desc>
+		</method>
+	</methods>
+</class>
+<class name='FHS'>
+	<desc>Dosya sistemlerinin, sistem hiyerarşisinde nereye bağlanacağını belirleyen nesneler.</desc>
+</class>
+</collection>
+
+<collection name='Network'>
+<desc>İletişim alt yapısı.</desc>
+
+<collection name='NS'>
+	<desc>Ağ isim servisleri.</desc>
+<class name='Address'>
+	<desc>Bir ağ, makina, ya da bunların bir grubunu gösteren nesneler.</desc>
+	<attributes>
+		<attr name='type'>
+			<desc>network/host</desc>
+		</attr>
+		<attr name='dns'>
+			<desc>Kayıt DNS üzerinde mi?</desc>
+		</attr>
+	</attributes>
+	<methods>
+		<method name='get_service'>
+			<desc>Adrese ait MX ve benzeri servis adreslerini verir.</desc>
+		</method>
+		<method name='get_address'>
+			<desc>Adresin IPv4, IPv6, IPX adreslerini döndürür.</desc>
+		</method>
+	</methods>
+</class>
+
+<class name='LHT'>
+	<desc>Local host table. Yerel makinanın isimleri.</desc>
+	<attributes>
+	</attributes>
+	<methods>
+	</methods>
+</class>
+
+<class name='NIT'>
+	<desc>Network information table. Kullanıcının yerel ağ, internet, muhasebe bölümünün ağı gibi tanımlar yaparak, ayarlamalarda belli bir ağı kolayca adreslemesi için tablo.</desc>
+	<attributes>
+	</attributes>
+	<methods>
+	</methods>
+</class>
+
+<class name='Precedence'>
+	<desc>DNS kayıtları sorulmasında öncelik sıraları.</desc>
+</class>
+
+<class name='Resolver'>
+	<desc>DNS çözücüler.</desc>
+</class>
+
+<class name='Provider'>
+	<desc>DNS kayıtları güncelleyebilen sunucular.</desc>
+</class>
+</collection>
+
+<class name='Interface'>
+	<desc>Ethernet kartı, modem, vb gibi bir ağ arabirimini yapılandıran nesneler.</desc>
+</class>
+
+<class name='Carrier'>
+	<desc>Bir ağ arabirimi üzerindeki taşıyıcı protokolü (IP, vb) yapılandıran nesneler.</desc>
+</class>
+
+<class name='Transmission'>
+	<desc>Taşıyıcı üzerindeki protokolü (TCP, vb) yapılandıran nesneler.</desc>
+</class>
+
+<class name='Session'>
+	<desc>Bir sunucu (apache, vb) ya da sunucu yönlendiricisi (squid, apache) yapılandıran nesneler.</desc>
+</class>
+
+</collection>
+
+<collection name='User'>
+<desc>Kullanıcı yönetimi.</desc>
+<class name='UserDB'>
+	<desc>Dosya sistemi yada LDAP gibi bir kullanıcı listesi kaynağı.</desc>
+</class>
+<class name='User'>
+	<desc>Kullanıcı.</desc>
+</class>
+<class name='Group'>
+	<desc>Kullanıcı grubu.</desc>
+</class>
+</collection>
+
+<collection name='Package'>
+<desc>Uygulama ve kitaplıkların yönetimi, kurulup kaldırılması, bilgileri.</desc>
+<class name='Manager'>
+	<desc>Paket kurum kaldırabilen yönetici nesneleri.</desc>
+</class>
+<class name='Package'>
+	<desc>Bir uygulama pakedi.</desc>
+</class>
+<class name='Application'>
+	<desc>Uygulama pakedi içinden çıkıp, pakedin bir özelliğini sunan bir uygulama.</desc>
+</class>
+</collection>
+
+<collection name='MIME'>
+<desc>Veri dosyaları ve uygulamalar arası eşleştirme.</desc>
+</collection>
+
+<collection name='Font'>
+<desc>Yazı tiplerinin yönetimi.</desc>
+</collection>
+
+<collection name='Desktop'>
+<desc>Kullanıcı çalışma arayüzleri.</desc>
+<collection name='Display'>
+<desc>Görsel çıktı birimlerini tarif eden nesneler.</desc>
+	<class name='Head'>
+		<desc>Bir Hardware Device nesnesi üzerindeki, grafik çıktı verebilen grafik kartı benzeri nesneler.</desc>
+	</class>
+	<class name='Monitor'>
+		<desc>Head nesnesinin bağlandığı monitor, tv, vb gibi bir çıktı birimi.</desc>
+	</class>
+	<class name='Screen'>
+		<desc>Birer Head ve Screen nesnesinden oluşan ve çeşitli visual (palette, truecolor, highcolor) ve çözünürlük değerlerini sağlayabilen çıkış nesnesi.</desc>
+	</class>
+	<class name='Layout'>
+		<desc>Screen nesnelerinin fiziksel sıralanmasını yapılandıran nesneler.</desc>
+	</class>
+	<class name='LGU'>
+		<desc>Görüntü birimi yöneticileri.</desc>
+	</class>
+	<class name='Protocol'>
+		<desc>Görüntü birimi bağlantı protokolleri.</desc>
+	</class>
+</collection>
+<collection name='HID'>
+<desc>Kullanıcı giriş birimleri (joystick, mouse, vb).</desc>
+</collection>
+	<class name='Menu'>
+		<desc>Uygulamaların sunduğu menüler.</desc>
+	</class>
+	<class name='Theme'>
+		<desc>Renk, arkaplan, ikon seti, font seçimi, pencere dekorasyonları gibi arayüz temaları.</desc>
+	</class>
+	<class name='Icon'>
+		<desc>İkon kaynakları.</desc>
+	</class>
+	<class name='Cursor'>
+		<desc>İşaretçi kaynakları.</desc>
+	</class>
+</collection>
+
+<collection name='Time'>
+<desc>Zaman ayarları ve zamanlı işlerin yürütülmesi.</desc>
+	<class name='Timer'>
+	<desc>İşlerin verilen zamanda çalıştırılmasını sağlayan nesne.</desc>
+	<attributes>
+		<attr name='handler'>
+			<desc>Çalıştırılacak ÇOMAR scripti ya da komut.</desc>
+		</attr>
+		<attr name='time'>
+			<desc>Zaman değeri.</desc>
+		</attr>
+		<attr name='periodic'>
+			<desc>Her zaman süresinde tekrar mı çalıştırılacak, yoksa bir kere mi.</desc>
+		</attr>
+		<attr name='queue'>
+			<desc>Yalnızca o an mı, yoksa o andan sonra ne zaman fırsat çıkarsa mı.</desc>
+		</attr>
+		<attr name='work_time'>
+			<desc>Fiziksel saat mi, yoksa bilgisayarın çalışma süresi mi esas alınacak.</desc>
+		</attr>
+		<attr name='when_idle'>
+			<desc>İşlemcinin boş kalması beklenecek mi.</desc>
+		</attr>
+	</attributes>
+	</class>
+</collection>
+
+<collection name='Message'>
+<desc>E-mektup ve benzeri yazışma uygulamalarının yapılandırılması.</desc>
+	<class name='Storage'>
+		<desc>İletileri depolayıp saklayabilen nesneler.</desc>
+	</class>
+	<class name='Transport'>
+		<desc>İletileri bir adresten ötekine taşıyabilen nesneler.</desc>
+	</class>
+	<class name='Client'>
+		<desc>Kullanıcı arabirimleri.</desc>
+	</class>
+	<class name='Hook'>
+		<desc>İletiler üzerinde virüs tarama, spam kontrol gibi işlemler yapabilen nesneler.</desc>
+	</class>
+</collection>
+
+<collection name='Data'>
+<desc>Kullanıcı verilerinin uygulamalar arası paylaşımının yapılandırılması.</desc>
+	<class name='Bookmark'>
+		<desc>Bookmarklar.</desc>
+	</class>
+	<class name='Recent'>
+		<desc>Son çalışılan dosyalar.</desc>
+	</class>
+	<class name='Favorite'>
+		<desc>Sık kullanılan dosyalar.</desc>
+	</class>
+	<class name='Address'>
+		<desc>Adres defterleri.</desc>
+	</class>
+	<class name='Calendar'>
+		<desc>Takvim hizmetleri.</desc>
+	</class>
+</collection>
+
+<collection name='Database'>
+<desc>Veritabanı sunucuları ve üzerlerindeki veri kaynaklarının yapılandırılması.</desc>
+</collection>
+
+<collection name='Log'>
+<desc>Olayların kaydedilmesi ve çeşitli işlemleri tetiklemesinin yapılandırılması.</desc>
+</collection>
+
+<collection name='Document'>
+<desc>Belgeler ve yardım dosyalarının yönetimi.</desc>
+	<class name='Document'>
+		<desc>Belge.</desc>
+	</class>
+	<class name='Indexer'>
+		<desc>Belge indeksleyici ve bulucu uygulama nesneleri.</desc>
+	</class>
+	<class name='Viewer'>
+		<desc>Belge gösterici nesneler.</desc>
+	</class>
+</collection>
+
+<collection name='Boot'>
+<desc>Ön yükleyici ve sistem açılışı yapılandırması.</desc>
+</collection>
+
+<collection name='Plugin'>
+<desc>Uygulama eklentilerinin yönetimi (kernel modülü, X11 window managerları?, gecko pluginleri, vb).</desc>
+</collection>
+
+<collection name='Multimedia'>
+<desc>Çokluortam uygulamalarının yapılandırılması.</desc>
+</collection>
+
+<collection name='Printer'>
+<desc>Baskı sistemlerinin yapılandırılması.</desc>
+</collection>
+</namespace>
+
+</model>

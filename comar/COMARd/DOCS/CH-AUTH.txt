@@ -1,0 +1,55 @@
+CXDRPC-HTTP Authentication şeması:
+
+CXDRPC-HTTP, iki doğrulama mekanizması sunar:
+
+1. Host based authentication.
+	Bağlantı, yerel makineden alınmışsa, her koşulda karşı uçtaki kullanıcı tespit edilerek user_name@localhost şeklinde doğrulanır. Bu sayede yerel bağlantılar için gereksiz authentication/key üretme vb. işlemler yapılmaz.
+2. Digest Tabanlı doğrulama:
+	Bu yöntemde, cxdrpc-http sunucudan, "GET /authinfo" komutu yoluyla doğrulama bilgisi istenir. Bu isteği alan sunucu HTTP headerlerini kullanarak gerekli doğrulama verilerini istemciye iletir. Bu bilgiler 300 sn boyunca takip edilir. 300 saniye içinde bu bilgiler yoluyla bağlantı gerçekleşmezse gönderilen bilgiler iptal edilir.
+
+	Auth işlemi iki farklı ana yoldan yapılabilir:
+	server header: "auth-methods" ==> "BASIC DIGEST"
+	BASIC AUTH:
+		Bu yöntem için, kullanıcı adı@realm ve parola bileşenleri sunucuya gönderilir. Sunucu, kullanabileceği authentication yöntemlerini önceden istemciye gönderir:
+		server header:  "pwdcheck-methods" ==> "SYSTEM <extended auth methods>
+		COMAR Sistemleri her zaman SYSTEM doğrulama yöntemini desteklerler. Bunun yanında, NTLM, KRB5 gibi ek kullanıcı doğrulama yöntemleri de sunulabilir.
+		client header:	"auth-type" ==> "BASIC"
+						"auth-info" ==> "<method> <authdescriptor>"
+						"auth-usedkeyid" ==> "<used_crypt_method> <ENCODING>:<cryptkeyid>"
+
+		<authdescriptor>, kullanılan pwdcheck_method'a bağlı olarak farklı içerikte olabilir. Ama her zaman "auth-usedkeyid" ile tarif edildiği şekilde şifrelenmiş ve gerektiği durumlarda BASE64 veya COMARENCODING (???) ile encode edilmiş haldedir. ENCODING sahası, PLAIN veya COMARENCODING olabilir. COMARENCODING %hexcode şeklinde yapılan kodlama işlevidir.
+
+USING COMAR CONNECTOR CLIENT MODULES:
+
+1.	Yeni bir konnektör oluşturun.
+	conn = CONNS.getModule("cxdrpc-http").object(comarHelper = comarRoot())
+
+2.	Konnektör için kullanıcı ve realm bilgilerini set edin.
+	conn.user = "testuser"
+	conn.realm = "serdar.serdarkoylu.com"
+
+3.	Bir RPCStruct Nesnesi oluşturup gerekli bilgileri düzenleyin:
+	xml = '<COMARRPCData>....</COMARRPCData>'
+	rpc = RPCData.RPCStruct(xmlData = xml)
+
+4.	Karşı taraf bağlantıyı başlatın.
+	connAvailInfo = conn.makeConnection(realmAddress = "127.0.0.1:8000")
+
+5.  .makeConnection() çağrısı, kullanılabilir olan şifreleme, doğrulama yöntemlerini geri döndürecektir. Hangi doğrulama yöntemini kullanacağınıza göre gerekli adımları uygulayın (See: BASIC Auth, DIGEST Auth).
+
+6.	Eğer veriyi şifrelemek istiyorsanız, kullanmak istediğiniz şifreleme algoritmasını belirtin. Bu algoritma, makeConnection ile elde ettiklerinizden biri olmalıdır.
+	cryptoAvail = conn.setCryptMethod("RSA-1024")
+	işlem başarılı olursa, bu çağrı geriye 1 döndürür, aksi halde None geri dönecektir.
+
+7.	Veriyi karşı sunucuya gönderin.
+	conn.sendRPC(rpc = rpc)
+
+BASIC Auth:
+	BASIC Auth, karşı tarafa kullanıcı adı ve parolasını ifade eden "passwdDescriptor" un yollanması ile sağlanır. Bu bilgiler, mümkün olduğunca güvenli yöntemlerle iletilmeye çalışılır. Alıcı taraftaki sunucu, bazı çağrılar için mutlak güvenli bağlantı isteyebilir, güvensiz bir bağlantı üzerinden yapılan istekleri red edebilir.
+
+	BASIC Auth için, bağlantıyı başlattıktan sonra (makeConnection), setBasicAuth ile bağlantıyı BASIC Auth moduna getirir.
+
+	connAvailInfo = conn.makeConnection(realmAddress = "127.0.0.1:8000")
+	if connconnAvailInfo[
+	conn.setBasicAuth(
+

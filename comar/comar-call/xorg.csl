@@ -1,0 +1,8 @@
+# startup script for autoconfiguring xorg
+# doesnt use COMAR:Desktop at the moment, scans hw directly
+
+method start() {
+	modes = capture(exec="/usr/sbin/ddcxinfo-knoppix -monitor");
+	xini_change_section(cfgfile="/home/palpa/xorg.conf",section="Monitor",content=modes);
+	xini_change_option(cfgfile="/home/palpa/xorg.conf",section="Device",option="Driver",value="nvidia");
+}

@@ -1,0 +1,16 @@
+from        TAM session    MNTB_TERM             SelfTerminate: Bu komutu alan process kendini sonlandırır.
+from        TAM session    MNTB_TERM             SelfTerminate: Bu komutu alan process kendini sonlandırır.
+from        TAM session    MNTB_TERM             SelfTerminate: Bu komutu alan process kendini sonlandırır.
+from      TAM session  MNTB_TERM      SelfTerminate: Bu komutu alan process kendini sonlandırır.
+from      TAM session  MNTB_TERM SelfTerminate     : Bu komutu alan process kendini sonlandırır.
+from      TAM, MNTB_TERM  SelfTerminate     : Bu komutu alan process kendini sonlandırır.
+from      TAM, MNTB_TERM  SelfTerminate     : Bu komutu alan process kendini sonlandırır.
+from      TAM, MNTB_TERM  SelfTerminate     : Bu komutu alan process kendini sonlandırır.
+from      TAM, MNTB_TERM  SelfTerminate     : Bu komutu alan process kendini sonlandırır.
+from      TAM, MNTB_TERM  SelfTerminate     : Bu komutu alan process kendini sonlandırır.
+from      TAM, MNTB_TERM  SelfTerminate     : Bu komutu alan process kendini sonlandırır.
+from      TAM, MNTB_TERM  SelfTerminate     : Bu komutu alan process kendini sonlandırır.
+from      TAM, MNTB_TERM  SelfTerminate     : Bu komutu alan process kendini sonlandırır.
+from      TAM, MNTB_TERM  SelfTerminate     : Bu komutu alan process kendini sonlandırır.
+from      TAM, MNTB_TERM  SelfTerminate     : Bu komutu alan process kendini sonlandırır.
+from      TAM, MNTB_TERM  SelfTerminate     : Bu komutu alan process kendini sonlandırır.

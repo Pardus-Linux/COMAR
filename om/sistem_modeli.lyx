@@ -1,0 +1,478 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass article
+\begin_preamble
+\tolerance=10000
+\usepackage{hyperref}
+\end_preamble
+\language turkish
+\inputencoding auto
+\fontscheme pslatex
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+Sistem Modeli
+\layout Author
+
+Serdar Köylü, A.
+ Murat Eren, Gürer Özen
+\layout Date
+
+29 Kasým 2004
+\layout Section
+
+Hardware
+\layout Quote
+
+Fiziksel düzey donaným yapýlandýrýlmasý.
+\begin_deeper 
+\layout Subsection*
+
+Hardware.Device
+\layout Quote
+
+Kullanýlabilen bir donaným parçasý ya da bus'ý tanýmlayan nesneleri içerir.
+\layout Subsection*
+
+Hardware.PUS
+\layout Quote
+
+Fiziksel tarayýcýlar (kudzu, discover, vb).
+ Bus'larý tarayarak, ya da gelen hotplug olaylarý üzerinden fiziksel cihazlarý
+ bulan, gerekli modüllerin yüklenmesini saðlayarak cihaz bilgilerini LUS'a
+ aktaran nesneler.
+\layout Subsection*
+
+Hardware.LUS
+\layout Quote
+
+Mantýksal tarayýcýlar (udev, vb).
+ PUS'tan gelen bilgilere göre fiziksel cihazlara ait Device nesnelerini
+ oluþturan ve cihazlarýn eriþim (/dev/...) noktalarýný belirleyen nesneler.
+\end_deeper 
+\layout Section
+
+Storage
+\layout Quote
+
+Depo birimleri hazýrlanmasý ve yönetimi.
+\begin_deeper 
+\layout Subsection*
+
+Storage.Storage
+\layout Quote
+
+Depolama kabiliyeti olan Hardware nesnelerinden oluþturulur.
+ Harddisk, cdrom gibi bir birimi ifade eder.
+\layout Subsection*
+
+Storage.Volume
+\layout Quote
+
+Bir veya birden fazla storage üzerinde, bir dosya sistemine sunulabilen
+ bir alaný temsil eder.
+\layout Subsection*
+
+Storage.FS
+\layout Quote
+
+Dosya sistemlerini tanýmlayan nesneleri içerir.
+\layout Subsection*
+
+Storage.FHS
+\layout Quote
+
+Dosya sistemlerinin, sistem hiyerarþisinde nereye baðlanacaðýný belirleyen
+ nesneler.
+\end_deeper 
+\layout Section
+
+Network
+\layout Quote
+
+Ýletiþim alt yapýsý.
+\begin_deeper 
+\layout Subsection
+
+NameTable
+\layout Quote
+
+Að isim servisleri.
+\begin_deeper 
+\layout Subsection*
+
+NameTable.Address
+\layout Subsection*
+
+NameTable.Host
+\layout Subsection*
+
+NameTable.Network
+\end_deeper 
+\layout Subsection
+
+ConnPoint
+\layout Quote
+
+Bir baðlantý noktasýný belirten nesneler.
+\begin_deeper 
+\layout Subsection*
+
+ConnPoint.PHY
+\layout Subsection*
+
+ConnPoint.NIC
+\end_deeper 
+\layout Subsection
+
+Protocol
+\layout Quote
+
+Baðlantý noktasý üzerindeki protokoller.
+\begin_deeper 
+\layout Subsection*
+
+Protocol.Carrier
+\layout Subsection*
+
+Protocol.Transport
+\end_deeper 
+\layout Subsection
+
+Application
+\layout Quote
+
+Bir sunucu (apache, vb) ya da sunucu yönlendiricisi (squid, apache) yapýlandýran
+ nesneler.
+\begin_deeper 
+\layout Subsection*
+
+Application.Session
+\layout Subsection*
+
+Application.Server
+\end_deeper 
+\end_deeper 
+\layout Section
+
+User
+\layout Quote
+
+Kullanýcý yönetimi.
+\begin_deeper 
+\layout Subsection*
+
+User.UserDB
+\layout Quote
+
+Dosya sistemi yada LDAP gibi bir kullanýcý listesi kaynaðý.
+\layout Subsection*
+
+User.User
+\layout Quote
+
+Kullanýcý.
+\layout Subsection*
+
+User.Group
+\layout Quote
+
+Kullanýcý grubu.
+\end_deeper 
+\layout Section
+
+Package
+\layout Quote
+
+Uygulama ve kitaplýklarýn yönetimi, kurulup kaldýrýlmasý, bilgileri.
+\begin_deeper 
+\layout Subsection*
+
+Package.Manager
+\layout Quote
+
+Paket kurum kaldýrabilen yönetici nesneleri.
+\layout Subsection*
+
+Package.Package
+\layout Quote
+
+Bir uygulama pakedi.
+\layout Subsection*
+
+Package.Application
+\layout Quote
+
+Uygulama pakedi içinden çýkýp, pakedin bir özelliðini sunan bir uygulama.
+\end_deeper 
+\layout Section
+
+MIME
+\layout Quote
+
+Veri dosyalarý ve uygulamalar arasý eþleþtirme.
+\layout Section
+
+Font
+\layout Quote
+
+Yazý tiplerinin yönetimi.
+\layout Section
+
+Desktop
+\layout Quote
+
+Kullanýcý çalýþma arayüzleri.
+\begin_deeper 
+\layout Subsection
+
+Display
+\layout Quote
+
+Görsel çýktý birimlerini tarif eden nesneler.
+\begin_deeper 
+\layout Subsection*
+
+Desktop.Display.Head
+\layout Quote
+
+Bir Hardware Device nesnesi üzerindeki, grafik çýktý verebilen grafik kartý
+ benzeri nesneler.
+\layout Subsection*
+
+Desktop.Display.Monitor
+\layout Quote
+
+Head nesnesinin baðlandýðý monitor, tv, vb gibi bir çýktý birimi.
+\layout Subsection*
+
+Desktop.Display.Screen
+\layout Quote
+
+Birer Head ve Screen nesnesinden oluþan ve çeþitli visual (palette, truecolor,
+ highcolor) ve çözünürlük deðerlerini saðlayabilen çýkýþ nesnesi.
+\layout Subsection*
+
+Desktop.Display.Layout
+\layout Quote
+
+Screen nesnelerinin fiziksel sýralanmasýný yapýlandýran nesneler.
+\layout Subsection*
+
+Desktop.Display.LGU
+\layout Quote
+
+Görüntü birimi yöneticileri.
+\layout Subsection*
+
+Desktop.Display.Protocol
+\layout Quote
+
+Görüntü birimi baðlantý protokolleri.
+\end_deeper 
+\layout Subsection
+
+HID
+\layout Quote
+
+Kullanýcý giriþ birimleri (joystick, mouse, vb).
+\layout Subsection*
+
+Desktop.Menu
+\layout Quote
+
+Uygulamalarýn sunduðu menüler.
+\layout Subsection*
+
+Desktop.Theme
+\layout Quote
+
+Renk, arkaplan, ikon seti, font seçimi, pencere dekorasyonlarý gibi arayüz
+ temalarý.
+\layout Subsection*
+
+Desktop.Icon
+\layout Quote
+
+Ýkon kaynaklarý.
+\layout Subsection*
+
+Desktop.Cursor
+\layout Quote
+
+Ýþaretçi kaynaklarý.
+\end_deeper 
+\layout Section
+
+Time
+\layout Quote
+
+Zaman ayarlarý ve zamanlý iþlerin yürütülmesi.
+\begin_deeper 
+\layout Subsection*
+
+Time.Timer
+\layout Quote
+
+Ýþlerin verilen zamanda çalýþtýrýlmasýný saðlayan nesne.
+\end_deeper 
+\layout Section
+
+Message
+\layout Quote
+
+E-mektup ve benzeri yazýþma uygulamalarýnýn yapýlandýrýlmasý.
+\begin_deeper 
+\layout Subsection*
+
+Message.Storage
+\layout Quote
+
+Ýletileri depolayýp saklayabilen nesneler.
+\layout Subsection*
+
+Message.Transport
+\layout Quote
+
+Ýletileri bir adresten ötekine taþýyabilen nesneler.
+\layout Subsection*
+
+Message.Client
+\layout Quote
+
+Kullanýcý arabirimleri.
+\layout Subsection*
+
+Message.Hook
+\layout Quote
+
+Ýletiler üzerinde virüs tarama, spam kontrol gibi iþlemler yapabilen nesneler.
+\end_deeper 
+\layout Section
+
+Data
+\layout Quote
+
+Kullanýcý verilerinin uygulamalar arasý paylaþýmýnýn yapýlandýrýlmasý.
+\begin_deeper 
+\layout Subsection*
+
+Data.Bookmark
+\layout Quote
+
+Bookmarklar.
+\layout Subsection*
+
+Data.Recent
+\layout Quote
+
+Son çalýþýlan dosyalar.
+\layout Subsection*
+
+Data.Favorite
+\layout Quote
+
+Sýk kullanýlan dosyalar.
+\layout Subsection*
+
+Data.Address
+\layout Quote
+
+Adres defterleri.
+\layout Subsection*
+
+Data.Calendar
+\layout Quote
+
+Takvim hizmetleri.
+\end_deeper 
+\layout Section
+
+Database
+\layout Quote
+
+Veritabaný sunucularý ve üzerlerindeki veri kaynaklarýnýn yapýlandýrýlmasý.
+\layout Section
+
+Log
+\layout Quote
+
+Olaylarýn kaydedilmesi ve çeþitli iþlemleri tetiklemesinin yapýlandýrýlmasý.
+\layout Section
+
+Document
+\layout Quote
+
+Belgeler ve yardým dosyalarýnýn yönetimi.
+\begin_deeper 
+\layout Subsection*
+
+Document.Document
+\layout Quote
+
+Belge.
+\layout Subsection*
+
+Document.Indexer
+\layout Quote
+
+Belge indeksleyici ve bulucu uygulama nesneleri.
+\layout Subsection*
+
+Document.Viewer
+\layout Quote
+
+Belge gösterici nesneler.
+\end_deeper 
+\layout Section
+
+Boot
+\layout Quote
+
+Ön yükleyici ve sistem açýlýþý yapýlandýrmasý.
+\layout Section
+
+Plugin
+\layout Quote
+
+Uygulama eklentilerinin yönetimi (kernel modülü, X11 window managerlarý?,
+ gecko pluginleri, vb).
+\layout Section
+
+Multimedia
+\layout Quote
+
+Çokluortam uygulamalarýnýn yapýlandýrýlmasý.
+\layout Section
+
+Printer
+\layout Quote
+
+Baský sistemlerinin yapýlandýrýlmasý.
+\layout Section
+
+Security
+\layout Quote
+
+Güvenlik ayarlarý, kimlik doðrulama ve yetkilendirme iþlemlerinin yapýlandýrýlma
+sý.
+\the_end

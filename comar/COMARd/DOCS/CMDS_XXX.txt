@@ -1,0 +1,4 @@
+to        XXX, TRTU_CALL  Call ObjHook Routine: Data kanalı, COMARCallInfo formatında işletilecek veriye ait bilgiyi ihtiva eder.
+to        XXX, TRTU_DTA   TAData            : Data CSID-RPCDATA 1.0 Formatında TA STATUS-RESPONSE verisini ihtiva eder.
+from      XXX, TRTU_CALL  Call ObjHook Routine: Data kanalı, COMARCallInfo formatında işletilecek veriye ait bilgiyi ihtiva eder.
+from      XXX, TRTU_DTA   TAData            : Data CSID-RPCDATA 1.0 Formatında TA STATUS-RESPONSE verisini ihtiva eder.

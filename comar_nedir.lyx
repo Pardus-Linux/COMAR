@@ -1,0 +1,507 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass article
+\begin_preamble
+\tolerance 1000
+\usepackage{hyperref}
+\end_preamble
+\language turkish
+\inputencoding auto
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+ÇOMAR 
+\newline 
+
+\family sans 
+\size normal 
+(Configuration Manager)
+\family default 
+\size default 
+
+\newline 
+ Nedir?, Yenir mi?
+\layout Author
+
+Dürtücü Teknolojiler Ar&Ge Labs.
+\layout Abstract
+
+Bu belge, ÇOMAR'ýn ne olduðunu ve ÇOMAR gibi bir altyapýya neden ihtiyaç
+ duyulduðunu mimari ve yöntem ile iglili teknik ayrýntýlara girmeksizin,
+ basit bir dille anlatmayý hedeflemiþtir.
+ Çok genel bir giriþ teþkil etmesi amacýyla en basit anlamda ÇOMAR, bir
+ yapýlandýrma altyapýsý olarak tanýmlanabilir.
+\layout Abstract
+\pagebreak_bottom 
+
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset 
+
+
+\layout Section
+
+Giriþ
+\layout Standard
+
+Herhangi bir bilgisayar kullanýcýsýnýn bilgisayardan beklentisi belirli
+ ve bir tanedir 
+\begin_inset Quotes eld
+\end_inset 
+
+bilgisayar ile iþ yapmak, bilgisayara bir iþ yaptýrmak
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Bu bahsi geçen iþ,
+\layout Itemize
+
+Film izlemek,
+\layout Itemize
+
+Yazý yazmak, yazýcýdan çýktý almak,
+\layout Itemize
+
+Internet'te oyun oynamak,
+\layout Itemize
+
+Yeni monitörü denemek,
+\layout Itemize
+
+E-posta okumak,
+\layout Itemize
+
+CD yazmak,
+\layout Itemize
+
+Yeni bir uygulama kurmak,
+\layout Itemize
+
+Bilgisayarýn Internet'e yalnýz belirli saatlerde baðlanabilmesini saðlamak,
+\layout Standard
+
+ve benzeri onlarca þey olabilir.
+ Bu iþlerin herhangi birisi için, bu iþler için kullanýlacak uygulamalarýn
+ sistemin diðer bileþenleri hakkýnda fikir sahibi olmasý ve sisteme uygun
+ þekilde yapýlandýrýlmýþ olmasý gerekmektedir.
+ Eðer daha önceden yapýlandýrýlmamýþsa, bir 
+\begin_inset Quotes eld
+\end_inset 
+
+iþ
+\begin_inset Quotes erd
+\end_inset 
+
+i yapabilmek için gereken uygulamalarýn yeteneklerinin ve nasýl yapýlandýracakla
+rýnýn bilgisi kullanýcý tarafýndan biliniyor olmalýdýr.
+\layout Standard
+
+Herhangi bir nedenle bilgisayarýn çalýþma koþullarý deðiþtiðinde de daha
+ önce yapýlan iþleri ayný þekilde yapabilmek için kullanýlan uygulamalarýn
+ deðiþikliklerden haberdar edilmesi de gerekmekte ve hangi iþ için hangi
+ uygulamalarýn nasýl deðiþikliklere ihtiyaç duyduðu da yine kullanýcý tarafýndan
+ biliniyor olmalýdýr.
+\layout Section
+
+Linux Daðýtýmlarý, Mevcut Durum
+\layout Standard
+
+Linux daðýtýmý, Linux çekirdeði kullanan bir iþletim sistemi ortamýný kullanýcýy
+a sunmayý hedefleyen bir bütündür.
+ Daðýtýmlar bu iþletim sistemi ortamýný, kullanýcýnýn ihtiyaç duyabileceði
+ çeþitli uygulamalarýn beraberce ve uyum içerisinde çalýþabilecekleri þekilde
+ bir araya getirerip, tüm bunlarý kolaylýkla kurulabilir þekilde kullanýcýya
+ ulaþtýrabilmeyi hedeflerler.
+\layout Standard
+
+Linux daðýtýmlarýnýn büyük bir kýsmý ayný zamanda kullanýcýnýn çalýþma zamanýnda
+ki ihtiyaçlarýna cevap vermek üzere bir takým yapýlandýrma araçlarýný da
+ kullanýcýlarýn hizmetine sunar.
+ SuSe, Mandrake, Fedora gibi son kullanýcýyý da hedef alan Linux daðýtýmlarýnýn
+ her birinin kendilerine ait, oturmuþ yapýlandýrma araçlarý mevcuttur.
+\layout Standard
+
+Kullanýcý bu araçlar sayesinde üzerinde çalýþtýðý sistemi ya da yapýlandýrma
+ aracýnda yer verilmiþ kimi özel uygulamalarý nispeten kolayca yapýlandýrabilir.
+ Fakat kullanýcý için aþaðýdakiler hem kullanýcý hem de sisteme gelen uygulamala
+r için hala birer sorundur:
+\layout Subsection*
+
+Kullanýcý Tarafýndan (Uygulamaya\SpecialChar ~
+Özel\SpecialChar ~
+Bilgi\SpecialChar ~
+Gerekliliði):
+\layout Standard
+
+Kullanýcýlar uygulamalarý birbirleri ile uyumlu þekilde çalýltýrabilmek
+ için bu uygulamalara özel bilgiye sahip olmak zorunda kalmaktadýr.
+ Bu da sistemi verimli bir þekilde kullanabilmeleri için zaman harcayarak
+ araþtýrma yapmalarýna, çoðunlukla yapmak istedikleri iþi çok zorlanarak
+ yapmalarýna zaman zaman da yapamamalarýna neden olmaktadýr.
+ Örneðin bir kullanýcý yapýlandýrma aracý ile yapýlandýrabileceði web sunucusunu
+n yeteneklerini tanýmýyorsa, karþýsýna çýkan
+\layout Quote
+
+
+\family typewriter 
+
+\begin_inset Quotes eld
+\end_inset 
+
+deðiþken(label) = deðer(input box ya da combo box)
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout Standard
+
+þeklindeki yapýlandýrma seçenekleri kullanýcýya bir þey ifade edememektedir.
+ Bu da kullanýcýnýn yapmasý gereken iþten ziyade bunu yaparken hangi uygulamalar
+ýn nasýl yapýlandýrýlmýþ olmasý gerektiðini araþtýrmaya ve bu konu hakkýnda
+ belki daha sonra hiç kullanmayacaðý bilgileri bir þekilde edinmeye mecbur
+ kalmaktadýr.
+ Bu durum, geniþ bir perspektifle ele alýndýðýnda Linux'un gücünden yaygýn
+ bir þekilde faydalanamamak anlamýna gelmektedir.
+\layout Subsection*
+
+Uygulama Tarafýndan (Yeteneklerini\SpecialChar ~
+Ýfade\SpecialChar ~
+Edememeleri):
+\layout Standard
+
+Uygulamalarýn kendi yeteneklerini tam olarak ortaya koyabilecekleri bir
+ platform olmadýðýndan dolayý, uygulamalarýn bir arada çalýþmalarý ile çözülebil
+ecek sorunlarýn aþýlmasý, ya da uygulamalarýn bir arada çalýþmalarý ile
+ elde edilebilecek yararlardan istifade edilebilmesi için çok fazla efor
+ gerekmektedir.
+ Çoðu zaman da normal olarak kullanýcý tarafýndan böyle çözümlerin varlýðý
+ bile düþünülememektedir.
+ Linux ile herþeyin çözümü makul kolaylýktaki yollardan mümkün iken bu çözüm
+ yöntemlerini sadece uygulamalarýn yeteneklerini daha önce tecrübe etmiþ
+ uzman kiþiler kullanabilmektedirler.
+\layout Section
+
+Nasýl Olmalýydý?
+\layout Standard
+
+Ýþletim sistemi içerisinde, herhangi bir uygulamayý sisteme maksimum verim
+ ile entegre edebilmek ve uygulamayý maksimum verim ile kullanabilmek için
+ sahip olunmasý gereken bilgi yükünü kullanýcýnýn sýrtýndan alacak iþleyiciler
+ olmalýdýr.
+ Uygulama, yapýlandýrmasý ve entegrasyonu ile ilgili kendi sorumluðunu kendisi
+ taþýmalýdýr, bu baðlamda sisteme gelen bir uygulama, yapabileceði iþler
+ ile ilgili bilgi ve yordamlarý kendi içerisinde barýndýrmalýdýr.
+ Bu bir nevi, HOWTO belgelerinin bir sistem modeli çerçevesine uydurularak
+ bir bilgisayarýn anlayabileceði þekle getirilmesi ve uygulama ile beraber
+ hareket etmesinin saðlanmasý anlamýna gelmektedir.
+ Bu tip bir yaklaþýmýn saðlýklý bir þekilde hayata geçirilebilmesi için,
+\layout Itemize
+
+Bir iþletim sisteminde ihtiyaç duyulabilecek yapýlandýrma ihtiyaçlarýný
+ kavramsal olarak ortaya koymuþ bir yapýlandýrma altyapýsý, bir model olmalýdýr,
+\layout Itemize
+
+Uygulamalarýn sistem ile ve kendi aralarýnda konuþabilmeleri için bu modeli
+ kullanan yapýlandýrma altyapýsýnýn sunduðu standart bir arayüz olmalýdýr,
+\layout Itemize
+
+Uygulamalarýn, yetenekleri ve kendilerinden beklenen çeþitli iþleri nasýl
+ yapabilecekleri ile ilgili deneyim, uygulamalarýn içerisine gömülebilmelidir,
+\layout Itemize
+
+Uygulamalarýn içerisine gömülen bilgiler hem uygulamanýn hem de içine gömülen
+ bilgilerin taþýnabilirliðini koruyabilmesi ve uygulamanýn yazýldýðý dilden
+ baðýmsýz þekilde kolayca geliþtirilebilmesi için uygulamanýn orjinal kaynak
+ kodunda herhangi bir deðiþiklik yapýlmasýný gerektirmemelidir,
+\layout Itemize
+
+Uygulamalar sistem içerisinde kendi yeteneklerinden ve karþýlayabilecekleri
+ fonksiyonaliteden yapýlandýrma altyapýsýný haberdar edebilmelidir,
+\layout Itemize
+
+Uygulamalar sistemin geri kalanýndaki yapýlandýrma bilgilerine yapýlandýrma
+ altyapýsýnýn sunduðu standart bir arayüzden ulaþabilmelidir,
+\layout Itemize
+
+Uygulamalar sistemin geri kalanýndaki uygulamalarýn sunduðu fonksiyonlara
+ yapýlandýrma altyapýsý üzerinden eriþebilmeli ve yeri geldiðinde onlara
+ yetkileri dahilinde hareket ettiklerini garanti eden bir yolla iþ yaptýrabilmel
+idir.
+\layout Standard
+
+Bu sayede,
+\layout Itemize
+
+
+\series bold 
+Kullanýcý
+\series default 
+ sisteme yeni eklenen bir uygulamanýn beklendiði gibi çalýþabilmesi için,
+ onu yapýlandýrmaya çalýþmak zorunda kalmayacak, uygulama paketlerine takýlan
+ küçük bileþenler, uygulamanýn sisteme geldiði zaman ortalýða göz atýp sistemi
+ tanýyabilmesi ve kendisinin nasýl bir yerde olduðunu anlayabilmesi için
+ gözü kulaðý olacaktýr.
+\layout Itemize
+
+
+\series bold 
+Uygulama geliþtiricisi
+\series default 
+ için yapýlandýrma altyapýsýnýn sunduðu olanaklardan faydalanan, mevcut
+ durumdaki gibi kullanýcýdan uygulamaya özel bilgi beklemeyen, uygulamadan
+ baðýmsýz ve görev temelli yapýlandýrma ön yüzleri inþa etmek özellikle
+ mevcut durum ile kýyaslandýðýnda son derece kolay olacaktýr.
+\layout Itemize
+
+
+\series bold 
+Sistem yöneticisi
+\series default 
+ için sistemin tüm yapýlandýrmasýnýn standart bir altyapý üzerine oturtulmasý,
+ bununla beraber beraber yapýlandýrmanýn kolayca taþýnmasý, kullanýcý seçimlerin
+e baðlý profillerin oluþturulmasý ve yönetilmesi de kolay olacaktýr.
+\layout Section
+
+ÇOMAR
+\layout Standard
+
+ÇOMAR, tüm bu bahsedilen gerekliliklerin hayata geçirilebilmesi, uygulama
+ isteklerinin belirli bir sýra düzende ve eriþim kontrolü ile iþletilebilmesi
+ için gereken zemin ve bileþenlerini sunacak olan yapýlandýrma altyapýsý
+ olarak tasarlanmýþtýr.
+\layout Standard
+
+ÇOMAR yapýlandýrma altyapýsýnýn tamamý temel olarak dört bileþenden meydana
+ gelmektedir, bu bileþenler basit tanýmlarý ile þu þekilde listelenebilir:
+\layout Description
+
+Sistem\SpecialChar ~
+Modeli: Bir iþletim sistemindeki yapýlandýrma ihtiyaçlarýnýn kavramsal
+ olarak nesnelerle tasvir edildiði modeldir.
+ Bu model sayesinde, uygulamalar sistem modeli içerisindeki beklentilerden
+ hangilerine cevap verebileceklerine karar verebilecek ve kendilerini Sistem
+ Modeli'nin uçlarý ile iliþkilendirebileceklerdir.
+ Sistem Modeli ÇOMAR'ýn en önemli parçasýdýr ve getirdiði en büyük yeniliktir.
+\layout Description
+
+CSL\SpecialChar ~
+Betikleri: ÇOMAR'ýn Uygulama paketi içerisinden çýkacak olan parçasýdýr.
+ Bu betikler içerisinde Sistem Modeli'nde adý geçen fonksiyonlarýn uygulama
+ tarafýndan nasýl gerçekleþtirileceðine dair anlatým olacaktýr.
+ 
+\layout Description
+
+CSL\SpecialChar ~
+Yorumlayýcý: ÇOMAR'ýn uygulama paketi içerisinden çýkan ve sistem modeline
+ yerleþen betikleri iþletebilmesi için onlarý yorumlayacak ve ÇOMAR'a sunacak
+ bileþenidir.
+\layout Description
+
+ÇOMARd: Ýþletim merkezidir.
+ Eriþim yetkilerini kontrol etmek, görevleri belirli bir sýra düzende yerine
+ getirlmesini saðlamak, yapýlandýrma için kullanýlabilecek görev temelli
+ kullanýcý grafik ön yüzlerine standart sorgu arayüzleri sunmak, sistemdeki
+ deðiþikliklerden gerekli uygulamalarýn betiklerini haberdar etmek, uzaktaki
+ ÇOMARd'lere isteklerde bulunmak, onlardan gelen istekleri karþýlamak gibi
+ daha alt seviyeli iþlevleri yerine getirecektir.
+\layout Section
+
+Daha Fazlasý
+\layout Standard
+
+Bu belgenin amacý ve þu ana kadar izlediði yaklaþým ÇOMAR'ýn ne olduðunu
+ ve ne olmadýðýný basit bir dil ile anlatmak idi.
+ ÇOMAR'ýn mimarisi, Sistem Modeli ve CSL ile ilgili teknik belgelerin hazýrlanma
+sý da ÇOMAR'ýn geliþtirilmesi ile paralel bir þekilde ilerlemektedir.
+ Diðer belgelerin ve bu belgenin son sürümlerini 
+\begin_inset LatexCommand \url{http://www.uludag.org.tr/belgeler.html}
+
+\end_inset 
+
+ adresinden takip edebilirsiniz.
+ Ayrýca ÇOMAR ve ULUDAÐ'ýn diðer bileþenleri ile ilgili yanýt bulamadýðýnýz
+ sorularýnýzý, düþüncelerinizi ya da fikirlerinizi 
+\begin_inset LatexCommand \url{http://www.uludag.org.tr/listeler.html}
+
+\end_inset 
+
+ adresindeki e-posta listelerimiz aracýlýðý ile bize iletebilirsiniz.
+\layout Section
+
+Sýkça Sorulan Sorular
+\layout Subsection
+
+ÇOMAR'ýn açýlýmý nedir?
+\layout Standard
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+Configuration Manager
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ ÇOMAR'ýn açýlýmý 
+\begin_inset Quotes eld
+\end_inset 
+
+Configuration by Objects Modify and Restart
+\begin_inset Quotes erd
+\end_inset 
+
+ idi.
+ Fakat ÇOMAR'ýn tasarým sürecinde 
+\begin_inset Quotes eld
+\end_inset 
+
+Modify and Restart
+\begin_inset Quotes erd
+\end_inset 
+
+ kýsmýnýn ÇOMAR'ýn iþlevselliðini tam olarak ifade etmez hale geldiði görüldü
+ ve açýlýmýnýn 
+\begin_inset Quotes eld
+\end_inset 
+
+Configuration Manager
+\begin_inset Quotes erd
+\end_inset 
+
+ olmasýnýn daha doyurucu ve anlamlý olacaðýna karar kýlýndý.
+\layout Subsection
+
+ÇOMAR ve ÇOMAR için hazýrlanmýþ uygulamalar bana ne sunacak?
+\layout Itemize
+
+ÇOMAR sistemin mevcut yapýlandýrmasýna göre kendi kendini yapýlandýrabilen
+ uygulamalar hazýrlanabilmesini, sistemdeki yapýlandýrmanýn deiðiþtirilmesi
+ ile haberdar edilmesi gereken uygulamalarý haberdar etmek gibi iþleri kullanýcý
+nýn üzerinden alarak yapýlandýrma baðlamýnda kaybedilen zamaný ve enerjiyi
+ kullanýcýya geri kazandýracaktýr.
+\layout Itemize
+
+Yeterince deneyimli kiþiler tarafýndan hazýrlanmýþ betikler sayesinde kurulum
+ ve çalýþma zamanýnda baþlangýç kullanýcýlarýnýn dahi uygulamalarýn yeteneklerin
+i tam anlamýyla kullanabilmelerini saðlayacaktýr.
+\layout Itemize
+
+Sunduðu fonksiyonalite ile tek tek uygulama yapýlandýrmaktan ziyade görev
+ temelli düþünülmüþ grafik yapýlandýrma ön yüzleri yazýlmasýný kolaylaþtýracak,
+ bu ön yüzler sayesinde kullanýcýnýn daha rahat 
+\begin_inset Quotes eld
+\end_inset 
+
+iþ
+\begin_inset Quotes erd
+\end_inset 
+
+ yapabilmesini saðlayacaktýr.
+\layout Subsection
+
+Sistemde ÇOMAR ile çalýþacak þekilde düzenlenmemiþ programlarý da kullanabilecek
+ miyim?
+\layout Standard
+
+Elbette.
+ Bunun sebebi de, uygulamalarýn ÇOMAR ile çalýþabilecek þekilde düzenlenmesinin,
+ uygulamanýn kaynak koduna dokunmaksýzýn, uygulama ile beraber gelecek bir
+ ya da bir kaç betik dosyasýnýn uygulama paketi içerisine eklenmesinden
+ ibaret olmasýndan kaynaklanmaktadýr.
+\layout Subsection
+
+ÇOMAR'ý devreden çýkarabilecek miyim, bu hali ile sistemi kullanmaya devam
+ edebilecek miyim?
+\layout Standard
+
+Evet ÇOMAR'ý devreden çýkarabileceksiniz, ve sisteminiz çalýþmaya devam
+ edecek.
+ Fakat bunu yaptýðýnýzda herhangi bir konfigürasyon deðiþikliði artýk kendi
+ kendine olmayacak, uygulamalar deðiþikliklerden haberdar olup kendilerini
+ yeniden yapýlandýramayacaklardýr.
+ Fakat bir Linux sisteme aþina olanlar yapýlandýrma dosyalarýna müdahale
+ ederek sistemin yapýlandýrmasýnýn sürekliliðini elle saðlayabileceklerdir.
+ ÇOMAR'ýn aktif olmamasý sistemi çalýþmaz hale getirmeyecek fakat olmasý
+ sistemi iyi çalýþýr hale getirecektir.
+\layout Subsection
+
+ÇOMAR sistemde kendi kendine bir takým iþler yapacak mý?
+\layout Standard
+
+ÇOMAR sistemde, konfigürasyon deðiþikliðini, bir uygulamanýn tetiklenmesini
+ ya da bir servisin yeniden baþlatýlmasýný gerektirecek bir 
+\begin_inset Quotes eld
+\end_inset 
+
+olay
+\begin_inset Quotes erd
+\end_inset 
+
+ meydana geldiðinde ya da kullanýcý grafik arayüzlerinden gelecek bir çaðrý
+ neticesinde çalýþacak ve sisteme müdahale edecek, kendi kendine bir takým
+ iþler yapmayacaktýr.
+\layout Subsection
+
+CSL yeni bir programlama dili mi? Bu dili kim kullanacak?
+\layout Standard
+
+CSL, ÇOMAR'ýn Betik Dili olarak düþünüldü.
+ Bu dili sadece ÇOMAR'dan faydalanmak isteyen uygulamalarýn paketleyicileri
+ gerekli betikleri paketlere eklemek için öðrenecekler.
+ CSL ile ilgili dökümanlarý ilerleyen tarihlerde dokumanlar sayfamýzdan
+ edinebileceksiniz.
+ Kullanýcýlarýn bu dili bilmesi gerekmeyecek.
+\layout Subsection
+
+CSL gibi yeni bir dile ihtiyaç var mýydý? Diðer diller yetmediler mi?
+\layout Standard
+
+CSL tam olarak diðer programlama dillerinin yetersizliðinden dolayý ortaya
+ çýkmýþ bir programlama dili deðil.
+ CSL, ÇOMAR'ýn beklediði yapýya uygun çaðrýlarýn minimum hata ve efor ile,
+ kolaylýkla üretilebilmesi ve ÇOMAR'a iletilebilmesi için geliþtirilmiþ,
+ son derece basit, Python temelli bir dil ve yorumlayýsýndan ibarettir.
+\layout Subsection
+
+ÇOMAR bu kadar çok sorunu çözüyorsa neden þu ana kadar kimse düþünemedi?
+\layout Standard
+
+ÇOMAR'ýn gücü ve en büyük getirisi Sistem Modeli'nden gelir.
+ Daha önce de daðýtým üreticileri yapýlandýrma ile ilgili sorunlarý çözmek
+ için çeþitli yöntemler düþündüler.
+ Onlarýn çözümleri çoðunlukla yapýlandýrma dosyalarýna standart eriþim için
+ çeþitli yalýtým katmanlarý ve uygulamalara özel yapýlandýrma araçlarýnýn
+ ötesine geçmedi.
+ Þu ana dek geliþtirilen yaklaþýmlarýn sorunun hep bir kýsmýný çözmesine
+ raðmen, gerçek yapýlandýrma sorununun tüm sistemi kucaklayacak bir sistem
+ modelinin sunduðu platform üzerinde çözülmediði taktirde asla beklenen
+ noktaya ulaþamayacaðýný düþünüyoruz.
+ Daha önce bunu benzer þekilde dile getiren ve uygulamaya çalýþanlar da
+ oldu, bunlardan en meþhur olaný da dünyanýn çok büyük bir kýsmýný kullanýcý
+ kitlesi olarak kendi etrafýna toplamayý baþarmýþ olan bir firma.
+ ÇOMAR'ýnkine benzer yaklaþýmlarýn daha önce de düþünülmediðini söylemek
+ haksýzlýk olur, fakat neden þu ana kadar uygulanmadýðý sorusunun da tek
+ ve net bir yanýtý yok.
+\the_end

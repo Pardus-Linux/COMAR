@@ -1,0 +1,26 @@
+TA_MGR Komut aksiyonlarý:
+IRSU_CONN
+	A New Call. Create a new RPCData.connectionInfo from packet data. Register this connection for PID+TID to Connection Table. Send a "INTU_AUTH" command to Source PID.
+
+INSU_OFF
+	Connection Tablosundaki PID/TID giriþini offline'a getirir.
+
+INSU_PID
+	Yeni birPID oluþturup isteði yapan PID'e IRTU_PID ile gönderir.
+
+LNSU_MCL
+	Komutu gönderen PID'e LNTU_KILL yollayarak ona kapanmasýný söyler.
+
+IRSU_AUTH
+	Alýnan paketin Data'sýndan yeni bir RPCData.userInfo oluþturup PID/TID için baðlantý tablosuna kaydeder. Eðer baðlantý tablosunda daha önceden user kaydý yoksa, göndericiye INTU_COK cevabý yollar.
+
+TRSU_DATA
+	Süren bir TA'ya cevap veya status/cancle çaðrýsý anlamýna gelir. Data ile yeni bir RPCData oluþturulur. Bu RPCData'nýn TTSID'si local bir TTS ise, sadece RESPONSE tipinde bir çaðrý olabilir. Eðer RPCData'nýn TTSID ile iþaret ettiði TA önceden baþlatýlmýþ bir uzak istek ise, sadece CANCEL/STATUS çaðrýlarý kabul edilir.
+	RESPONSE çaðrýlarý ilgili Local TA'ya geçirilir. Bu komutu yollayana ise LNTU_MCL komutu yollanýr.
+	CANCEL/STATUS çaðrýlarý ise, ilgili TA'ya geçirilip onlardan dönen STATUS cevabý, komutu yollayan baðlantýya gönderilir.
+
+TRSU_CKTA
+	Belirtilen TTSID için mevcut bir TA olup olmadýðýný kontrol eder. Duruma göre TNTU_LOC, TNTU_ARTA veya TNTU_TANF ile cevap verilir.
+
+TRSU_RTA
+	Paketin Datasýndan elde edilen RPCData ile yeni bir TA oluþturulur. Ýþlem sonucu SNSU_* komutlarý ile geri yollanýr.

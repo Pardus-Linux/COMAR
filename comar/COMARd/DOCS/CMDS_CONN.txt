@@ -1,0 +1,18 @@
+to        TAM, TRSU_CKTA  CheckTA           : TA-MGR tarafından bu TA' bilgisi teyit edilir. NEW/UNKNOWN/INVALID state'leri için kullanılır. Data Format: TTSID
+to        TAM, TRTU_DATA  ReachedTAData     : TNTU_DATA Cevabı için kullanılır. Data, CSID-RPCDATA 1.0 formatındadır.
+to        TAM, IRSU_AUTH  SetAuthData       : TA'nın istemiş olduğu auth bilgisini connector TA'ya yollar. DC üzerinde CSID USERINFO 1.0 formatlı bilgi bulunur.
+to        TAM, TNSU_SST   SendStatus        : TA_MGR Bu komutu alınca, TA için STATUS çağrısı yollar.
+to        TAM, TNSU_BRK   AbortTA           : Şu anki transaction kesilerek session TERMINATED State'ine getirilir.
+to        TAM, TRSU_OFFL  Off Line          : JOB Conn thread'lerinin offline durumuna geçtiklerini belirtmeye yarar. Temel olarak, bu komuttan sonra sistemden yokolurlar.
+to        TAM, IRSU_CONN  NewConnection     : RPC Modülleri, yeni bağlantıları bu komutla TA'ya bildirir. Bu, TA Connection tablosunda ilgili PID için online bir connection girdisi oluşmasını sağlar. DC, CSID-CONNINFO 1.0 (COMAR Serialized Internal Data) formatında bağlantı verisi ihtiva eder. Bu komut TTS bilgisi taşımaz. Bu komut tipik olarak CXDRPC-HTTP bağlantısı benzeri çağrılarda kullanılır. Bu komutu alan TA, eğer bağlantı üzerinden yeni bir session başlatılır veya mevcut bir session'a sorgulama isteği alırsa, response'ları bu bağlantı üzerinden yönlendirebilir. Diğer taraftan, IRTU_CONN TID Değeri ile PID değeri kombine tutulur. Bu sayede tek bir PID (child) içinden birden fazla bağlantı takip edilebilir.
+to        TAM, INSU_CONN  NewTmpConnection  : Bu komut connector'lerden TAM'a gnderilerek conninfo'ya sahip olmayan bir balant oluturur. Bu tr bir balant sadece CONNECTOR Tablosuna eklenir.
+to        TAM, INSU_OFF   ConnOffline       : IRSU_CONN ile belirtilen bağlantının kesildiğini belirtir.
+from      TAM, TNTU_DATA  ReadData          : Bu komutu alan child (generally a Connector Module) elindeki TA bilgisini TA_MGR'ye geri yollar.
+from      TAM, TNTU_ARTA  TARemote          : Bu bir uzak çağrı.
+from      TAM, TNTU_TANF  TANotFound        : CheckTA'nın cevabıdır. TA Sistemde yoktur.
+from      TAM, TNTU_LOC   TALocal           : Bu bağlantı yerel bir TTS'e ait.
+from      TAM, INTU_AUTH  GetAuthData       : TA, gerekli görürse, connector'den authentication bilgisini ister.
+from      TAM, TRTU_SNDR  SendTAResult      : Data Kanalı CSID-RPCDATA 1.0 Formatında yollanacak veriyi ihtiva eder.
+from      TAM, TRSU_ACC   AcceptResult      : Data kanalı, CSID-RPCDATA 1.* Formatında alınan veriyi ihtiva eder. LocalTA icin istenen cevap geldiğinde, konnektörden alınan bilgi bu komutla JOB'a iletilir.
+from      TAM, LNSU_ERR   InvalidCall       : İstenen görev geçersiz.
+from      TAM, INTU_COK   ConnectionAccepted: Bir bağlantı için connection kabul edilmiş ise, TA_MGR Bu komut gönderir.

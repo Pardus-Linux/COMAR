@@ -1,0 +1,99 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass article
+\begin_preamble
+\tolerance 10000
+\usepackage{hyperref}
+\end_preamble
+\language turkish
+\inputencoding auto
+\fontscheme pslatex
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+OM Hardware Tasarýmý
+\layout Author
+
+Serdar Köylü, A.
+ Murat Eren, Gürer Özen
+\layout Section
+
+Gereksinimler
+\layout Standard
+
+Bu katmandan kullanýcýnýn istekleri:
+\layout Enumerate
+
+Varolan aygýtlarý görmek
+\layout Enumerate
+
+Çalýþýp çalýþmadýklarýna, güç yönetimi durumlarýna bakmak
+\layout Enumerate
+
+Çalýþtýrýp durdurmak
+\layout Enumerate
+
+Takýlan aygýtlarýn otomatik olarak tanýnmasý
+\layout Standard
+
+Üst katmanlardaki uygulamalarýn istekleri ise:
+\layout Enumerate
+
+Belli bir sýnýfa giren aygýtlarýn listesi
+\layout Enumerate
+
+Bir aygýt için, bu aygýta nasýl eriþileceði bilgisi (Örneðin /dev/hda gibi
+ bir baðlantý noktasý)
+\layout Section
+
+Ýþleyiþ
+\layout Standard
+
+Cihazlar kernel, moduller ve özel programlar tarafýndan iþletilmekte
+\layout Standard
+
+Her cihaz kendisi bir cihaz olarak kullanýlabildiði gibi, yeni cihazlar
+ için bus olarak görev yapabilmekte
+\layout Standard
+
+Buslar üzerinde yeni cihazlar ve yeni buslar ortaya çýkabilir
+\layout Standard
+
+Hotplug durumlarý
+\layout Standard
+
+Bulunan cihazlarýn çalýþmasý için modül yüklenmesi, kernelin dürtülmesi
+ gerekmekte
+\layout Standard
+
+Taranýp bulunan cihazlarýn üst katmanlar tarafýndan kullanýlabilmesi için
+ sýnýflandýrýlmasý lazým
+\layout Standard
+
+Alt düzeyde donaným bulanlar: kernel, kudzu, discover
+\layout Standard
+
+Bulunan donanýmlarý hizaya sokanlar: udev
+\layout Section
+
+Tasarým
+\the_end

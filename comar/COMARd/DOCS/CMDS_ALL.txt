@@ -1,0 +1,17 @@
+from        TAM session    LNSU_KILL                  KillSelf: COMARd, alt süreçlerinin kapanması için bu mesajı göderir.
+from        TAM session    LNSU_KILL                  KillSelf: COMARd, alt süreçlerinin kapanması için bu mesajı göderir.
+from        TAM session    LNSU_KILL                  KillSelf: COMARd, alt süreçlerinin kapanması için bu mesajı göderir.
+from      TAM session  LNSU_KILL           KillSelf: COMARd, alt süreçlerinin kapanması için bu mesajı göderir.
+from      TAM session  LNSU_KILL KillSelf          : COMARd, alt süreçlerinin kapanması için bu mesajı göderir.
+from      TAM, LNSU_KILL  KillSelf          : COMARd, alt süreçlerinin kapanması için bu mesajı göderir.
+from      TAM, LNSU_KILL  KillSelf          : COMARd, alt süreçlerinin kapanması için bu mesajı göderir.
+from      TAM, LNSU_KILL  KillSelf          : COMARd, alt süreçlerinin kapanması için bu mesajı göderir.
+from      TAM, LNSU_KILL  KillSelf          : COMARd, alt süreçlerinin kapanması için bu mesajı göderir.
+from      TAM, LNSU_KILL  KillSelf          : COMARd, alt süreçlerinin kapanması için bu mesajı göderir.
+from      TAM, LNSU_KILL  KillSelf          : COMARd, alt süreçlerinin kapanması için bu mesajı göderir.
+from      TAM, LNSU_KILL  KillSelf          : COMARd, alt süreçlerinin kapanması için bu mesajı göderir.
+from      TAM, LNSU_KILL  KillSelf          : COMARd, alt süreçlerinin kapanması için bu mesajı göderir.
+from      TAM, LNSU_KILL  KillSelf          : COMARd, alt süreçlerinin kapanması için bu mesajı göderir.
+from      TAM, LNSU_KILL  KillSelf          : COMARd, alt süreçlerinin kapanması için bu mesajı göderir.
+from      TAM, LNSU_MCL   MissionComplete   : İstenen görev tamamlandı. TID = Cevaplanan TID
+from      TAM, LNSU_KILL  KillSelf          : COMARd, alt süreçlerinin kapanması için bu mesajı göderir.

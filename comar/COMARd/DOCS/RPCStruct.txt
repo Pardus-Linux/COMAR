@@ -1,0 +1,84 @@
+COMAR - RPCStruct Interface
+
+RPCStruct interface, a Python object for handling COMAR RPC Data structures. This API defined with COMAR RPC Data Paper. This API contain a constructor for support XML Capsulated RPC Data or parameter list support.
+
+Constructor formats:
+	RPCStruct(TTSID="ttsid", EOL=END-OF-LIFE-TIME, Priority="priority_string")
+	With this form, you can create a new and empty RPC Call object with TTSID, EOL and Priority values. After creation you must set RPCData object.
+	TTSID 		: Transaction ID for object. Can be set/get after creation with TTSID Property. Default: ""
+	EOL			: EOLTime value. See COMAR RPC Data Paper for details. If you can't set or set to zero, default value used. Default: (current epoch time) + 86400 (one day).
+	Priority	: Priority identifier. Must be an item of RPCStruct.PriorityList array. See doc. for details. Default: "NORMAL"
+
+	RPCStruct(xmlData = "xml-capsuled-rpc-data")
+	This form can be used for make a RPC object with received or saved XML data. XML DTD not defined, but can be found this document.
+
+	After creating new RPCStruct object, you can use this method and properties. But more methods can be defined with object vtbl. Don't use this methods for compatibility.
+
+	method	RPCHandler()					: Return a dictionary for accepted RPCType types. In this dictionary, keys() is provide accepted types and values can be used directly create sub objects for this RPCType. But, you don't use this object for portability and compability.
+	method	delRPCHandler(RPCType)			: Return RPCType on internal handler table.
+	method	addRPCHandler(RPCType, Handler)	: Set a object for RPCType.
+	RPCStructInstance[RPCType]				: Return a handler for RPCType. You don't use this object for portability and compability.
+	method	isTimeout()						: If RPCCall is timeout, return 1, elsewhere 0.
+	method	makeRPCData(RPCType)			: Set RPCData object for provided RPCType. RPCData object is created, but empty. Modify/fill values with provided RPCStruct methods. But if you can use xmlData string for make instance of RPCStruct, RPCData may be maked with provided XML information.
+	method	setProperty(name, value)		: Set RPCData property's value. Property as looked from "name"
+	method	getProperty(name)				: Return RPCData property's value. Property as looked from "name"
+	method	addPropertyMulti(name, index, value)	: Set RPCData property's value. Property as looked from "name" and index value as looked from index. See "Setting RPCData Properties" section for details.
+	method	getPropertyMulti(name, index)			: Return RPCData property's value. Property as looked from "name" and index value as looked from index. See "Setting RPCData Properties" section for details.
+	method	delPropertyMulti(name, index)	: Delete previously added RPCData property.
+	Property	EOLTime						: EOLTime value for RPC Call.
+	Property	Priority					: Priority value.
+	Property	Type						: RPCType (read-only)
+	Property	RPCData						: RPCData object. Don't use directly, use setData method.
+	Property	xml							: Serialize/deserialize object to/from XML text. Use dangerous, don't set if you not sure your requirements. With new verison of COMAR's, this property can be read-only. If you can set a XML string to this object, all object data destroyed.
+
+Settings RPCData Properties:
+	For setting RPCStruct's RPCData properties, you must use setProperty, setPropertyMulti methods. setProperty can be used for single-valued properties. setPropertyMulti method can be use for repeated values such as "parameters on OMCALL type RPC Calls". You can found property names in COMAR RPC Data Documentation. In this document, if a property is marked as "array", this property/value is a multivalue property.
+
+Creating new RPCCall:
+	For a new session, you must create a new RPCStruct and fill its properties. Such as create a new OMCALL typed RPCCall you must use this (or similar) code:
+
+	import RPCData, time
+
+	# create a RPC data. Timeout is 1 hour.
+	rpc = RPCData.RPCStruct(TTSID="myTTSID", EOL=time.time()+3600, Priority="NORMAL")
+	rpc.makeRPCData("OMCALL")
+	rpc.setProperty("type", "method")
+	rpc.setProperty("name", "COMAR:user.add")
+	rpc.setProperty("index", "")
+	rpc.addPropertyMulti("parameter", "username", "serdar")
+	rpc.addPropertyMulti("parameter", "uid", "501")
+	rpc.addPropertyMulti("parameter", "homedir", "/home/serdar")
+
+	# Save object to "savedata" file. You can send this data to remote COMAR over HTTP or e-mail message.
+	xmlstring = rpc.xml
+	fd = open("savedata", "w")
+	fd.write(xmlstring)
+
+Restoring a RPCCall from XML Data:
+	XML very popular format for saving/transporting data. RPCStruct provide its own XML serializer for optimized calls. Low level serialization functions, such as cPickle, make a lot unnecessary data. And, naturally, PRC Call values all accepted COMARValue format. This features provide very powerfull API for access remote COMAR's or save session data.
+	Sample Application, read XML info from file "savedata" in previous sample.
+
+	import RPCData, time
+
+	fd = open("savedata", "r")
+	xmlstring = fd.read()
+	rpc = RPCData.RPCStruct(xmlData=xmlstring)
+	print "Timeout Status	:", rpc.isTimeout()
+	print "RPC Type			:", rpc.Type
+	print "Called Method	:", rpc.getProperty("name")
+	for i in ["username", "uid", "homedir"]:
+		print "Parameter %s: %s" % (i, rpc.getPropertyMulti("parameter", i)
+
+RPCData modules.
+	RPCStruct module have built-in classes for currently defined RPCTypes. If you want expand RPCTypes, you must use a RPCType handler.  A RPCHandler, must contain this method and data:
+
+	method initFromXml(xmlDocElementNode)
+	method toxmlNode(xmlDocument)
+	property or instancedata propTable		: { "property": (gethandler, sethandler, gethandlermulti, addhandlermulti, delhandlermulti) }
+	property or instancedata RPCDataType	: string, must be indicate RPCType enum element.
+
+Don't modify classes for RPCType handlers on RPCData module. You can add or remove new handlers with this methods:
+
+	addRPCHandler("RPCType", RPCHandlerObject)
+	delRPCHandler("RPCType")
+

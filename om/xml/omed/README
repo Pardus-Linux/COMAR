@@ -1,0 +1,22 @@
+
+COMAR OM Editor 0.1
+Copyright (c) 2004 Ulusal Dağıtım Projesi - Tübitak UEKAE
+
+[ giriş ]
+
+Bu yazılım COMAR sistemi için bir nesne modeli (OM) hazırlamayı,
+modeli anlatan LyX formatında çıktılar oluşturmayı ve model üzerinde
+CSL betikleri geliştirmeyi sağlar.
+
+[ gereksinimler ]
+
+* gtk 2.4
+* gtksourceview 1.0
+
+[ derleme ]
+
+./autogen.sh  (eğer svn'den yeni çektiyseniz)
+./configure
+make
+
+[ kullanım ]

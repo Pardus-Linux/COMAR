@@ -1,0 +1,83 @@
+TRSU_CKTA				: CheckTA. CONN->TAM:TA-MGR tarafından bu TA' bilgisi teyit edilir. NEW/UNKNOWN/INVALID state'leri için kullanılır. Data Format: TTSID
+TNTU_DATA				: ReadData. TAM->CONN:Bu komutu alan child (generally a Connector Module) elindeki TA bilgisini TA_MGR'ye geri yollar.
+TRTU_DATA				: ReachedTAData. CONN->TAM:TNTU_DATA Cevabı için kullanılır. Data, CSID-RPCDATA 1.0 formatındadır.
+TNTU_ARTA				: TARemote. TAM->CONN:Bu bir uzak çağrı.
+TNTU_TANF				: TANotFound. TAM->CONN:CheckTA'nın cevabıdır. TA Sistemde yoktur.
+TNTU_LOC				: TALocal. TAM->CONN:Bu bağlantı yerel bir TTS'e ait.
+TRTU_VAL				: TAValue. CALL->EXEC:Result, COMARRetVal şeklinde, data kanalından okunabilir.
+TRSU_RTA				: RegisterTA. TAM->JOB,CALL->JOB:TA_MGR yeni bir TA kaydı oluşturur, Job Session'a yeni bir TA Başlattırır.
+TNTU_STP				: StartTA (Processing). TAM->JOB:TA_MGR bu mesajla birlikte Job Session'un yeni bir session/TA başlattığını farzeder. Job Session bu işlevi yerine getiremezse, uygun StateSet komutuyla TA_MGR'yi bilgilendirir. Data, CSID-RPCDATA 1.0 formatında Session bilgisini ihtiva eder. TID, gerekiyorsa, Bu connection için gerekli olan TID bilgisini ihtiva eder.
+INTU_AUTH				: GetAuthData. TAM->CONN:TA, gerekli görürse, connector'den authentication bilgisini ister.
+IRSU_AUTH				: SetAuthData. CONN->TAM:TA'nın istemiş olduğu auth bilgisini connector TA'ya yollar. DC üzerinde CSID USERINFO 1.0 formatlı bilgi bulunur.
+TNSU_RUN				: ProcessOMCall. JOB->CALL:Job, Call'den hazırladığı OM/OBJ/EXEC çağrısını yürütmesini ister.
+TNTU_EXEC				: ExecuteNode. CALL->EXEC:MultiCall çağrıların başlatılması için kullanılır..
+TRTU_CALL				: Call ObjHook Routine. XXX->XXX:Data kanalı, COMARCallInfo formatında işletilecek veriye ait bilgiyi ihtiva eder.
+TRTU_RES				: ExecResult. OBJ->EXEC,EXEC->CALL:Data Kanalı, COMRRetVal şeklinde geri dönen bilgiyi ihtiva eder.
+TRSU_FIN				: FinishResult. CALL->JOB:Data Kanalı, COMRRetVal şeklinde geri dönen bilgiyi ihtiva eder.
+TRSU_TAE				: TAFinished. JOB->TAM:Data Kanalı, COMRRetVal şeklinde geri dönen bilgiyi ihtiva eder.
+TRTU_SNDR				: SendTAResult. TAM->CONN:Data Kanalı CSID-RPCDATA 1.0 Formatında yollanacak veriyi ihtiva eder.
+TRTU_DTA				: TAData. XXX->XXX:Data CSID-RPCDATA 1.0 Formatında TA STATUS-RESPONSE verisini ihtiva eder.
+TNSU_SST				: SendStatus. CONN->TAM:TA_MGR Bu komutu alınca, TA için STATUS çağrısı yollar.
+TNSU_BRK				: AbortTA. CONN->TAM,JOB->TAM:Şu anki transaction kesilerek session TERMINATED State'ine getirilir.
+MNTB_TERM				: SelfTerminate. TAM->PID:Bu komutu alan process kendini sonlandırır.
+TNSU_COM				: CreateOMCall. OBJ->EXEC,EXEC->CALL:Data kanalı, COMARCallInfo formatında işletilecek veriye ait bilgiyi ihtiva eder.
+TNSU_GSID				: GetLocalTTSID. CALL->JOB,JOB->TAM:Yeni bir Yerel TTSID oluşturur.
+TRTU_SSID				: NewLocalTTSID. TAM->CALL:Oluşturulan yerel TTSID'yi gönderir.
+TRSU_RMAP				: RemapTA. CALL->TAM: Şu anki TA'değerini, yeni bir Local TTSID ile map eder. Yeni TTSID'ye gelen istekler doğrudan asıl TA'ya iletilir.
+TRSU_LRUN				: RunLocalTA. OBJ->CALL:Data kanalı, COMARCallInfo formatında işletilecek veriye ait bilgiyi ihtiva eder.
+MNTU_SLP				: GoSleep. CALL->EXEC,EXEC->OBJ:Bu komutu alan process uykuya yatar (co-operated). Deep Sleep/Wait tercihini kendi yapar.
+MRTU_AWQ				: AddWaitQue. OBJ->EXEC,EXEC->CALL:Data kanalı, uyandırma için gereken event bilgisini ihtiva eder. Bunu yollayan process, ardından belirttiği şekilde beklemeye girer.
+MNTU_WUP				: Aweak. CALL->EXEC,EXEC->OBJ:Uyan. Bu sinyal, temel olarak uyanması istenen sürece değil, onun parentine ulaşır. Parent gereken bilgiyi kullanarak ilgili child'i uyandırır.
+TRSU_ACC				: AcceptResult. TAM->CONN:Data kanalı, CSID-RPCDATA 1.* Formatında alınan veriyi ihtiva eder. LocalTA icin istenen cevap geldiğinde, konnektörden alınan bilgi bu komutla JOB'a iletilir.
+TNTU_RDY				: ResultReady. TAM->JOB:Bu sinyali alan süreç, oluşturduğu yerel TA'ya gelen işlem cevabını TA_MGR'den ister.
+TNTU_ERR				: ResponseIsNone. TAM->JOB:Eğer, yerel TA içinde yapılan istek, hata cevabı almışsa, TNTU_RDY yerine bu komut alıcıya yollanır.
+TNSU_GET				: GetValue. CALL->JOB,JOB->TAM:TA için gelen RESULT bu işlevle geri alınır.
+TRSU_OFFL				: Off Line. CONN->TAM:JOB Conn thread'lerinin offline durumuna geçtiklerini belirtmeye yarar. Temel olarak, bu komuttan sonra sistemden yokolurlar.
+MRSU_NCH				: RegisterNewChild. CHILD->PARENT:Child, kendine yeni bir child oluşturunca, yeni child'in PID'ini parentine yollar. DC: C.PID
+MRSU_LCH				: LostChild. CHILD->PARENT:Child kendini sonlandırınca, parenti bunu kendi parentine bildirir. DC: C.PID
+IRSU_STD				: SetTASessionData. ANY->TAM:Bir uygulama, TA özel olarak saklanmasını istediği datayı bu komutla TA_MGR'ye yollar. Data kanalında "<session_id[<=32]> <key[<=32]> <eol> <data[...]>" formatında saklanmak istenen değer bulunur. <data> değeri içeriğinde boşluklar da bulunabilen tipik bir buffer olarak işlev görür. <eol>, bu değerin maksimum saklanacağı süreyi gösterir, 0 = okununcaya kadar.
+IRSU_RTD				: ReqTASessionData. ANY->TAM:Uygulama Önceden saklanmış olan TA değerini geri ister. Data kanalında "<session_id> <key>" bilgileri bulunur. Bu bilgiler, SetTASessionData ile kullanılan değerler ile aynı olmalıdır.
+IRSU_PTD				: PopTASessionData. ANY->TAM:Uygulamaya Önceden saklanmış olan TA değeri geri gönderilir. Data kanalında "<session_id> <key>" verisi bulunur. Bir sessiondata, bu komutla okunduktan sonra silinir.
+IRTU_GTD				: GetTASessionData. TAM->ANY:Uygulamaya Önceden saklanmış olan TA değeri geri gönderilir. Data kanalında "<session_id> <key> <data...> verisi bulunur..
+INSU_PID				: ReqUniquePID. ANY->TAM:TA_MGR'den sistemde yeğane olan bir PID almak için kullanılır.
+IRTU_PID				: GetUniquePID. TAM->ANY:TA_MGR sistemde yeğane olan PID değerini istemciye yollar. Data kanalında 8 bayt uzunlukta PID bulunur.
+IRSU_PPID				: MyOSpid. ANY->ANY: Child'ler, parentlerine OS pidlerini bu komutla iletirler. Data kanal pid deerini ihtiva eder.
+LNSU_MCL				: MissionComplete. TAM->ALL,CHILD->PARENT:İstenen görev tamamlandı. TID = Cevaplanan TID
+LNSU_ERR				: InvalidCall. TAM->CONN: İstenen görev geçersiz.
+LNSU_KILL				: KillSelf.	TAM->ALL:COMARd, alt süreçlerinin kapanması için bu mesajı göderir.
+LNSU_KPID				: GetTAMGRPid. CHILD->PARENT:Ana TA_MGR'in ppid'ini ister.
+LRTU_KPID				: TAMGRPid. PARENT->CHILD:Ana TA_MGR'in ppid'ini data kanalda bulundurur.
+IRSU_APRT				: AddPIDRoutingTable. CHILD->PARENT:dc = new PID.
+IRSU_DPRT				: DelPIDRoutingTable. CHILD->PARENT:dc = deleted PID
+ENTU_####				: Error. ANY->ANY:Eğer yapılan çağrı, TA süreci değilde, başka bir nedenle (internal error) işlenemezse, bu mesaj geri yollanır. #### kısmı, errno ile elde edilen hata durumudur.
+IRSU_CONN				: NewConnection. CONN->TAM:RPC Modülleri, yeni bağlantıları bu komutla TA'ya bildirir. Bu, TA Connection tablosunda ilgili PID için online bir connection girdisi oluşmasını sağlar. DC, CSID-CONNINFO 1.0 (COMAR Serialized Internal Data) formatında bağlantı verisi ihtiva eder. Bu komut TTS bilgisi taşımaz. Bu komut tipik olarak CXDRPC-HTTP bağlantısı benzeri çağrılarda kullanılır. Bu komutu alan TA, eğer bağlantı üzerinden yeni bir session başlatılır veya mevcut bir session'a sorgulama isteği alırsa, response'ları bu bağlantı üzerinden yönlendirebilir. Diğer taraftan, IRTU_CONN TID Değeri ile PID değeri kombine tutulur. Bu sayede tek bir PID (child) içinden birden fazla bağlantı takip edilebilir.
+INSU_CONN				: NewTmpConnection. CONN->TAM: Bu komut connector'lerden TAM'a gnderilerek conninfo'ya sahip olmayan bir balant oluturur. Bu tr bir balant sadece CONNECTOR Tablosuna eklenir. 
+INSU_OFF				: ConnOffline. CONN->TAM:IRSU_CONN ile belirtilen bağlantının kesildiğini belirtir.
+INTU_COK				: ConnectionAccepted. TAM->CONN:Bir bağlantı için connection kabul edilmiş ise, TA_MGR Bu komut gönderir.
+SNSU_QUE				: TAStateQUEUE. ANY->TAM:.
+SNSU_ACC				: TAStateACCEPTED. ANY->TAM:.
+SNSU_FIN				: TAStateFIN. ANY->TAM:.
+SNSU_NEW				: TAStateNEW. ANY->TAM:.
+SNSU_PRC				: TAStatePROCESSED. ANY->TAM:.
+SNSU_DENY				: TAStatDENIED. ANY->TAM:.
+SNSU_FTL				: TAStateFATAL. ANY->TAM:.
+QRSU_OPEN				: QueryDBOpen. ANY->TAMDB:DATA = DB File Name. Cevap: QRTU_QDB,  DATA = DBHandler.
+QRSU_GET				: QueryDBGet. ANY->TAMDB:DATA = DBHandler " " DB Key. Cevap: QRTU_DATA, DATA = Value
+QRSU_PUT				: QueryDBPut. ANY->TAMDB:DATA = DBIO 1.0 Cevap: Null.
+QRSU_SEEK				: QueryDBSeek. ANY->TAMDB:DATA = DBHandler " " DB Key. Cevap: QRTU_LOC, DATA = DBIO 1.0
+QRSU_FRST				: QueryDBNext. ANY->TAMDB:DATA = DBHandler. Cevap: QRTU_LOC, DATA = DBIO 1.0
+QRSU_LAST				: QueryDBPrev. ANY->TAMDB:DATA = DBHandler. Cevap: QRTU_LOC, DATA = DBIO 1.0
+QRSU_NEXT				: QueryDBNext. ANY->TAMDB:DATA = DBHandler. Cevap: QRTU_LOC, DATA = DBIO 1.0
+QRSU_PREV				: QueryDBPrev. ANY->TAMDB:DATA = DBHandler. Cevap: QRTU_LOC, DATA = DBIO 1.0
+QRSU_END				: QueryDBClose. ANY->TAMDB:DATA = DBHandler. Cevap: NULL
+QRTU_DATA				: QueryResDATA. TAMDB->ANY:DATA = DBIO 1.0
+QRTU_LOC				: QueryResDATA. TAMDB->ANY:DATA = DBIO 1.0 ((HANDLE=hndValue\x00KEY=keysize keyvalue\x00DATA=datasize datavalue\0x00) || (Null))
+QRTU_QDB				: QueryDBHandler. TAMDB->ANY:DATA = DB Handler.
+ERSU_NID				: newEventId. ANY->TAMEV:DATA = Event Class.
+ERSU_AOBJ				: addNewEventObject. ANY->TAMEV: DATA = EVENTID=eventid\x00OBJECT=objDescriptor\x00METHOD=methodName\x00WAIT=0\x00
+ERSU_AOM				: addNewEventOMNode. ANY->TAMEV: DATA = EVENTID=eventid\x00NODE=OMNode\x00WAIT=0\x00
+ERSU_DTK				: deleteEventTask. ANY->TAMEV: DATA = taskKey
+ERTU_NID				: GetNewEventId. TAMEV->ANY: DATA = eventid
+ERTU_NTK				: EventTaskKey. TAMEV->ANY: DATA = taskKey
+ERSU_FUP				: FireEvent. ANY->TAMEV: DATA = eventid.
+TRTU_COM				: OMCall. EXEC->CALL: DATA = RPCINFO 1.0. Start new OMCALL..

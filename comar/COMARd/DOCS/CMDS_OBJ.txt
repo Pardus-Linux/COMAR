@@ -1,0 +1,6 @@
+to       EXEC, TRTU_RES   ExecResult        : Data Kanalı, COMRRetVal şeklinde geri dönen bilgiyi ihtiva eder.
+to       EXEC, TNSU_COM   CreateOMCall      : Data kanalı, COMARCallInfo formatında işletilecek veriye ait bilgiyi ihtiva eder.
+to       CALL, TRSU_LRUN  RunLocalTA        : Data kanalı, COMARCallInfo formatında işletilecek veriye ait bilgiyi ihtiva eder.
+to       EXEC, MRTU_AWQ   AddWaitQue        : Data kanalı, uyandırma için gereken event bilgisini ihtiva eder. Bunu yollayan process, ardından belirttiği şekilde beklemeye girer.
+from     EXEC, MNTU_SLP   GoSleep           : Bu komutu alan process uykuya yatar (co-operated). Deep Sleep/Wait tercihini kendi yapar.
+from     EXEC, MNTU_WUP   Aweak             : Uyan. Bu sinyal, temel olarak uyanması istenen sürece değil, onun parentine ulaşır. Parent gereken bilgiyi kullanarak ilgili child'i uyandırır.

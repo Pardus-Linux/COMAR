@@ -1,0 +1,1322 @@
+import CSLParser, copy, types, sys, os, urlparse
+
+_INTERPRETER 	= 'CSL'
+
+
+class CSLCapsule:
+	""" CSLCapsule: An object for Execution Environment of CSL Language. """
+	# Features List:
+	# Persistency values determine		: SUCCESS
+	# Persistency values save			: DEFINED
+	# Persistency values restore		: DEFINED Only
+	# MakeInstance 					: CSLParser not ready
+	# Array Values					: Partially success, not well tested..
+	# COMAR->CSL Numeric				: SUCCESS
+	# COMAR->CSL String				: SUCCESS
+	# COMAR->CSL Array				: SUCCESS
+	# COMAR->CSL Object				: N/A
+	# CSL->COMAR Numeric				: SUCCESS
+	# CSL->COMAR String				: SUCCESS
+	# CSL->COMAR Array				: SUCCESS
+	# CSL->COMAR Object				: N/A
+	# InterObject Property call		: SUCCESS
+	# InterObject Method call			: SUCCESS
+	# InterObject Function call		: SUCCESS
+	# COMARtoCSL Property call		: SUCCESS
+	# COMARtoCSL Method call			: SUCCESS
+	# COMARtoCSL Function call		: SUCCESS
+	# External Property call			: Defined only
+	# External Method call			: Defined only
+	# External Function call			: Defined only
+	# CAPI Call						: CSL-CAPI Success, COMAR-CAPI work continue..
+	# Object Interface Entries		: Defined only.
+	# LoadObject					: SUCCESS
+	# treeCoder, preprocessor			: Partially Success:
+	#	TreeCoder 'cmds'			: SUCCESS
+	#	treeCoder 'alias'			: SUCCESS
+	#	treeCoder make vtbl			: SUCCESS
+	#	treeCoder persistent			: Partially success
+	# Object Type Handling			: Partially Success, identification ok, execution none..
+	# External Object Handling		:
+	#	CSLCheckValue object detect	: SUCCESS
+	#	CSLInterpreter object "LET"	: SUCCESS
+	#   Others ????					: N/A
+	# Save Machine State			: N/A
+	# makeinstance implementation	: N/A
+	# destroy implementation		: N/A
+	# "me" implementation			: SUCCESS
+
+	def	__init__(self, instance = "", nsAPI = None, callerInfo = None):
+		self.Obj = None				# Code block.
+		self.Tbl = {}				# Code tbls.
+
+		self.root = None
+
+		self.decl 			= [ "deffunc", "defmethod", "defprop" ] # internal, used by treeCoder, etc.
+		self.vtbl			= {}			# vtbl, interface entry points.
+		self.current_cb 	= None		#
+		self.instance 		= instance	# instance id.
+		self.nsAPI 			= nsAPI		# NameSpaces, call entry points..
+		self.callerInfo 	= callerInfo
+		self.COMARValue 	= nsAPI.COMARValue
+		self.lastLTbl 		= None
+		self.current_cb 	= None		#
+		self.lTblStack 		= []
+		self.codeStack 		= []
+		self.sessionStack 	= []
+		self.sessionID 		= 0
+		self.tc 			= 0
+
+
+	def  CSLisCAPI(self, name=""):
+		if self.nsAPI.CAPI.has_key(name):
+			return 1
+		else:
+			return 0
+
+	def	LoadObject(self, fileName = ""):
+		CPO = CSLParser.CSLParse(file = fileName)
+
+		if CPO == None:
+			return None
+
+		tree = CPO.tree
+		self.Obj = CPO
+		self.Tbl = { "A":CPO.ATbl, "I":CPO.ITbl, "F":CPO.FTbl,
+					"Q":CPO.QTbl, "N":CPO.NTbl, "O":CPO.OTbl }
+
+		self.root = copy.deepcopy(tree)
+
+		self.decl = [ "deffunc", "defmethod", "defprop" ]
+		self.current_cb = None
+		if tree.type == "ROOT" and tree.data != "binded":
+			self.CSLTreeCoder(tree)
+
+		print self.vtbl
+
+	def saveMachineState(localTbl = {}):
+		# Save current parsed code..
+		pass
+
+	def CSLPersistSet(self, name, val, index = ""):
+		value = self.CSLtoCOMARValue(val)
+		key = self.instance + "/" +
+		pass
+
+	def GetInterfaceInfo(self):
+		"Return interface info (methods, prms, props.. etc. )for Capsule."
+		ret = []
+		tree = self.root.child
+
+		while tree != None:
+			if tree.type == "defmethod":
+				prm = []
+				for i in tree.data["prmlist"].keys():
+					prm.append(i);
+
+				ret.append({ "method":tree.data["name"],  "prmlist":prm  })
+
+			elif tree.type == "defprop":
+				ret.append({ "property":tree.data["name"], 'prmlist':[ tree.data["prm"] ] })
+
+			elif tree.type == "deffunc":
+				prm = []
+				for i in tree.data["prmlist"].keys():
+					prm.append(i);
+
+				ret.append({ "function":tree.data["name"], 'prmlist' :prm })
+
+			tree = tree.next
+
+		return ret
+
+	def COMARtoCSLValue(self, comarVal, root = None, oldkey = ""):
+		if comarVal.type == "string":
+			return CSLValue(typeid = "string", value = comarVal.data.value)
+		elif comarVal.type == "numeric":
+			return CSLValue(type = "numeric", value = comarVal.data)
+		elif comarVal.type == "array":
+			comarArrItem = copy.copy(comarVal.data)
+			if root == None:
+				ret = CSLValue(typeid='array', value = {})
+			else:
+				ret = root
+			while comarArrItem:
+				key = comarArrItem.Key[:]
+				val = COMARtoCSLValue(comarArrItem.item, root)
+				if val != None:
+					ret.value[key] = val
+				comarArrItem = comarArrItem.next
+			if root == None:
+				return ret
+			else:
+				return None
+
+		elif comarVal.type == "object":
+			return None
+
+	def CSLtoCOMARValue(self, cslVal):
+		if cslVal.type == "string":
+			return self.nsAPI.COMARValue.string_create(cslVal.toString())
+			#comarStr = self.COMARValue.COMARString(value = cslVal.toString(), encoding="UTF-8")
+			#return self.COMARValue.COMARValue(type="string", data = comarStr)
+
+		elif cslVal.type == "numeric" or cslVal.type == "boolean":
+			return self.nsAPI.COMARValue.numeric_create(cslVal.value)
+			#return self.COMARValue.COMARValue(type = "numeric", data = cslVal.value)
+
+		elif cslVal.type == "array":
+			arr = self.nsAPI.COMARValue.array_create()
+			for key in cslVal.value.keys():
+				self.nsAPI.COMARValue.array_additem(arr, key, 0, CSLtoCOMARValue(cslVal.value[key]))
+			return arr
+
+	def	runMethod(self, name = "__default", prms = {}):
+		""" Called from COMAR Container/objhook. prms is COMARValue  """
+
+		prms = self.CSLBuildPrmList(prms)
+		localTbl = { 'vars':{}, 'status':0, 'props':{}, 'alias':{}, 'persistent':{}, 'instance':{}}
+		res = self.callMethod(name, prms, localTbl)
+		if localTbl["status"] == 2:
+			return self.COMARValue.COMARRetVal(1, None)
+		else:
+			return self.COMARValue.COMARRetVal(0, None)
+
+
+	def	runPropertyGet(self, name = "__default", prms = {}):
+		""" Called from COMAR Container/objhook. prms is COMARValue  """
+		
+		prmtbl = self.CSLBuildPrmList(prms)		
+		res = self.callPropertyGet(name, prmtbl)
+		if res.type == "NULL":
+			return self.COMARValue.COMARRetVal(1, None)
+		else:
+			return self.COMARValue.COMARRetVal(0, self.CSLtoCOMARValue(res))
+
+	def	runPropertySet(self, name = "__default", prms = {}, value = None):
+		""" Called from COMAR Container/objhook. prms + value is COMARValue  """
+		prmtbl = self.CSLBuildPrmList(prms)
+		val = self.COMARtoCSLValue(value)
+		res = self.callPropertySet(name, prmtbl,  val)
+		if res == 1:
+			return self.COMARValue.COMARRetVal(1, None)
+		else:
+			return self.COMARValue.COMARRetVal(0, None)
+
+
+	def runFunction(self, name = "__value", prms = {}):
+		""" Called from COMAR Container/objhook. prms is COMARValue  """
+
+		prms = self.CSLBuildPrmList(prms)
+		localTbl = { 'vars':{}, 'status':0, 'props':{}, 'alias':{}, 'persistent':{}, 'instance':{}}
+		res = self.callFunction(name, prms, localTbl)
+		if localTbl["status"] == 2:
+			return self.COMARValue.COMARRetVal(1, None)
+		else:
+			return self.COMARValue.COMARRetVal(0, self.CSLtoCOMARValue(res))
+
+
+	def	CSLBuildPrmList(self, COMARPrms = {}):
+		prmNames = COMARPrms.keys()
+		ptbl = {}
+		for key in prmNames:
+			ptbl[key] = self.COMARtoCSLValue(COMARPrms[key])
+
+		return ptbl
+
+	def CSLCreateLocalTbl(self, prms = {}, prototype = {}, symtab = {}):
+
+		localTbl = { 'vars':{}, 'status':0, 'props':{}, 'alias':{}, 'persistent':{}, 'instance':{}}
+		prmNames = prms.keys()
+		ptbl = localTbl['vars']
+
+		for key in prmNames:
+			if prototype.has_key(key):
+				ptbl[key] = self.CSLCheckVariable(prms[key], symtab)
+				del prototype[key]
+			else:
+				print "Undefined parameter:", key
+
+		prmNames = prototype.keys()
+
+		for key in prmNames:
+			ptbl[key] = self.CSLCheckVariable(prototype[key], symtab)
+
+		return localTbl
+
+	def CAPIFunc(self, name = "", prms = {}, symtab = {}):
+		""" CAPI Processor. This is a really big function :( """
+		prmkeys = prms.keys()
+		for item in prmkeys:
+			print "item: %s -> %s" % (item, prms[item]) , " = ",
+			prms[item] = self.CSLCheckVariable(id = prms[item], localTbl = symtab)
+			print prms[item]
+
+		firstc = name[0]
+		# This model is a simple hack for performance gain.
+		if firstc == "s":
+			if name == "strupper":
+				if prms.has_key("string"):
+					a = prms["string"].toString()
+					return CSLValue("string", a.upper())
+			elif name == "strlower":
+				if prms.has_key("string"):
+					a = prms["string"].toString()
+					return CSLValue("string", a.lower())
+			elif name == "startswith":
+				if prms.has_key("prefix") and prms.has_key("string"):
+					a = prms["string"].toString()
+					return CSLValue("string", a.startswith(prms['prefix'].toString()))
+			elif name == "split":
+				if prms.has_key("seperator") and prms.has_key("string"):
+					a = prms["string"].toString()
+					arr = a.split(prms.has_key("seperator"))
+					ret = {}
+					x = 0
+					for i in arr:
+						ret[x] = CSLValue("string", i)
+						x += 1
+					return ret
+			elif name == "strlen":
+				if prms.has_key("string"):
+					return CSLValue("numeric", len(prms['string'].toString()))
+			elif name == "strstr":
+				if prms.has_key("string") and prms.has_key("pattern"):
+					st = prms['string'].toString()
+					if st.find(prms['pattern'].toString()) != -1:
+					    return CSLValue("numeric", 1)
+					else:
+					    return CSLValue("numeric", 0)
+			elif name == "substr_left":
+				if prms.has_key("string"):
+					if prms.has_key("first"):
+						st = prms['string'].toString()
+					if prms.has_key("size"):
+					    maxs = size;
+					else:
+					    maxs = len(st)
+					pos = st.find(prms['first'].toString())
+					if pos == -1:
+					    return CSLValue("string", "")
+					a = st[:pos-1]
+					a = a[:maxs]
+					return CSLValue("string", a)
+
+			elif name == "substr_mid":
+				if prms.has_key("string"):
+					if prms.has_key("first"):
+						st = prms['string'].toString()
+					if prms.has_key("size"):
+					    maxs = size;
+					else:
+					    maxs = len(st)
+					pos = st.find(prms['first'].toString())
+					if pos == -1:
+					    return CSLValue("string", "")
+					a = st[pos+1:]
+					a = a[:maxs]
+					return CSLValue("string", a)
+
+		elif firstc == "c":
+			if name == "casestartswith":
+				if prms.has_key("prefix") and prms.has_key("string"):
+					a = prms["string"].toString()
+					a = a.lower()
+					needle = prms['prefix'].toString()
+					needle = needle.lower()
+					return CSLValue("string", a.startswith(needle))
+			if name == "caseendswith":
+				if prms.has_key("trailer") and prms.has_key("string"):
+					a = prms["trailer"].toString()
+					a = a.lower()
+					needle = prms['trailer'].toString()
+					needle = needle.lower()
+					return CSLValue("string", a.startswith(needle))
+			if name == "casefind":
+				if prms.has_key("pattern") and prms.has_key("string"):
+					a = prms["string"].toString()
+					a = a.lower()
+					needle = prms['pattern'].toString()
+					needle = needle.lower()
+					ret = CSLValue("string", a.find(needle))
+					if ret == -1:
+						return CSLValue("numeric", 0)
+					else:
+						return CSLValue("numeric", ret + 1)
+			if name == "caserfind":
+				if prms.has_key("pattern") and prms.has_key("string"):
+					a = prms["string"].toString()
+					a = a.lower()
+					needle = prms['pattern'].toString()
+					needle = needle.lower()
+					ret = CSLValue("string", a.rfind(needle))
+					if ret == -1:
+						return CSLValue("numeric", 0)
+					else:
+						return CSLValue("numeric", ret + 1)
+		elif firstc == "r":
+			if name == "rfind":
+				if prms.has_key("string") and prms.has_key("pattern"):
+					a = prms["string"].toString()
+					needle = prms['pattern'].toString()
+					ret = CSLValue("string", a.rfind(needle))
+					if ret == -1:
+						return CSLValue("numeric", 0)
+					else:
+						return CSLValue("numeric", ret + 1)
+
+			if name == "rpart":
+				return CSLValue("string", "")
+			if name == "rnd":
+				return CSLValue("string", "")
+
+		elif firstc == "i":
+			if name == "int":
+				if prms.has_key("string"):
+					return CSLValue("numeric", prms["string"].toNumeric())
+			if name == "iconv":
+				if prms.has_key("string") and prms.has_key("from") and prms.has_key("to"):
+					#FIX
+					pass
+
+			if name == "insert":
+				if prms.has_key("string") and prms.has_key("part"):
+					pos = 0
+					rep = 0
+					if prms.has_key("position"):
+						pos = prms["position"].toNumeric() - 1
+
+					if pos < 0:
+						pos = 0
+
+					if prms.has_key("replace"):
+						rep = prms["replace"].toNumeric()
+					st = prms["string"]
+					ll = st[:pos]
+					rl = st[pos + 1:]
+
+					if rep:
+						rl = rl[rep:]
+
+					return CSLValue("string", ll + prms['part'] + rl)
+			if name == "isdomainname":
+				if prms.has_key("string"):
+					a = prms["string"].toString()
+					if a[0] == "@":
+						return CSLValue("numeric", 1)
+					else:
+						return CSLValue("numeric", 0)
+
+		elif name == "join":
+			return CSLValue("string", "")
+		elif name == "endswith":
+			return CSLValue("numeric", 1)
+		elif name == "find":
+			return CSLValue("numeric", 1)
+		elif name == "part":
+			return CSLValue("string", "")
+		elif name == "getvalue":
+			if prms.has_key("string"):
+				a = prms["string"].toString()
+				st = a.find("=")
+				if st != -1:
+					return CSLValue("string", a[st+1:].strip())
+				else:
+					return CSLValue("string", "");
+				
+
+		# We not found name in CSL CAPI functions.
+		# We try COMAR CAPI functions..
+
+		if self.CSLisCAPI(name):
+			# Yes, its defined with nsAPI CAPI entry..
+			# First, create a COMARValue array for parameters..
+			keys = prms.keys()
+			keys.sort()
+			callPrm = {}
+
+			for key in keys:
+				callPrm[key] = self.CSLtoCOMAR(prms[key])
+
+			ret = self.nsAPI['CAPI'][name](prmlist = callPrm)
+
+			if ret.execResult:
+				return CSLValue("NULL", None)
+			else:
+				return self.COMARtoCSLValue(ret.returnValue)
+
+		return CSLValue("NULL", None)
+
+	def callMethod(self, name = "", prms = {}, symtab = {}):
+		# First build prms..
+		print "MCALL: %s ( %s )" % (name, prms)
+		fn = "m_" + name
+		if not self.vtbl.has_key(fn):
+			return CSLValue("NULL", None)
+
+		treeEntry = self.vtbl[fn]
+		fnparms = copy.copy(treeEntry.data['prmlist'])
+
+		localTbl = self.CSLCreateLocalTbl(prms, fnparms, symtab)
+
+		#FIX At This point, we load persistent and instance values..
+
+		l = self.CSLInterpreter(treeEntry.child, localTbl)['status']
+		print "GetMethod:", l
+
+		if l == 2:
+			return 1
+		else:
+			return 0
+
+	def	callFunction(self, name = "", prms = {}, symtab = {}):
+		print "FCALL: %s ( %s )" % (name, prms)
+		fn = "f_" + name
+		if not self.vtbl.has_key(fn):
+			return CSLValue("NULL", None)
+
+		treeEntry = self.vtbl[fn]
+		fnparms = copy.copy(treeEntry.data['prmlist'])
+
+		localTbl = self.CSLCreateLocalTbl(prms, fnparms, symtab)
+
+		#FIX At This point, we load persistent and instance values..
+
+		l = self.CSLInterpreter(treeEntry.child, localTbl)['vars']
+		print "GetFunc:", l
+
+		if l != None and l.has_key(name):
+			return copy.deepcopy(l[name])
+		else:
+			return CSLValue(typeid = "NULL", value = None)
+
+	def	callExtPropertyGet(self, name = "", index = None):
+		return CSLValue("NULL", None)
+
+	def	callExtPropertySet(self, method = "", index = None , localTbl = {}, value = None):
+		pass
+
+	def callPropertyGet(self, name = "__value", index = None):
+		""" Called from CSL Script prms is CSLValue  """
+
+		Entry = self.vtbl['p_' + name + "_get"]
+
+		localTbl = { 'vars':{}, 'status':0, 'props':{}, 'alias':{}, 'persistent':{}, 'instance':{}}
+
+		propEntry = Entry.parent
+
+		prmName = propEntry.data['prm']
+
+		if prmName != "":
+			default = propEntry.data['default']
+			if default != "":
+				default = self.CSLCheckValue(default, localTbl)
+			else:
+				default = CSLValue(typeid = "NULL", value = None)
+
+			localTbl['vars'][prmName] = default
+
+		self.lastLTbl = self.CSLInterpreter(Entry.child, localTbl)
+		l = self.lastLTbl['vars']
+
+		print "GetProp:", l
+
+		if l != None and l.has_key(name):
+			return copy.deepcopy(l[name])
+		else:
+			return CSLValue(typeid = "NULL", value = None)
+
+	def callPropertySet(self, name = "__value", index = None, value = None):
+		""" Set Property Entry. Called from CSL Script prms is CSLValue  """
+		pname = 'p_' + name + "_set"
+		if not self.vtbl.has_key(pname):
+			return 1
+
+		Entry = self.vtbl[pname]
+
+		localTbl = { 'vars':{}, 'status':0, 'props':{}, 'alias':{}, 'persistent':{}, 'instance':{}}
+
+		propEntry = Entry.parent
+
+		prmName = propEntry.data['prm']
+
+		if prmName != "":
+			default = propEntry.data['default']
+			if default != "":
+				default = self.CSLCheckValue(default, localTbl)
+			else:
+				default = CSLValue(typeid = "NULL", value = None)
+
+			localTbl['vars'][prmName] = default
+
+		if value == None:
+			value = CSLValue(typeid = "NULL", value = None)
+
+		localTbl['vars']['name'] = value
+
+		l = self.CSLInterpreter(Entry.child, localTbl)['status']
+
+		print "SetProp:", l
+
+		if l == 2:
+			return 1
+		else:
+			return 0
+
+
+	def	CSLInterpreter(self, startNode, localTbl = None):
+		""" Main CSL Executor. Return Local Variable and status Table """
+		tree = startNode
+		if localTbl == None:
+			localTbl = { 'vars':{}, 'status':0, 'props':{}, 'alias':{}, 'persistent':{}, 'instance':{}}
+			for i in self.vtbl.keys():
+				if i[0:2] == "p_":
+					localTbl['props'][i[2:]] = self.vtbl[i]
+
+
+		while tree != None:
+			if tree.type == "LET":
+				varName = tree.data["id"]
+				val = self.CSLCheckVariable(tree.data["exp"], localTbl)
+
+				if varName[0:2] == '$A':
+					# TODO:
+					# We not implement a tree and "instance" feature.
+					# We don't have enough time..
+					# if we seed serious requirement, we can thing its...
+
+					cont 		= 1
+					arrDesc 	= self.Tbl['A'][varName]
+					arrIndexes 	= arrDesc['prmlist']
+					arrId  		= arrDesc['id']
+					if localTbl['alias'].has_key(arrId):
+						arrId = localTbl['alias'][arrId][:]
+
+					if arrId.find(".") == -1 and arrId.find(':') == -1:	# Not a COMAR object call..
+						if not localTbl['vars'].has_key(arrId):
+							localTbl['vars'][arrId] = CSLValue(typeid='array', value = {})
+							#DBG print "NEW ARR:", localTbl['vars'], arrId
+
+						if cont:
+							array = localTbl['vars'][arrId].value
+							newkey = ""
+							for ai in arrIndexes:
+								inx = self.CSLCheckVariable(ai, localTbl)
+								newkey = newkey + "\\" + inx.toString()
+
+							newkey = newkey[1:]
+							#DBG print "SET ARR:[%s] = %s" % (newkey, val.value)
+
+							array[newkey] = val
+
+							if arrId in localTbl['persistent']:
+								self.CSLPersistSet(arrId, val, newkey)
+
+					else:	# a Object property
+						if arrId.find(":") == -1:
+							rootObj = arrId[:arrId.find(".")]
+							if rootObj == "me":
+								inx = self.CSLCheckVariable(arrIndexes[0], localTbl)
+								self.callPropertySet(method = varName, index = inx, localTbl = localTbl, value = val)
+								cont = 0
+							else:
+								inx = self.CSLCheckVariable(arrIndexes[0], localTbl)
+								self.callExtPropertySet(method = varName, index = inx , localTbl = localTbl, value = val)
+						else:
+							inx = self.CSLCheckVariable(arrIndexes[0], localTbl)
+							self.callExtPropertySet(method = varName, index = inx , localTbl = localTbl, value = val)
+
+					del val
+
+				else:
+					if varName[0:1] == "$":
+						varName = self.CSLCheckVariable(varName, localTbl)
+
+					if localTbl['alias'].has_key(varName):
+						varName = localTbl['alias'][varName]
+
+					if varName.find(".") == -1 and varName.find(':')  == -1:
+						if not localTbl["vars"].has_key(varName):
+							#print "LET CREATE VAR:", varName, val.type, val.value, "TD:", tree.data["exp"]
+							localTbl["vars"][varName] = None
+
+						localTbl["vars"][varName] = val
+						if varName in localTbl['persistent']:
+							self.CSLPersistSet(varName, val)
+
+						#print "LET ->", localTbl["vars"]
+					else:	# A COMAR Property Call..
+						self.callExtPropertySet(method = varName, index = None , localTbl = localTbl, value = val)
+
+				tree = tree.next
+
+			elif tree.type == "CALL":
+				tree.next
+				pass
+
+			elif tree.type == "if":
+				tree.data['stat'] = self.CSLCheckVariable(tree.data["cond"], localTbl).toBoolean()
+				if tree.data['stat']:
+					localTbl = self.CSLInterpreter(tree.child, localTbl)
+
+				tree = tree.next
+
+			elif tree.type == "else":
+
+				if tree.prev.data['stat'] == 0:
+					localTbl = self.CSLInterpreter(tree.child, localTbl)
+					tree.prev.data['stat'] == 1
+				tree = tree.next
+
+			elif tree.type == "elif":
+				if tree.prev.data['stat'] == 0:
+					tree.data['stat'] = self.CSLCheckVariable(tree.data["cond"], localTbl).toBoolean()
+					if tree.data['stat']:
+						localTbl = self.CSLInterpreter(tree.child, localTbl)
+						tree.prev.data['stat'] == 1
+				else:
+					tree.data['stat'] = 0
+
+				tree = tree.next
+
+			elif tree.type == "while":
+				wcond = copy.deepcopy(tree.data['cond'])
+				while 1:
+					tree.data['stat'] = self.CSLCheckVariable(wcond, localTbl).toBoolean()
+					if not tree.data['stat']:
+						break
+					localTbl = self.CSLInterpreter(tree.child, localTbl)
+					if localTbl['status']:
+						break
+
+				tree = tree.next
+
+			elif tree.type == "for":
+				fstart = copy.deepcopy(tree.data['start'])
+				foper  = copy.deepcopy(tree.data['oper'])
+				#print "C:" , tree.child, "N:", tree.child.next
+				fcond  = tree.data['cond']
+				localTbl = self.CSLInterpreter(fstart, localTbl)
+				wcond = copy.deepcopy(fcond)
+				while 1:
+
+					tree.data['stat'] = self.CSLCheckVariable(wcond, localTbl).toBoolean()
+					if not tree.data['stat']:
+						break
+					localTbl = self.CSLInterpreter(tree.child, localTbl)
+					if localTbl['status']:
+						break
+					localTbl = self.CSLInterpreter(foper, localTbl)
+					if localTbl['status']:
+						break
+
+				localTbl['status'] = 0
+				tree = tree.next
+
+			elif tree.type == "makeinstance":
+				tree = tree.next
+
+			elif tree.type == "destroy":
+				tree = tree.next
+
+			elif tree.type == "foreach":
+				tree = tree.next
+
+			elif tree.type == "break":
+				localTbl['status'] = 1
+				return localTbl
+
+			elif tree.type == "abort":
+				localTbl['status'] = 2
+				return localTbl
+
+			elif tree.type == "pass":
+				localTbl['status'] = 0
+				return localTbl
+
+			else:
+				tree = tree.next
+
+			if localTbl['status']:
+				return localTbl
+
+		return localTbl
+
+	def CSLEvalExp(self, exp = "", localTbl = None):	# $O Handler..
+
+		tbl = exp[1:2]
+
+		oper = self.Tbl[tbl][exp]
+		#print "EVAL:", exp, "->", oper
+		# '$O4': {'src': '$I3', 'dst': '$I2', 'op': '=='}
+		op  = oper["op"]
+		src = self.CSLCheckVariable(oper['dst'], localTbl)
+		dst = self.CSLCheckVariable(oper['src'], localTbl)
+		#DBG print "src: %s = %s (%s) dst: %s = %s (%s)" % (oper['dst'],src.value, src.type, oper['src'], dst.value, dst.type)
+		if   op == "+":
+			res = src.op.op_add(dst)
+		elif op == "-":
+			res = src.op.op_del(dst)
+		elif op == "*":
+			res = src.op.op_mul(dst)
+		elif op == "/":
+			res = src.op.op_div(dst)
+		elif op == "^":
+			res = src.op.op_exp(dst)
+		elif op == "%":
+			res = src.op.op_mod(dst)
+		elif op == "==":
+			res = src.op.op_equ(dst)
+		elif op == "!=":
+			res = not src.op.op_equ(dst)
+		elif op == ">=":
+			res = src.op.op_gte(dst)
+		elif op == "<=":
+			res = src.op.op_lte(dst)
+		elif op == ">":
+			res = src.op.op_gt(dst)
+		elif op == "<":
+			res = src.op.op_lt(dst)
+
+		if type(res) is types.BooleanType:
+			res = int(res)
+
+		res = CSLValue(typeid = src.type, value = res)
+		#print exp ,"->", res
+		return res
+
+	def CSLCheckVariable(self, id = "", localTbl = None):
+		return self.xCSLCheckVariable(id, localTbl)
+
+	def xCSLCheckVariable(self, id = "", localTbl = None):
+
+		if id[0:2] == "$A":
+			a = self.Tbl['A'][id]['id']
+
+			if a[0] != '$':
+				if not localTbl["vars"].has_key(a):
+					if not localTbl['props'].has_key(a + "_get"):
+						if a.find(".") == -1 and a.find(":") == -1:
+							#print "VAR CREATION:", a
+							localTbl['vars'][a] = CSLValue(typeid='array', value = {})
+						else:
+							ret = self.callExtPropertyGet(name = a, index = self.Tbl['A'][id]['prmlist'][0])
+							return ret
+					else:
+						ret = self.callPropertyGet(name = a, index = self.Tbl['A'][id]['prmlist'][0])
+						return ret
+
+				if len(self.Tbl['A'][id]['prmlist']):
+					arrIndexes 	= self.Tbl['A'][id]['prmlist']
+					array = localTbl['vars'][a].value
+					newkey = ""
+					for ai in arrIndexes:
+						inx = self.CSLCheckVariable(ai, localTbl)
+						newkey = newkey + "\\" + inx.toString()
+
+					newkey = newkey[1:]
+					return array[newkey]
+
+				return localTbl['vars'][a]
+
+		if id[0:2] == "$I":
+			a = self.Tbl['I'][id]
+			if a[0] != '$':
+				if not localTbl["vars"].has_key(a) :
+					#FIXT: if not localTbl['props'].has_key(a + "_get"):
+					if a.find(".") == -1 and a.find(":") == -1:
+						#print "VAR CREATION:", a
+						localTbl['vars'][a] = CSLValue("NULL", None)
+					else:
+						rootObj = a[:a.find(".")]
+						if rootObj == "me":
+							ret = self.callPropertyGet(name = a[a.find(".") + 1:], index = None)
+							return ret
+						elif localTbl["vars"].has_key(a):	# Locally defined object ?
+							if localTbl["vars"][a].type == "object":
+								# Hugh.. Its a object call
+								# FIX ME P:1
+								pass
+						else:
+							ret = self.callExtPropertyGet(name = a, index = None)
+							return ret
+
+				return localTbl['vars'][a]
+			else:
+				return self.xCSLCheckVariable(a, localTbl)
+
+		if id[0:2] == "$O":
+			return CSLValue(typeid = "auto", value = self.CSLEvalExp(id, localTbl).value)
+
+		if id[0:2] == "$N":
+			return CSLValue(typeid = "auto", value = int(self.Tbl['N'][id]))
+
+		if id[0:2] == "$F":
+			# A Function call.
+			# Seek object function table first..
+			f = self.Tbl['F'][id]
+			print f["id"], f["prmlist"]
+			func = f["id"]
+			if func.find(":") == -1 and func.find(".") == -1:
+				# API/CAPI Function call..
+
+				return self.CAPIFunc(name = func, prms = copy.copy(f["prmlist"]), symtab = localTbl)
+
+			else:
+				if func.find(":") == -1:
+					rootObj = func[:func.find(".")]
+					if rootObj == "me":
+						return self.callFunction(name = func[func.find(".")+1:], prms = f["prmlist"], symtab = localTbl)
+					else:
+						return self.callExtFunction(name = func, prms = f["prmlist"], symtab = localTbl)
+				else:
+					return self.callExtFunction(name = func, prms = f["prmlist"], symtab = localTbl)
+
+		if id[0:2] == "$Q":
+			print "STRING REQUEST:", id, "->", self.Tbl['Q'][id]
+			return CSLValue(typeid = "string", value = self.Tbl['Q'][id])
+
+		if localTbl["vars"].has_key(id) == -1:
+				localTbl['vars'][id] = CSLValue("NULL", None)
+
+		print "ID: %s Value: %s" % (id, localTbl['vars'][id].value)
+		return localTbl['vars'][id]
+
+	def CSLTreeCoder(self, tree = None):
+		while tree != None:
+			print "->", tree.type, tree.data
+			if self.ipts.has_key(tree.type):
+				# basic commands (if, for etc..)
+				if self.ipts.has_key(tree.type):
+					tree.data["entry"] = self.ipts[tree.type]
+				self.CSLTreeCoder(tree.child)
+				tree = tree.next
+
+			elif tree.type == "ROOT":
+				# go child immediately..
+				tree.data = "binded"
+				tree = tree.child
+
+			elif tree.type in self.decl:
+				#print "DECL: '%s' in " % ( tree.type ), tree.data
+				self.current_cb = tree.data
+				if tree.type == "defprop":
+					# special case. We are create name_get and
+					# name_set node.
+					tmp = copy.copy(tree)
+					tree = tree.child
+					print "GP:", tree.type
+
+					while tree != None:
+						if tree.type == "get":
+							tmp.data[tmp.data["name"] + "_get"] = tree
+
+							self.vtbl["p_" + tmp.data["name"] + "_get"] = tree
+							print "GO CHILD:", tree.child.type, tree.child.data
+							self.CSLTreeCoder(tree.child)
+						elif tree.type == "set":
+							tmp.data[tmp.data["name"] + "_set"] = tree
+							self.vtbl["p_"+tmp.data["name"] + "_set"] = tree
+							print "GO CHILD:", tree.child.type, tree.child.data
+							self.CSLTreeCoder(tree.child)
+						else:
+							return None
+						tree = tree.next
+					tree = tmp.next
+				else:
+					print "IN:", tree.data
+					self.vtbl[tree.type[3]+"_"+tree.data["name"]] = tree
+					self.CSLTreeCoder(tree.child)
+					tree = tree.next
+
+			elif tree.type == "alias":
+
+				if self.current_cb.has_key("alias"): # Already defined?
+					tmp = self.current_cb["alias"]
+					# seek old identifier and add new aliases..
+				else:
+					tmp = {}
+					self.current_cb["alias"] = tmp
+
+				arr = tree.data['aliases']
+				for i in arr:
+					tmp[i] = tree.data['identifier']
+
+				#print tmp, self.current_cb
+				print "alias entry", tmp
+				tree = tree.next
+			elif tree.type == "persistent":
+				# Get previously saved values..
+				if self.current_cb.has_key("persistent"): # Already defined?
+					tmp = self.current_cb["persistent"]
+					# seek old identifier and add new aliases..
+				else:
+					tmp = []
+					self.current_cb["persistent"] = tmp
+
+				tmp.append(tree.data)
+
+				tree = tree.next
+
+			else:
+				#print "Unknown:", tree.type, tree.data
+				tree = tree.next
+
+class CSLValue:
+	""" CSL Value type.
+	CSL Value, define basic data types, numeric, integer and boolean.
+	For object types,
+	"""
+	def	__init__(self, typeid = "auto", value = None):
+		if typeid == "auto":
+			if type(value) in [ types.IntType, types.FloatType, types.LongType ]:
+				typeid = "numeric"
+			elif type(typeid) == types.StringType:
+				typeid = "string"
+			else:
+				typeid = "string"
+				value = value.__str__()
+
+		self.type = typeid
+		self.value = value
+		if typeid == "string":
+			self.op = CSLTmpString(value)
+			if type(value) in [ types.IntType, types.FloatType, types.LongType ]:
+				self.value = value.__str__()
+			elif type(value) is types.BooleanType:
+				self.value = "y"
+
+		elif typeid == "numeric":
+			self.op = CSLTmpNumeric(value)
+			self.value = value
+
+		elif typeid == "boolean":
+			value = int(value != 0)
+			self.value = value
+			self.op = CSLTmpNumeric(value)
+		else:
+			self.op = CSLTmpString("")
+			self.value = value
+
+	def __call__(self, type = ""):
+		if type == "string":
+			return self.toString()
+
+		if type == "numeric":
+			return self.toNumeric()
+
+		if type == "boolean":
+			return self.toBoolean()
+
+		return self.value
+
+	def	toNumeric(self):
+		if self.type == "string":
+			try:
+				return int(self.value)
+			except:
+				return float(self.value)
+		elif self.type == "numeric":
+			return self.value
+		elif self.type == "object":
+			if value != None:
+				pass
+		elif self.type == "array":
+			pass
+		elif self.type == "boolean":
+			return self.value
+		else:
+			return 0
+
+	def	toString(self):
+		if self.type == "string":
+			return self.value
+		elif self.type == "numeric":
+			return str(self.value)
+		elif self.type == "object":
+			if value != None:
+				pass
+		elif self.type == "array":
+			pass
+
+		elif self.type == "boolean":
+			if self.value:
+				return "Y"
+			else:
+				return "N"
+		else:
+			return ""
+
+	def	toBoolean(self):
+		""" TODO: Language Specific "Yes" implementation """
+
+		if self.type == "string":
+			if self.value == "Y" or  self.value == "y" or self.value.upper() == "YES":
+			   return 1
+			else:
+				return 0
+			return self.value
+
+		elif self.type == "numeric":
+			return self.value != 0
+
+		elif self.type == "object":
+			if value != None:
+				return 1
+
+		elif self.type == "array":
+			return self.value["len"]
+
+		elif self.type == "boolean":
+			return self.value
+
+		else:
+			return 0
+
+
+class CSLTmpString:
+	def	__init__(self, strval):
+		self.val = strval
+
+	def op_add(self, valObj):
+		tmp = valObj.toString()
+		return self.val + tmp
+
+	def op_del(self, valObj): # Oopps !
+		return ""
+
+	def op_mul(self, valObj):
+		if valObj.type == "numeric":
+			ret = ""
+			for i in xrange(valObj.value):
+				ret += self.val
+			return ret
+		return ""
+
+	def op_div(self, valObj):
+		return ""
+
+	def op_exp(self, valObj):
+		return ""
+
+	def op_mod(self, valObj):
+		return ""
+
+	def op_equ(self, valObj):
+		tmp = valObj.toString()
+		return self.val == tmp
+
+	def op_gt(self, valObj):
+		tmp = valObj.toString()
+		return self.val > tmp
+
+	def op_lt(self, valObj):
+		tmp = valObj.toString()
+		return self.val < tmp
+
+	def op_gte(self, valObj):
+		tmp = valObj.toString()
+		return self.val >= tmp
+
+	def op_lte(self, valObj):
+		tmp = valObj.toString()
+		return self.val <= tmp
+
+class CSLTmpNumeric:
+	def	__init__(self, numval):
+		self.val = numval
+
+	def op_add(self, valObj):
+		tmp = valObj.toNumeric()
+		return self.val + tmp
+
+	def op_del(self, valObj): # Oopps !
+		tmp = valObj.toNumeric()
+		return self.val - tmp
+
+	def op_mul(self, valObj):
+		if valObj.type == "numeric":
+			return valObj.value * self.val
+
+		return 0
+
+	def op_div(self, valObj):
+		if valObj.type == "numeric":
+			if valObj.value == 0:
+				return 2^31
+
+			return self.val / valObj.value
+
+		return 0
+	def op_exp(self, valObj):
+		if valObj.type == "numeric":
+			return self.val ^ valObj.value
+
+		return 1
+
+	def op_mod(self, valObj):
+		if valObj.type == "numeric":
+			return self.val % valObj.value
+
+		return self.val
+
+	def op_equ(self, valObj):
+		tmp = valObj.toNumeric()
+		return self.val == tmp
+
+	def  op_gt(self, valObj):
+		tmp = valObj.toNumeric()
+		return self.val > tmp
+
+	def  op_lt(self, valObj):
+		tmp = valObj.toNumeric()
+		return self.val < tmp
+
+	def  op_gte(self, valObj):
+		tmp = valObj.toNumeric()
+		return self.val >= tmp
+
+	def  op_lte(self, valObj):
+		tmp = valObj.toNumeric()
+		return self.val <= tmp
+
+class CSLArrayItem:
+	def	__init__(self, Array=None, key=None, instance=0):
+		if key == None:
+			return None
+
+		self.parent = Array
+		self.key = key
+		self.instance = instance
+		self.value = None
+		self.next = None
+		self.prev = None
+		self.child = None
+
+def CheckParameters(capsule, method = "", prms = {}):
+	"""
+		prms icindeki parametrelerden kacinin bu method
+		tarafindan kullanilabildigini tespit eder.
+		alias olarak yapilmis tariflerde teste tabidir..
+	"""
+	if method == "":
+		return -1
+		
+	try:
+		tree = capsule.root.child
+	except:				
+		return -1
+		
+	item = 0
+		
+	while tree != None:
+		if tree.type == "defmethod" and tree.data["name"] == method:
+			print "LOOK METHOD:", tree.data
+			for i in prms.keys():
+				print "    LOOK PRM:", i
+				if i in tree.data["prmlist"]:
+					item += 1
+				else:
+					if tree.data.has_key("alias"):
+						aliased_prms = tree.data["alias"].keys()
+						print "       LOOK ALIAS:", aliased_prms
+						for x in aliased_prms:
+							print "              LOOK IS:", x, i
+							if i in tree.data["alias"][x]:
+								item += 1
+
+		tree = tree.next
+	return item
+
+class	COMARObjHook:
+	def	__init__(self, instanceid = '', cAPI = None, callerInfo = None):
+		self.file = ''
+		self.runenv = CSLCapsule(instance=instanceid)
+
+		self.api 	= cAPI.COMARAPI
+		print dir(self.api)
+		self.cv		= cAPI.COMARValue
+		self.callerInfo = callerInfo
+
+		self.instance = self.api.loadValue(instanceid, callerInfo)
+
+		if self.cv.gettype(self.instance) != 'null':
+			# This is a new instance..
+			# Make our instance data..
+			codetype = self.cv.array_finditem(self.instance, 'code_type')
+			print self.cv.dump_value_xml(codetype.item), self.instance
+			if codetype.item.data.value == 'file':
+				cslfile = self.cv.array_finditem(self.instance, 'source')
+				self.runenv.LoadObject(cslfile.item.data.value)
+			else:
+				cslcode = self.cv.array_finditem(self.instance, 'code_buffer')
+				self.runenv.LoadBuffer(cslcode.item.data.value)
+		else:
+			self.cv.CVAL_destroy(self.instance)
+			self.instance = self.cv.array_create()
+			self.cv.array_additem(self.instance, 'code_type', 0, self.cv.string_create(str='null'))
+			self.cv.array_additem(self.instance, 'source', 0, self.cv.string_create(str='null'))
+
+		self.instanceid = instanceid
+
+	def	setSourceFromURL(self, src = ''):
+		url = urlparse.urlparse(src)
+		proto = url[0]
+		print "proto:", proto
+		if proto == 'file':
+			self.file = url[2]
+			oldtypeval = self.cv.array_finditem(self.instance, 'code_type')
+			oldtype = self.cv.CVALget(oldtypeval)
+			if oldtype == 'buffer':
+				self.cv.array_delitem(self.instance, 'code_buffer')
+			elif oldtype == 'file':
+				old = self.cv.array_finditem(self.instance, 'source')
+				self.cv.array_setitem_str(old, self.file)
+			elif oldtype == 'null':
+				self.cv.array_setitem_str(oldtypeval, 'file')
+				old = self.cv.array_finditem(self.instance, 'source')
+				self.cv.array_setitem_str(old, self.file)
+
+
+
+			self.api.saveValue(self.instanceid, self.instance, self.callerInfo)
+			self.runenv.LoadObject(self.file)
+		else:
+			# We must use COMAR URL Functions for retrieve URL data.
+			# But, currently this is not ready..
+
+			pass
+
+	def	setSourceFromBuffer(self, buffer = ''):
+		pass
+
+	def	_buildPrms(self, prmList):
+		if prmList != None:
+			root = prmList.data
+			while root:
+				prms[root.Key] = root.item
+				root = root.next
+		return prms
+
+	def	runMethod(self, method = '', prmList = None):
+		prms = self._buildPrms(prmList)
+		res = self.runenv.runMethod( method, prms )
+		return res
+
+	def	runFunction(self, function = '', prmList = None):
+		prms = self._buildPrms(prmList)
+		res = self.runenv.runFunction( function, prms )
+		return res
+
+	def	runPropertyGet(self, property = '', prmList = None):
+		prms = self._buildPrms(prmList)
+		res = self.runenv.runPropertyGet( method, prms )
+		return res
+
+	def	runPropertySet(self, property = '', prmList = None, newValue = None):
+		prms = self._buildPrms(prmList)
+		res = self.runenv.runPropertySet( method, prms, newValue )
+		return res
+
+
+_HOOK			= COMARObjHook

@@ -1,0 +1,456 @@
+# Generic Object Provider for Ethernet Cards.
+# object item Provider
+# Description:
+#  PHY nesnesini sunan belirticiyi döndürür. Bu özellik NIC nesnelerinin bağlı olduğu PHY'leri handle etmesini kolaylaştırır. Sadece NIC nesneleri tarafından erişilebilir.
+
+property Provider {
+	get { 
+		Provider = "COMAR Network System 0.9";
+	}
+}
+
+# object item Identifier
+# Description:
+#  PHY nesnesinin sistem çapında yeğane olan identifier'ini döndürür.
+
+property Identifier {
+	get { tmp=0;
+	}
+	set { tmp=0;
+	}
+}
+
+# object item Name
+# Description:
+#  PHY nesnesinin yeğane olması gereken ismini döndürür. Bu isim özellikle DialUp bağlantılar için kullanılabilir.
+
+property Name {
+	get { 
+		instance phyName;
+		Name = phyName;
+	}
+	set { 
+		instance phyName;
+		phyName = Name;
+	}
+}
+
+# object item new
+# Description:
+#  PHY Nesnesinin yeni ve boş bir instance'ını oluştup geri döndürür. Doğrudan kullanılamaz, sadece daha önceden alınmış bir nesne içinden kullanılmalıdır.
+
+method New() {
+	main[0]=5;
+	data = COMAR:Network[main[0]].connPoint.PHY["ali"].TXSpeed[0];	
+	New = 0;
+}
+
+# object item registerself
+# Description:
+#  PHY Nesnesinin kendini OM'a register etmesini saglar.
+
+method registerself() { tmp=0;
+
+}
+
+# object item LinkDevice
+# Description:
+#  PHY nesnesinin -varsa- low level cihazının adını döndürür.
+
+property LinkDevice {
+	get { 
+		instance ethName;
+		LinkDevice = ethName;
+	}
+	set { 
+		instance ethName;
+		ethName = LinkDevice;
+	}
+}
+
+# object item RemoteAccessType
+# Description:
+#  CONNECT işlevi için Sertifika/Login methodlarından hangisinin kullanılacağını belirler.
+#
+# Possible Return Values:
+#	NONE	   = Auth. Kullanılmıyor.
+#	INTERACTIVE	= RemoteLogin* değerleri ile
+#	NONINTERACTIVE = RemoteAuth* değerleri ile
+#	AUTO	   = Otomatik seçim.
+
+property RemoteAccessType {
+	get { 
+		RemoteAccessType = "NONE";
+	}
+}
+
+# object item MACAddress
+# Description:
+#  PHY Cihazının varsa MAC adresini ifade eder.
+
+property MACAddress {
+	get { 
+		instance ethName;
+		ethName = "eth0";
+		if (ethName != "") {
+			prg = "/sbin/ifconfig " + ethName;
+			m = grep_first(exec=prg, pattern="HWaddr");
+			if (m != "") {
+				MAC = split(string=m, separator=" ");
+				MACAddress = MAC[4];
+			}
+		} else {
+			MACAddress = "";
+		}
+	}
+	set {
+		instance ethName;
+		if (ethName != "") {
+			tmp = 0;
+		} else {
+			tmp = 0;
+		}
+
+	}
+}
+
+# object item MACisChangeable
+# Description:
+#  PHY cihazının MAC Adresinin değiştirilebilir olup olmadığını ifade eder:
+#  Diğer tüm değerler MAC Adresinin değiştirilemez olduğunu ifade eder.
+#  Eğer, bu property OK değerine sahipse, MACAddress property kullanılarak MAC Adresi değiştirilebilir.
+#
+# Possible Return Values:
+#	BUSY	- Cihaz kullanımda olduğundan değiştirilemez.
+#	OK			- MAC Adresi değiştirilebilir.
+
+
+
+property MACisChangeable {
+	get {
+		MACisChangeable = "BUSY";
+	}
+}
+
+method setLinkUpEvent(eventReceiverId="") {
+}
+
+# object item setLinkDownEvent
+# Description:
+#  Fiziksel bağlantı başlatılınca (up) ve sona erince (down) bir COMAR eventi oluşturulmasını sağlar.
+
+method setLinkDownEvent(eventReceiverId="") { tmp=0;
+}
+
+property RXSpeedInfo {
+	get {
+		RXSpeedInfo = me.TXSpeedInfo;
+	}
+}
+
+# object item TXSpeedInfo
+# Description:
+#  Kullanılabilir bağlantı hızlarını belirten bir array döndürür. Array elemanları şu şekildedir:
+#  "model" =  [ LINEER | STEPPED | LOGICAL]
+#  Eğer "model" lineer ise, aşağıdaki değerler array üzerinde mevcut olacaktır.
+#  "min"	= Minimal Hız.
+#  "max" = Maximum hız.
+#  "step" = Artış değeri.
+#  Eğer "model" STEPPED ise "speeds" adlı yeni bir array eleman ile kullanılabilir hız değerleri gösterilir. "foreach" kullanılarak bu değerler alınabilir, array_min(), array_max() fonksiyonları kullanılabilir.
+#  Eğer model "LOGICAL" ise, bağlantı tünel benzeri bir mantıksal yapıda olduğundan hız değerleri anlamsızdır.
+#  Hız parametreleri cihazın fiziksel bağlantı hızını kbit-per-second olarak ifade eder.
+
+property TXSpeedInfo {
+	get { 
+		instance ethName;
+		spd["model"]  = "STEPPED";
+		spdinfo = capture(exec="/sbin/ethtool "+ethName);
+		collect = 0; 
+		data = "";
+		x = 0;		
+		foreach (key=val in spdinfo) {			
+			if (collect != 0) {				
+				if (strstr(string=val, pattern = ":")) {				
+					break;
+					collect = 0;
+				} else {
+					data = strip(string=val);
+					data = split(string=data, separator = " ");
+					foreach (k = v in data) {
+						mbps = getnumleft(string = v);
+						kbps = 1000 * mbps;
+						if (arrayhasvalue(array=spd["speeds"], value = kbps) == 0) {							
+							spd["speeds"][x] = kbps;
+							x = x + 1;
+						}
+					}					
+				}
+			} else {				
+				if (strstr(string=val, pattern = "Advertised link modes:")) {
+					lmx = split(string=strip(string=val), separator=":");
+					data = lmx[1] + " ";
+					data = strip(string=data);
+					data = split(string=data, separator = " ");
+					foreach (k = v in data) {
+						mbps = getnumleft(string = v);
+						kbps = 1000 * mbps;
+						if (arrayhasvalue(array=spd["speeds"], value = kbps) == 0) {
+							spd["speeds"][x] = kbps;
+							x = x + 1;
+						}
+					}
+					collect = 1;
+					debugout(value=spd);
+				}
+			}
+		}
+		TXSpeedInfo = spd;
+	}
+}
+
+property RXSpeed {
+	get { tmp=0;
+	}
+	set { tmp=0;
+	}
+}
+
+# object item TXSpeed
+# Description:
+#  Fiziksel bağlantının hızını belirtir/tespit eder.
+
+property TXSpeed {
+	get { tmp=0;
+	}
+	set { tmp=0;
+	}
+}
+
+# object item FlowMode
+# Description:
+#  Bağlantının akış modelini ifade eder.
+#
+# Possible Return Values:
+#	FULLDUPLEX	= Her iki yönde aynı anda akış olabilir.
+#	HALFDUPLEX	= Bir anda sadece bir tek yönde akış olabilir.
+
+
+
+property FlowMode {
+	get { tmp=0;
+	}
+	set { tmp=0;
+	}
+}
+
+property RXBytes {
+	get { tmp=0;
+	}
+}
+
+# object item TXBytes
+# Description:
+#  Bu oturumda işlenmiş olan RX/TX Byte sayısını gösterir.
+
+property TXBytes {
+	get { tmp=0;
+	}
+}
+
+property RXTreshold {
+	get { tmp=0;
+	}
+	set { tmp=0;
+	}
+}
+
+method setRXTresholdEvent(eventReceiverId="") { tmp=0;
+}
+
+property TXTreshold {
+	get { tmp=0;
+	}
+	set { tmp=0;
+	}
+}
+
+# object item setTXTresholdEvent
+# Description:
+#  Belirtilmiş olan Treshold kadar byte işlenince bir COMAR event oluşturulmasını sağlar. Eğer Treshold değeri 0 ise, event oluşturulmaz.
+
+method setTXTresholdEvent(eventReceiverId="") { tmp=0;
+}
+
+# object item LinkStatus
+# Description:
+#  Bağlantının mevcut durumunu belirtir.
+#
+# Possible Return Values:
+#	UP		- Bağlantı hazır.
+#	DOWN		- Bağlantı yok.
+
+
+
+property LinkStatus {
+	get { tmp=0;
+	}
+}
+
+# object item MediaStatus
+# Description:
+#  Bağlantıyı sağlayan fiziksel katmanın (kablo, cihaz, vs.) durumunu belirtir.
+#
+# Possible Return Values:
+#	ONLINE	- Bağlantı hazır.
+#	READY	- Cihaz bağlı ve hazır. Media bağlantısı yok (DialUp çağrı, kablo takılı değil vs.)
+#	FAULT	- Cihaz bağlı değil, power off durumunda vs.
+
+
+
+property MediaStatus {
+	get { tmp=0;
+	}
+}
+
+# object item LinkType
+# Description:
+#  Bağlantı türünü belirtir:
+#
+# Possible Return Values:
+#	PTP	- Point-to-point. Bağlantı her zaman tek bir karşı cihaza erişir.
+#	PTMP	- Point-to-MultiPoint.
+
+
+
+property LinkType {
+	get { tmp=0;
+	}
+}
+
+# object item MediaType
+# Description:
+#  Bağlantının ortam türünü belirtir.
+
+property MediaType {
+	get { tmp=0;
+	}
+}
+
+# object item securityLevel
+# Description:
+#  COMAR Security Level belirtimine uygun olarak bağlantının fiziksel seviyedeki güvenlik derecesini gösterir.
+
+property securityLevel {
+	get { tmp=0;
+	}
+}
+
+# object item getExtraProperties
+# Description:
+#  COMAR Property Definiton kurallarına uygun olarak cihazın kabul ettiği extra property'leri döndürür.
+
+property getExtraProperties {
+	get { tmp=0;
+	}
+}
+
+# object item setExtraProperty(property
+# Description:
+#  Cihazın extra property'lerinden birinin değerini değiştirmek üzere kullanılır.
+
+property setExtraProperty {
+	get { tmp=0;
+	}
+	
+}
+
+property EDCTypeInfo {
+	get { tmp=0;
+	}
+}
+
+# object item EDCType
+# Description:
+#  Cihazın hata kontrol/düzeltme mekanizmasını belirler.
+#
+# Possible Return Values:
+#	NONE
+#	EVEN-PARITY
+#	ODD-PARITY
+#	CRC16
+#	CRC32
+
+
+
+property EDCType {
+	get { tmp=0;
+	}
+}
+
+# object item MTU
+# Description:
+#  Cihazdan bir defada maximum kaç byte yollanabileceğini ifade eder.
+
+property MTU {
+	get { tmp=0;
+	}
+	set { tmp=0;
+	}
+}
+
+# object item remoteAddress
+# Description:
+#  Karşı adres değeri.
+
+property remoteAddress {
+	get { tmp=0;
+	}
+	set { tmp=0;
+	}
+}
+
+# object item remoteAddressType
+# Description:
+#  Karşı adresin adres türünü belirtir. Bu değerler sadece PTP bağlantılarda faydalıdır.
+#
+# Possible Return Values:
+#	TELNUMBER (Format: (Country Code)-AreaCode-TelNumber)
+#	IPv4
+#	IPv6
+
+
+
+property remoteAddressType {
+	get { tmp=0;
+	}
+}
+
+# object item operMode
+# Description:
+#  PHY arabiriminin operational modunu belirtir. CONNECT, LISTEN, CONNECTBACK, CONNECTFORWARD, ONLINE modlarını verir.
+
+property operMode {
+	get { tmp=0;
+	}
+	set { tmp=0;
+	}
+}
+
+property totalUpTime {
+	get { tmp=0;
+	}
+}
+
+property totalRXBytes {
+	get { tmp=0;
+	}
+}
+
+# object item totalTXBytes
+# Description:
+#  PHY oluşturulduğundan bu yana toplam istatistik değerlerini byte ve saniye olarak belirtir.
+
+property totalTXBytes {
+	get { tmp=0;
+	}
+}

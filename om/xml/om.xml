@@ -1,40 +1,32 @@
 <comar-om>
-<namespace name='COMAR'><acl/><description/>
+<namespace name='COMAR'><acl/><description/><description/><description/><description/><description/><description/>
 <object name='Network'><description>Network altsistemi, temel görev olarak veri iletimi işlevi gören cihazların yapılandırılması işlevlerini ve bunlar üzerinde kullnulabilir durumda olan network protokollerinin düzenlenmesini üstlenir. Ayrıca network üzerindeki diğer hostlara erişimin sağlanması ve erişim denetimi de bu altsistemin kapsamına girer.</description><acl/>
 <object name='ConnPoint'><description>Bağlantıyı sağlayan cihaz, uygulama, protokol ve benzeri bileşenleri kapsar. Bir Connection Point en yalın hali ile ethernet, modem gibi network cihazlarıdır. Diğer yandan veri aktarımı işlebi sadece fiziksel yapıları değil, tünel cihazları gibi sanal aygıtları da kapsadığından, tipik interface kavramı genişletilerek nesne modeline taşınmıştır.
 
 Bilgi alışverişini gerçekleştiren PHY bileşenleri ve taşınan bilginin OSI Layer 1 ve 2 protokol karşılığına tekabül eden bir NIC bileşeni bir araya gelerek, bir Connection Point oluştururlar. Bu NIC bileşeni üst seviyede işler için bir NSAP olarak işlev görür. X.200 tanımları tam kapsamlı Network ve Open System bağlantısını tarif ederken, ÇOMAR OM kapsamı bu sahadaki mevcut yapılandırma ihtiyaçlarını tarif etmek üzere modellenmiştir. Bu nedenle ISO-IEC-7498 belirtimleri birebir OM ile örtüşmezler. Buna karşın aşina olunan terimlerin herkes tarafından rahat anlaşılırlığını sağlamak amacıya isimlendirmelerde X.200 ve IEEE 802 terimlerine sadık kalınması bir gereksinim olarak belirlenmiştir.</description><acl/>
-<object name='PHY'><description>X.200 (ISO-IEC-7498-[1,2,3]) Tariflerinde yeralan PhSAP (Physical Service-Access-Point) ve DLSAP (Data-Link Service-Access-Point) kavramlarına uygun olarak, fiziksel ortam (Physical Media, PMA) nağlantısını sağlayan düzeneklerdir. Fiziksel ortamla bağlantıyı temsil eden sanal (FR, Tunnel) ve/veya fiziksel cihazlar (Ethernet, PSTN v.b.) ile Network altsistemi arasındaki bağlantıları tarif eder. PHY bileşenleri PMA ve MAC işlevlerini üstlenirler. Haritalama yönünden, fiziksel cihazların üzerinde birden fazla PHY tarif edilebilir. Bazı durumlarda da bir fiziksel cihaz üzerinde birden fazla PHY eşzamanlı çalışabilir.</description><acl/>
+<object name='PHY'><acl/><description>X.200 (ISO-IEC-7498-[1,2,3]) Tariflerinde yeralan 
+PhSAP (Physical Service-Access-Point) ve DLSAP (Data-Link Service-Access-Point) 
+kavramlarına uygun olarak, fiziksel ortam (Physical Media, PMA) 
+bağlantısını sağlayan düzeneklerdir. Fiziksel ortamla bağlantıyı temsil eden
+sanal (FR, Tunnel) ve/veya fiziksel cihazlar (Ethernet, PSTN v.b.) ile Network altsistemi 
+arasındaki bağlantıları tarif eder. 
+PHY bileşenleri PMA ve MAC işlevlerini üstlenirler. 
+Haritalama yönünden, fiziksel cihazların üzerinde birden fazla PHY tarif edilebilir. 
+Bazı durumlarda da bir fiziksel cihaz üzerinde birden fazla PHY eşzamanlı çalışabilir.</description>
 <method name='New'><description>PHY nesnesinin yeni ve boş bir instance&apos;ını oluşturup geri döndürür.
 Doğrudan kullanılmaz, daha önceden alınmış bir NIC nesnesi içerisinden kullanılır..</description><inputs/><acl/>
 </method>
 <method name='RegisterSelf'><description>Yeni PHY nesnesinin OM&apos;a register edilmesi için cağrılır.</description><inputs/><acl/>
 </method>
 <property name='Provider'><description>PHY nesnesini sunan belirticiyi döndürür..
-Bu, NIC nesnelerinin bağlı olduğu PHY&apos;leri handle etmesini kolaylaştırır.</description><acl/>
+Bu, NIC nesnelerinin bağlı olduğu PHY&apos;leri handle etmesini kolaylaştırır.</description>
 </property>
-<property name='Identifier'><description>PHY nesnesinin sistem çapında yegane olan tanımlayıcısını döndürür.</description><acl/>
+<property name='Identifier'><description>PHY nesnesinin sistem çapında yegane olan tanımlayıcısını döndürür.</description>
 </property>
-<property name='Name'><description>PHY nesnesinin sistem çapında yegane olan ismini döndürür.</description><acl/>
+<property name='Name'><description>PHY nesnesinin sistem çapında yegane olan ismini döndürür.</description>
 </property>
-<property name='LinkDevice'><description>PHY nesnesinin low level cihazının descriptor&apos;ını döndürür.</description><acl/>
-</property>
-<property name='AvailLinkDevices'><description>PHY nesnesi için kullanılabilir olan cihazların descriptor&apos;larını ihtiva eden bir array döndürür.</description><acl/>
-</property>
-<property name='GoOnlineCmd'><description>DialUp ve benzeri bağlantılarda, karşı sistemin online olabilmesi için ekstra komut verilmesi gerekebilir,
-bu durumda karşıya yollanacak olan komut bu property ile tanımlanabilir.</description><acl/>
-</property>
-<property name='GoOnlinePrompts'><description>DialUp ve benzeri bağlantılarda, karşı sistemin online olabilmesi için ekstra komut verilmesi gerekebilir,
-bu durumda karşıdan beklenecek prompt bu property ile belirlenebilir.</description><acl/>
-</property>
-<property name='RemoteAccessType'><description>Connect işlevi için sertifika/login methodlarından hangisinin kullanılacağı bilgisi..
-
-NONE			: Auth. yok
-INTERACTIVE		: RemoteLogin* değerleri ile
-NONINTERACTIVE 	: RemoteAuth* değerleri ile
-AUTO			: Otomatik seçim.</description><acl/>
-</property>
-<property name='LocalAuth'><description>LISTEN modu için gerekli olan COMARauth nesnesini donurur..</description><acl/>
+<property name='LinkDevice'><acl/><description>PHY nesnesinin low level cihazının descriptor&apos;ını döndürür. Eğer, cihaz &quot;ONLINE&quot; modunda değilse, bu değer boş dönebilir.
+</description>
 </property>
 <property name='MACAddress'><description>PHY&apos;nin varsa MAC adresini ifade eder..</description><acl/>
 </property>
@@ -47,11 +39,19 @@ Diğer durumlar değiştirilemez olduğu anlamına gelir.
 
 Değiiştirme MACAddress property&apos;si üzerinden gerçekleştirilebilir..</description><acl/>
 </property>
-<property name='setLinkUpEvent'><description>Fiziksel bağlantı başlatılınca işletilebilecek bir ÇOMAR event&apos;i set edilebilmesini sağlar..</description><acl/>
+<property name='DataMode'><acl/><description>DTE - Cihaz DTE Modunda.
+DCE - Cihaz DCE Modunda.
+AUTO - otomatik. Bu durumda, DTE/DCE ayrımı olmayabilir (Ethernet gibi).
+</description>
+</property>
+<property name='setLinkUpEvent'><acl/><description>Fiziksel bağlantı başlatılınca işletilebilecek bir ÇOMAR event&apos;i set edilebilmesini sağlar..
+LinkUp durumu, cihazın network için aktif hale geçmesi anlamına gelmez. LinkUp, kablonun takılması,
+modemin açılması gibi faaliyetleri ifade eder.
+</description>
 </property>
 <property name='setLinkDownEvent'><description>Fiziksel abağlantı sonlanınca işletilebilecek bir ÇOMAR event&apos;i set edilebilmesini sağlar.</description><acl/>
 </property>
-<property name='totalUpTime'><description>PHY oluşturulduğundan bu yana geçen süreyi saniye cinsinden tutar.</description><acl/>
+<property name='totalUpTime'><description>PHY oluşturulduğundan bu yana geçen süreyi saniye cinsinden tutar.</description>
 </property>
 <property name='RXSpeedInfo'><description>Kullanılabilir bağlantı hızlarını belirten bir array döndürür.. Array elemanları şu şekildedir:
 
@@ -67,7 +67,7 @@ eğer STEPPED ise, &quot;speeds&quot; adlı yeni bir array ile kullanılabilir h
 
 eğer LOGICAL ise, bağlantı tünel benzeri bir mantıksal yapı üzerinden gerçekleştirildiğinden hız değerleri anlamsızdır.
 
-hız değerleri cihazın fiziksel bağlantı hızını bits per sec cinsinden ifade eder.</description><acl/>
+hız değerleri cihazın fiziksel bağlantı hızını bits per sec cinsinden ifade eder.</description>
 </property>
 <property name='TXSpeedInfo'><description>Kullanılabilir bağlantı hızlarını belirten bir array döndürür.. Array elemanları şu şekildedir:
 
@@ -83,43 +83,43 @@ eğer STEPPED ise, &quot;speeds&quot; adlı yeni bir array ile kullanılabilir h
 
 eğer LOGICAL ise, bağlantı tünel benzeri bir mantıksal yapı üzerinden gerçekleştirildiğinden hız değerleri anlamsızdır.
 
-hız değerleri cihazın fiziksel bağlantı hızını bits per sec cinsinden ifade eder.</description><acl/>
+hız değerleri cihazın fiziksel bağlantı hızını bits per sec cinsinden ifade eder.</description>
 </property>
 <property name='RXSpeed'><description>Fiziksel bağlantının giriş hızını tutar/tespit eder.</description><acl/>
 </property>
-<property name='TXSpeed'><description>Fiziksel bağlantının çıkış hızını tutar/tespit eder.</description><acl/>
+<property name='TXSpeed'><description>Fiziksel bağlantının çıkış hızını tutar/tespit eder.</description>
 </property>
 <property name='FlowMode'><description>Bağlantının akış modelini ifade eder..
 
 HALFDUPLEX	: Bir anda sadece tek yönde akış mümkün.
 FULLDUPLEX	: Bir anda çift yönde akış mümkün.</description><acl/>
 </property>
-<property name='RXBytes'><description>Geçerli oturumda bu fiziksel cihaz tarafından içeri işlenmiş byte miktarını verir.</description><acl/>
+<property name='RXBytes'><description>Geçerli oturumda bu fiziksel cihaz tarafından içeri işlenmiş byte miktarını verir.</description>
 </property>
-<property name='TXBytes'><description>Geçerli oturumda bu fiziksel cihaz tarafından dışarı gönderilmiş byte miktarını verir.</description><acl/>
+<property name='TXBytes'><description>Geçerli oturumda bu fiziksel cihaz tarafından dışarı gönderilmiş byte miktarını verir.</description>
 </property>
-<property name='RXTreshold'><acl/><description></description>
+<property name='RXTreshold'><description/>
 </property>
-<property name='setRXTresholdEvent'><description>0&apos;dan farklı bir RXTreshold kadar byte işlenince bir seferliğine işletilecek bir COMAR event&apos;ı set edilir</description><acl/>
+<property name='setRXTresholdEvent'><description>0&apos;dan farklı bir RXTreshold kadar byte işlenince bir seferliğine işletilecek bir COMAR event&apos;ı set edilir</description>
 </property>
-<property name='getRXTresholdEvent'><description>-varsa- set edilmiş RXTresholdEvent&apos;ını gösterir</description><acl/>
+<property name='getRXTresholdEvent'><description>-varsa- set edilmiş RXTresholdEvent&apos;ını gösterir</description>
 </property>
-<property name='TXTreshold'><acl/><description></description>
+<property name='TXTreshold'><description/>
 </property>
-<property name='setTXTresholdEvent'><description>0&apos;dan farklı bir RXTreshold kadar byte gönderilince işletilecek bir COMAR event&apos;ı set edilir</description><acl/>
+<property name='setTXTresholdEvent'><description>0&apos;dan farklı bir RXTreshold kadar byte gönderilince işletilecek bir COMAR event&apos;ı set edilir</description>
 </property>
-<property name='getTXTresholdEvent'><description>-varsa- set edilmiş TXTreshold&apos;ını gösterir</description><acl/>
+<property name='getTXTresholdEvent'><description>-varsa- set edilmiş TXTreshold&apos;ını gösterir</description>
 </property>
 <property name='LinkStatus'><description>Bağlantının mevcut durumunu gösterir..
 
 UP	: up, up
-DOWN	: down da down işte.</description><acl/>
+DOWN	: down da down işte.</description>
 </property>
 <property name='MediaStatus'><description>Bağlantıyı sağlayan fiziksel katmanın durumunu belirtir..
 
 ONLINE	: Bağlı..
 READY	: Bağlantı için hazır..
-FAULT	: Cihaz bağlı değil, power-off durumunda vs.</description><acl/>
+FAULT	: Cihaz bağlı değil, power-off durumunda vs.</description>
 </property>
 <property name='LinkType'><description>Bağlantı türünü belirtir..
 
@@ -152,13 +152,14 @@ CRC32</description><acl/>
 </property>
 <property name='remoteAddressType'><description>Karşı tarafın adres türünü belirler. Sadece PTP bağlantılarda anlamlıdır.</description><acl/>
 </property>
-<property name='operMode'><description>PHY&apos;nin operational modunu belirler..
+<property name='operMode'><acl/><description>PHY&apos;nin operational modunu belirler..
 
 CONNECT
 LISTEN
 CONNECTBACK
 CONNECTFORWARD
-ONLINE</description><acl/>
+ONLINE
+IDLE</description>
 </property>
 <property name='totalRXBytes'><description>PHY oluşturulduğundan bu yana alınan veri miktarını byte cinsinden tutar.</description><acl/>
 </property>
@@ -170,8 +171,6 @@ ONLINE</description><acl/>
 
 </object>
 <object name='NIC'><description>Bu bileşen ise PHY üzerinden veri taşınabilmesi amacuyla belirlenen protokoller için SAP görevini yerine getirir. Her zaman bir PHY üzerinde yer alırlar. Bazı cihazlar PHY ve NIC bileşenlerini birlikte sunabilirler. Bir NIC bileşeni her zaman tek bir PHY üzerinde yer alır, bir PHY de her zaman tek bir NIC ile bağlanır.</description><acl/>
-<method name='dstAddress'><description>Karşı ucun adresi. PTP end-point (hostAddrObjet)</description><inputs/><acl/>
-</method>
 <property name='Identifier'><description>NIC&apos;in tanımlayıcısını saklar.</description><acl/>
 </property>
 <property name='Provider'><description>NIC&apos;i neyin provide ettiğini saklar.</description><acl/>
@@ -207,7 +206,12 @@ DEFAULT			- No optimizasyon.</description><acl/>
 </property>
 <property name='acceptedProtos'><acl/><description>Cihaza uygulanabilecek protokolleri gösterir. Protokol isimleri IANA standardında belirtildiği gibidir. Uyum için versiyon ifade eden &quot;v&quot; harfi dışında tüm harfleri büyük yazılırlar.</description>
 </property>
-<property name='currentProtos'><description>Cihzın üzerinde o anda geçerli olan protokollerdir. Protokol isimleri IANA standardında belirtildiği gibidir. Uyum için versiyon ifade eden &quot;v&quot; harfi dışında tüm harfleri büyük yazılırlar.</description><acl/>
+<property name='currentProtos'><acl/><description>Cihazın üzerinde o anda geçerli olan protokollerdir. Protokol isimleri IANA standardında belirtildiği gibidir. Uyum için versiyon ifade eden &quot;v&quot; harfi dışında tüm harfleri büyük yazılırlar.</description>
+</property>
+<property name='acceptAutoConf'><acl/><description>NIC cihazının otomatik konfigurasyon kabul edip etmediğini belirler. 
+obj.acceptAutoconf[&quot;protocol&quot;] şeklinde kullanılır. protocol, acceptedProtos değerine uygun olmalıdır.
+Bu property, nesnenin otomatik konfigurasyonunu sağlamaz, sadece bunun mümkün olup olmadığını ifade eder. 
+Geriye dönen değerler, bu iş için kullanılabilecek protokollerin bir listesini gösterir.</description>
 </property>
 <property name='ARPType'><description>Cihazın kabul ettiği arp tiplerini gösterir. Bu property ile cihazın türü tespit edilmeye çalışılmamalıdır.
 
@@ -227,18 +231,18 @@ HIPPI 	- (HIPPI)
 IRDA	- (IrLAP)
 X25 	- (generic X.25)</description><acl/>
 </property>
-<property name='outgoingSpeed'><acl/><description>Cihazın dışarıya giden hızını gösterir. Bit/sn</description>
+<property name='outgoingSpeed'><acl><rule><chain>User</chain><policy>Read only</policy><value>all</value></rule><rule><chain>Group</chain><policy>Allow</policy><value>netadmin</value></rule></acl><description>Cihazın dışarıya giden hızını gösterir. Bit/sn</description>
 </property>
 <property name='incomingSpeed'><acl/><description>Cihazın içeriye giren hızını gösterir. Bit/sn</description>
 </property>
-<property name='networkId'><acl/><description></description>
+<property name='networkId'><acl/><description/><description/><description/>
 </property>
-<method name='availNetworks'><acl/><inputs/><description></description>
-</method>
-<method name='joinNetwork'><acl/><inputs/><description></description>
-</method>
-<property name='subNetworkId'><acl/><description></description>
+<property name='subNetworkId'><acl/><description/><description/>
 </property>
+<method name='availNetworks'><acl/><inputs/><description>Bu NIC ile erişilebilecek kablo seviyesi ağları gösterir.</description><description>Bu NIC ile erişilebilecek kablo seviyesi ağları gösterir.</description><description/><description/><description>Bağlanılabilecek networkların bir listesini döndürür. Liste, bir ARRAY&apos;dan ibarettir.</description><description>Bağlanılabilecek networkların bir listesini döndürür. Liste, bir ARRAY&apos;dan ibarettir.</description><description>Bağlanılabilecek networkların bir listesini döndürür. Liste, bir ARRAY&apos;dan ibarettir.</description><description/><description/>
+</method>
+<method name='joinNetwork'><acl/><inputs/><description/><description/><description/><description/><description/>
+</method>
 <property name='loginModel'><acl/><description>Used Login Model. See, usableLoginModels</description>
 </property>
 <property name='usableLoginModels'><acl/><description>Kullanılabilir Login türleri.
@@ -256,9 +260,9 @@ EAP-TLS
 EAP-TTLS
 EAP-PEAP</description>
 </property>
-<property name='loginUserInfo'><acl/><description></description>
+<property name='loginUserInfo'><acl/><description/><description></description>
 </property>
-<property name='loginUserInfoProps'><acl/><description></description>
+<property name='loginUserInfoProps'><acl/><description/><description></description>
 </property>
 <property name='cryptType'><acl/><description>Eğer, cihaz basit bir encryption sunuyorsa, bu değer, hangi encrypt yönteminin kullanılacağını belirtir. see usableCryptTypes</description>
 </property>
@@ -272,12 +276,17 @@ Eğer, NIC Cyrpt desteği vermiyorsa bu property boş olmalıdır. NIC&apos;leri
 </property>
 <property name='cryptKey'><acl/><description>cryptType bağlı olarak, kullanılacak cryptKey&apos;ini ifade eder.</description>
 </property>
-<property name='RASLoginModels'><acl/><description>RAS modu için Kullanılabilir Login türleri.
+<property name='RASLoginModel'><acl/><description></description>
+</property>
+<property name='RASLoginUsableModels'><acl/><description>RAS modu için Kullanılabilir Login türleri.
+
+NONE		: Bu aygıt, RAS modunu desteklemiyor.
 
 TERMINAL		: Terminal doğrulama, send user[@realm], passwd
 NTLM		: Win NTLM Auth.
 PAP			: PAP
-CHAPv2		: MS-CHAP 
+CHAP		: CHAP
+CHAPv2		: MS-CHAPv2
 RSA-KEY-xxx	: RSA Public Key. xxx = Bits.. 
 DSA-KEY-xxx	: RSA Public Key. xxx = Bits..
 SSL-CERT		: SSL Certificate Authentication. 
@@ -285,7 +294,8 @@ EAP-MD5		:
 EAP-SIM
 EAP-TLS
 EAP-TTLS
-EAP-PEAP</description>
+EAP-PEAP
+</description>
 </property>
 <property name='RASLoginUserDB'><acl/><description>RADIUS
 PAM
@@ -303,48 +313,89 @@ SASL		: USE SASL
 PAM			: USE PAM.
 PRIVATE		: Özel veritabanı. Bu durumda, userDB* komutları kullanılarak kullanıcılar işlenir.</description>
 </property>
-<method name='userDBAdd'><acl/><inputs/><description></description>
+<method name='userDBAdd'><acl/><inputs/><description/><description/>
 </method>
-<method name='userDBCheck'><acl/><inputs/><description></description>
+<method name='userDBCheck'><acl/><inputs/><description/><description/>
 </method>
-<method name='userDBUpdate'><acl/><inputs/><description></description>
+<method name='userDBUpdate'><acl/><inputs/><description/><description/>
 </method>
-<method name='userDBDel'><acl/><inputs/><description></description>
+<method name='userDBDel'><acl/><inputs/><description/><description/><description/>
 </method>
-<method name='userDBProps'><acl/><inputs/><description></description>
+<method name='userDBProps'><acl/><inputs/><description/><description/>
 </method>
-<method name='userDBList'><acl/><inputs><parameter name='filter'/><parameter name='first'/><parameter name='max'/></inputs><description></description>
+<method name='userDBList'><acl/><inputs><parameter name='filter'/><parameter name='first'/><parameter name='max'/></inputs><description/><description/><description/>
 </method>
+<property name='callBackMode'><acl/><description/>
+</property>
+<property name='callBackTo'><acl/><description/>
+</property>
+<property name='remoteAddr'><acl/><description/>
+</property>
+<property name='remoteAddrType'><acl/><description>TYPENAME  = &quot;IPv4&quot;, &quot;PSTN&quot;, &quot;IPv6&quot; ...
+TYPEFORMAT = COMARExtraProp Format..
+</description>
+</property>
+<property name='possibleRemoteAddrs'><acl/><description>3 Aşamalı bir array olarak, kullanılabilir adreslerin bir listesini sunar.
+
+PROVIDER		 - string-unicode
+       AREA	                 - string-unicode
+            ADDRESS	 - string- remoteAddrType
+
+</description>
+</property>
+<method name='createVNetwork'><acl/><inputs/><description></description>
+</method>
+<method name='deleteVNetwork'><acl/><inputs/><description></description>
+</method>
+<property name='VNetworks'><acl/><description></description>
+</property>
+<property name='interfaceName'><acl/><description/>
+</property>
+<property name='interfaceIndex'><acl/><description/>
+</property>
+<property name='getExtProps'><acl/><description></description>
+</property>
+<property name='setExtProp'><acl/><description></description>
+</property>
 
 
 </object>
 <object name='SKBInterface'><acl/><description>SKB Cihazlarının, tespit edilmesi durumunda, PHY/NIC&apos;lerinin oluşturulması için kullanılır. 
 NIC/PHY providerları, bu nesneleri provide ederek, hardware vs. betiklerinde bulunan SKB Cihazlarının ele alnabilmesini sağlarlar.</description>
-<method name='addSKBDev'><acl/><inputs/><description></description>
+<method name='addSKBNICDev'><acl/><inputs/><description/>
 </method>
-<method name='delSKBDev'><acl/><inputs/><description></description>
+<method name='delSKBNICDev'><acl/><inputs/><description/>
 </method>
-<method name='chkSKBDev'><acl/><inputs/><description></description>
+<method name='chkSKBNICDev'><acl/><inputs/><description/>
+</method>
+<method name='addSKBPHYDev'><acl/><inputs/><description/>
+</method>
+<method name='delSKBPHYDev'><acl/><inputs/><description/>
+</method>
+<method name='chkSKBPHYDev'><acl/><inputs/><description/>
 </method>
 
 
 </object>
 <object name='FIFOInterface'><acl/><description>Device File türünde (/dev/ttyS0, seri port, paralel port vs.) network cihazlarının sisteme bağlanabilmesi için kullanılır.</description>
-<method name='addFIFODev'><acl/><inputs/><description></description>
+<method name='addFIFOPHYDev'><acl/><inputs/><description/>
 </method>
-<method name='delFIFODev'><acl/><inputs/><description></description>
+<method name='delFIFOPHYDev'><acl/><inputs/><description/>
 </method>
-<method name='chkFIFODev'><acl/><inputs/><description></description>
+<method name='chkFIFOPHYDev'><acl/><inputs/><description/>
 </method>
 
 
 </object>
-<object name='phyNetworks'><acl><rule><chain>User</chain><policy>Deny</policy><quick/></rule></acl><description>NIC&apos;lerin bağlı olduğu networkları, Layer 1/2 seviyesinde ifade eder.</description>
+<object name='phyVNetworks'><acl><rule><chain>User</chain><policy>Deny</policy><quick/></rule></acl><description>Bazı işlemlerde (packet filtering etc.) yardımcı olmak üzere Fiziksel seviyede tanımlanan
+Fiziksel Host adreslerinin listesinden ibaret olan sanal Layer 1 networklardır. 
+Bunlar, sadece, Layer 1 üzerindeki bazı hostları gruplamak için kullanılırlar. 
+</description>
 <method name='new'><acl/><inputs/><description></description>
 </method>
 <property name='name'><acl/><description>Network&apos;un adı</description>
 </property>
-<property name='NIC'><acl/><description></description>
+<property name='network'><acl/><description></description>
 </property>
 <property name='friendlyName'><acl/><description></description>
 </property>
@@ -352,28 +403,19 @@ NIC/PHY providerları, bu nesneleri provide ederek, hardware vs. betiklerinde bu
 </property>
 <method name='hostIsReachable'><acl/><inputs/><description></description>
 </method>
-<method name='getForNIC'><acl><rule><chain>Caller</chain><policy>Allow</policy><quick/><value>all</value></rule></acl><inputs/><description></description>
+<property name='definedHostList'><acl/><description></description>
+</property>
+<method name='addHost'><acl/><inputs/><description></description>
+</method>
+<method name='delHost'><acl/><inputs/><description></description>
+</method>
+<method name='isMember'><acl/><inputs/><description></description>
 </method>
 
 
 </object>
-<object name='phyHosts'><acl/><description></description>
-<property name='name'><acl/><description></description>
-</property>
-<property name='ARPType'><acl/><description></description>
-</property>
-<property name='address'><acl/><description></description>
-</property>
-<method name='getFromName'><acl/><inputs><parameter name='name'/><parameter name='networkid'/></inputs><description></description>
-</method>
-<property name='new'><acl/><description></description>
-</property>
-<property name='networkid'><acl/><description></description>
-</property>
-
-
-</object>
-<method name='newVirtualNIC'><acl/><inputs/><description>Dialup bağlantılara benzer şekilde, bir NIC&apos;in yeni bir sanal kopyasını oluşturmak için kullanılır. Bu kavramı &quot;virtual interface&quot; kavramı ile karıştırmamak önemlidir.</description>
+<method name='newVirtualNIC'><acl/><inputs/><description>Dialup bağlantılara benzer şekilde, bir NIC&apos;in yeni bir sanal kopyasını oluşturmak için kullanılır. 
+Bu kavramı &quot;virtual interface&quot; kavramı ile karıştırmamak önemlidir.</description>
 </method>
 
 
@@ -381,8 +423,8 @@ NIC/PHY providerları, bu nesneleri provide ederek, hardware vs. betiklerinde bu
 
 
 </object>
-<object name='Boot'><acl/><description/>
-<method name='start'><inputs/><acl/><description></description>
+<object name='Boot'><acl/><description/><description/><description/><description/>
+<method name='start'><inputs/><acl/>
 </method>
 
 

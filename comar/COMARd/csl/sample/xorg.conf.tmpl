@@ -7,6 +7,7 @@ Section "Module"
     Load        "freetype"
     Load       "glx"
     Load       "dri"
+    $EXTRAMODS
 EndSection
 
 Section "dri"
@@ -48,6 +49,7 @@ Section "InputDevice"
     Driver "$MOUSEDRV"
     Option "Protocol"    "$MOUSEPROTO"
     Option "Device"      "$MOUSEDEV"
+	$MOUSEOPTS
     Option "ZAxisMapping"	"4 5"	
     Option "Buttons"	 "5"
 EndSection
@@ -55,7 +57,7 @@ EndSection
 
 Section "Device"
     Identifier  "vcard"
-    Driver      "$DRIVER"
+    Driver      $DRIVER
     Option		"RenderAccel" "true"
 EndSection
 

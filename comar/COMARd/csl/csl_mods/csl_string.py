@@ -135,9 +135,9 @@ class API:
 					for i in arr:
 						if i != "":
 							ret[x] = CSLValue("string", i)
-							print "split:", x, "=", i,
+							#print "split:", x, "=", i,
 							x += 1
-					print "SPLIT Return:", ret, a, arr,prms["separator"].toString()
+					#print "SPLIT Return:", ret, a, arr,prms["separator"].toString()
 					return CSLValue("array", ret)
 				print "Incorrect split:", prms
 				

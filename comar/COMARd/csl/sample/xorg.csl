@@ -138,7 +138,7 @@ method ConfigureDisplay(dpi=90) {
 			hsyncend = l[5];
 			htotal = int(string=l[6]);
 			hsync = dotclk / htotal;
-			debugout(value="L2:"+l[2]+"MODE:"+val+" CLK:"+dotclk+"HTOT:"+htotal+" HSYNC:"+hsync);
+			#debugout(value="L2:"+l[2]+"MODE:"+val+" CLK:"+dotclk+"HTOT:"+htotal+" HSYNC:"+hsync);
 			if (arrayhaskey(array=vals, key=x) == 0) {
 				if (hsync <= maxkhz) {
 					vals[x] = '"'+x+"x"+y+'"';					

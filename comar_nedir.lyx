@@ -154,7 +154,7 @@ Bilgi\SpecialChar ~
 Gerekliliði):
 \layout Standard
 
-Kullanýcýlar uygulamalarý birbirleri ile uyumlu þekilde çalýltýrabilmek
+Kullanýcýlar uygulamalarý birbirleri ile uyumlu þekilde çalýþtýrabilmek
  için bu uygulamalara özel bilgiye sahip olmak zorunda kalmaktadýr.
  Bu da sistemi verimli bir þekilde kullanabilmeleri için zaman harcayarak
  araþtýrma yapmalarýna, çoðunlukla yapmak istedikleri iþi çok zorlanarak
@@ -279,8 +279,8 @@ Uygulama geliþtiricisi
 Sistem yöneticisi
 \series default 
  için sistemin tüm yapýlandýrmasýnýn standart bir altyapý üzerine oturtulmasý,
- bununla beraber beraber yapýlandýrmanýn kolayca taþýnmasý, kullanýcý seçimlerin
-e baðlý profillerin oluþturulmasý ve yönetilmesi de kolay olacaktýr.
+ bununla beraber yapýlandýrmanýn kolayca taþýnmasý, kullanýcý seçimlerine
+ baðlý profillerin oluþturulmasý ve yönetilmesi de kolay olacaktýr.
 \layout Section
 
 ÇOMAR

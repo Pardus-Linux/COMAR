@@ -534,8 +534,7 @@ class	CSLCapsule:
 		if hasattr(comarVal, "execResult"):
 			if comarVal.execResult != 0:
 				return CSLValue(typeid = "NULL", value = None)				
-			comarVal = comarVal.returnValue
-			
+			comarVal = comarVal.returnValue			
 		if comarVal == None:
 			return CSLValue(typeid = "NULL", value = None)
 		if comarVal.type == "string":
@@ -954,7 +953,8 @@ class	CSLCapsule:
 		return self.COMARtoCSLValue(rv)
 
 	def	callExtPropertyGet(self, name = "", index = None):
-		self.debug(DEBUG_CALL, "ExtPropertyGet:", name, index)
+		self.debug(DEBUG_CALL, "callExtPropertyGet:", name, index)
+		#rv = 
 		return CSLValue("NULL", None)
 
 	def	callExtPropertySet(self, name = "", index = None , localTbl = {}, value = None):
@@ -974,13 +974,21 @@ class	CSLCapsule:
 		plist = {}
 		for i in prms.keys():
 			plist[i] = self.CSLtoCOMARValue(self.CSLCheckVariable(prms[i], locals))
-		cobj = self.CSLtoCOMARValue(obj)
-		print "Obj '%s'->'%s' called for '%s %s' with %s" % (obj, cobj, Type, name, prms)
+		if obj:
+			cobj = self.CSLtoCOMARValue(obj)
+		else:
+			cobj = None
+		if index:
+			inx = self.CSLCheckVariable(index[0])
+		else:
+			inx = None
+		
 		if value:
 			val = self.CSLtoCOMARValue(value)
 		else:
 			val = None
-		rv = self.ExtObjCall(obj = cobj, Type=Type, name = name, index = index, prms = plist, value = val)
+		print "Obj '%s'->'%s' called for '%s %s[%s]' with %s = %s" % (obj, cobj, Type, name, inx, prms, val)
+		rv = self.ExtObjCall(obj = cobj, Type=Type, name = name, index = inx, prms = plist, value = val)
 		print "OBJ RetVal:", rv
 		return self.COMARtoCSLValue(rv)
 
@@ -993,6 +1001,21 @@ class	CSLCapsule:
 		val = self.CSLCheckVariable(tree.data["exp"], localTbl)
 		self.debug(DEBUG_LET, "EXP:", varName, "=", tree.data["exp"], "->", val.type)
 
+		if varName[0:2] == '$A':			
+			# Check a indexed omcall?
+			if varName.find(".") != -1:
+				print "A OBJCALL:", varName
+				xx = 0
+				while varName.find(".") != -1:
+					x = varName.find(".")
+					root = varName[:x]
+					entry = varName[x+1:]
+					root = self.CSLCheckVariable(root, localTbl)
+					print "INXOMCALL RESOLVE:", root, root.type, entry
+					localTbl["vars"]["tmp$$"] = root
+					varName = "tmp$$." + entry
+					break
+					
 		if varName[0:2] == '$A':
 			cont 		= 1
 			arrDesc 	= self.Tbl['A'][varName]
@@ -1061,7 +1084,7 @@ class	CSLCapsule:
 								print "Go ObjCall:", fname,
 								self.objCall(obj = obj, Type="propertyset", name = fname, index = inx, prms = {}, locals = localTbl, value=val)
 				else:
-					inx = self.CSLCheckVariable(arrIndexes[0], localTbl)
+					inx = self.CSLCheckVariable(arrIndexes[0], localTbl)					
 					self.callExtPropertySet(name = varName, index = inx , localTbl = localTbl, value = val)
 
 			del val
@@ -1368,7 +1391,13 @@ class	CSLCapsule:
 							tree = tree.next
 					else:
 						tree = tree.next
-
+				elif tree.type == "register":
+					inxval = self.CSLCheckVariable(tree.data["objname"], localTbl)
+					if inxval.type == "numeric" or inxval.type == "string":
+						inx = inxval.toString()
+						self.debug(DEBUG_FATAL, "REGISTER:", inx)
+						self.nsAPI.OMAPI.objectRegister(object = self.callerInfo, omnode = "", index = inx)
+					tree = tree.next
 				elif tree.type == "break":
 					localTbl['status'] = 1
 					break
@@ -1531,21 +1560,29 @@ class	CSLCapsule:
 			return CSLValue("NULL", None)
 		if isinstance(id, CSLValue):
 			return id
+			
+		if id[0:2] == '$A':			
+			# Check a indexed omcall?
+			
+			if id.find(".") != -1:
+				print "A OBJCALL:", id
+				xx = 0
+				while id.find(".") != -1:
+					x = id.find(".")
+					root = id[:x]
+					entry = id[x+1:]
+					root = self.CSLCheckVariable(root, localTbl)
+					print "INXOMCALL RESOLVE:", root, root.type, entry					
+					id = "$Itmp$"
+					
+					self.Tbl['I']["$Itmp$"] = "tmp$$." + entry
+					localTbl["vars"]["tmp$$"] = root
+					break
+
 		if id[0:2] == "$A":
 			# array or property value..
-			if id.find(".") != -1:
-				methodPart = id[id.find(".")+1:]
-				#id = id[:id.find(".")]
-			else:
-				methodPart = None
 			a = self.Tbl['A'][id]['id']
-			if a[0:2] == '$A':
-				a = self.Tbl['A'][a]['id']
-				inx = self.Tbl['A'][a]['prmlist'][0]
-				if inx[0] == "$":
-					inx = CSLCheckVariable(inx, localTbl)
-				a = a + "[" + inx + "]"
-
+			methodName = None
 			if a[0] != '$':
 				if not localTbl["vars"].has_key(a):
 					# identifier not defined as local var.
@@ -1572,7 +1609,8 @@ class	CSLCapsule:
 								a = a + "[" + arrkeyfix(self.Tbl['A'][id]['prmlist'][0]) + "]." + methodName
 								ret = self.callExtPropertyGet(name = a, index = arrkeyfix(self.Tbl['A'][id]['prmlist'][0]))
 							else:
-								ret = self.callExtPropertyGet(name = a, index = arrkeyfix(self.Tbl['A'][id]['prmlist'][0]))
+								#ret = self.callExtPropertyGet(name = a, index = arrkeyfix(self.Tbl['A'][id]['prmlist'][0]))
+								ret = self.objCall(obj = None, Type = "propertyget", name = a, index = self.Tbl['A'][id]['prmlist'])
 							return ret
 					else:
 						ret = self.callPropertyGet(name = a, index = self.Tbl['A'][id]['prmlist'][0])
@@ -2209,9 +2247,37 @@ class	COMARObjHook:
 				print "CSL->COMAR PRM:", p, v
 				rpc.addPropertyMulti("parameter", p, prms[p])
 		else:
-			rpc.addPropertyMulti("parameter", "index", index)
-			if Type == "propertyset":
-				rpc.addPropertyMulti("parameter", "value", value)
+			if obj == None:			
+				ctype = self.cAPI.OMAPI.getOMNodeType(name)
+				if ctype == None:
+					return self.cv.COMARRetVal(1, self.cv.null_create())
+				if ctype[1] == "OBJECT":
+					if Type == "propertyset":
+						# An OM Object can't set !!
+						return self.cv.COMARRetVal(1, self.cv.null_create())
+					print "A INDEXED OBJ CALL CAPTURED:", name, ctype, 
+					if index != None:
+						ix = name + "[" + index.toString() + "]"
+						rpc["name"] = ix
+						print "CSLRE: Before call:", ix
+					else:
+						# Himm, this call return list of objects.. We can return directly
+						inxs = self.cAPI.OMAPI.objectGetList(name)
+						x = 0
+						ret = self.cv.array_create();
+						for i in inxs:
+							v = self.cv.string_create(i)
+							self.cv.array_additem(ret, "%03d" % x, 0, v)
+							x += 1							
+						return self.cv.COMARRetVal(0, ret)
+				else:
+					rpc.addPropertyMulti("parameter", "index", index)
+				if Type == "propertyset":
+					rpc.addPropertyMulti("parameter", "value", value)
+			else:
+				rpc.addPropertyMulti("parameter", "index", index)
+				if Type == "propertyset":
+					rpc.addPropertyMulti("parameter", "value", value)
 
 		print os.getpid(), self.procHelper.modName, self.procHelper.myPID, "CSLOBJHOOK CALL INFO:", rpc.xml
 		self.procHelper.sendParentCommand(cmd, self.procHelper.myPID, 0, rpc.toString())
@@ -2224,7 +2290,7 @@ class	COMARObjHook:
 				data = cmd[3]
 				if command == "TRTU_TAE":
 					st = int(data[:data.find(" ")])
-					if st == 0:
+					if st == 0 and data != None:
 						val = self.cv.load_value_xml(data[data.find(" ")+1:])
 					else:
 						val = self.cv.null_create()

@@ -77,8 +77,9 @@ class TAcallSession:
 	def execute(self):
 		print "TACALL.execute: EXECUTE STARTED", OM_MGR, OM_MGR.dbhelper, OM_MGR.dbhelper.dbSocket, "PRMS:", self.c_prms
 		if self.mode == "OBJCALL":
-			print "Execute ObjCall:", self.c_object.data, self.runit, self.c_prms
+			print "Execute ObjCall:", self.c_object.data, self.runit, self.c_prms,
 			objkeys = OM_MGR.getOBJList(self.c_object)			
+			print objkeys
 			for objkey in objkeys:
 				hnd = OM_MGR.getOBJHandler(objkey)
 				print "Return hook:", hnd
@@ -155,11 +156,107 @@ class TAcallSession:
 		elif self.mode == "INDEXEDOM":
 			return "1 <null/>"
 		elif self.mode == "OMCALL":
+			omtype = OM_MGR.getOMNodeType(self.runit)
+			if (omtype[0] == 1 and omtype[1] != "INVALID") or (omtype[1] == "OBJECT"):
+				# indexed OMCALL
+				print "Indexed OMCALL:", self.runit, self.c_prms, omtype
+				# omtype: (1, "OBJECT", nname, None, inxpart)
+				if omtype[1] == "OBJECT" and omtype[0] == 0:
+					rx = COMARAPI.COMARValue.array_create()
+					objs = OM_MGR.objectGetList(self.runit)					
+					print "objs:", objs
+					rc = 0
+					for i in objs:						
+						COMARAPI.COMARValue.array_additem(rx, str(rc), 0, COMARAPI.COMARValue.string_create(i))
+						rc += 1
+					return "0 %s" % COMARAPI.COMARValue.dump_value_xml(rx)
+				elif omtype[1] == "OBJECT" and omtype[0] == 1:
+					objkey = OM_MGR.objectGetImmediate(omtype[2], omtype[4])
+					print "IMMEDIATE OBJECT:", objkey
+					rx = COMARAPI.COMARValue.COMARValue(type="object", data=objkey)
+					return "0 %s" % COMARAPI.COMARValue.dump_value_xml(rx)					
+				else:
+					objkey = OM_MGR.objectGetImmediate(omtype[2], omtype[4])
+				
+				
+				hnd = OM_MGR.getOBJHandler(objkey)
+				print "Return hook:", hnd
+				retStack = {}
+				rv = "1 <null/>"
+				retobj = COMARAPI.COMARValue.COMARValue(type=object, data="")
+				hook = hnd[2]
+				ci = hnd[1]
+				print "\tINDEXE OBJCALL HOOK '%s': %s :" % (self.runit, hook.__class__), hook, ci.omkey, hook[2]
+				ret = self.executeOne(ci.omkey, hook, hnd, self.c_name, self.c_type, self.c_prms)
+				print "INDEXED HOOK ITEM ADD:", ret
+				retStack[ret["PID"]] = ret["key"]
+				
+				save = self.procHelper.cmdHandler	
+				cont = 1
+				self.waitFor = retStack
+				self.procHelper.addSessionCommand([ "TRSU_FIN", "TNSU_GET", "TNSU_GSID", "LNTU_KILL", "TRSU_SOBJ" ])
+				self.procHelper.cmdHandler = self.execCmdHandler
+				usepid = self.procHelper.myPID
+				for i in retStack.keys():
+					print "START OBJCALL ITEM:", i
+					#self.procHelper.registerChild(i, self.procHelper.myPID)
+					self.procHelper.sendCommand(child = i, command = "TNTU_EXEC", PID = usepid, TID = 0, data = None)
+				while cont:
+					pv = self.procHelper.ProcessIO()
+					print "A OBJCALL Call Captured ?", pv
+					if len(self.waitFor) == 0:
+						break
+					if pv == -2:
+						cont = 0
+				#print "\tCollected retvals:", self.retVal
+				rx = None					
+				retobj = COMARAPI.COMARValue.COMARValue(type="object", data="")
+				if len(self.retVal.keys()) > 1:						
+					rc = 0
+					for i in self.retVal.keys():
+						s = self.retVal[i]
+						x = s.find(" ")
+						stat = int(s[:x])
+						if stat == 0:
+							res = s[x+1:]
+							val = COMARAPI.COMARValue.load_value_xml(res)
+							if val.type == "object":
+								retobj = OM_MGR.objectMerge(retobj, val)									
+							else:
+								if rx == None:
+									rx = COMARAPI.COMARValue.array_create()
+								COMARAPI.COMARValue.array_additem(rx, str(rc), 0, val)
+								
+							rc += 1				
+				else:
+					s = self.retVal[self.retVal.keys()[0]]
+					x = s.find(" ")
+					stat = int(s[:x])						
+					if stat == 0:
+						res = s[x+1:]
+						print "TACALL RES BUILDER ADD: ", res, type(res)
+						if res != 'None':							
+							val = COMARAPI.COMARValue.load_value_xml(res)
+							if val.type == "object":
+								retobj = val
+							else:
+								rx = val
+				if rx or len(retobj.data) > 0:						
+					if len(retobj.data) > 0:
+						if rx:
+							print "WARNING: Mixing of Object/Data retvals. Data retvals ignored !"							
+						rv = "0 %s" % COMARAPI.COMARValue.dump_value_xml(retobj)
+					else:
+						rv = "0 %s" % COMARAPI.COMARValue.dump_value_xml(rx)
+				else:
+					rv = "0 %s" % COMARAPI.COMARValue.dump_value_xml(COMARAPI.COMARValue.null_create())
+				return rv	
 
 			omattrs = OM_MGR.getOMProperties(self.runit)
+			
 			if omattrs == None:
-				print "TACALL EXECUTE: Invalid call:", self.runit
-				self.procHelper.exit()
+				print "TACALL EXECUTE OMCALL: Invalid call:", self.runit
+				return "1 <null/>"					
 			acl_check = OM_MGR.checkAccess(self.callerInfo, self.runit)
 			if "usecontainer" in omattrs:
 				print "Exec Session: Require a container.."

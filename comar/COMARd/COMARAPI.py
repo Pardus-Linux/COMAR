@@ -109,10 +109,10 @@ class COMARIAPI:
 		#	os.makedirs(dbpath)
 		return dbpath
 	def getObjectFromKey(self, key=""):
-		try:
-			fd = open(comar_global.comar_instance_data + "/instance/reginfo_" + key, "r")
-		except:
-			return None
+		#try:
+		fd = open(comar_global.comar_instance_data + "/instance/reginfo_" + key, "r")
+		#except:
+		#	return None
 		buf = fd.read()
 		fd.close()
 		cinfo = callerInfoObject()
@@ -256,10 +256,11 @@ class COMARCAPI:
 
 	def call(self, method = "", prms = {}, callerInfo = None):
 		""" Primary API call entry for installable API funcs """
-		if self.api_entries.has_key(method):
+		if self.api_entries.has_key(method) and self.api_entries[method]["call"]:
 			ret = self.api_entries[method]["call"](method, prms, checkPerms, callerInfo)
 			return ret
 		else:
+			print "Invalid CAPI Call:", method
 			return None
 
 
@@ -517,21 +518,57 @@ class OM_MANAGER:
 		node = n[1]		
 		objpart   = node[:node.rfind(".")]
 		entrypart = node[node.rfind(".")+1:]		
+		io = 0
 		print "CHECK OM NODE:", node, objpart, entrypart
 		if objpart[-1] == "]":
 			#NS:node.object[inx].entry format..
+			print "NS:node.object[inx].entry format..", objpart, entrypart
+			
 			if entrypart.find("[") != -1:
 				return (0, "INVALID")
+			if objpart.find("]") != objpart.rfind("]") or objpart.find("[") != objpart.rfind("["):
+				return (0, "INVALID")
+			inxpart = objpart[objpart.find("[")+1:objpart.find("]")]
+			objname = objpart[:objpart.find("[")]
+			io = 1
+			print "LOOK OBJ", objname
+			if self.OMS.has_key(NS):			
+				if hasattr(self.OMS[NS], "getOMNodeType"):
+					objtype = self.OMS[NS].getOMNodeType(objname)
+					if objtype == "OBJECT":
+						en = self.OMS[NS].getOMNodeType(objname+"."+entrypart)
+						if en == "PROPERTY" or en == "METHOD":
+							return (1, en, NS + ":" +objname, entrypart, inxpart)
+						else:
+							return (0, "INVALID")
+			return (0, "INVALID")
 			
 		elif entrypart[-1] == "]":
-			#NS:node.object[inx] Format..
-			#inxpart = 
-			pass
-		else self.OMS.has_key(NS):			
+			#NS:node.object[inx] format
+			print "NS:node.object[inx] format", objpart, entrypart
+			if objpart.find("[") != -1:
+				return (0, "INVALID")
+			if entrypart.find("]") != entrypart.rfind("]") or entrypart.find("[") != entrypart.rfind("["):
+				return (0, "INVALID")
+			inxpart = entrypart[entrypart.find("[")+1:entrypart.find("]")]
+			entryname = entrypart[:entrypart.find("[")]
+			objname = objpart
+			io = 1
+			print "LOOK ENTRY:", objname + "->" + entryname
+			if self.OMS.has_key(NS):			
+				if hasattr(self.OMS[NS], "getOMNodeType"):
+					nname = objname + "." + entryname
+					objtype = self.OMS[NS].getOMNodeType(nname)
+					if objtype == "OBJECT":												
+						return (1, "OBJECT", NS + ":" + nname, None, inxpart)
+					else:
+						return (1, "INVALID")
+			return (1, "INVALID")
+		elif self.OMS.has_key(NS):			
 			if hasattr(self.OMS[NS], "getOMNodeType"):
-				return (io, self.OMS[NS].getOMNodeType(node))
-			return (0, "INVALID")
-
+				return (io, self.OMS[NS].getOMNodeType(node))				
+		return (0, "INVALID")
+		
 	def getOMProperties(self, key):
 		n = []
 		if key.find(":") == -1:
@@ -550,7 +587,7 @@ class OM_MANAGER:
 		return OBJ_HOOKDRV.getInterpreter(langid)
 	def getOBJList(self, object):
 		lst = object.data.split("\n")
-		return lst
+		return lst		
 	def getOBJHandler(self, key):
 		t = OBJ_IAPI.getObjectFromKey(key)
 		cinfo = t[1]		
@@ -578,13 +615,23 @@ class OM_MANAGER:
 
 		
 	def objectRegister(self, object, omnode, index):
+		# object is callerinfo object..
+		if object.objid == "":
+			return 1
+		if omnode == "":
+			omnode = object.node[:object.node.rfind(".")]
+		
 		rec = self.dbhelper.dbRead(self.inxdb, omnode)
 		if rec == None or rec == "":
-			rec = index
+			rec = "\001"+index+"\001"
 		else:
-			rec += "\n" + index
+			if rec.find("\001" + index + "\001") != -1:				
+				return 1
+			rec += "\002\001" + index  + "\001"
+		print "OM OBJ INDEX REGISTER:", self.inxdb, omnode, index, object.objid
 		self.dbhelper.dbWrite(self.inxdb, omnode, rec)
 		self.dbhelper.dbWrite(self.inxdb, omnode + "!" + index, object.objid)		
+		return 0
 	def objectUnregister(self, omnode, index):
 		rec = self.dbhelper.dbRead(self.inxdb, omnode)
 		if rec != "" and rec != None:
@@ -600,14 +647,15 @@ class OM_MANAGER:
 		rec = self.dbhelper.dbRead(self.inxdb, omnode)
 		nr = []
 		if rec != "" and rec != None:
-			nr = rec.split("\n")			
+			n = rec.split("\002")
+			for i in n:
+				nr.append(i[1:len(i)-1])
 		return nr		
 	def objectGetImmediate(self, omnode, index):
 		rec = self.dbhelper.dbRead(self.inxdb, omnode + "!" + index)
 		if rec != "" and rec != None:
-			return rec
-			
-		return ""		
+			return rec			
+		return ""
 	def objectMerge(self, object, item):
 		if len(object.data):
 			object.data += "\n"
@@ -688,6 +736,7 @@ class COMARAPI:
 		#print "Module Dir:",dir(), DEFAULT_CAPI
 		self.IAPI 				= OBJ_IAPI				# COMAR Core Functions. saveValue etc.
 		self.CAPI 				= OBJ_CAPI				# Library functions for CSL.
+		self.OMAPI				= OBJ_OMMGR				# OM Manager.
 		self.checkPerms			= checkPerms			# checkPerms for function calls.
 		self.makeinstance 		= None
 		self.api_OBJHOOK 		= OBJ_HOOKDRV
@@ -726,3 +775,4 @@ class callerInfoObject:
 		self.runenv = "CSL"
 		self.TAData = None
 		self.objid = ""
+		self.omindex = ""

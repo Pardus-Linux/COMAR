@@ -189,7 +189,7 @@ cb_value(GtkCellRenderer *cell, const char *path, const char *new_val, OMAcl *ob
 }
 
 static void
-cb_inherit(GtkComboBox *combo, OMAcl *obj)
+cb_inherit(GtkComboClass *combo, OMAcl *obj)
 {
 	int act;
 	iks *x;

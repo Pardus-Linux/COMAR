@@ -349,9 +349,10 @@ class ConnectorModules(object):
 
 	def readConn(self, xPID):
 		for i in self.connectors.keys():
-			if self.connectors[i]["obj"].PID == xPID:
+			conn = self.connectors[i]["obj"]
+			if conn.PID == xPID:
 				#print "Receive from:", i, xPID
-				return self.connectors[i]["obj"].readData()
+				return conn.readData()				
 
 	def sendTarget(self, command, PID = 0, TID = 0, data = None):
 		pi = str(PID) + ":" + str(TID)
@@ -379,6 +380,7 @@ class ConnectorModules(object):
 	def fdNotHangup(self, fd):
 		r = 1
 		for i in self.connectors.keys():
+			#print "LOOK CONNFD:", fd, "OVER", i, self.connectors[i]["obj"].ReadFDs
 			if fd in self.connectors[i]["obj"].ReadFDs:
 				s = self.connectors[i]["obj"].IOChannel.cmdrpoll.poll(0)[0][1]
 				if s & select.POLLHUP:
@@ -616,12 +618,14 @@ class TAManager:
 						break
 					pos += 1
 				if dl > -1:
-					del self.del_que[pos]
+					del self.del_que[pos]					
 					print "TA Finished Normally:", item
+					del self.TAStack[key]
 				else:
 					TA_CHLDS.releaseChild(child=deadChild)
-					print "Try for reload transaction: ", self.TAStack[key].TTSID
-					self.loadFrom(key)
+					print "TODO: Try for reload transaction: ", self.TAStack[key].TTSID
+					del self.TAStack[key]
+					#self.loadFrom(key)
 
 	def	ttsid2TA(self, user, ttsid):
 		key = self.makettskey(ttsid, user)
@@ -780,24 +784,34 @@ class TAManager:
 	def fdNotHangup(self, fd):
 		r = 1
 		for i in self.TAStack.keys():
+			print "LOOK TAFD:", fd, "OVER", i, self.TAStack[i].rfds			
 			if fd in self.TAStack[i].rfds:
 				s = TA_CHLDS.PID2io(self.TAStack[i].TAPID).cmdrpoll.poll(0)[0][1]
 				#s = self.TAStack[i].IOChannel.cmdrpoll.poll(0)[0][1]
-				print "TA Checking,",i, s
+				#print "TA Checking,",i, s, select.POLLNVAL, select.POLLHUP
 				if s & select.POLLNVAL:
-					print "TAMGR: IOChannel", TA_CHLDS.PID2io(self.TAStack[i].TAPID).name, "for", self.TAStack[i].TTSID, "is invalid.."					
+					print "TAMGR: IOChannel", TA_CHLDS.PID2io(self.TAStack[i].TAPID).name, "for", self.TAStack[i].TTSID, "is invalid.."
 					try:
-						os.close(fd)
-						os.close(self.TAStack[i].IOChannel.cmd_rfile)
+						
+						self.RIP(self.TAStack[i].TAPID)						
+						try:
+							os.close(fd)
+							os.close(self.TAStack[i].IOChannel.cmd_wfile)
+						except:
+							print "Unable to close channel:", fd, self.ReadFDs
+							pass
 					except:
+						print "Unable to RIP TA:", self.TAStack[i].TAPID
 						pass
 					
 					r = 0
 				if s & (select.POLLHUP):
 					r = 0
-					try:
+					try:						
+						self.RIP(self.TAStack[i].TAPID)
 						os.close(fd)
 						os.close(self.TAStack[i].IOChannel.cmd_wfile)
+						
 					except:
 						pass
 				else:
@@ -1022,7 +1036,7 @@ PRE-ALPHA MESSAGE:
 	COMARAPI.CLASS_CHLDHELPER	= CHLDHELPER.childHelper
 	COMARAPI.OBJ_COMARValue		= COMARAPI.COMARValue
 	COMARAPI.OBJ_HOOKDRV  		= COMARAPI.OBJ_HOOK_DRV()
-	COMARAPI.OBJ_IAPI 			= COMARAPI.COMARIAPI()
+	COMARAPI.OBJ_IAPI 			= COMARAPI.COMARIAPI()	
 	capi = COMARAPI.COMARCAPI()
 	capi.init()
 	COMARAPI.OBJ_CAPI 			= capi
@@ -1057,7 +1071,7 @@ PRE-ALPHA MESSAGE:
 	
 	#OM_MGR.addObjHandlers(objhookClass)
 	COMARAPI.OBJ_OMMGR 			= OM_MGR
-	
+	CAPI.OMAPI                  = COMARAPI.OBJ_OMMGR
 	JOBSESS.OM_MGR = OM_MGR
 	JOBSESS.COMARAPI = CAPI
 

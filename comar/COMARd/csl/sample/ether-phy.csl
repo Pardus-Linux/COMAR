@@ -52,11 +52,8 @@ method New(over="") {
 		if (read) {
 			if (val.getfieldval(field = "link/") == "ether") {
 				ethName = over;
-				makeinstance ethobj, over;
-				
-				ret = ethobj.registerself(phyname=over);				
-				ethobj.LinkDevice = over;
-				debugout(value = ret);
+				makeinstance ethobj, over;				
+				ethobj.RegisterSelf(phyname=over);				
 				New = ethobj;
 				break;
 			}
@@ -73,10 +70,9 @@ method New(over="") {
 # Description:
 #  PHY Nesnesinin kendini OM'a register etmesini saglar.
 
-method registerself(phyname = "") { 
+method RegisterSelf() { 
 	instance ethName;
-	ethName = phyname;	
-	registerself = "I'm new ethernet:" + ethName;
+	register "Ethernet" + ethName.getnumright();	
 }
 
 method getFromLinkDev(device="") {
@@ -97,6 +93,9 @@ property LinkDevice {
 	get { 
 		instance ethName;
 		LinkDevice = ethName;
+		COMAR:Network.ConnPoint.PHY["Ethernet0"].FlowMode = "FULLDUPLEX";
+		a = COMAR:Network.ConnPoint.PHY["Ethernet0"].LinkDevice;
+		a.debugout();
 	}
 	set { 
 		instance ethName;
@@ -301,8 +300,9 @@ property FlowMode {
 		FlowMode = prm["DUPLEX"];
 	}
 	set { 
-		if (FlowMode == "HALFDUPLEX") {
-			instance ethName;
+		instance ethName;
+		debugout(value="FlowMode Change:"+ethName+FlowMode);
+		if (FlowMode == "HALFDUPLEX") {			
 			execute(exec="/sbin/ethtool -s " + ethName + " duplex half"); 
 		} else {
 			execute(exec="/sbin/ethtool -s " + ethName + " duplex full"); 
@@ -360,8 +360,7 @@ method setTXTresholdEvent(eventReceiverId="") { tmp=0;
 
 property LinkStatus {
 	get { tmp=0;
-		instance ethName;
-		ethName = "eth0";
+		instance ethName;		
 		prm = me.getifdata(ifc = ethName);
 		LinkStatus = prm["LINKSTATUS"];
 	}
@@ -429,7 +428,7 @@ property securityLevel {
 
 property getExtraProperties {
 	get { 			
-		getExtraProperties = ge;		
+		getExtraProperties = "";		
 	}
 }
 
@@ -556,5 +555,8 @@ function getifdata(ifc = "eth0") {
 	} else {
 		ret["LINKSTATUS"] = "DOWN";
 	}
+	dup = buffer.getfieldval(field = "Duplex:");	
+	if (dup == "Full") 
+		ret["DUPLEX"] = "FULLDUPLEX";
 	getifdata = ret;
 }

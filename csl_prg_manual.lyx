@@ -675,6 +675,33 @@ or (||)
  (FIXME: kontrol et)
 \layout Standard
 
+Atama iþlemleri, Saðdaki elemaný soldaki ile iþleme tabi tut þeklinde yorumlanýr.
+ Bu sebeple, sonuç her zaman saðdakinin türünde olacaktýr.
+ 
+\layout LyX-Code
+
+5 + 
+\begin_inset Quotes eld
+\end_inset 
+
+5
+\begin_inset Quotes erd
+\end_inset 
+
+ = 10
+\layout LyX-Code
+
+
+\begin_inset Quotes eld
+\end_inset 
+
+5
+\begin_inset Quotes erd
+\end_inset 
+
+ + 5 = 55
+\layout Standard
+
 Atamalar 
 \begin_inset Quotes eld
 \end_inset 
@@ -884,6 +911,51 @@ Null
 \layout LyX-Code
 
 ...
+\layout Subsubsection*
+
+register
+\layout Standard
+
+makeinstance ile elde edilen kopya, kendini bir index ile OM üzerinde baðlayabil
+ir.
+ Bu durumda, index'i kullanýlarak bu nesneye doðrudan eriþim saðlanabilir.
+ 
+\layout LyX-Code
+
+makeinstance new_object, 
+\begin_inset Quotes eld
+\end_inset 
+
+new
+\begin_inset Quotes erd
+\end_inset 
+
+;
+\layout LyX-Code
+
+new.selfregister();
+\layout LyX-Code
+
+...
+\layout LyX-Code
+
+# from selfregister()
+\layout LyX-Code
+
+...
+\layout LyX-Code
+
+register 
+\begin_inset Quotes eld
+\end_inset 
+
+new_instance
+\begin_inset Quotes erd
+\end_inset 
+
+;
+\layout LyX-Code
+
 \layout Subsubsection*
 
 if
@@ -1356,6 +1428,124 @@ New Value
 \layout LyX-Code
 
 }
+\layout Standard
+
+Oluþturulan yeni nesne, kendine indexli eriþim saðlayabilmek için OM üzerine
+ kaydedebilir.
+ Bu durumda, nesnenin bulunduðu OM Node tanýmý üzerinden, nesneye doðrudan
+ index ile eriþmek mümkün olur.
+\layout Standard
+
+From COMAR:Collection.OBJ object:
+\layout LyX-Code
+
+method new () {
+\begin_deeper 
+\layout LyX-Code
+
+makeinstance new_obj, 
+\begin_inset Quotes eld
+\end_inset 
+
+new
+\begin_inset Quotes erd
+\end_inset 
+
+;
+\layout LyX-Code
+
+new_obj.register_self();
+\end_deeper 
+\layout LyX-Code
+
+}
+\layout LyX-Code
+
+method register_self() {
+\begin_deeper 
+\layout LyX-Code
+
+register 
+\begin_inset Quotes eld
+\end_inset 
+
+newindex
+\begin_inset Quotes erd
+\end_inset 
+
+;
+\end_deeper 
+\layout LyX-Code
+
+}
+\layout Standard
+
+Örnekte, COMAR:Collection.OBJ içindeki CSL kodu, new() metodunda kendinden
+ türeyen bir nesneyi, nesnenin sunduðu register_self() metodunu kullanarak
+ COMAR:Collection.OBJ[...] þeklinde kullanýlmak üzere OM'a kaydetmektedir.
+ Bu iþlemden ( new() metodunun çaðrýlmasýndan) sonra, herhangi bir yerden
+ yapýlacak
+\layout LyX-Code
+
+array = COMAR:Collection.OBJ;
+\layout Standard
+
+çaðrýsý, her bir elemanýnýn deðeri, benzer þekilde kaydedilmiþ nesnelerin
+ index'i olan bir array döndürür.
+ Bu array içersinden uygun nesne seçilerek kullanýlabilir.
+\layout LyX-Code
+
+# array dump:
+\layout LyX-Code
+
+# array[0]  = 
+\begin_inset Quotes eld
+\end_inset 
+
+newindex
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout LyX-Code
+
+# array[1]  = 
+\begin_inset Quotes eld
+\end_inset 
+
+otherindex
+\begin_inset Quotes erd
+\end_inset 
+
+
+\layout LyX-Code
+
+obj = COMAR:Collection.OBJ[
+\begin_inset Quotes erd
+\end_inset 
+
+newindex
+\begin_inset Quotes erd
+\end_inset 
+
+];
+\layout LyX-Code
+
+value = obj.method_foo();
+\layout LyX-Code
+
+COMAR:Collection.OBJ[
+\begin_inset Quotes erd
+\end_inset 
+
+otherindex
+\begin_inset Quotes erd
+\end_inset 
+
+].method_bar();
+\layout Standard
+
+.....
 \layout Section
 
 CSL BNF

@@ -61,9 +61,9 @@ class APICALLS:
 				prg = prms[prm].data.value
 			if checkPerms(perm = "PROCESS_EXEC", file=prg) and isexecutable(prg):
 				self.exec_stdout(prg)
-				return self.cv.COMARRetVal( value=st, result=0 )
+				return self.cv.COMARRetVal( value=self.cv.numeric_create(0), result=0 )
 				
-			return self.cv.COMARRetVal(value=None, result = EBADF)
+			return self.cv.COMARRetVal(value=self.cv.numeric_create(EBADF), result = EBADF)
 			
 	def fileexist(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
 		keylist = prms.keys()
@@ -392,8 +392,7 @@ class	API_FILEIO:
 		self.objHandlers = { "CAPI:SYS:FILEIO": (None, self.fileObjHandler) }
 
 	def	GetFuncTable(self):
-		return { 'openfile':None,
-				  'execute':None,
+		return { 'openfile':None,				  
 				  'makedir':None }
 	def fileObjHandler(self, objClass = "", objid = "", callType = "", callName = "", prms = {},callerInfo = None):
 		pass

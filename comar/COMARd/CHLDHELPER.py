@@ -627,6 +627,7 @@ class childHelper(object):
 	def getParentOfChild(self, child):
 		return self.subchlds[child]
 	def releaseChild(self, child):
+		self.debugout(DEBUG_FATAL, "Release Child:", child, str(self.subchlds))
 		if self.subchlds.has_key(child):
 			del self.subchlds[child]
 

@@ -481,7 +481,7 @@ class CSLParse:
 		this.pinst += 1
 		pinstance = this.pinst
 		inwhile = 0
-		print "PARSER:",this.pinst,"\n",  code
+		#print "PARSER:",this.pinst,"\n",  code
 		#print traceback.print_stack(None,5)
 		while __st < __stop:
 			if root.type != None and root.next != None:
@@ -886,8 +886,9 @@ class CSLParse:
 
 					elif __id == "register":
 						__i = __rr.strip()
-						__j = this.CSLParseCheckIdRight(__i)
-						if __j != __i:
+						__j = this.CSLParseExpression(__i)
+						print "REGISTER: ", __j, __i
+						if __j == "" or __j == None:
 							print "Invalid Register object - invalid name:", __id, __rr
 							return None
 						__p = CSLTreeNode(None, __id, None)

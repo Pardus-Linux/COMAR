@@ -86,6 +86,11 @@ class OM_CORE:
 			return (genericObjHook, self, key)
 		else:
 			return None
+	def getOMNodeType(self, key):
+		if self.nodes.has_key(key):
+			return "METHOD"
+		else:
+			return "INVALID"
 	def getOMProperties(self, key = ""):
 		if self.nodes.has_key(key):
 			return [0]

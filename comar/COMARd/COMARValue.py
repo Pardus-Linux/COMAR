@@ -268,7 +268,10 @@ def _load_value_xml(first = None ):
 		elif first.tagName == "object":
 			#self.COMARValue.COMARValue("object", cslVal.value)
 			node = first.firstChild
-			return COMARValue(type = 'object', data = node.data)
+			if node:
+				return COMARValue(type = 'object', data = node.data)
+			else:
+				return COMARValue(type = 'object', data = "")
 
 		first = first.nextSibling
 

@@ -1,4 +1,9 @@
-# COMARRPCData Management Objects and structures.
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# COMARRPCData	- COMAR-RPC Data Management Objects and Structures.
+# Copyright (c) 2003-2005 TUBITAK-UEKAE. All Rights Reserved.
+
+
 import time, xml.dom.minidom, copy, COMARValue, zlib, bz2, base64, cPickle
 
 STATUS_CODES = ["ACCEPTED", "PROCESSED", "QUEUE", "WAIT", "RESULT", "PERMISSIONDENIED", "INVALID", "ABORT", "ERROR", "NOTFOUND", "FATAL", "KILLED", "ACCESSDENIED" ]

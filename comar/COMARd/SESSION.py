@@ -1,5 +1,9 @@
-# XML-IO-MODULE.
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# COMARd	- COMAR XML-IO-MODULE.
 # This module contains COMARRPCoverXML object.
+# Copyright (c) 2003-2005 TUBITAK-UEKAE. All Rights Reserved.
+
 
 __version__ = "0.1"
 __all__ = ["RPCServer"]

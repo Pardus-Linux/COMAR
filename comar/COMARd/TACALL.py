@@ -1,9 +1,9 @@
-# JOBSESS.PY
-#
-# JOB/CALL/EXEC SESSION PROVIDER.
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# TACALL	- JOB/CALL/EXEC Session Provider.
+# Copyright (c) 2003-2005 TUBITAK-UEKAE. All Rights Reserved.
 
 # standart python modules
-
 import os
 import sys
 import select

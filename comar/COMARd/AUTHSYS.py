@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# COMARd	- COMAR Framework main VM.
+# AUTHSYS	- Authentication System (Draft).
 # Copyright (c) 2003-2005 TUBITAK-UEKAE. All Rights Reserved.
 
 # standart python modules

@@ -12,7 +12,63 @@ def getFuncTable():
 			vtbl[i[4:]] = getattr(cls, i)
 	return vtbl
 	
+def safeget(prms, prm, default):
+	if prms.has_key(prm):
+		return prms[prm].toString()
+	return default
+
 class API:
+	def csl_replacetokens(self, prms):
+		tokenid = "$"
+		valid_chars = "0123456789_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+		if prms.has_key("buffer") and prms.has_key("fields"):
+			tokenid = safeget(prms, "tokenid", tokenid)
+			fields = prms["fields"]
+			print "Fields:", fields, fields.type, fields.value, prms
+			buf = prms["buffer"].toString()
+			pos = 0
+			x = buf.find(tokenid, pos)
+			while x != -1:
+				buf_last = len(buf) - 1
+				if x < buf_last:
+					if buf[x+1] == tokenid:
+						buf = buf[:x] + buf[x+1:]
+						pos = x + 1
+					else:
+						pos = x + 1
+						lpart = buf[:x]
+						start = buf[x+1]
+						stop = None
+						if start == "{":
+							sp = x + 2
+							x += 1
+							stop = "}"
+						token = ""
+						x += 1
+						for i in range(x, buf_last):
+							if stop:								
+								if buf[i] == stop:
+									token = buf[sp:i]									
+									pos = i + 1									
+									break
+							else:								
+								if not (buf[i] in valid_chars):
+									token = buf[x:i]
+									pos = i 
+									break
+						if token != "":							
+							fld = safeget(fields.value, token, "")							
+							#print "Replace \"%s\"Token: +%s+ -> +%s+ \"%s\" + \"%s\" %d "% (buf, token, fld, lpart, buf[pos:], pos)
+							buf = lpart + fld + buf[pos:]
+							pos = len(lpart) + len(fld) + 1
+							token = ""
+				x = buf.find(tokenid, pos)
+				if x == len(buf) - 1:
+					x = -1
+				#print "new buf:", buf, x
+			return CSLValue("string", buf)
+		return CSLValue("NULL", "")
+		
 	def	csl_strupper(self, prms):
 		if prms.has_key("string"):
 			a = prms["string"].toString()

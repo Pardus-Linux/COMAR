@@ -60,7 +60,23 @@ class APICALLS:
 				return self.cv.COMARRetVal( value=st, result=0 )
 				
 			return self.cv.COMARRetVal(value=None, result = EBADF)
-
+	def put_file(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
+		keylist = prms.keys()
+		file = None
+		buffer = None
+		for prm in keylist:			
+			if prm == "file":
+				file = prms[prm].data.value		
+			elif prm == "buffer":
+				buffer = prms[prm].data.value
+		if file and buffer:
+			if checkPerms(perm = "FILE_WRITE", file=file):
+				fd = open(file, "w")
+				wb = fd.write(buffer)
+				fd.close()
+				return self.cv.COMARRetVal( value=wb, result=0 )
+			return self.cv.COMARRetVal( value=0, result=EPERM )
+			
 	def capture_stdout(self, _name = "", prms = {}, checkPerms=dummycheckPerms, callerInfo=None):
 		keylist = prms.keys()
 		prg = ""

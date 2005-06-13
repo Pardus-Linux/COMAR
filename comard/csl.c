@@ -10,6 +10,7 @@
 #include <Python.h>
 #include <marshal.h>
 #include <node.h>
+#include <compile.h>
 
 #include "csl.h"
 
@@ -21,7 +22,7 @@ c_call(PyObject *self, PyObject *args)
 	return Py_BuildValue("i", num);
 }
 
-static const PyMethodDef methods[] = {
+static PyMethodDef methods[] = {
 	{ "call", c_call, METH_VARARGS, "Call a method from COMAR system model" },
 	{ NULL, NULL, 0, NULL }
 };
@@ -46,7 +47,7 @@ csl_compile(char *str, char *name, char **codeptr, size_t *sizeptr)
 		PyErr_Print();
 		return -CSL_BADCODE;
 	}
-	pCode = PyNode_Compile(n, name);
+	pCode = (PyObject *) PyNode_Compile(n, name);
 	PyNode_Free(n);
 	if (!pCode) {
 		PyErr_Print();
@@ -75,7 +76,7 @@ csl_compile(char *str, char *name, char **codeptr, size_t *sizeptr)
 int
 csl_execute(char *code, size_t size, const char *func_name)
 {
-	PyObject *pCode, *pModule, *pDict, *pFunc;
+	PyObject *pCode, *pModule, *pDict, *pFunc, *pValue;
 
 	pCode = PyMarshal_ReadObjectFromString(code, size);
 	if (!pCode) {
@@ -92,17 +93,25 @@ csl_execute(char *code, size_t size, const char *func_name)
 	pDict = PyModule_GetDict(pModule);
 	if (!pDict) {
 		puts("no dict");
+		Py_DECREF(pModule);
 		return -CSL_BADCODE;
 	}
 
 	pFunc = PyDict_GetItemString(pDict, func_name);
 	if (!pFunc || !PyCallable_Check(pFunc)) {
 		PyErr_Print();
+		Py_DECREF(pModule);
 		return -CSL_NOFUNC;
 	}
 
-	PyObject_CallObject(pFunc, NULL);
+	pValue = PyObject_CallObject(pFunc, NULL);
+	if (!pValue) {
+		PyErr_Print();
+		Py_DECREF(pModule);
+		return -CSL_FUNCERR;
+	}
 
+	Py_DECREF(pValue);
 	Py_DECREF(pModule);
 
 	return 0;

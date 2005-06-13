@@ -14,7 +14,8 @@ enum {
 	CSL_OK = 0,
 	CSL_NOMEM,
 	CSL_BADCODE,
-	CSL_NOFUNC
+	CSL_NOFUNC,
+	CSL_FUNCERR
 };
 
 void csl_setup(void);

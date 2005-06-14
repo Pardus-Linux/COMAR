@@ -7,10 +7,12 @@ CFLAGS= -O2 -Wall -Iinclude $(PYTHON_CFLAGS)
 
 OBJS = \
 	src/main.o \
+	src/job.o \
+	src/process.o \
 	src/csl.o
 
-comard: $(OBJS)
+comar: $(OBJS)
 	$(CC) -o $@ $(OBJS) $(PYTHON_LIBS)
 
 clean:
-	rm -f comard *.o
+	rm -f comar src/*.o

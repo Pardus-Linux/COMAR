@@ -7,28 +7,13 @@
 ** option) any later version. Please read the COPYING file.
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#ifndef PROCESS_H
+#define PROCESS_H 1
 
-#include "process.h"
+void proc_init(void);
+int proc_fork(void (*child_func)(void));
+int proc_listen(int timeout);
+int proc_send_parent(const char *data, size_t size);
 
-void job_start(void);
 
-int
-main(int argc, char *argv[])
-{
-	int i;
-
-	proc_init();
-
-	for (i = 0; i < 16; i++)
-		proc_fork(job_start);
-
-	while (1) {
-		proc_listen(1);
-		puts("tick");
-	}
-
-	return 0;
-}
+#endif /* PROCESS_H */

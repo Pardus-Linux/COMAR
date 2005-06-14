@@ -21,6 +21,7 @@ enum {
 void csl_setup(void);
 int csl_compile(char *str, char *name, char **codeptr, size_t *sizeptr);
 int csl_execute(char *code, size_t size, const char *func_name);
+void csl_cleanup(void);
 
 
 #endif /* CSL_H */

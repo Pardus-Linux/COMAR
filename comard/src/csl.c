@@ -13,11 +13,13 @@
 #include <compile.h>
 
 #include "csl.h"
+#include "process.h"
 
 static PyObject *
 c_call(PyObject *self, PyObject *args)
 {
 	int num = 42;
+	proc_send_parent("comar.call", 0);
 	// FIXME:
 	return Py_BuildValue("i", num);
 }
@@ -115,4 +117,10 @@ csl_execute(char *code, size_t size, const char *func_name)
 	Py_DECREF(pModule);
 
 	return 0;
+}
+
+void
+csl_cleanup(void)
+{
+	Py_Finalize();
 }

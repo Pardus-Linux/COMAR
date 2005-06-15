@@ -9,7 +9,8 @@ OBJS = \
 	src/main.o \
 	src/job.o \
 	src/process.o \
-	src/csl.o
+	src/csl.o \
+	src/rpc_unix.o
 
 comar: $(OBJS)
 	$(CC) -o $@ $(OBJS) $(PYTHON_LIBS)

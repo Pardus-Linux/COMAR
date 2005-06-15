@@ -14,30 +14,28 @@
 #include "process.h"
 
 void job_start(void);
-
-static char *funcs[] = {
-	"funcA",
-	"funcB",
-	"funcC"
-};
+void rpc_unix_start(void);
 
 int
 main(int argc, char *argv[])
 {
-	struct ProcChild *p;
-	int i;
+	struct ProcChild *p, *rpc;
 
 	proc_init();
 
-	for (i = 0; i < 16; i++) {
-		p = proc_fork(job_start);
-		proc_cmd_to_child(p, 1, 5);
-		proc_data_to_child(p, funcs[i % 3], 5);
-	}
+	rpc = proc_fork(rpc_unix_start);
 
 	while (1) {
 		if (1 == proc_listen(&p, 1)) {
 			printf("Child %d said %d, %d.\n", p->pid, p->cmd.cmd, p->cmd.data_size);
+			if (p == rpc) {
+				char buf[1024]; // FIXME: totally lame
+				int size = p->cmd.data_size - 4;
+				proc_read_data(p, buf);
+				p = proc_fork(job_start);
+				proc_cmd_to_child(p, 1, size);
+				proc_data_to_child(p, &buf[4], size);
+			}
 		}
 //		puts("tick");
 	}

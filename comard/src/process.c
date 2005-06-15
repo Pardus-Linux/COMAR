@@ -14,44 +14,36 @@
 
 #include "process.h"
 
-struct Proc {
-	int to_parent;
-	int from_parent;
-	int nr_children;
-	int max_children;
-	int *to_children;
-	int *from_children;
-	pid_t *child_pids;
-};
-
-static struct Proc my_proc;
+struct Proc my_proc;
 
 void
 proc_init(void)
 {
-	my_proc.to_parent = -1;
-	my_proc.from_parent = -1;
-	my_proc.nr_children = 0;
+	memset(&my_proc, 0, sizeof(struct Proc));
+	my_proc.parent.to = -1;
+	my_proc.parent.from = -1;
 	my_proc.max_children = 8;
-	my_proc.to_children = calloc(8, sizeof(int));
-	my_proc.from_children = calloc(8, sizeof(int));
-	my_proc.child_pids = calloc(8, sizeof(pid_t));
+	my_proc.children = calloc(8, sizeof(struct ProcChild));
 }
 
-static int
+static struct ProcChild *
 add_child(pid_t pid, int to, int from)
 {
-	if (my_proc.nr_children >= my_proc.max_children) {
+	int i;
+
+	i = my_proc.nr_children;
+	if (i >= my_proc.max_children) {
 		my_proc.max_children *= 2;
-		my_proc.to_children = realloc(my_proc.to_children, my_proc.max_children * sizeof(int));
-		my_proc.from_children = realloc(my_proc.from_children, my_proc.max_children * sizeof(int));
-		my_proc.child_pids = realloc(my_proc.child_pids, my_proc.max_children * sizeof(pid_t));
+		my_proc.children = realloc(my_proc.children,
+			my_proc.max_children * sizeof(struct ProcChild)
+		);
 	}
-	my_proc.to_children[my_proc.nr_children] = to;
-	my_proc.from_children[my_proc.nr_children] = from;
-	my_proc.child_pids[my_proc.nr_children] = pid;
+	memset(&my_proc.children[i], 0, sizeof(struct ProcChild));
+	my_proc.children[i].from = from;
+	my_proc.children[i].to = to;
+	my_proc.children[i].pid = pid;
 	++my_proc.nr_children;
-	return 0;
+	return &my_proc.children[i];
 }
 
 static void
@@ -59,12 +51,10 @@ rem_child(int nr)
 {
 	--my_proc.nr_children;
 	if (0 == my_proc.nr_children) return;
-	my_proc.to_children[nr] = my_proc.to_children[my_proc.nr_children];
-	my_proc.from_children[nr] = my_proc.from_children[my_proc.nr_children];
-	my_proc.child_pids[nr] = my_proc.child_pids[my_proc.nr_children];
+//	my_proc.to_children[nr] = my_proc.to_children[my_proc.nr_children];
 }
 
-int
+struct ProcChild *
 proc_fork(void (*child_func)(void))
 {
 	pid_t pid;
@@ -73,43 +63,47 @@ proc_fork(void (*child_func)(void))
 	pipe(fdr);
 	pipe(fdw);
 	pid = fork();
-	if (pid == -1) return -1;
+	if (pid == -1) return NULL;
 
 	if (pid == 0) {
 		// new child process starts
 		close(fdw[1]);
 		close(fdr[0]);
 		memset(&my_proc, 0, sizeof(struct Proc));
-		my_proc.from_parent = fdw[0];
-		my_proc.to_parent = fdr[1];
+		my_proc.parent.from = fdw[0];
+		my_proc.parent.to = fdr[1];
 		child_func();
 		while (1) sleep(1);	// FIXME: report parent
 	} else {
 		// parent process continues
 		close(fdw[0]);
 		close(fdr[1]);
-		add_child(pid, fdw[1], fdr[0]);
-		return pid;
+		return add_child(pid, fdw[1], fdr[0]);
 	}
 }
 
 int
-proc_listen(int timeout)
+proc_listen(struct ProcChild **sender, int timeout)
 {
-	static char buffer[1024];	// FIXME: lame
 	fd_set fds;
 	struct timeval tv, *tvptr;
 	int i, sock, max;
+	int len;
 
 	tv.tv_sec = 0;
 	tv.tv_usec = 0;
 
 	FD_ZERO(&fds);
-	if (my_proc.from_parent != -1) {
-		FD_SET(my_proc.from_parent, &fds);
+	max = 0;
+	sock = my_proc.parent.from;
+	if (sock != -1) {
+		// we have a parent to listen for
+		FD_SET(sock, &fds);
+		if (sock > max) max = sock;
 	}
-	for (max = 0, i = 0; i < my_proc.nr_children; i++) {
-		sock = my_proc.from_children[i];
+	// and some children maybe?
+	for (i = 0; i < my_proc.nr_children; i++) {
+		sock = my_proc.children[i].from;
 		FD_SET(sock, &fds);
 		if (sock > max) max = sock;
 	}
@@ -118,19 +112,21 @@ proc_listen(int timeout)
 	if (timeout != -1) tvptr = &tv; else tvptr = NULL;
 
 	if (select(max, &fds, NULL, NULL, tvptr) > 0) {
-		if (my_proc.from_parent != -1 && FD_ISSET(my_proc.from_parent, &fds)) {
-			puts("message from parent");
+		sock = my_proc.parent.from;
+		if (sock != -1 && FD_ISSET(sock, &fds)) {
+			len = read(sock, &my_proc.parent.cmd, sizeof(struct ProcCmd));
+			*sender = &my_proc.parent;
+			return 1;
 		}
 		for (i = 0; i < my_proc.nr_children; i++) {
-			sock = my_proc.from_children[i];
+			sock = my_proc.children[i].from;
 			if (FD_ISSET(sock, &fds)) {
-				int len;
-				len = read(sock, buffer, 1023);
-				buffer[len] = '\0';
-				if (len > 0) {
-					printf("Message from child %d: [%s]\n", my_proc.child_pids[i], buffer);
+				len = read(sock, &my_proc.children[i].cmd, sizeof(struct ProcCmd));
+				if (len == sizeof(struct ProcCmd)) {
+					*sender = &my_proc.children[i];
+					return 1;
 				} else {
-					printf("Child %d dead\n", my_proc.child_pids[i]);
+					//printf("Child %d dead\n", my_proc.children[i].pid);
 					// FIXME: handle dead child
 				}
 			}
@@ -140,14 +136,46 @@ proc_listen(int timeout)
 }
 
 int
-proc_send_parent(const char *data, size_t size)
+proc_cmd_to_parent(int cmd, unsigned int data_size)
 {
-	if (0 == size) size = strlen(data);
-	write(my_proc.to_parent, data, size);
+	struct ProcCmd tmp;
+
+	tmp.cmd = cmd;
+	tmp.data_size = data_size;
+	write(my_proc.parent.to, &tmp, sizeof(struct ProcCmd));
 	return 0;
 }
 
-void
-proc_exit()
+int
+proc_data_to_parent(const char *data, unsigned int size)
 {
+	if (0 == size) size = strlen(data);
+	write(my_proc.parent.to, data, size);
+	return 0;
+}
+
+int
+proc_cmd_to_child(struct ProcChild *child, int cmd, unsigned int data_size)
+{
+	struct ProcCmd tmp;
+
+	tmp.cmd = cmd;
+	tmp.data_size = data_size;
+	write(child->to, &tmp, sizeof(struct ProcCmd));
+	return 0;
+}
+
+int
+proc_data_to_child(struct ProcChild *child, const char *data, unsigned int size)
+{
+	if (0 == size) size = strlen(data);
+	write(child->to, data, size);
+	return 0;
+}
+
+int
+proc_read_data(struct ProcChild *sender, char *buffer)
+{
+	read(sender->from, buffer, sender->cmd.data_size);
+	return 0;
 }

@@ -55,27 +55,35 @@ load_file(const char *fname, int *sizeptr)
 void
 job_start(void)
 {
+	struct ProcChild *sender;
 	char *buf;
 	char *code;
+	char func[128];
 	size_t codelen;
 	int e;
+
+	while (1) {
+		if (1 == proc_listen(&sender, 1)) break;
+	}
+	proc_read_data(sender, &func[0]);
+	func[sender->cmd.data_size] = '\0';
 
 	csl_setup();
 
 	buf = load_file("test.py", NULL);
 	e = csl_compile(buf, "test", &code, &codelen);
 	if (e) {
-		proc_send_parent("compile error", 0);
+		proc_cmd_to_parent(-1, 0);
 		exit(1);
 	}
 
-	e = csl_execute(code, codelen, "funcA");
+	e = csl_execute(code, codelen, func);
 	if (e) {
-		proc_send_parent("execute error", 0);
+		proc_cmd_to_parent(-1, 0);
 		exit(4);
 	}
 
-	proc_send_parent("OK", 2);
+	proc_cmd_to_parent(1, 0);
 
 	csl_cleanup();
 }

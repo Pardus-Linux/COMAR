@@ -19,7 +19,7 @@ static PyObject *
 c_call(PyObject *self, PyObject *args)
 {
 	int num = 42;
-	proc_send_parent("comar.call", 0);
+	proc_cmd_to_parent(42, 0);
 	// FIXME:
 	return Py_BuildValue("i", num);
 }

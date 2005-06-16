@@ -18,10 +18,17 @@
 static PyObject *
 c_call(PyObject *self, PyObject *args)
 {
-	int num = 42;
-	proc_cmd_to_parent(42, 0);
-	// FIXME:
-	return Py_BuildValue("i", num);
+	const char *func;
+	size_t size;
+
+	if (!PyArg_ParseTuple(args, "s#", &func, &size))
+		return NULL;
+
+	proc_cmd_to_parent(42, size);
+	proc_data_to_parent(func, size);
+
+	Py_INCREF(Py_None);
+	return Py_None;
 }
 
 static PyMethodDef methods[] = {

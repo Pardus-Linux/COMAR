@@ -4,7 +4,7 @@ import comar
 
 def funcA():
 	print "Ahmet"
-	print comar.call()
+	comar.call("funcB")
 
 def funcB():
 	print "Baran"

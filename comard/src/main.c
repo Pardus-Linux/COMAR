@@ -35,6 +35,16 @@ main(int argc, char *argv[])
 				p = proc_fork(job_start);
 				proc_cmd_to_child(p, 1, size);
 				proc_data_to_child(p, &buf[4], size);
+			} else {
+				if (p->cmd.cmd == 42) {
+					// another call from object
+					char buf[1024];	// FIXME: lame
+					int size = p->cmd.data_size;
+					proc_read_data(p, buf);
+					p = proc_fork(job_start);
+					proc_cmd_to_child(p, 1, size);
+					proc_data_to_child(p, &buf[0], size);
+				}
 			}
 		}
 //		puts("tick");

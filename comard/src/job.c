@@ -58,32 +58,37 @@ job_start(void)
 	struct ProcChild *sender;
 	char *buf;
 	char *code;
-	char func[128];
+	char *func;
+	char *res;
+	int reslen;
 	size_t codelen;
 	int e;
 
 	while (1) {
 		if (1 == proc_listen(&sender, 1)) break;
 	}
-	proc_read_data(sender, &func[0]);
-	func[sender->cmd.data_size] = '\0';
+	proc_get_data(sender, &func);
 
 	csl_setup();
 
 	buf = load_file("test.py", NULL);
 	e = csl_compile(buf, "test", &code, &codelen);
 	if (e) {
-		proc_cmd_to_parent(-1, 0);
+		proc_send_cmd(TO_PARENT, CMD_FAIL, 0);
 		exit(1);
 	}
 
-	e = csl_execute(code, codelen, func);
+	e = csl_execute(code, codelen, func, &res, &reslen);
 	if (e) {
-		proc_cmd_to_parent(-1, 0);
+		proc_send_cmd(TO_PARENT, CMD_FAIL, 0);
 		exit(4);
 	}
 
-	proc_cmd_to_parent(1, 0);
+	proc_send_cmd(TO_PARENT, CMD_RESULT, reslen);
+	if (reslen)
+		proc_send_data(TO_PARENT, res, reslen);
+
+	free(res);
 
 	csl_cleanup();
 }

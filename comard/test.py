@@ -3,8 +3,8 @@
 import comar
 
 def funcA():
-	print "Ahmet"
 	comar.call("funcB")
+	return "Ahmet"
 
 def funcB():
-	print "Baran"
+	return "Baran"

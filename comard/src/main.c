@@ -20,6 +20,8 @@ int
 main(int argc, char *argv[])
 {
 	struct ProcChild *p, *rpc;
+	char *data;
+	int size;
 
 	proc_init();
 
@@ -29,21 +31,36 @@ main(int argc, char *argv[])
 		if (1 == proc_listen(&p, 1)) {
 			printf("Child %d said %d, %d.\n", p->pid, p->cmd.cmd, p->cmd.data_size);
 			if (p == rpc) {
-				char buf[1024]; // FIXME: totally lame
-				int size = p->cmd.data_size - 4;
-				proc_read_data(p, buf);
+				size = p->cmd.data_size - 4;
+				proc_get_data(p, &data);
 				p = proc_fork(job_start);
-				proc_cmd_to_child(p, 1, size);
-				proc_data_to_child(p, &buf[4], size);
+				p->data = ((void **)data)[0];
+				proc_send_cmd(p, CMD_CALL, size);
+				proc_send_data(p, data + 4, size);
+				free(data);
 			} else {
-				if (p->cmd.cmd == 42) {
-					// another call from object
-					char buf[1024];	// FIXME: lame
-					int size = p->cmd.data_size;
-					proc_read_data(p, buf);
-					p = proc_fork(job_start);
-					proc_cmd_to_child(p, 1, size);
-					proc_data_to_child(p, &buf[0], size);
+				switch(p->cmd.cmd) {
+					case CMD_CALL:
+						// another call from object
+						size = p->cmd.data_size;
+						proc_get_data(p, &data);
+						p = proc_fork(job_start);
+						p->data = NULL;
+						proc_send_cmd(p, CMD_CALL, size);
+						proc_send_data(p, data, size);
+						free(data);
+						break;
+					case CMD_RESULT:
+						if (p->data) {
+							char *b2;
+							proc_get_data(p, &data);
+							b2 = malloc(4 + p->cmd.data_size);
+							memcpy(b2 + 4, data, p->cmd.data_size);
+							*(unsigned int *)&b2[0] = (unsigned int) p->data;
+							proc_send_cmd(rpc, CMD_RESULT, p->cmd.data_size + 4);
+							proc_send_data(rpc, b2, 4 + p->cmd.data_size);
+						}
+						break;
 				}
 			}
 		}

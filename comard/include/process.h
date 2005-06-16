@@ -11,7 +11,7 @@
 #define PROCESS_H 1
 
 struct ProcCmd {
-	int cmd;
+	unsigned int cmd;
 	unsigned int data_size;
 };
 
@@ -19,7 +19,7 @@ struct ProcChild {
 	int from;
 	int to;
 	pid_t pid;
-	int state;
+	void *data;
 	struct ProcCmd cmd;
 };
 
@@ -35,14 +35,24 @@ struct Proc {
 // per process global variable
 extern struct Proc my_proc;
 
+// ipc commands
+enum {
+	CMD_DIED,
+	CMD_QUIT,
+	CMD_CALL,
+	CMD_FAIL,
+	CMD_RESULT
+};
+
+// for readability of send_cmd/data functions
+#define TO_PARENT NULL
+
 void proc_init(void);
 struct ProcChild *proc_fork(void (*child_func)(void));
 int proc_listen(struct ProcChild **sender, int timeout);
-int proc_cmd_to_parent(int cmd, unsigned int data_size);
-int proc_data_to_parent(const char *data, unsigned int size);
-int proc_cmd_to_child(struct ProcChild *child, int cmd, unsigned int data_size);
-int proc_data_to_child(struct ProcChild *child, const char *data, unsigned int size);
-int proc_read_data(struct ProcChild *sender, char *buffer);
+int proc_send_cmd(struct ProcChild *child, int cmd, unsigned int data_size);
+int proc_send_data(struct ProcChild *child, const char *data, unsigned int size);
+int proc_get_data(struct ProcChild *p, char **bufferptr);
 
 
 #endif /* PROCESS_H */

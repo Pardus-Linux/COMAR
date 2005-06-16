@@ -24,8 +24,8 @@ c_call(PyObject *self, PyObject *args)
 	if (!PyArg_ParseTuple(args, "s#", &func, &size))
 		return NULL;
 
-	proc_cmd_to_parent(42, size);
-	proc_data_to_parent(func, size);
+	proc_send_cmd(TO_PARENT, CMD_CALL, size);
+	proc_send_data(TO_PARENT, func, size);
 
 	Py_INCREF(Py_None);
 	return Py_None;
@@ -83,9 +83,9 @@ csl_compile(char *str, char *name, char **codeptr, size_t *sizeptr)
 }
 
 int
-csl_execute(char *code, size_t size, const char *func_name)
+csl_execute(char *code, size_t size, const char *func_name, char **resptr, int *reslen)
 {
-	PyObject *pCode, *pModule, *pDict, *pFunc, *pValue;
+	PyObject *pCode, *pModule, *pDict, *pFunc, *pValue, *pStr;
 
 	pCode = PyMarshal_ReadObjectFromString(code, size);
 	if (!pCode) {
@@ -120,8 +120,18 @@ csl_execute(char *code, size_t size, const char *func_name)
 		return -CSL_FUNCERR;
 	}
 
+	pStr = PyObject_Str(pValue);
+
 	Py_DECREF(pValue);
 	Py_DECREF(pModule);
+
+	*reslen = PyString_Size(pStr);
+	*resptr = malloc(*reslen);
+	if (!*resptr) {
+		Py_DECREF(pStr);
+		return -CSL_NOMEM;
+	}
+	memcpy(*resptr, PyString_AsString(pStr), *reslen);
 
 	return 0;
 }

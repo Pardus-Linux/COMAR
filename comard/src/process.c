@@ -136,46 +136,49 @@ proc_listen(struct ProcChild **sender, int timeout)
 }
 
 int
-proc_cmd_to_parent(int cmd, unsigned int data_size)
+proc_send_cmd(struct ProcChild *child, int cmd, unsigned int data_size)
 {
 	struct ProcCmd tmp;
+	int to;
 
+	if (child) to = child->to; else to = my_proc.parent.to;
 	tmp.cmd = cmd;
 	tmp.data_size = data_size;
-	write(my_proc.parent.to, &tmp, sizeof(struct ProcCmd));
+	if (sizeof(struct ProcCmd) != write(to, &tmp, sizeof(struct ProcCmd))) {
+		return -1;
+	}
+//printf("send_cmd(%d, %d)\n", cmd, data_size);
 	return 0;
 }
 
 int
-proc_data_to_parent(const char *data, unsigned int size)
+proc_send_data(struct ProcChild *child, const char *data, unsigned int size)
 {
+	int to;
+
+	if (child) to = child->to; else to = my_proc.parent.to;
 	if (0 == size) size = strlen(data);
-	write(my_proc.parent.to, data, size);
+	if (size != write(to, data, size)) {
+		return -1;
+	}
+//printf("send_data(%d [%.*s])\n", size, size, data);
 	return 0;
 }
 
 int
-proc_cmd_to_child(struct ProcChild *child, int cmd, unsigned int data_size)
+proc_get_data(struct ProcChild *p, char **bufferptr)
 {
-	struct ProcCmd tmp;
+	size_t size;
 
-	tmp.cmd = cmd;
-	tmp.data_size = data_size;
-	write(child->to, &tmp, sizeof(struct ProcCmd));
-	return 0;
-}
+	size = p->cmd.data_size;
 
-int
-proc_data_to_child(struct ProcChild *child, const char *data, unsigned int size)
-{
-	if (0 == size) size = strlen(data);
-	write(child->to, data, size);
-	return 0;
-}
-
-int
-proc_read_data(struct ProcChild *sender, char *buffer)
-{
-	read(sender->from, buffer, sender->cmd.data_size);
+	*bufferptr = malloc(size + 1);
+	if (NULL == *bufferptr) return -1;
+	// FIXME: try multiple times when size is bigger than pipe buf
+	if (size != read(p->from, *bufferptr, size)) {
+		return -2;
+	}
+	(*bufferptr)[size] = '\0';
+//printf("get_data(%d [%.*s])\n", size, size, *bufferptr);
 	return 0;
 }

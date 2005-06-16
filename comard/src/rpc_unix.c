@@ -96,7 +96,7 @@ pipe_listen(void)
 	char buffer[1024];	// FIXME: totally lame
 
 	tv.tv_sec = 0;
-	tv.tv_usec = 0;
+	tv.tv_usec = 500000;
 
 	FD_ZERO(&fds);
 	max = 0;
@@ -141,9 +141,9 @@ pipe_listen(void)
 					continue;
 				}
 				buffer[len + 4] = '\0';
-				proc_cmd_to_parent(1, 4 + strlen(buffer) + 1);
+				proc_send_cmd(TO_PARENT, CMD_CALL, 4 + len + 1);
 				*(unsigned int *)&buffer[0] = (unsigned int) c;
-				proc_data_to_parent(buffer, 4 + strlen(buffer) + 1);
+				proc_send_data(TO_PARENT, buffer, 4 + len + 1);
 			}
 			c = c->next;
 		}
@@ -165,8 +165,9 @@ rpc_unix_start(void)
 
 	while (1) {
 		if (1 == proc_listen(&p, 0)) {
-			char *b = malloc(p->cmd.data_size);
-			proc_read_data(p, b);
+			char *b;
+			if (p->cmd.cmd != CMD_RESULT) continue;
+			proc_get_data(p, &b);
 			c = ((struct connection **)b)[0];
 			for (t = conns; t; t = t->next) {
 				if (t == c) {

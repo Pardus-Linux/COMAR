@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "process.h"
+#include "model.h"
 
 void job_start(void);
 void rpc_unix_start(void);
@@ -24,6 +25,7 @@ main(int argc, char *argv[])
 	int size;
 
 	proc_init();
+	model_init();
 
 	rpc = proc_fork(rpc_unix_start);
 

@@ -8,12 +8,14 @@ CFLAGS= -O2 -Wall -Iinclude $(PYTHON_CFLAGS)
 OBJS = \
 	src/main.o \
 	src/job.o \
+	src/model.o \
 	src/process.o \
 	src/csl.o \
+	src/data.o \
 	src/rpc_unix.o
 
 comar: $(OBJS)
-	$(CC) -o $@ $(OBJS) $(PYTHON_LIBS)
+	$(CC) -o $@ $(OBJS) -ldb $(PYTHON_LIBS)
 
 clean:
 	rm -f comar src/*.o

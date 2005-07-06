@@ -7,13 +7,10 @@
 ** option) any later version. Please read the COPYING file.
 */
 
-#ifndef MODEL_H
-#define MODEL_H 1
+#ifndef CFG_H
+#define CFG_H 1
 
-int model_init(void);
-int model_lookup_object(const char *path);
-int model_lookup_method(const char *path);
-const char *model_get_method(int node_no);
+void cfg_init(int argc, char *argv[]);
 
 
-#endif /* MODEL_H */
+#endif /* CFG_H */

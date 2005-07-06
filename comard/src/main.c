@@ -11,8 +11,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cfg.h"
 #include "process.h"
 #include "model.h"
+#include "data.h"
 
 void job_start(void);
 void rpc_unix_start(void);
@@ -24,6 +26,9 @@ main(int argc, char *argv[])
 	char *data;
 	int size;
 
+	cfg_init(argc, argv);
+
+	if (db_init() != 0) return 1;
 	proc_init();
 	model_init();
 

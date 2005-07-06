@@ -16,8 +16,28 @@
 
 #include "data.h"
 
+// for testing without root, final place would probably be /var/lib/comar
+#define COMAR_DATA_DIR "db"
+
 static DB_ENV *my_env;
 static int nr_open_dbs;
+
+int
+db_init(void)
+{
+	struct stat fs;
+
+	if (stat(COMAR_DATA_DIR, &fs) != 0) {
+		if (0 != mkdir(COMAR_DATA_DIR, S_IRWXU)) {
+			printf("Cannot create data dir '%s'\n", COMAR_DATA_DIR);
+			return -1;
+		}
+	} else {
+		// FIXME: check perms and owner
+	}
+	// FIXME: check and recover db files
+	return 0;
+}
 
 static DB *
 open_db(const char *name)
@@ -32,7 +52,8 @@ open_db(const char *name)
 			printf("Cannot create env, %s\n", db_strerror(e));
 			return NULL;
 		}
-		e = my_env->open(my_env, "db", DB_INIT_LOCK | DB_INIT_MPOOL | DB_INIT_LOG | DB_INIT_TXN | DB_CREATE, 0);
+		e = my_env->open(my_env, COMAR_DATA_DIR, DB_INIT_LOCK | DB_INIT_MPOOL
+				| DB_INIT_LOG | DB_INIT_TXN | DB_CREATE, 0);
 		if (e) {
 			printf("Cannot open env, %s\n", db_strerror(e));
 			my_env->close(my_env, 0);
@@ -90,11 +111,28 @@ make_key(int node_no, const char *app)
 	return buf;
 }
 
+static char *
+make_list(char *old, const char *item)
+{
+	// FIXME: lame
+	char *ret;
+
+	if (strcmp(old, "") != 0) {
+		ret = malloc(strlen(old) + 1 + strlen(item) + 1);
+		sprintf(ret, "%s/%s", old, item);
+	} else {
+		ret = malloc(strlen(item) + 1);
+		sprintf(ret, "%s", item);
+	}
+	return ret;
+}
+
 int
 db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 {
 	DB *code_db = NULL, *model_db = NULL;
 	DBT key, data;
+	char *old;
 	int e, ret = -1;
 
 	code_db = open_db("code.db");
@@ -110,7 +148,6 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 	data.size = size;
 
 	// FIXME: transaction olacak bunlar
-
 	e = code_db->put(code_db, NULL, &key, &data, 0);
 	if (e) goto out;
 
@@ -118,11 +155,30 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 	memset(&data, 0, sizeof(DBT));
 	key.data = make_key(node_no, NULL);
 	key.size = strlen(key.data);
-	data.data = (char *)app;
-	data.size = strlen(app) + 1;
+	data.flags = DB_DBT_MALLOC;
 
-	e = model_db->put(model_db, NULL, &key, &data, 0);
-	if (e) goto out;
+	e = model_db->get(model_db, NULL, &key, &data, 0);
+	if (e == DB_NOTFOUND) {
+		old = "";
+	} else if (e) {
+		goto out;
+	} else {
+		old = data.data;
+	}
+
+	if (strstr(old, app) == NULL) {
+		memset(&key, 0, sizeof(DBT));
+		memset(&data, 0, sizeof(DBT));
+		key.data = make_key(node_no, NULL);
+		key.size = strlen(key.data);
+		data.data = make_list(old, app);
+		data.size = strlen(data.data) + 1;
+
+		e = model_db->put(model_db, NULL, &key, &data, 0);
+		free(data.data);
+		if (e) goto out;
+	}
+	if (strcmp(old, "") != 0) free(old);
 
 	ret = 0;
 out:

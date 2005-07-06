@@ -10,6 +10,8 @@
 #ifndef DB_H
 #define DB_H 1
 
+int db_init(void);
+
 int db_put_script(int node_no, const char *app, const char *buffer, size_t size);
 int db_del_app(const char *app);
 

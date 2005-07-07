@@ -22,7 +22,7 @@ struct node {
 	const char *path;
 	const char *method;
 	struct node *next;
-	struct node *parent;	// FIXME: for acl stuff, not used yet
+	int parent_no;
 	int type;
 	int no;
 };
@@ -55,8 +55,8 @@ prepare_tables(int max_nodes, size_t str_size)
 	return 0;
 }
 
-static void
-add_node(const char *path, int type)
+static int
+add_node(int parent_no, const char *path, int type)
 {
 	struct node *n;
 	int val;
@@ -71,24 +71,28 @@ add_node(const char *path, int type)
 	} else {
 		n->method = NULL;
 	}
+	n->parent_no = parent_no;
 	n->type = type;
 	n->no = nr_nodes++;
 
 	val = hash_string(path, len) % TABLE_SIZE;
 	n->next = node_table[val];
 	node_table[val] = n;
+	return n->no;
 }
 
 int
 model_init(void)
 {
+	int no;
+
 	// FIXME: silly test case, replace with real loader
 	if (prepare_tables(4, 128)) return -1;
 
-	add_node("Net", N_MODULE);
-	add_node("Net.NIC", N_OBJECT);
-	add_node("Net.NIC.up", N_METHOD);
-	add_node("Net.NIC.down", N_METHOD);
+	no = add_node(-1, "Net", N_MODULE);
+	no = add_node(no, "Net.NIC", N_OBJECT);
+	add_node(no, "Net.NIC.up", N_METHOD);
+	add_node(no, "Net.NIC.down", N_METHOD);
 
 	return 0;
 }
@@ -121,6 +125,15 @@ model_lookup_method(const char *path)
 		}
 	}
 	return -1;
+}
+
+int
+model_parent(int node_no)
+{
+	struct node *n;
+
+	n = &nodes[node_no];
+	return n->parent_no;
 }
 
 const char *

@@ -14,6 +14,17 @@
 
 #include "csl.h"
 #include "process.h"
+#include "data.h"
+
+struct reg_cmd {
+	int node_no;
+	size_t app_len;
+	char data[2];
+};
+
+struct exec_cmd {
+	int node_no;
+};
 
 static unsigned char *
 load_file(const char *fname, int *sizeptr)
@@ -52,43 +63,112 @@ load_file(const char *fname, int *sizeptr)
 	return data;
 }
 
-void
-job_start(void)
+static void
+register_proc(void)
 {
+	struct reg_cmd *cmd;
 	struct ProcChild *sender;
 	char *buf;
 	char *code;
-	char *func;
-	char *res;
-	int reslen;
 	size_t codelen;
 	int e;
 
 	while (1) {
 		if (1 == proc_listen(&sender, 1)) break;
 	}
-	proc_get_data(sender, &func);
+	proc_get_data(sender, &cmd);
 
 	csl_setup();
 
-	buf = load_file("test.py", NULL);
+	buf = load_file(&cmd->data[0] + cmd->app_len + 1, NULL);
+	if (!buf) {
+		proc_send_cmd(TO_PARENT, CMD_FAIL, 0);
+		exit(1);
+	}
+
 	e = csl_compile(buf, "test", &code, &codelen);
 	if (e) {
 		proc_send_cmd(TO_PARENT, CMD_FAIL, 0);
 		exit(1);
 	}
 
-	e = csl_execute(code, codelen, func, &res, &reslen);
-	if (e) {
-		proc_send_cmd(TO_PARENT, CMD_FAIL, 0);
-		exit(4);
-	}
+	db_put_script(cmd->node_no, &cmd->data[0], code, codelen);
 
-	proc_send_cmd(TO_PARENT, CMD_RESULT, reslen);
-	if (reslen)
-		proc_send_data(TO_PARENT, res, reslen);
-
-	free(res);
+	proc_send_cmd(TO_PARENT, CMD_RESULT, 0);
 
 	csl_cleanup();
+}
+
+int
+job_start_register(int node_no, const char *app, const char *csl_file)
+{
+	struct ProcChild *p;
+	struct reg_cmd *cmd;
+	size_t sz;
+
+	sz = sizeof(struct reg_cmd) + strlen(app) + strlen(csl_file);
+	cmd = malloc(sz);
+	if (!cmd) return -1;
+	cmd->node_no = node_no;
+	cmd->app_len = strlen(app);
+	strcpy(&cmd->data[0], app);
+	strcpy(&cmd->data[0] + strlen(app) + 1, csl_file);
+	p = proc_fork(register_proc);
+	if (!p) {
+		free(cmd);
+		return -1;
+	}
+	proc_send_cmd(p, CMD_CALL, sz);
+	proc_send_data(p, cmd, sz);
+	free(cmd);
+	return 0;
+}
+
+static void
+exec_proc(void)
+{
+	struct ProcChild *sender;
+	struct exec_cmd *cmd;
+	char *apps;
+	char *code;
+	char *res;
+	size_t reslen;
+	size_t size;
+	int e;
+
+	while (1) {
+		if (1 == proc_listen(&sender, 1)) break;
+	}
+	proc_get_data(sender, &cmd);
+
+	csl_setup();
+
+	if (db_open_node(model_parent(cmd->node_no), &apps) != 0) {
+		proc_send_cmd(TO_PARENT, CMD_FAIL, 0);
+		exit(1);
+	}
+
+	// FIXME: multiple apps & value return
+	db_get_code(apps, &code, &size);
+	e = csl_execute(code, size, model_get_method(cmd->node_no), &res, &reslen);
+	free(res);
+
+	db_close_node();
+
+	csl_cleanup();
+}
+
+int
+job_start_execute(int node_no, const char *app) // FIXME: args
+{
+	struct ProcChild *p;
+	struct exec_cmd cmd;
+
+	cmd.node_no = node_no;
+
+	p = proc_fork(exec_proc);
+	if (!p) return -1;
+	proc_send_cmd(p, CMD_CALL, sizeof(struct exec_cmd));
+	proc_send_data(p, &cmd, sizeof(struct exec_cmd));
+	return 0;
 }

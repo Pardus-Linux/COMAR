@@ -15,8 +15,8 @@
 #include "process.h"
 #include "model.h"
 #include "data.h"
+#include "job.h"
 
-void job_start(void);
 void rpc_unix_start(void);
 
 int
@@ -32,12 +32,18 @@ main(int argc, char *argv[])
 	proc_init();
 	model_init();
 
+job_start_register(model_lookup_object("Net.NIC"), "eth", "test.py");
+
 	rpc = proc_fork(rpc_unix_start);
 
 	while (1) {
 		if (1 == proc_listen(&p, 1)) {
 			printf("Child %d said %d, %d.\n", p->pid, p->cmd.cmd, p->cmd.data_size);
-			if (p == rpc) {
+			if (p->cmd.cmd == CMD_RESULT) {
+				puts("hede");
+				job_start_execute(model_lookup_method("Net.NIC.up"), NULL);
+			}
+/*			if (p == rpc) {
 				size = p->cmd.data_size - 4;
 				proc_get_data(p, &data);
 				p = proc_fork(job_start);
@@ -69,7 +75,7 @@ main(int argc, char *argv[])
 						}
 						break;
 				}
-			}
+			} */
 		}
 //		puts("tick");
 	}

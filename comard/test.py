@@ -2,9 +2,8 @@
 
 import comar
 
-def funcA():
-	comar.call("funcB")
-	return "Ahmet"
+def up():
+	print "Ahmet"
 
-def funcB():
-	return "Baran"
+def down():
+	print "Baran"

@@ -7,14 +7,11 @@
 ** option) any later version. Please read the COPYING file.
 */
 
-#ifndef MODEL_H
-#define MODEL_H 1
+#ifndef JOB_H
+#define JOB_H 1
 
-int model_init(void);
-int model_lookup_object(const char *path);
-int model_lookup_method(const char *path);
-int model_parent(int node_no);
-const char *model_get_method(int node_no);
+int job_start_register(int node_no, const char *app, const char *csl_file);
+int job_start_execute(int node_no, const char *app);
 
 
-#endif /* MODEL_H */
+#endif /*JOB_H */

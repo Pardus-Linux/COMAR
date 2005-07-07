@@ -1,0 +1,18 @@
+
+COMARd
+======
+
+Modüller:
+* model.c		Sistem modelini yükleme/indeksleme
+* data.c		Veritabanı (acl, script, apps, model, config)
+* job.c			İş yapan süreçler (Register, Execute, Remove script)
+* process.c		Süreç yönetimi ve süreçler arası iletişim
+* cfg.c			Komut satırı parametreleri
+* rpc_unix.c	Unix soket üzerinden comar çağrısı modülü
+* main.c		Ana süreç
+
+Kod stili:
+* K&R
+* Fonksiyon isimleri (module)_(görev) şeklinde
+* Ana süreçte hazırlık işlemleri (module)_init
+* Yeni bir süreç başlatan fonksiyonlar (module)_start [ _(opsiyonel isim)]

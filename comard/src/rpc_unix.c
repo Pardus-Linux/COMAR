@@ -17,6 +17,7 @@
 #include <unistd.h>
 
 #include "process.h"
+#include "model.h"
 #include "acl.h"
 
 #define RPC_PIPE_NAME "/tmp/comar"
@@ -92,6 +93,39 @@ rem_conn(struct connection *c)
 }
 
 static int
+parse_rpc(struct connection *c)
+{
+	char *t, *s;
+	int no;
+
+printf("RPC [%s]\n", c->buffer);
+	t = c->buffer + 1;
+	switch (c->buffer[0]) {
+		case '+':
+			// register cmd, object name, app name, file name follows
+			s = strchr(t, ' ');
+			if (!s) return -1;
+			*s = '\0';
+			no = model_lookup_object(t);
+			if (no == -1) return -1;
+			t = s + 1;
+			s = strchr(t, ' ');
+			if (!s) return -1;
+			*s = '\0';
+			printf("Register node %d app %s\n", no, t);
+			return 0;
+		case '-':
+		case '$':
+		default:
+			return -1;
+	}
+	return 0;
+//		proc_send_cmd(TO_PARENT, CMD_CALL, 4 + len + 1);
+//		*(unsigned int *)&buffer[0] = (unsigned int) c;
+//		proc_send_data(TO_PARENT, buffer, 4 + len + 1);
+}
+
+static int
 read_rpc(struct connection *c)
 {
 	int len;
@@ -104,11 +138,7 @@ read_rpc(struct connection *c)
 	t = strchr(c->buffer + c->pos, '\n');
 	if (t) {
 		*t = '\0';
-		// FIXME: parse and forward to the main process
-//		proc_send_cmd(TO_PARENT, CMD_CALL, 4 + len + 1);
-//		*(unsigned int *)&buffer[0] = (unsigned int) c;
-//		proc_send_data(TO_PARENT, buffer, 4 + len + 1);
-		printf("RPC [%s]\n", c->buffer);
+		if (parse_rpc(c)) return -1;
 		c->pos = 0;
 	} else {
 		c->pos += len;

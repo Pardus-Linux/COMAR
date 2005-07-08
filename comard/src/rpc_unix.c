@@ -17,19 +17,17 @@
 #include <unistd.h>
 
 #include "process.h"
+#include "acl.h"
 
 #define RPC_PIPE_NAME "/tmp/comar"
-
-struct creds {
-	pid_t pid;
-	uid_t uid;
-	gid_t gid;
-};
 
 struct connection {
 	struct connection *next, *prev;
 	int sock;
-	struct creds cred;
+	struct Creds cred;
+	char *buffer;
+	size_t size;
+	int pos;
 };
 
 static int pipe_fd;
@@ -65,13 +63,20 @@ create_pipe(const char *pipe_name)
 }
 
 static int
-get_peer(int sock, struct creds *cred)
+get_peer(int sock, struct Creds *cred)
 {
-	size_t size = sizeof(struct creds);
+	// this implementation requires a linux kernel
+	struct {
+		pid_t pid;
+		uid_t uid;
+		gid_t gid;
+	} tmp;
+	size_t size = sizeof(tmp);
 
-	// requires a linux kernel
-	if (0 != getsockopt(sock, SOL_SOCKET, SO_PEERCRED, cred, &size))
+	if (0 != getsockopt(sock, SOL_SOCKET, SO_PEERCRED, &tmp, &size))
 		return -1;
+	cred->uid = tmp.uid;
+	cred->gid = tmp.gid;
 	return 0;
 }
 
@@ -82,7 +87,33 @@ rem_conn(struct connection *c)
 	if (c->prev) c->prev->next = c->next;
 	if (c->next) c->next->prev = c->prev;
 	if (conns == c) conns = c->next;
+	free(c->buffer);
 	free(c);
+}
+
+static int
+read_rpc(struct connection *c)
+{
+	int len;
+	char *t;
+
+	len = recv(c->sock, c->buffer + c->pos, c->size - c->pos, 0);
+	if (len <= 0) return -1;
+
+	c->buffer[c->pos + len] = '\0';
+	t = strchr(c->buffer + c->pos, '\n');
+	if (t) {
+		*t = '\0';
+		// FIXME: parse and forward to the main process
+//		proc_send_cmd(TO_PARENT, CMD_CALL, 4 + len + 1);
+//		*(unsigned int *)&buffer[0] = (unsigned int) c;
+//		proc_send_data(TO_PARENT, buffer, 4 + len + 1);
+		printf("RPC [%s]\n", c->buffer);
+		c->pos = 0;
+	} else {
+		c->pos += len;
+	}
+	return 0;
 }
 
 static int
@@ -92,8 +123,6 @@ pipe_listen(void)
 	struct timeval tv;
 	struct connection *c;
 	int sock, max;
-	int len;
-	char buffer[1024];	// FIXME: totally lame
 
 	tv.tv_sec = 0;
 	tv.tv_usec = 500000;
@@ -119,12 +148,16 @@ pipe_listen(void)
 			if (sock >= 0) {
 				c = calloc(1, sizeof(struct connection));
 				c->sock = sock;
+				c->buffer = malloc(256);
+				c->size = 256;
+				c->pos = 0;
 				if (0 == get_peer(sock, &c->cred)) {
 					c->next = conns;
 					c->prev = NULL;
 					if (conns) conns->prev = c;
 					conns = c;
 				} else {
+					free(c->buffer);
 					free(c);
 				}
 			}
@@ -132,18 +165,14 @@ pipe_listen(void)
 		c = conns;
 		while (c) {
 			if (FD_ISSET(c->sock, &fds)) {
-				len = recv(c->sock, buffer + 4, sizeof(buffer) - 5, 0);
-				if (len <= 0) {
+				// incoming rpc data
+				if (read_rpc(c)) {
 					struct connection *tmp;
 					tmp = c->next;
 					rem_conn(c);
 					c = tmp;
 					continue;
 				}
-				buffer[len + 4] = '\0';
-				proc_send_cmd(TO_PARENT, CMD_CALL, 4 + len + 1);
-				*(unsigned int *)&buffer[0] = (unsigned int) c;
-				proc_send_data(TO_PARENT, buffer, 4 + len + 1);
 			}
 			c = c->next;
 		}

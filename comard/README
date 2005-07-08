@@ -3,6 +3,7 @@ COMARd
 ======
 
 Modüller:
+---------
 * model.c		Sistem modelini yükleme/indeksleme
 * data.c		Veritabanı (acl, script, apps, model, config)
 * job.c			İş yapan süreçler (Register, Execute, Remove script)
@@ -12,7 +13,23 @@ Modüller:
 * main.c		Ana süreç
 
 Kod stili:
+----------
 * K&R
 * Fonksiyon isimleri (module)_(görev) şeklinde
 * Ana süreçte hazırlık işlemleri (module)_init
 * Yeni bir süreç başlatan fonksiyonlar (module)_start [ _(opsiyonel isim)]
+
+RPC:
+----
+biçim:
+(komut) (parametreler) '\n'
+
+komutlar:
++ Register
+- Remove
+$ Call
+
+örnekler:
++ Net.NIC eth "/home/gurer/lala.csl"
+- eth
+$ Net.NIC.autoConfig

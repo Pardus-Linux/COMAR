@@ -7,11 +7,14 @@
 ** option) any later version. Please read the COPYING file.
 */
 
-#ifndef JOB_H
-#define JOB_H 1
+#ifndef ACL_H
+#define ACL_H 1
 
-int job_start_register(int node_no, const char *app, const char *csl_file);
-int job_start_execute(int node_no, const char *app);
+struct Creds {
+	uid_t uid;
+	gid_t gid;
+	// there'll be other fields
+};
 
 
-#endif /* JOB_H */
+#endif /* ACL_H */

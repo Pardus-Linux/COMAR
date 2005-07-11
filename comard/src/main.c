@@ -45,6 +45,9 @@ main(int argc, char *argv[])
 				case CMD_REMOVE:
 					break;
 				case CMD_CALL:
+					proc_recv(p, &data, size);
+					printf("Call(%d)\n", data->node);
+					job_start_execute(data->node, NULL);
 					break;
 			}
 		}

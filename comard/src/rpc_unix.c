@@ -123,9 +123,20 @@ printf("RPC [%s]\n", c->buffer);
 			strcpy(&cmd->data[0], t);
 			strcpy(&cmd->data[0] + strlen(t) + 1, s);
 			proc_send(TO_PARENT, CMD_REGISTER, cmd, size);
+			free(cmd);
 			return 0;
 		case '-':
+			return 0;
 		case '$':
+			// call cmd, method name, (app name), (args)
+			no = model_lookup_method(t);
+			if (no == -1) return -1;
+			{
+				struct call_cmd cmd;
+				cmd.node = no;
+				proc_send(TO_PARENT, CMD_CALL, &cmd, sizeof(cmd));
+			}
+			return 0;
 		default:
 			return -1;
 	}

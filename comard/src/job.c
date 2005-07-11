@@ -15,16 +15,8 @@
 #include "csl.h"
 #include "process.h"
 #include "data.h"
-
-struct reg_cmd {
-	int node_no;
-	size_t app_len;
-	char data[2];
-};
-
-struct exec_cmd {
-	int node_no;
-};
+#include "model.h"
+#include "rpc.h"
 
 static unsigned char *
 load_file(const char *fname, int *sizeptr)
@@ -72,29 +64,31 @@ register_proc(void)
 	char *code;
 	size_t codelen;
 	int e;
+	int c;
+	size_t size;
 
 	while (1) {
-		if (1 == proc_listen(&sender, 1)) break;
+		if (1 == proc_listen(&sender, &c, &size, 1)) break;
 	}
-	proc_get_data(sender, &cmd);
+	proc_recv(sender, &cmd, size);
 
 	csl_setup();
 
 	buf = load_file(&cmd->data[0] + cmd->app_len + 1, NULL);
 	if (!buf) {
-		proc_send_cmd(TO_PARENT, CMD_FAIL, 0);
+		proc_send(TO_PARENT, CMD_FAIL, NULL, 0);
 		exit(1);
 	}
 
 	e = csl_compile(buf, "test", &code, &codelen);
 	if (e) {
-		proc_send_cmd(TO_PARENT, CMD_FAIL, 0);
+		proc_send(TO_PARENT, CMD_FAIL, NULL, 0);
 		exit(1);
 	}
 
-	db_put_script(cmd->node_no, &cmd->data[0], code, codelen);
+	db_put_script(cmd->node, &cmd->data[0], code, codelen);
 
-	proc_send_cmd(TO_PARENT, CMD_RESULT, 0);
+	proc_send(TO_PARENT, CMD_RESULT, NULL, 0);
 
 	csl_cleanup();
 }
@@ -109,7 +103,7 @@ job_start_register(int node_no, const char *app, const char *csl_file)
 	sz = sizeof(struct reg_cmd) + strlen(app) + strlen(csl_file);
 	cmd = malloc(sz);
 	if (!cmd) return -1;
-	cmd->node_no = node_no;
+	cmd->node = node_no;
 	cmd->app_len = strlen(app);
 	strcpy(&cmd->data[0], app);
 	strcpy(&cmd->data[0] + strlen(app) + 1, csl_file);
@@ -118,8 +112,7 @@ job_start_register(int node_no, const char *app, const char *csl_file)
 		free(cmd);
 		return -1;
 	}
-	proc_send_cmd(p, CMD_CALL, sz);
-	proc_send_data(p, cmd, sz);
+	proc_send(p, CMD_CALL, cmd, sz);
 	free(cmd);
 	return 0;
 }
@@ -128,29 +121,30 @@ static void
 exec_proc(void)
 {
 	struct ProcChild *sender;
-	struct exec_cmd *cmd;
+	struct call_cmd *cmd;
 	char *apps;
 	char *code;
 	char *res;
 	size_t reslen;
 	size_t size;
+	int c;
 	int e;
 
 	while (1) {
-		if (1 == proc_listen(&sender, 1)) break;
+		if (1 == proc_listen(&sender, &c, &size, 1)) break;
 	}
-	proc_get_data(sender, &cmd);
+	proc_recv(sender, &cmd, size);
 
 	csl_setup();
 
-	if (db_open_node(model_parent(cmd->node_no), &apps) != 0) {
-		proc_send_cmd(TO_PARENT, CMD_FAIL, 0);
+	if (db_open_node(model_parent(cmd->node), &apps) != 0) {
+		proc_send(TO_PARENT, CMD_FAIL, NULL, 0);
 		exit(1);
 	}
 
 	// FIXME: multiple apps & value return
 	db_get_code(apps, &code, &size);
-	e = csl_execute(code, size, model_get_method(cmd->node_no), &res, &reslen);
+	e = csl_execute(code, size, model_get_method(cmd->node), &res, &reslen);
 	free(res);
 
 	db_close_node();
@@ -162,13 +156,12 @@ int
 job_start_execute(int node_no, const char *app) // FIXME: args
 {
 	struct ProcChild *p;
-	struct exec_cmd cmd;
+	struct call_cmd cmd;
 
-	cmd.node_no = node_no;
+	cmd.node = node_no;
 
 	p = proc_fork(exec_proc);
 	if (!p) return -1;
-	proc_send_cmd(p, CMD_CALL, sizeof(struct exec_cmd));
-	proc_send_data(p, &cmd, sizeof(struct exec_cmd));
+	proc_send(p, CMD_CALL, &cmd, sizeof(struct call_cmd));
 	return 0;
 }

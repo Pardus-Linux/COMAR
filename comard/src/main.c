@@ -22,7 +22,8 @@ int
 main(int argc, char *argv[])
 {
 	struct ProcChild *p, *rpc;
-	char *data;
+//	char *data;
+	int cmd;
 	int size;
 
 	cfg_init(argc, argv);
@@ -34,8 +35,8 @@ main(int argc, char *argv[])
 	rpc = proc_fork(rpc_unix_start);
 
 	while (1) {
-		if (1 == proc_listen(&p, 1)) {
-			printf("Child %d said %d, %d.\n", p->pid, p->cmd.cmd, p->cmd.data_size);
+		if (1 == proc_listen(&p, &cmd, &size, 1)) {
+			printf("Child %d said %d, %d.\n", p->pid, cmd, size);
 /*			if (p == rpc) {
 				size = p->cmd.data_size - 4;
 				proc_get_data(p, &data);

@@ -14,6 +14,7 @@
 
 #include "csl.h"
 #include "process.h"
+#include "rpc.h"
 
 static PyObject *
 c_call(PyObject *self, PyObject *args)
@@ -24,8 +25,7 @@ c_call(PyObject *self, PyObject *args)
 	if (!PyArg_ParseTuple(args, "s#", &func, &size))
 		return NULL;
 
-	proc_send_cmd(TO_PARENT, CMD_CALL, size);
-	proc_send_data(TO_PARENT, func, size);
+	proc_send(TO_PARENT, CMD_CALL, func, size);
 
 	Py_INCREF(Py_None);
 	return Py_None;

@@ -19,6 +19,7 @@
 #include "process.h"
 #include "model.h"
 #include "acl.h"
+#include "rpc.h"
 
 #define RPC_PIPE_NAME "/tmp/comar"
 
@@ -215,6 +216,8 @@ rpc_unix_start(void)
 {
 	struct ProcChild *p;
 	struct connection *c, *t;
+	int cmd;
+	size_t size;
 
 	if (create_pipe(RPC_PIPE_NAME) != 0) {
 		puts("RPC_UNIX: Cannot create listening pipe");
@@ -223,14 +226,14 @@ rpc_unix_start(void)
 	printf("RPC_UNIX: listening on %s\n", RPC_PIPE_NAME);
 
 	while (1) {
-		if (1 == proc_listen(&p, 0)) {
+		if (1 == proc_listen(&p, &cmd, &size, 0)) {
 			char *b;
-			if (p->cmd.cmd != CMD_RESULT) continue;
-			proc_get_data(p, &b);
+			if (cmd != CMD_RESULT) continue;
+			proc_recv(p, &b, size);
 			c = ((struct connection **)b)[0];
 			for (t = conns; t; t = t->next) {
 				if (t == c) {
-					send(c->sock, b + 4, p->cmd.data_size - 4, 0);
+					send(c->sock, b + 4, size - 4, 0);
 				}
 			}
 			free(b);

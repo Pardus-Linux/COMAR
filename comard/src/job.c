@@ -112,7 +112,7 @@ job_start_register(int node_no, const char *app, const char *csl_file)
 		free(cmd);
 		return -1;
 	}
-	proc_send(p, CMD_CALL, cmd, sz);
+	proc_send(p, CMD_REGISTER, cmd, sz);
 	free(cmd);
 	return 0;
 }

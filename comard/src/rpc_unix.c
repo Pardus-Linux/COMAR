@@ -96,6 +96,8 @@ rem_conn(struct connection *c)
 static int
 parse_rpc(struct connection *c)
 {
+	struct reg_cmd *cmd;
+	size_t size;
 	char *t, *s;
 	int no;
 
@@ -113,7 +115,14 @@ printf("RPC [%s]\n", c->buffer);
 			s = strchr(t, ' ');
 			if (!s) return -1;
 			*s = '\0';
-			printf("Register node %d app %s\n", no, t);
+			++s;
+			size = sizeof(struct reg_cmd) + strlen(t) + strlen(s);
+			cmd = malloc(size);
+			cmd->node = no;
+			cmd->app_len = strlen(t);
+			strcpy(&cmd->data[0], t);
+			strcpy(&cmd->data[0] + strlen(t) + 1, s);
+			proc_send(TO_PARENT, CMD_REGISTER, cmd, size);
 			return 0;
 		case '-':
 		case '$':
@@ -121,9 +130,6 @@ printf("RPC [%s]\n", c->buffer);
 			return -1;
 	}
 	return 0;
-//		proc_send_cmd(TO_PARENT, CMD_CALL, 4 + len + 1);
-//		*(unsigned int *)&buffer[0] = (unsigned int) c;
-//		proc_send_data(TO_PARENT, buffer, 4 + len + 1);
 }
 
 static int

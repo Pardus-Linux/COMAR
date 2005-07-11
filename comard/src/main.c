@@ -22,7 +22,7 @@ int
 main(int argc, char *argv[])
 {
 	struct ProcChild *p, *rpc;
-//	char *data;
+	struct reg_cmd *data;
 	int cmd;
 	int size;
 
@@ -36,40 +36,17 @@ main(int argc, char *argv[])
 
 	while (1) {
 		if (1 == proc_listen(&p, &cmd, &size, 1)) {
-			printf("Child %d said %d, %d.\n", p->pid, cmd, size);
-/*			if (p == rpc) {
-				size = p->cmd.data_size - 4;
-				proc_get_data(p, &data);
-				p = proc_fork(job_start);
-				p->data = ((void **)data)[0];
-				proc_send_cmd(p, CMD_CALL, size);
-				proc_send_data(p, data + 4, size);
-				free(data);
-			} else {
-				switch(p->cmd.cmd) {
-					case CMD_CALL:
-						// another call from object
-						size = p->cmd.data_size;
-						proc_get_data(p, &data);
-						p = proc_fork(job_start);
-						p->data = NULL;
-						proc_send_cmd(p, CMD_CALL, size);
-						proc_send_data(p, data, size);
-						free(data);
-						break;
-					case CMD_RESULT:
-						if (p->data) {
-							char *b2;
-							proc_get_data(p, &data);
-							b2 = malloc(4 + p->cmd.data_size);
-							memcpy(b2 + 4, data, p->cmd.data_size);
-							*(unsigned int *)&b2[0] = (unsigned int) p->data;
-							proc_send_cmd(rpc, CMD_RESULT, p->cmd.data_size + 4);
-							proc_send_data(rpc, b2, 4 + p->cmd.data_size);
-						}
-						break;
-				}
-			} */
+			switch (cmd) {
+				case CMD_REGISTER:
+					proc_recv(p, &data, size);
+					printf("Register(%d, %s, %s)\n", data->node, data->data, &data->data[0] + data->app_len + 1);
+					job_start_register(data->node, data->data, &data->data[0] + data->app_len + 1);
+					break;
+				case CMD_REMOVE:
+					break;
+				case CMD_CALL:
+					break;
+			}
 		}
 //		puts("tick");
 	}

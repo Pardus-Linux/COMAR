@@ -16,8 +16,7 @@
 #include "model.h"
 #include "data.h"
 #include "job.h"
-
-void rpc_unix_start(void);
+#include "rpc.h"
 
 int
 main(int argc, char *argv[])

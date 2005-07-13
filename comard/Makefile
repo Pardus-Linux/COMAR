@@ -13,7 +13,8 @@ OBJS = \
 	src/process.o \
 	src/csl.o \
 	src/data.o \
-	src/rpc_unix.o
+	src/rpc_unix.o \
+	src/iksemel.o
 
 comar: $(OBJS)
 	$(CC) -o $@ $(OBJS) -ldb $(PYTHON_LIBS)

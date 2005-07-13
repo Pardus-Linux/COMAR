@@ -10,6 +10,9 @@
 #ifndef CFG_H
 #define CFG_H 1
 
+extern char *cfg_model_file;
+extern char *cfg_data_dir;
+
 void cfg_init(int argc, char *argv[]);
 
 

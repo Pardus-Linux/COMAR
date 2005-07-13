@@ -1,0 +1,12 @@
+<comar>
+<model name='PARDUS'>
+
+<group name='Net'>
+	<object name='NIC'>
+		<method name='up'/>
+		<method name='down'/>
+	</object>
+</group>
+
+</model>
+</comar>

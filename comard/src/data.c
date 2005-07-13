@@ -14,10 +14,8 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
+#include "cfg.h"
 #include "data.h"
-
-// for testing without root, final place would probably be /var/lib/comar
-#define COMAR_DATA_DIR "db"
 
 static DB_ENV *my_env;
 static int nr_open_dbs;
@@ -27,9 +25,9 @@ db_init(void)
 {
 	struct stat fs;
 
-	if (stat(COMAR_DATA_DIR, &fs) != 0) {
-		if (0 != mkdir(COMAR_DATA_DIR, S_IRWXU)) {
-			printf("Cannot create data dir '%s'\n", COMAR_DATA_DIR);
+	if (stat(cfg_data_dir, &fs) != 0) {
+		if (0 != mkdir(cfg_data_dir, S_IRWXU)) {
+			printf("Cannot create data dir '%s'\n", cfg_data_dir);
 			return -1;
 		}
 	} else {
@@ -52,7 +50,7 @@ open_db(const char *name)
 			printf("Cannot create env, %s\n", db_strerror(e));
 			return NULL;
 		}
-		e = my_env->open(my_env, COMAR_DATA_DIR, DB_INIT_LOCK | DB_INIT_MPOOL
+		e = my_env->open(my_env, cfg_data_dir, DB_INIT_LOCK | DB_INIT_MPOOL
 				| DB_INIT_LOG | DB_INIT_TXN | DB_CREATE, 0);
 		if (e) {
 			printf("Cannot open env, %s\n", db_strerror(e));

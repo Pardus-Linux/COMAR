@@ -7,13 +7,17 @@
 ** option) any later version. Please read the COPYING file.
 */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "i18n.h"
+#include "iksemel.h"
+#include "cfg.h"
 #include "model.h"
 
 enum {
-	N_MODULE,
+	N_GROUP,
 	N_OBJECT,
 	N_METHOD
 };
@@ -81,18 +85,116 @@ add_node(int parent_no, const char *path, int type)
 	return n->no;
 }
 
+static char *
+build_path(iks *g, iks *o, iks *m)
+{
+	static char *ptr = NULL;
+
+	if (ptr) {
+		ptr += strlen(ptr) + 1;
+	} else {
+		ptr = paths;
+	}
+
+	if (m) {
+		sprintf(ptr, "%s.%s.%s",
+			iks_find_attrib(g, "name"),
+			iks_find_attrib(o, "name"),
+			iks_find_attrib(m, "name")
+		);
+	} else if (o) {
+		sprintf(ptr, "%s.%s",
+			iks_find_attrib(g, "name"),
+			iks_find_attrib(o, "name")
+		);
+	} else {
+		strcpy(ptr, iks_find_attrib(g, "name"));
+	}
+
+	return ptr;
+}
+
 int
 model_init(void)
 {
-	int no;
+	iks *doc, *model;
+	iks *grp, *obj, *met;
+	int count = 0;
+	size_t size = 0;
+	size_t grp_size, obj_size, met_size;
+	int grp_no, obj_no;
+	int e;
 
-	// FIXME: silly test case, replace with real loader
-	if (prepare_tables(4, 128)) return -1;
+	// parse model file
+	e = iks_load(cfg_model_file, &doc);
+	if (e) {
+		fprintf(stderr, "Cannot process model file '%s'\n", cfg_model_file);
+		return -1;
+	}
 
-	no = add_node(-1, "Net", N_MODULE);
-	no = add_node(no, "Net.NIC", N_OBJECT);
-	add_node(no, "Net.NIC.up", N_METHOD);
-	add_node(no, "Net.NIC.down", N_METHOD);
+	model = iks_find(doc, "model");
+	if (iks_strcmp(iks_name(doc), "comar") != 0 || model == NULL) {
+		fprintf(stderr, "Not a COMAR model file '%s'\n", cfg_model_file);
+		return -1;
+	}
+
+	// scan the model
+	for (grp = iks_first_tag(model); grp; grp = iks_next_tag(grp)) {
+		if (iks_strcmp(iks_name(grp), "group") == 0) {
+			grp_size = iks_strlen(iks_find_attrib(grp, "name"));
+			if (!grp_size) {
+				fprintf(stderr, "Broken COMAR model file '%s'\n", cfg_model_file);
+				return -1;
+			}
+			size += grp_size + 1;
+			++count;
+			for (obj = iks_first_tag(grp); obj; obj = iks_next_tag(obj)) {
+				if (iks_strcmp(iks_name(obj), "object") == 0) {
+					obj_size = iks_strlen(iks_find_attrib(obj, "name"));
+					if (!obj_size) {
+						fprintf(stderr, "Broken COMAR model file '%s'\n", cfg_model_file);
+						return -1;
+					}
+					size += grp_size + obj_size + 2;
+					++count;
+					for (met = iks_first_tag(obj); met; met = iks_next_tag(met)) {
+						if (iks_strcmp(iks_name(met), "method") == 0) {
+							met_size = iks_strlen(iks_find_attrib(met, "name"));
+							if (!met_size) {
+								fprintf(stderr, "Broken COMAR model file '%s'\n", cfg_model_file);
+								return -1;
+							}
+							size += grp_size + obj_size + met_size + 3;
+							++count;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// prepare data structures
+	if (prepare_tables(nr_nodes, size)) return -1;
+
+	// load the model
+	for (grp = iks_first_tag(model); grp; grp = iks_next_tag(grp)) {
+		if (iks_strcmp(iks_name(grp), "group") == 0) {
+			grp_no = add_node(-1, build_path(grp, NULL, NULL), N_GROUP);
+			for (obj = iks_first_tag(grp); obj; obj = iks_next_tag(obj)) {
+				if (iks_strcmp(iks_name(obj), "object") == 0) {
+					obj_no = add_node(grp_no, build_path(grp, obj, NULL), N_OBJECT);
+					for (met = iks_first_tag(obj); met; met = iks_next_tag(met)) {
+						if (iks_strcmp(iks_name(met), "method") == 0) {
+							add_node(obj_no, build_path(grp, obj, met), N_METHOD);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// no need to keep dom tree in memory
+	iks_delete(doc);
 
 	return 0;
 }

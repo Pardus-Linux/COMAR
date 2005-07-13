@@ -30,7 +30,7 @@ main(int argc, char *argv[])
 
 	if (db_init() != 0) return 1;
 	proc_init();
-	model_init();
+	if (model_init() != 0) return 1;
 
 	rpc = proc_fork(rpc_unix_start);
 

@@ -30,6 +30,6 @@ komutlar:
 $ Call
 
 örnekler:
-+ Net.NIC eth "/home/gurer/lala.csl"
-- eth
-$ Net.NIC.autoConfig
++Net.NIC eth "/home/gurer/lala.csl"
+-eth
+$Net.NIC.autoConfig

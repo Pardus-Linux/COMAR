@@ -94,9 +94,44 @@ rem_conn(struct connection *c)
 }
 
 static int
+get_str(char **str, char **arg)
+{
+	char *s, *t;
+
+	s = *str;
+	if (s == NULL) return -1;
+	if (s[0] == '"') {
+		// quoted string
+		// FIXME: handle escape codes
+		++s;
+		*arg = s;
+		t = strchr(s, '"');
+		if (t) {
+			*t = '\0';
+			++t;
+			if (t[0] == ' ') ++t;
+			*str = t;
+		} else {
+			return -1;
+		}
+	} else {
+		// plain string
+		*arg = s;
+		t = strchr(s, ' ');
+		if (t) {
+			*t = '\0';
+			*str = t + 1;
+		} else {
+			*str = NULL;
+		}
+	}
+	return 0;
+}
+
+static int
 parse_rpc(struct connection *c)
 {
-	struct reg_cmd *cmd;
+	struct ipc_data *ipc;
 	size_t size;
 	char *t, *s;
 	int no;
@@ -106,36 +141,31 @@ printf("RPC [%s]\n", c->buffer);
 	switch (c->buffer[0]) {
 		case '+':
 			// register cmd, object name, app name, file name follows
-			s = strchr(t, ' ');
-			if (!s) return -1;
-			*s = '\0';
-			no = model_lookup_object(t);
+			if (get_str(&t, &s)) return -1;
+			no = model_lookup_object(s);
 			if (no == -1) return -1;
-			t = s + 1;
-			s = strchr(t, ' ');
-			if (!s) return -1;
-			*s = '\0';
-			++s;
-			size = sizeof(struct reg_cmd) + strlen(t) + strlen(s);
-			cmd = malloc(size);
-			cmd->node = no;
-			cmd->app_len = strlen(t);
-			strcpy(&cmd->data[0], t);
-			strcpy(&cmd->data[0] + strlen(t) + 1, s);
-			proc_send(TO_PARENT, CMD_REGISTER, cmd, size);
-			free(cmd);
+			if (get_str(&t, &s)) return -1;
+			size = sizeof(struct ipc_data) + strlen(t) + strlen(s);
+			ipc = malloc(size);
+			ipc->node = no;
+			ipc->app_len = strlen(s);
+			strcpy(&ipc->data[0], s);
+			strcpy(&ipc->data[0] + strlen(s) + 1, t);
+			proc_send(TO_PARENT, CMD_REGISTER, ipc, size);
+			free(ipc);
 			return 0;
 		case '-':
+			// app name
 			return 0;
 		case '$':
 			// call cmd, method name, (app name), (args)
 			no = model_lookup_method(t);
 			if (no == -1) return -1;
-			{
-				struct call_cmd cmd;
-				cmd.node = no;
-				proc_send(TO_PARENT, CMD_CALL, &cmd, sizeof(cmd));
-			}
+			size = sizeof(struct ipc_data);
+			ipc = malloc(size);
+			ipc->node = no;
+			proc_send(TO_PARENT, CMD_CALL, ipc, sizeof(size));
+			free(ipc);
 			return 0;
 		default:
 			return -1;

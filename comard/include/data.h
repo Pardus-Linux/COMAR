@@ -24,8 +24,8 @@ int db_get_data(const char *key, char **bufferp, size_t *sizep);
 int db_put_data(const char *key, const char *buffer, size_t size);
 void db_close_storage(void);
 
-int db_get_acl(int node_no, const char *method, char **bufferp, size_t *sizep);
-int db_put_acl(int node_no, const char *method, const char *buffer, size_t size);
+int db_get_acl(int node_no, char **bufferp, size_t *sizep);
+int db_put_acl(int node_no, const char *buffer, size_t size);
 
 
 #endif /* DB_H */

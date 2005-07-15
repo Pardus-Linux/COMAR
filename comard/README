@@ -4,13 +4,15 @@ COMARd
 
 Modüller:
 ---------
+* main.c		Ana süreç
 * model.c		Sistem modelini yükleme/indeksleme
 * data.c		Veritabanı (acl, script, apps, model, config)
+* csl.c			CSL - Python VM yardımcıları
 * job.c			İş yapan süreçler (Register, Execute, Remove script)
 * process.c		Süreç yönetimi ve süreçler arası iletişim
 * cfg.c			Komut satırı parametreleri
 * rpc_unix.c	Unix soket üzerinden comar çağrısı modülü
-* main.c		Ana süreç
+* iksemel.c		Model dosyasını okumak için dahili minimal XML parser
 
 Kod stili:
 ----------

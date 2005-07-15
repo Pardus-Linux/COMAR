@@ -128,15 +128,46 @@ make_list(char *old, const char *item)
 int
 db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 {
-	DB *code_db = NULL, *model_db = NULL;
+	DB *code_db = NULL, *model_db = NULL, *app_db = NULL;
 	DBT key, data;
 	char *old;
 	int e, ret = -1;
 
-	code_db = open_db("code.db");
-	if (!code_db) goto out;
+	app_db = open_db("app.db");
+	if (!app_db) goto out;
 	model_db = open_db("model.db");
 	if (!model_db) goto out;
+	code_db = open_db("code.db");
+	if (!code_db) goto out;
+
+	memset(&key, 0, sizeof(DBT));
+	memset(&data, 0, sizeof(DBT));
+	key.data = app;
+	key.size = strlen(key.data);
+	data.flags = DB_DBT_MALLOC;
+
+	e = app_db->get(app_db, NULL, &key, &data, 0);
+	if (e == DB_NOTFOUND) {
+		old = "";
+	} else if (e) {
+		goto out;
+	} else {
+		old = data.data;
+	}
+
+	if (strstr(old, make_key(node_no, NULL)) == NULL) {
+		memset(&key, 0, sizeof(DBT));
+		memset(&data, 0, sizeof(DBT));
+		key.data = app;
+		key.size = strlen(key.data);
+		data.data = make_list(old, make_key(node_no, NULL));
+		data.size = strlen(data.data) + 1;
+
+		e = app_db->put(app_db, NULL, &key, &data, 0);
+		free(data.data);
+		if (e) goto out;
+	}
+	if (strcmp(old, "") != 0) free(old);
 
 	memset(&key, 0, sizeof(DBT));
 	memset(&data, 0, sizeof(DBT));
@@ -180,15 +211,54 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 
 	ret = 0;
 out:
-	if (model_db) close_db(model_db);
 	if (code_db) close_db(code_db);
+	if (model_db) close_db(model_db);
+	if (app_db) close_db(app_db);
 	return ret;
 }
 
 int
 db_del_app(const char *app)
 {
-	return -1;
+	DB *code_db = NULL, *model_db = NULL, *app_db = NULL;
+	DBT key, data;
+	char *list;
+	int e, ret = -1;
+
+	app_db = open_db("app.db");
+	if (!app_db) goto out;
+	model_db = open_db("model.db");
+	if (!model_db) goto out;
+	code_db = open_db("code.db");
+	if (!code_db) goto out;
+
+	memset(&key, 0, sizeof(DBT));
+	memset(&data, 0, sizeof(DBT));
+	key.data = app;
+	key.size = strlen(key.data);
+	data.flags = DB_DBT_MALLOC;
+
+	e = app_db->get(app_db, NULL, &key, &data, 0);
+	if (e == DB_NOTFOUND) {
+		puts("no such app");
+		goto out;
+	} else if (e) {
+		goto out;
+	} else {
+		printf("app %s registered (%s)\n", app, data.data);
+		list = data.data;
+	}
+
+//	e = 
+
+	free(list);
+
+	ret = 0;
+out:
+	if (code_db) close_db(code_db);
+	if (model_db) close_db(model_db);
+	if (app_db) close_db(app_db);
+	return ret;
 }
 
 static DB *n_code_db;

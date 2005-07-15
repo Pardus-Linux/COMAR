@@ -10,8 +10,9 @@
 #ifndef JOB_H
 #define JOB_H 1
 
-int job_start_register(int node_no, const char *app, const char *csl_file);
-int job_start_execute(int node_no, const char *app);
+#include "rpc.h"
+
+int job_start(int cmd, struct ipc_data *ipc_msg, size_t ipc_size);
 
 
 #endif /* JOB_H */

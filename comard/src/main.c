@@ -22,7 +22,7 @@ int
 main(int argc, char *argv[])
 {
 	struct ProcChild *p, *rpc;
-	struct reg_cmd *data;
+	struct ipc_data *ipc;
 	int cmd;
 	int size;
 
@@ -38,16 +38,11 @@ main(int argc, char *argv[])
 		if (1 == proc_listen(&p, &cmd, &size, 1)) {
 			switch (cmd) {
 				case CMD_REGISTER:
-					proc_recv(p, &data, size);
-					printf("Register(%d, %s, %s)\n", data->node, data->data, &data->data[0] + data->app_len + 1);
-					job_start_register(data->node, data->data, &data->data[0] + data->app_len + 1);
-					break;
 				case CMD_REMOVE:
-					break;
 				case CMD_CALL:
-					proc_recv(p, &data, size);
-					printf("Call(%d)\n", data->node);
-					job_start_execute(data->node, NULL);
+					proc_recv(p, &ipc, size);
+					job_start(cmd, ipc, size);
+					free(ipc);
 					break;
 			}
 		}

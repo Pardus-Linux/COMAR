@@ -55,26 +55,17 @@ load_file(const char *fname, int *sizeptr)
 	return data;
 }
 
-static void
-register_proc(void)
+static int
+do_register(int node, const char *app, const char *fname)
 {
-	struct reg_cmd *cmd;
-	struct ProcChild *sender;
 	char *buf;
 	char *code;
 	size_t codelen;
 	int e;
-	int c;
-	size_t size;
-
-	while (1) {
-		if (1 == proc_listen(&sender, &c, &size, 1)) break;
-	}
-	proc_recv(sender, &cmd, size);
-
+printf("Register(%d,%s,%s)\n", node, app, fname);
 	csl_setup();
 
-	buf = load_file(&cmd->data[0] + cmd->app_len + 1, NULL);
+	buf = load_file(fname, NULL);
 	if (!buf) {
 		proc_send(TO_PARENT, CMD_FAIL, NULL, 0);
 		exit(1);
@@ -86,82 +77,84 @@ register_proc(void)
 		exit(1);
 	}
 
-	db_put_script(cmd->node, &cmd->data[0], code, codelen);
+	db_put_script(node, app, code, codelen);
 
 	proc_send(TO_PARENT, CMD_RESULT, NULL, 0);
 
 	csl_cleanup();
-}
 
-int
-job_start_register(int node_no, const char *app, const char *csl_file)
-{
-	struct ProcChild *p;
-	struct reg_cmd *cmd;
-	size_t sz;
-
-	sz = sizeof(struct reg_cmd) + strlen(app) + strlen(csl_file);
-	cmd = malloc(sz);
-	if (!cmd) return -1;
-	cmd->node = node_no;
-	cmd->app_len = strlen(app);
-	strcpy(&cmd->data[0], app);
-	strcpy(&cmd->data[0] + strlen(app) + 1, csl_file);
-	p = proc_fork(register_proc);
-	if (!p) {
-		free(cmd);
-		return -1;
-	}
-	proc_send(p, CMD_REGISTER, cmd, sz);
-	free(cmd);
 	return 0;
 }
 
-static void
-exec_proc(void)
+static int
+do_remove(const char *app)
 {
-	struct ProcChild *sender;
-	struct call_cmd *cmd;
-	char *apps;
+printf("Remove(%s)\n", app);
+	return -1;
+}
+
+static int
+do_call(int node)		// FIXME: app, args
+{
 	char *code;
 	char *res;
+	char *apps;
 	size_t reslen;
 	size_t size;
-	int c;
 	int e;
-
-	while (1) {
-		if (1 == proc_listen(&sender, &c, &size, 1)) break;
-	}
-	proc_recv(sender, &cmd, size);
-
+printf("Call(%d)\n", node);
 	csl_setup();
 
-	if (db_open_node(model_parent(cmd->node), &apps) != 0) {
+	if (db_open_node(model_parent(node), &apps) != 0) {
 		proc_send(TO_PARENT, CMD_FAIL, NULL, 0);
 		exit(1);
 	}
 
 	// FIXME: multiple apps & value return
 	db_get_code(apps, &code, &size);
-	e = csl_execute(code, size, model_get_method(cmd->node), &res, &reslen);
+	e = csl_execute(code, size, model_get_method(node), &res, &reslen);
 	free(res);
 
 	db_close_node();
 
 	csl_cleanup();
+
+	return 0;
+}
+
+static void
+job_proc(void)
+{
+	struct ProcChild *sender;
+	struct ipc_data *ipc;
+	int cmd;
+	size_t size;
+
+	while (1) {
+		if (1 == proc_listen(&sender, &cmd, &size, 1)) break;
+	}
+	proc_recv(sender, &ipc, size);
+
+	switch (cmd) {
+		case CMD_REGISTER:
+			do_register(ipc->node, &ipc->data[0], &ipc->data[0] + ipc->app_len + 1);
+			break;
+		case CMD_REMOVE:
+			do_remove(&ipc->data[0]);
+			break;
+		case CMD_CALL:
+			do_call(ipc->node);
+			break;
+	}
 }
 
 int
-job_start_execute(int node_no, const char *app) // FIXME: args
+job_start(int cmd, struct ipc_data *ipc_msg, size_t ipc_size)
 {
 	struct ProcChild *p;
-	struct call_cmd cmd;
 
-	cmd.node = node_no;
-
-	p = proc_fork(exec_proc);
+	p = proc_fork(job_proc);
 	if (!p) return -1;
-	proc_send(p, CMD_CALL, &cmd, sizeof(struct call_cmd));
+	if (proc_send(p, cmd, ipc_msg, ipc_size)) return -1;
 	return 0;
 }

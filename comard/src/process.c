@@ -160,11 +160,15 @@ proc_send(struct ProcChild *p, int cmd, const void *data, size_t size)
 }
 
 int
-proc_recv(struct ProcChild *p, void **datap, size_t size)
+proc_recv(struct ProcChild *p, void *datap, size_t size)
 {
-	*datap = malloc(size);
-	if (NULL == *datap) return -1;
-	if (proc_recv_to(p, *datap, size)) return -2;
+	char **datap2;
+
+	datap2 = (char **) datap;
+	*datap2 = malloc(size);
+	if (NULL == *datap2) return -1;
+	if (proc_recv_to(p, *datap2, size)) return -2;
+
 //printf("get_data(%p, %d [%.*s])\n", p, size, size, *datap);
 	return 0;
 }

@@ -20,15 +20,10 @@ enum {
 	CMD_CALL
 };
 
-struct reg_cmd {
+struct ipc_data {
 	int node;
 	size_t app_len;
 	char data[4];
-};
-
-struct call_cmd {
-	int node;
-	// FIXME: parameters
 };
 
 void rpc_unix_start(void);

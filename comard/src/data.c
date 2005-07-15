@@ -222,7 +222,7 @@ db_del_app(const char *app)
 {
 	DB *code_db = NULL, *model_db = NULL, *app_db = NULL;
 	DBT key, data;
-	char *list;
+	char *list, *list2, *t, *s;
 	int e, ret = -1;
 
 	app_db = open_db("app.db");
@@ -249,9 +249,60 @@ db_del_app(const char *app)
 		list = data.data;
 	}
 
-//	e = 
+	for (t = list; t; t = s) {
+		s = strchr(t, '/');
+		if (s) {
+			*s = '\0';
+			++s;
+		}
+
+		memset(&key, 0, sizeof(DBT));
+		memset(&data, 0, sizeof(DBT));
+		key.data = t;
+printf("get model '%s'\n", key.data);
+		key.size = strlen(key.data);
+		data.flags = DB_DBT_MALLOC;
+		e = model_db->get(model_db, NULL, &key, &data, 0);
+		if (e) goto out;
+		list2 = data.data;
+printf("del model(%s) %s\n", t, list2);
+		memset(&key, 0, sizeof(DBT));
+		memset(&data, 0, sizeof(DBT));
+		key.data = t;
+		key.size = strlen(key.data);
+		data.data = list2;
+printf("old node list '%s'\n", list2);
+		{
+			char *k;
+			int sa = strlen(app);
+			k = strstr(list2, app);
+			if (k) {
+				if (k[sa] == '/') ++sa;
+				memmove(k, k + sa, strlen(k) - sa + 1);
+				data.size = strlen(list2);
+printf("old node list '%s'\n", list2);
+				e = model_db->put(model_db, NULL, &key, &data, 0);
+				if (e) goto out;
+			}
+		}
+		free(list2);
+
+		memset(&key, 0, sizeof(DBT));
+		key.data = make_key(atoi(t), app);
+printf("del code (%s)\n", key.data);
+		key.size = strlen(key.data);
+		e = code_db->del(code_db, NULL, &key, 0);
+		if (e) goto out;
+	}
 
 	free(list);
+
+	memset(&key, 0, sizeof(DBT));
+	key.data = app;
+printf("del app (%s)\n", key.data);
+	key.size = strlen(key.data);
+	e = app_db->del(app_db, NULL, &key, 0);
+	if (e) goto out;
 
 	ret = 0;
 out:

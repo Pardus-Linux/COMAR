@@ -156,6 +156,12 @@ printf("RPC [%s]\n", c->buffer);
 			return 0;
 		case '-':
 			// app name
+			size = sizeof(struct ipc_data) + strlen(t);
+			ipc = malloc(size);
+			ipc->app_len = strlen(t);
+			strcpy(&ipc->data[0], t);
+			proc_send(TO_PARENT, CMD_REMOVE, ipc, size);
+			free(ipc);
 			return 0;
 		case '$':
 			// call cmd, method name, (app name), (args)

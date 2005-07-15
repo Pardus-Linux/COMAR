@@ -90,6 +90,7 @@ static int
 do_remove(const char *app)
 {
 printf("Remove(%s)\n", app);
+	db_del_app(app);
 	return -1;
 }
 

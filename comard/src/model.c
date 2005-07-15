@@ -82,6 +82,7 @@ add_node(int parent_no, const char *path, int type)
 	val = hash_string(path, len) % TABLE_SIZE;
 	n->next = node_table[val];
 	node_table[val] = n;
+
 	return n->no;
 }
 

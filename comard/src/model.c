@@ -176,7 +176,7 @@ model_init(void)
 	}
 
 	// prepare data structures
-	if (prepare_tables(nr_nodes, size)) return -1;
+	if (prepare_tables(count, size)) return -1;
 
 	// load the model
 	for (grp = iks_first_tag(model); grp; grp = iks_next_tag(grp)) {

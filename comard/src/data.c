@@ -141,12 +141,11 @@ make_key(int node_no, const char *app)
 	// FIXME: lame
 	static char buf[128];
 
-	if (node_no != -1 && app)
+	if (app)
 		sprintf(buf, "%d/%s", node_no, app);
-	else if (app == NULL)
-		sprintf(buf, "%d", node_no);
 	else
-		return app;
+		sprintf(buf, "%d", node_no);
+
 	return buf;
 }
 
@@ -170,7 +169,7 @@ int
 db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 {
 	DB *code_db = NULL, *model_db = NULL, *app_db = NULL;
-	char *old;
+	char *old, *t;
 	int e, ret = -1;
 
 	app_db = open_db("app.db");
@@ -188,8 +187,9 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 			goto out;
 	}
 
-	if (strstr(old, make_key(node_no, NULL)) == NULL) {
-		char *t = make_list(old, make_key(node_no, NULL));
+	t = make_key(node_no, NULL);
+	if (strstr(old, t) == NULL) {
+		char *t = make_list(old, t);
 		e = put_data(app_db, app, t, strlen(t) + 1);
 		free(t);
 		if (e) goto out;
@@ -209,7 +209,7 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 
 	if (strstr(old, app) == NULL) {
 		char *t = make_list(old, app);
-		e = put_data(model_db, make_key(node_no, NULL), t, strlen(t + 1));
+		e = put_data(model_db, make_key(node_no, NULL), t, strlen(t) + 1);
 		free(t);
 		if (e) goto out;
 	}
@@ -284,24 +284,17 @@ out:
 	return ret;
 }
 
-static DB *n_code_db;
-static int n_node_no;
-
 int
-db_open_node(int node_no, char **bufferp)
+db_get_apps(int node_no, char **bufferp)
 {
 	DB *model_db = NULL;
 	int e, ret = -1;
 
 	model_db = open_db("model.db");
-	if (!model_db) return -1;
+	if (!model_db) goto out;
 
 	*bufferp = get_data(model_db, make_key(node_no, NULL), 0, &e);
 	if (e) goto out;
-
-	n_code_db = open_db("code.db");
-	if (!n_code_db) goto out;
-	n_node_no = node_no;
 
 	ret = 0;
 out:
@@ -310,27 +303,29 @@ out:
 }
 
 int
-db_get_code(const char *app, char **bufferp, size_t *sizep)
+db_get_code(int node_no, const char *app, char **bufferp, size_t *sizep)
 {
+	DB *code_db;
 	DBT key, data;
-	int e;
+	int e, ret = -1;
+
+	code_db = open_db("code.db");
+	if (!code_db) goto out;
 
 	memset(&key, 0, sizeof(DBT));
 	memset(&data, 0, sizeof(DBT));
-	key.data = (char *) make_key(n_node_no, app);
+	key.data = (char *) make_key(node_no, app);
 	key.size = strlen(key.data);
 	data.flags = DB_DBT_MALLOC;
 
-	e = n_code_db->get(n_code_db, NULL, &key, &data, 0);
-	if (e) return -1;
+	e = code_db->get(code_db, NULL, &key, &data, 0);
+	if (e) goto out;
 
 	*bufferp = data.data;
 	*sizep = data.size;
-	return 0;
-}
 
-void
-db_close_node(void)
-{
-	close_db(n_code_db);
+	ret = 0;
+out:
+	close_db(code_db);
+	return ret;
 }

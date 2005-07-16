@@ -62,7 +62,7 @@ do_register(int node, const char *app, const char *fname)
 	char *code;
 	size_t codelen;
 	int e;
-printf("Register(%d,%s,%s)\n", node, app, fname);
+printf("Register(%s,%s,%s)\n", model_get_path(node), app, fname);
 	csl_setup();
 
 	buf = load_file(fname, NULL);
@@ -95,30 +95,66 @@ printf("Remove(%s)\n", app);
 }
 
 static int
-do_call(int node)		// FIXME: app, args
+do_execute(int node, const char *app)
 {
 	char *code;
 	char *res;
-	char *apps;
-	size_t reslen;
-	size_t size;
+	size_t code_size;
+	size_t res_size;
 	int e;
-printf("Call(%d)\n", node);
+printf("Execute(%s,%s)\n", model_get_path(node), app);
 	csl_setup();
 
-	if (db_open_node(model_parent(node), &apps) != 0) {
+	if (0 != db_get_code(model_parent(node), app, &code, &code_size)) return -1;
+	e = csl_execute(code, code_size, model_get_method(node), &res, &res_size);
+	free(res);
+
+	csl_cleanup();
+
+	return e;
+}
+
+int bk_node;
+char *bk_app;
+
+static void
+exec_proc(void)
+{
+	do_execute(bk_node, bk_app);
+}
+
+static int
+do_call(int node)		// FIXME: app, args
+{
+	char *apps;
+printf("Call(%s)\n", model_get_path(node));
+
+	if (db_get_apps(model_parent(node), &apps) != 0) {
 		proc_send(TO_PARENT, CMD_FAIL, NULL, 0);
 		exit(1);
 	}
 
-	// FIXME: multiple apps & value return
-	db_get_code(apps, &code, &size);
-	e = csl_execute(code, size, model_get_method(node), &res, &reslen);
-	free(res);
+	// FIXME: return values
+	if (strchr(apps, '/') == NULL) {
+		do_execute(node, apps);
+	} else {
+		char *t, *s;
+		struct ProcChild *p;
 
-	db_close_node();
+		for (t = apps; t; t = s) {
+			s = strchr(t, '/');
+			if (s) {
+				*s = '\0';
+				++s;
+			}
+			bk_node = node;
+			bk_app = t;
+			p = proc_fork(exec_proc);
+		}
+		while(1);
+	}
 
-	csl_cleanup();
+	free(apps);
 
 	return 0;
 }

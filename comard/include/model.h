@@ -15,6 +15,7 @@ int model_lookup_object(const char *path);
 int model_lookup_method(const char *path);
 int model_parent(int node_no);
 const char *model_get_method(int node_no);
+const char *model_get_path(int node_no);
 
 
 #endif /* MODEL_H */

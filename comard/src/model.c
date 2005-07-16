@@ -247,3 +247,12 @@ model_get_method(int node_no)
 	n = &nodes[node_no];
 	return n->method;
 }
+
+const char *
+model_get_path(int node_no)
+{
+	struct node *n;
+
+	n = &nodes[node_no];
+	return n->path;
+}

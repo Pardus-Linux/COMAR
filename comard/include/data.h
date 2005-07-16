@@ -14,10 +14,8 @@ int db_init(void);
 
 int db_put_script(int node_no, const char *app, const char *buffer, size_t size);
 int db_del_app(const char *app);
-
-int db_open_node(int node_no, char **bufferp);
-int db_get_code(const char *app, char **bufferp, size_t *sizep);
-void db_close_node(void);
+int db_get_apps(int node_no, char **bufferp);
+int db_get_code(int node_no, const char *app, char **bufferp, size_t *sizep);
 
 int db_open_storage(int node_no, const char *app);
 int db_get_data(const char *key, char **bufferp, size_t *sizep);

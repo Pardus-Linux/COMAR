@@ -121,6 +121,7 @@ static void
 exec_proc(void)
 {
 	do_execute(bk_node, bk_app);
+	proc_send(TO_PARENT, CMD_RESULT, NULL, 0);
 }
 
 static int
@@ -140,6 +141,9 @@ printf("Call(%s)\n", model_get_path(node));
 	} else {
 		char *t, *s;
 		struct ProcChild *p;
+		int cmd;
+		int cnt = 0;
+		size_t size;
 
 		for (t = apps; t; t = s) {
 			s = strchr(t, '/');
@@ -150,8 +154,12 @@ printf("Call(%s)\n", model_get_path(node));
 			bk_node = node;
 			bk_app = t;
 			p = proc_fork(exec_proc);
+			if (p) ++cnt;
 		}
-		while(1);
+		while(cnt && proc_listen(&p, &cmd, &size, 1) == 1) {
+			if (cmd == CMD_RESULT || cmd == CMD_FAIL)
+				--cnt;
+		}
 	}
 
 	free(apps);

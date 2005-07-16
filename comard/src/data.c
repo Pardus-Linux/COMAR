@@ -189,7 +189,7 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 
 	t = make_key(node_no, NULL);
 	if (strstr(old, t) == NULL) {
-		char *t = make_list(old, t);
+		t = make_list(old, t);
 		e = put_data(app_db, app, t, strlen(t) + 1);
 		free(t);
 		if (e) goto out;

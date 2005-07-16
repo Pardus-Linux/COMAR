@@ -97,15 +97,56 @@ close_db(DB *db)
 }
 
 static char *
+get_data(DB *db, const char *name, int rw_lock, int *errorp)
+{
+	DBT pair[2];
+
+	memset(&pair[0], 0, sizeof(DBT) * 2);
+	pair[0].data = (char *) name;
+	pair[0].size = strlen(name);
+	pair[1].flags = DB_DBT_MALLOC;
+
+	*errorp = db->get(db, NULL, &pair[0], &pair[1], 0);
+	if (*errorp == 0) return pair[1].data;
+	return NULL;
+}
+
+static int
+put_data(DB *db, const char *name, const char *data, size_t size)
+{
+	DBT pair[2];
+
+	memset(&pair[0], 0, sizeof(DBT) * 2);
+	pair[0].data = (char *) name;
+	pair[0].size = strlen(name);
+	pair[1].data = (char *) data;
+	pair[1].size = size;
+	return db->put(db, NULL, &pair[0], &pair[1], 0);
+}
+
+static int
+del_data(DB *db, const char *name)
+{
+	DBT key;
+
+	memset(&key, 0, sizeof(DBT));
+	key.data = (char *) name;
+	key.size = strlen(name);
+	return db->del(db, NULL, &key, 0);
+}
+
+static const char *
 make_key(int node_no, const char *app)
 {
 	// FIXME: lame
 	static char buf[128];
 
-	if (app)
+	if (node_no != -1 && app)
 		sprintf(buf, "%d/%s", node_no, app);
-	else
+	else if (app == NULL)
 		sprintf(buf, "%d", node_no);
+	else
+		return app;
 	return buf;
 }
 
@@ -129,7 +170,6 @@ int
 db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 {
 	DB *code_db = NULL, *model_db = NULL, *app_db = NULL;
-	DBT key, data;
 	char *old;
 	int e, ret = -1;
 
@@ -140,71 +180,37 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 	code_db = open_db("code.db");
 	if (!code_db) goto out;
 
-	memset(&key, 0, sizeof(DBT));
-	memset(&data, 0, sizeof(DBT));
-	key.data = app;
-	key.size = strlen(key.data);
-	data.flags = DB_DBT_MALLOC;
-
-	e = app_db->get(app_db, NULL, &key, &data, 0);
-	if (e == DB_NOTFOUND) {
-		old = "";
-	} else if (e) {
-		goto out;
-	} else {
-		old = data.data;
+	old = get_data(app_db, app, 0, &e);
+	if (!old) {
+		if (e == DB_NOTFOUND)
+			old = "";
+		else
+			goto out;
 	}
 
 	if (strstr(old, make_key(node_no, NULL)) == NULL) {
-		memset(&key, 0, sizeof(DBT));
-		memset(&data, 0, sizeof(DBT));
-		key.data = app;
-		key.size = strlen(key.data);
-		data.data = make_list(old, make_key(node_no, NULL));
-		data.size = strlen(data.data) + 1;
-
-		e = app_db->put(app_db, NULL, &key, &data, 0);
-		free(data.data);
+		char *t = make_list(old, make_key(node_no, NULL));
+		e = put_data(app_db, app, t, strlen(t) + 1);
+		free(t);
 		if (e) goto out;
 	}
 	if (strcmp(old, "") != 0) free(old);
 
-	memset(&key, 0, sizeof(DBT));
-	memset(&data, 0, sizeof(DBT));
-	key.data = make_key(node_no, app);
-	key.size = strlen(key.data);
-	data.data = (char *)buffer;
-	data.size = size;
-
-	// FIXME: transaction olacak bunlar
-	e = code_db->put(code_db, NULL, &key, &data, 0);
+	e = put_data(code_db, make_key(node_no, app), buffer, size);
 	if (e) goto out;
 
-	memset(&key, 0, sizeof(DBT));
-	memset(&data, 0, sizeof(DBT));
-	key.data = make_key(node_no, NULL);
-	key.size = strlen(key.data);
-	data.flags = DB_DBT_MALLOC;
-
-	e = model_db->get(model_db, NULL, &key, &data, 0);
-	if (e == DB_NOTFOUND) {
-		old = "";
-	} else if (e) {
-		goto out;
-	} else {
-		old = data.data;
+	old = get_data(model_db, make_key(node_no, NULL), 0, &e);
+	if (!old) {
+		if (e == DB_NOTFOUND)
+			old = "";
+		else
+			goto out;
 	}
 
 	if (strstr(old, app) == NULL) {
-		memset(&key, 0, sizeof(DBT));
-		memset(&data, 0, sizeof(DBT));
-		key.data = make_key(node_no, NULL);
-		key.size = strlen(key.data);
-		data.data = make_list(old, app);
-		data.size = strlen(data.data) + 1;
-
-		e = model_db->put(model_db, NULL, &key, &data, 0);
-		free(data.data);
+		char *t = make_list(old, app);
+		e = put_data(model_db, make_key(node_no, NULL), t, strlen(t + 1));
+		free(t);
 		if (e) goto out;
 	}
 	if (strcmp(old, "") != 0) free(old);
@@ -221,7 +227,6 @@ int
 db_del_app(const char *app)
 {
 	DB *code_db = NULL, *model_db = NULL, *app_db = NULL;
-	DBT key, data;
 	char *list, *list2, *t, *s;
 	int e, ret = -1;
 
@@ -232,22 +237,10 @@ db_del_app(const char *app)
 	code_db = open_db("code.db");
 	if (!code_db) goto out;
 
-	memset(&key, 0, sizeof(DBT));
-	memset(&data, 0, sizeof(DBT));
-	key.data = app;
-	key.size = strlen(key.data);
-	data.flags = DB_DBT_MALLOC;
+	list = get_data(app_db, app, 0, &e);
+	if (!list) goto out;
 
-	e = app_db->get(app_db, NULL, &key, &data, 0);
-	if (e == DB_NOTFOUND) {
-		puts("no such app");
-		goto out;
-	} else if (e) {
-		goto out;
-	} else {
-		printf("app %s registered (%s)\n", app, data.data);
-		list = data.data;
-	}
+	printf("app %s registered (%s)\n", app, list);
 
 	for (t = list; t; t = s) {
 		s = strchr(t, '/');
@@ -256,22 +249,9 @@ db_del_app(const char *app)
 			++s;
 		}
 
-		memset(&key, 0, sizeof(DBT));
-		memset(&data, 0, sizeof(DBT));
-		key.data = t;
-printf("get model '%s'\n", key.data);
-		key.size = strlen(key.data);
-		data.flags = DB_DBT_MALLOC;
-		e = model_db->get(model_db, NULL, &key, &data, 0);
-		if (e) goto out;
-		list2 = data.data;
+		list2 = get_data(model_db, t, 0, &e);
+		if (!list2) goto out;
 printf("del model(%s) %s\n", t, list2);
-		memset(&key, 0, sizeof(DBT));
-		memset(&data, 0, sizeof(DBT));
-		key.data = t;
-		key.size = strlen(key.data);
-		data.data = list2;
-printf("old node list '%s'\n", list2);
 		{
 			char *k;
 			int sa = strlen(app);
@@ -279,29 +259,21 @@ printf("old node list '%s'\n", list2);
 			if (k) {
 				if (k[sa] == '/') ++sa;
 				memmove(k, k + sa, strlen(k) - sa + 1);
-				data.size = strlen(list2);
-printf("old node list '%s'\n", list2);
-				e = model_db->put(model_db, NULL, &key, &data, 0);
+printf("new node list '%s'\n", list2);
+				e = put_data(model_db, t, list2, strlen(list2) + 1);
 				if (e) goto out;
 			}
 		}
 		free(list2);
 
-		memset(&key, 0, sizeof(DBT));
-		key.data = make_key(atoi(t), app);
-printf("del code (%s)\n", key.data);
-		key.size = strlen(key.data);
-		e = code_db->del(code_db, NULL, &key, 0);
+		e = del_data(code_db, make_key(atoi(t), app));
 		if (e) goto out;
 	}
 
 	free(list);
 
-	memset(&key, 0, sizeof(DBT));
-	key.data = app;
-printf("del app (%s)\n", key.data);
-	key.size = strlen(key.data);
-	e = app_db->del(app_db, NULL, &key, 0);
+printf("del app (%s)\n", app);
+	e = del_data(app_db, app);
 	if (e) goto out;
 
 	ret = 0;
@@ -319,22 +291,13 @@ int
 db_open_node(int node_no, char **bufferp)
 {
 	DB *model_db = NULL;
-	DBT key, data;
 	int e, ret = -1;
 
 	model_db = open_db("model.db");
 	if (!model_db) return -1;
 
-	memset(&key, 0, sizeof(DBT));
-	memset(&data, 0, sizeof(DBT));
-	key.data = make_key(node_no, NULL);
-	key.size = strlen(key.data);
-	data.flags = DB_DBT_MALLOC;
-
-	e = model_db->get(model_db, NULL, &key, &data, 0);
+	*bufferp = get_data(model_db, make_key(node_no, NULL), 0, &e);
 	if (e) goto out;
-
-	*bufferp = data.data;
 
 	n_code_db = open_db("code.db");
 	if (!n_code_db) goto out;
@@ -354,7 +317,7 @@ db_get_code(const char *app, char **bufferp, size_t *sizep)
 
 	memset(&key, 0, sizeof(DBT));
 	memset(&data, 0, sizeof(DBT));
-	key.data = make_key(n_node_no, app);
+	key.data = (char *) make_key(n_node_no, app);
 	key.size = strlen(key.data);
 	data.flags = DB_DBT_MALLOC;
 

@@ -4,6 +4,11 @@ from qt import *
 import socket
 import sys
 
+def comar():
+	s = socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+	s.connect("/tmp/comar")
+	return s
+
 class MainWindow(QMainWindow):
 	def __init__(self, *args):
 		QMainWindow.__init__(self, *args)
@@ -18,8 +23,7 @@ class MainWindow(QMainWindow):
 	
 	def start(self):
 		try:
-			self.s = socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
-			self.s.connect("/tmp/comar")
+			self.s = comar()
 			self.notifier = QSocketNotifier(self.s.fileno(), QSocketNotifier.Read)
 			self.notifier.setEnabled(True)
 			self.connect(self.notifier, SIGNAL("activated(int)"), self.recv_data)

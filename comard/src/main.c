@@ -44,6 +44,12 @@ main(int argc, char *argv[])
 					job_start(cmd, ipc, size);
 					free(ipc);
 					break;
+				case CMD_RESULT:
+				case CMD_FAIL:
+					proc_recv(p, &ipc, size);
+					proc_send(rpc, cmd, ipc, size);
+					free(ipc);
+					break;
 			}
 		}
 //		puts("tick");

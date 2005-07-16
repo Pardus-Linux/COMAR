@@ -147,6 +147,7 @@ printf("RPC [%s]\n", c->buffer);
 			if (get_str(&t, &s)) return -1;
 			size = sizeof(struct ipc_data) + strlen(t) + strlen(s);
 			ipc = malloc(size);
+			ipc->chan = (void *) c;
 			ipc->node = no;
 			ipc->app_len = strlen(s);
 			strcpy(&ipc->data[0], s);
@@ -158,6 +159,7 @@ printf("RPC [%s]\n", c->buffer);
 			// app name
 			size = sizeof(struct ipc_data) + strlen(t);
 			ipc = malloc(size);
+			ipc->chan = (void *) c;
 			ipc->app_len = strlen(t);
 			strcpy(&ipc->data[0], t);
 			proc_send(TO_PARENT, CMD_REMOVE, ipc, size);
@@ -169,8 +171,9 @@ printf("RPC [%s]\n", c->buffer);
 			if (no == -1) return -1;
 			size = sizeof(struct ipc_data);
 			ipc = malloc(size);
+			ipc->chan = (void *) c;
 			ipc->node = no;
-			proc_send(TO_PARENT, CMD_CALL, ipc, sizeof(size));
+			proc_send(TO_PARENT, CMD_CALL, ipc, size);
 			free(ipc);
 			return 0;
 		default:
@@ -268,7 +271,8 @@ void
 rpc_unix_start(void)
 {
 	struct ProcChild *p;
-	struct connection *c, *t;
+	struct connection *c;
+	struct ipc_data *ipc;
 	int cmd;
 	size_t size;
 
@@ -280,16 +284,14 @@ rpc_unix_start(void)
 
 	while (1) {
 		if (1 == proc_listen(&p, &cmd, &size, 0)) {
-			char *b;
-			if (cmd != CMD_RESULT) continue;
-			proc_recv(p, &b, size);
-			c = ((struct connection **)b)[0];
-			for (t = conns; t; t = t->next) {
-				if (t == c) {
-					send(c->sock, b + 4, size - 4, 0);
+			if (cmd != CMD_RESULT && cmd != CMD_FAIL) continue;
+			proc_recv(p, &ipc, size);
+			for (c = conns; c; c = c->next) {
+				if (c == (struct connection *) ipc->chan) {
+					send(c->sock, &ipc->data[0], ipc->app_len, 0);
 				}
 			}
-			free(b);
+			free(ipc);
 		}
 		pipe_listen();
 	}

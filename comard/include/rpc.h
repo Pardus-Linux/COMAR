@@ -21,6 +21,7 @@ enum {
 };
 
 struct ipc_data {
+	void *chan;
 	int node;
 	size_t app_len;
 	char data[4];

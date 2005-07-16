@@ -156,7 +156,6 @@ printf("Call(%s)\n", model_get_path(node));
 		exit(1);
 	}
 
-	// FIXME: return values
 	if (strchr(apps, '/') == NULL) {
 		do_execute(node, apps);
 	} else {

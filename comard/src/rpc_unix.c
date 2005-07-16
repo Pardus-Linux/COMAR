@@ -19,6 +19,7 @@
 #include "process.h"
 #include "model.h"
 #include "acl.h"
+#include "log.h"
 #include "rpc.h"
 
 #define RPC_PIPE_NAME "/tmp/comar"
@@ -67,7 +68,7 @@ create_pipe(const char *pipe_name)
 static int
 get_peer(int sock, struct Creds *cred)
 {
-	// this implementation requires a linux kernel
+	// NOTE: this implementation requires a linux kernel
 	struct {
 		pid_t pid;
 		uid_t uid;
@@ -133,25 +134,26 @@ parse_rpc(struct connection *c)
 {
 	struct ipc_data *ipc;
 	size_t size;
-	char *t, *s;
+	char *t, *s, *s2;
 	int no;
 
 printf("RPC [%s]\n", c->buffer);
 	t = c->buffer + 1;
 	switch (c->buffer[0]) {
 		case '+':
-			// register cmd, object name, app name, file name follows
+			// register cmd, object name, app name, file name
 			if (get_str(&t, &s)) return -1;
 			no = model_lookup_object(s);
 			if (no == -1) return -1;
 			if (get_str(&t, &s)) return -1;
-			size = sizeof(struct ipc_data) + strlen(t) + strlen(s);
+			if (get_str(&t, &s2)) return -1;
+			size = sizeof(struct ipc_data) + strlen(s2) + strlen(s);
 			ipc = malloc(size);
 			ipc->chan = (void *) c;
 			ipc->node = no;
 			ipc->app_len = strlen(s);
 			strcpy(&ipc->data[0], s);
-			strcpy(&ipc->data[0] + strlen(s) + 1, t);
+			strcpy(&ipc->data[0] + strlen(s) + 1, s2);
 			proc_send(TO_PARENT, CMD_REGISTER, ipc, size);
 			free(ipc);
 			return 0;
@@ -277,10 +279,10 @@ rpc_unix_start(void)
 	size_t size;
 
 	if (create_pipe(RPC_PIPE_NAME) != 0) {
-		puts("RPC_UNIX: Cannot create listening pipe");
+		log_print("RPC_UNIX: Cannot create listening pipe");
 		return;
 	}
-	printf("RPC_UNIX: listening on %s\n", RPC_PIPE_NAME);
+	log_print("RPC_UNIX: listening on %s\n", RPC_PIPE_NAME);
 
 	while (1) {
 		if (1 == proc_listen(&p, &cmd, &size, 0)) {

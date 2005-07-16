@@ -19,6 +19,9 @@
 // FIXME: test only, proper defaults are given in comments
 char *cfg_model_file = "model.xml";	// /etc/comar/system_model.xml
 char *cfg_data_dir = "db"; // /var/lib/comar
+int cfg_log_console = 1;	// 0
+int cfg_log_file = 0;
+char *cfg_log_file_name = "log.txt";
 
 static struct option longopts[] = {
 	{ "model", required_argument, NULL, 'm' },

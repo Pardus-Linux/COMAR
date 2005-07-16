@@ -14,6 +14,7 @@
 #include "i18n.h"
 #include "iksemel.h"
 #include "cfg.h"
+#include "log.h"
 #include "model.h"
 
 enum {
@@ -129,13 +130,13 @@ model_init(void)
 	// parse model file
 	e = iks_load(cfg_model_file, &doc);
 	if (e) {
-		fprintf(stderr, "Cannot process model file '%s'\n", cfg_model_file);
+		log_print("Cannot process model file '%s'\n", cfg_model_file);
 		return -1;
 	}
 
 	model = iks_find(doc, "model");
 	if (iks_strcmp(iks_name(doc), "comar") != 0 || model == NULL) {
-		fprintf(stderr, "Not a COMAR model file '%s'\n", cfg_model_file);
+		log_print("Not a COMAR model file '%s'\n", cfg_model_file);
 		return -1;
 	}
 
@@ -144,7 +145,7 @@ model_init(void)
 		if (iks_strcmp(iks_name(grp), "group") == 0) {
 			grp_size = iks_strlen(iks_find_attrib(grp, "name"));
 			if (!grp_size) {
-				fprintf(stderr, "Broken COMAR model file '%s'\n", cfg_model_file);
+				log_print("Broken COMAR model file '%s'\n", cfg_model_file);
 				return -1;
 			}
 			size += grp_size + 1;
@@ -153,7 +154,7 @@ model_init(void)
 				if (iks_strcmp(iks_name(obj), "object") == 0) {
 					obj_size = iks_strlen(iks_find_attrib(obj, "name"));
 					if (!obj_size) {
-						fprintf(stderr, "Broken COMAR model file '%s'\n", cfg_model_file);
+						log_print("Broken COMAR model file '%s'\n", cfg_model_file);
 						return -1;
 					}
 					size += grp_size + obj_size + 2;
@@ -162,7 +163,7 @@ model_init(void)
 						if (iks_strcmp(iks_name(met), "method") == 0) {
 							met_size = iks_strlen(iks_find_attrib(met, "name"));
 							if (!met_size) {
-								fprintf(stderr, "Broken COMAR model file '%s'\n", cfg_model_file);
+								log_print("Broken COMAR model file '%s'\n", cfg_model_file);
 								return -1;
 							}
 							size += grp_size + obj_size + met_size + 3;

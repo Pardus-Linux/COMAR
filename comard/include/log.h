@@ -7,16 +7,10 @@
 ** option) any later version. Please read the COPYING file.
 */
 
-#ifndef CFG_H
-#define CFG_H 1
+#ifndef LOG_H
+#define LOG_H 1
 
-extern char *cfg_model_file;
-extern char *cfg_data_dir;
-extern int cfg_log_console;
-extern int cfg_log_file;
-extern char *cfg_log_file_name;
-
-void cfg_init(int argc, char *argv[]);
+void log_print(const char *fmt, ...);
 
 
-#endif /* CFG_H */
+#endif /* LOG_H */

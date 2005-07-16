@@ -16,6 +16,7 @@
 
 #include "cfg.h"
 #include "data.h"
+#include "log.h"
 
 static DB_ENV *my_env;
 static int nr_open_dbs;
@@ -27,7 +28,7 @@ db_init(void)
 
 	if (stat(cfg_data_dir, &fs) != 0) {
 		if (0 != mkdir(cfg_data_dir, S_IRWXU)) {
-			printf("Cannot create data dir '%s'\n", cfg_data_dir);
+			log_print("Cannot create data dir '%s'\n", cfg_data_dir);
 			return -1;
 		}
 	} else {
@@ -47,13 +48,13 @@ open_db(const char *name)
 	if (!my_env) {
 		e  = db_env_create(&my_env, 0);
 		if (e) {
-			printf("Cannot create env, %s\n", db_strerror(e));
+			log_print("Cannot create env, %s\n", db_strerror(e));
 			return NULL;
 		}
 		e = my_env->open(my_env, cfg_data_dir, DB_INIT_LOCK | DB_INIT_MPOOL
 				| DB_INIT_LOG | DB_INIT_TXN | DB_CREATE, 0);
 		if (e) {
-			printf("Cannot open env, %s\n", db_strerror(e));
+			log_print("Cannot open env, %s\n", db_strerror(e));
 			my_env->close(my_env, 0);
 			my_env = NULL;
 			return NULL;
@@ -63,7 +64,7 @@ open_db(const char *name)
 	// open db
 	e = db_create(&db, my_env, 0);
 	if (e) {
-		printf("Cannot create db, %s\n", db_strerror(e));
+		log_print("Cannot create db, %s\n", db_strerror(e));
 		if (0 == nr_open_dbs) {
 			my_env->close(my_env, 0);
 			my_env = NULL;
@@ -72,7 +73,7 @@ open_db(const char *name)
 	}
 	e = db->open(db, NULL, name, NULL, DB_BTREE, DB_CREATE, 0);
 	if (e) {
-		printf("Cannot open db, %s\n", db_strerror(e));
+		log_print("Cannot open db, %s\n", db_strerror(e));
 		db->close(db, 0);
 		if (0 == nr_open_dbs) {
 			my_env->close(my_env, 0);

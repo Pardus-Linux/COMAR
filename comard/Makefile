@@ -8,6 +8,7 @@ CFLAGS= -O2 -Wall -Iinclude -DVERSION='"1.0"' $(PYTHON_CFLAGS)
 OBJS = \
 	src/main.o \
 	src/cfg.o \
+	src/log.o \
 	src/job.o \
 	src/model.o \
 	src/process.o \

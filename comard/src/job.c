@@ -16,6 +16,7 @@
 #include "process.h"
 #include "data.h"
 #include "model.h"
+#include "log.h"
 #include "rpc.h"
 
 static unsigned char *
@@ -26,6 +27,7 @@ load_file(const char *fname, int *sizeptr)
 	size_t size;
 	unsigned char *data;
 
+	// FIXME: this function sucks
 	if (stat (fname, &fs) != 0) {
 		printf ("Cannot stat file '%s'\n", fname);
 		return NULL;
@@ -79,7 +81,9 @@ do_register(int node, const char *app, const char *fname)
 	char *code;
 	size_t codelen;
 	int e;
-printf("Register(%s,%s,%s)\n", model_get_path(node), app, fname);
+
+	log_debug(LOG_JOB, "Register(%s,%s,%s)\n", model_get_path(node), app, fname);
+
 	csl_setup();
 
 	buf = load_file(fname, NULL);
@@ -106,7 +110,8 @@ printf("Register(%s,%s,%s)\n", model_get_path(node), app, fname);
 static int
 do_remove(const char *app)
 {
-printf("Remove(%s)\n", app);
+	log_debug(LOG_JOB, "Remove(%s)\n", app);
+
 	db_del_app(app);
 	return 0;
 }
@@ -119,7 +124,9 @@ do_execute(int node, const char *app)
 	size_t code_size;
 	size_t res_size;
 	int e;
-printf("Execute(%s,%s)\n", model_get_path(node), app);
+
+	log_debug(LOG_JOB, "Execute(%s,%s)\n", model_get_path(node), app);
+
 	csl_setup();
 
 	if (0 != db_get_code(model_parent(node), app, &code, &code_size)) return -1;
@@ -149,7 +156,8 @@ static int
 do_call(int node)		// FIXME: app, args
 {
 	char *apps;
-printf("Call(%s)\n", model_get_path(node));
+
+	log_debug(LOG_JOB, "Call(%s)\n", model_get_path(node));
 
 	if (db_get_apps(model_parent(node), &apps) != 0) {
 		send_result(CMD_RESULT, "no app", 6);

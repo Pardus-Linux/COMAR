@@ -279,10 +279,10 @@ rpc_unix_start(void)
 	size_t size;
 
 	if (create_pipe(RPC_PIPE_NAME) != 0) {
-		log_print("RPC_UNIX: Cannot create listening pipe");
+		log_error("RPC_UNIX: Cannot create listening pipe");
 		return;
 	}
-	log_print("RPC_UNIX: listening on %s\n", RPC_PIPE_NAME);
+	log_info("RPC_UNIX: listening on %s\n", RPC_PIPE_NAME);
 
 	while (1) {
 		if (1 == proc_listen(&p, &cmd, &size, 0)) {

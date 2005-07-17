@@ -28,7 +28,7 @@ db_init(void)
 
 	if (stat(cfg_data_dir, &fs) != 0) {
 		if (0 != mkdir(cfg_data_dir, S_IRWXU)) {
-			log_print("Cannot create data dir '%s'\n", cfg_data_dir);
+			log_error("Cannot create data dir '%s'\n", cfg_data_dir);
 			return -1;
 		}
 	} else {
@@ -48,13 +48,13 @@ open_db(const char *name)
 	if (!my_env) {
 		e  = db_env_create(&my_env, 0);
 		if (e) {
-			log_print("Cannot create env, %s\n", db_strerror(e));
+			log_error("Cannot create env, %s\n", db_strerror(e));
 			return NULL;
 		}
 		e = my_env->open(my_env, cfg_data_dir, DB_INIT_LOCK | DB_INIT_MPOOL
 				| DB_INIT_LOG | DB_INIT_TXN | DB_CREATE, 0);
 		if (e) {
-			log_print("Cannot open env, %s\n", db_strerror(e));
+			log_error("Cannot open env, %s\n", db_strerror(e));
 			my_env->close(my_env, 0);
 			my_env = NULL;
 			return NULL;
@@ -64,7 +64,7 @@ open_db(const char *name)
 	// open db
 	e = db_create(&db, my_env, 0);
 	if (e) {
-		log_print("Cannot create db, %s\n", db_strerror(e));
+		log_error("Cannot create db, %s\n", db_strerror(e));
 		if (0 == nr_open_dbs) {
 			my_env->close(my_env, 0);
 			my_env = NULL;
@@ -73,7 +73,7 @@ open_db(const char *name)
 	}
 	e = db->open(db, NULL, name, NULL, DB_BTREE, DB_CREATE, 0);
 	if (e) {
-		log_print("Cannot open db, %s\n", db_strerror(e));
+		log_error("Cannot open db, %s\n", db_strerror(e));
 		db->close(db, 0);
 		if (0 == nr_open_dbs) {
 			my_env->close(my_env, 0);
@@ -136,7 +136,7 @@ del_data(DB *db, const char *name)
 	return db->del(db, NULL, &key, 0);
 }
 
-static const char *
+static char *
 make_key(int node_no, const char *app)
 {
 	// FIXME: lame
@@ -170,7 +170,8 @@ int
 db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 {
 	DB *code_db = NULL, *model_db = NULL, *app_db = NULL;
-	char *old, *t;
+	char *old;
+	char *t;
 	int e, ret = -1;
 
 	app_db = open_db("app.db");
@@ -209,7 +210,7 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 	}
 
 	if (strstr(old, app) == NULL) {
-		char *t = make_list(old, app);
+		t = make_list(old, app);
 		e = put_data(model_db, make_key(node_no, NULL), t, strlen(t) + 1);
 		free(t);
 		if (e) goto out;
@@ -241,8 +242,6 @@ db_del_app(const char *app)
 	list = get_data(app_db, app, 0, &e);
 	if (!list) goto out;
 
-	printf("app %s registered (%s)\n", app, list);
-
 	for (t = list; t; t = s) {
 		s = strchr(t, '/');
 		if (s) {
@@ -252,7 +251,6 @@ db_del_app(const char *app)
 
 		list2 = get_data(model_db, t, 0, &e);
 		if (!list2) goto out;
-printf("del model(%s) %s\n", t, list2);
 		{
 			char *k;
 			int sa = strlen(app);
@@ -260,7 +258,6 @@ printf("del model(%s) %s\n", t, list2);
 			if (k) {
 				if (k[sa] == '/') ++sa;
 				memmove(k, k + sa, strlen(k) - sa + 1);
-printf("new node list '%s'\n", list2);
 				e = put_data(model_db, t, list2, strlen(list2) + 1);
 				if (e) goto out;
 			}
@@ -273,7 +270,6 @@ printf("new node list '%s'\n", list2);
 
 	free(list);
 
-printf("del app (%s)\n", app);
 	e = del_data(app_db, app);
 	if (e) goto out;
 

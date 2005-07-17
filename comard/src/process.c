@@ -13,6 +13,7 @@
 #include <unistd.h>
 
 #include "process.h"
+#include "log.h"
 
 struct Proc my_proc;
 
@@ -155,7 +156,7 @@ proc_send(struct ProcChild *p, int cmd, const void *data, size_t size)
 			return -2;
 		}
 	}
-//printf("send_cmd(%d, %d)\n", cmd, data_size);
+	log_debug(LOG_PROC, "proc_send(pid %d, cmd %d, size %d)\n", p->pid, cmd, size);
 	return 0;
 }
 
@@ -169,7 +170,7 @@ proc_recv(struct ProcChild *p, void *datap, size_t size)
 	if (NULL == *datap2) return -1;
 	if (proc_recv_to(p, *datap2, size)) return -2;
 
-//printf("get_data(%p, %d [%.*s])\n", p, size, size, *datap);
+	log_debug(LOG_PROC, "proc_recv(pid %d, size %d)\n", p->pid, size);
 	return 0;
 }
 

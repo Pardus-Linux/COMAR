@@ -13,6 +13,7 @@
 #include <getopt.h>
 
 #include "i18n.h"
+#include "log.h"
 #include "cfg.h"
 
 /* global option variables with defaults */
@@ -22,16 +23,28 @@ char *cfg_data_dir = "db"; // /var/lib/comar
 int cfg_log_console = 1;	// 0
 int cfg_log_file = 0;
 char *cfg_log_file_name = "log.txt";
+int cfg_log_flags = 0;
+
+static struct logflag_struct {
+	const char *flag;
+	int value;
+} logflags[] = {
+	{ "proc", LOG_PROC },
+	{ "db", LOG_DB },
+	{ "job", LOG_JOB },
+	{ NULL, 0 }
+};
 
 static struct option longopts[] = {
 	{ "model", required_argument, NULL, 'm' },
 	{ "datadir", required_argument, NULL, 'd' },
+	{ "debug", required_argument, NULL, 'g' },
 	{ "help", 0, NULL, 'h' },
 	{ "version", 0, NULL, 'v' },
 	{ NULL, 0, NULL, 0 }
 };
 
-static char *shortopts = "m:d:hv";
+static char *shortopts = "m:d:g:hv";
 
 static void
 print_usage(void)
@@ -41,6 +54,7 @@ print_usage(void)
 		"Pardus configuration manager.\n"
 		" -m, --model [FILE]  Use the given xml model file.\n"
 		" -d, --datadir [DIR] Data storage directory.\n"
+		" -g, --debug [FLAGS] Enable debug output.\n"
 		" -h, --help          Print this text and exit.\n"
 		" -v, --version       Print version and exit.\n"
 		"Report bugs to http://bugs.uludag.org.tr")
@@ -73,6 +87,17 @@ cfg_init(int argc, char *argv[])
 				break;
 			case 'd':
 				cfg_data_dir = optarg;
+				break;
+			case 'g':
+				if (strcmp(optarg, "all") == 0) {
+					cfg_log_flags = LOG_ALL;
+				} else {
+					int j;
+					for (j = 0; logflags[j].flag; ++j) {
+						if (strstr(optarg, logflags[j].flag))
+							cfg_log_flags |= logflags[j].value;
+					}
+				}
 				break;
 			case 'h':
 				print_usage();

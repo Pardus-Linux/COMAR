@@ -10,7 +10,14 @@
 #ifndef LOG_H
 #define LOG_H 1
 
-void log_print(const char *fmt, ...);
+#define LOG_PROC 1
+#define LOG_DB 2
+#define LOG_JOB 4
+#define LOG_ALL 0xffffffff
+
+void log_error(const char *fmt, ...);
+void log_info(const char *fmt, ...);
+void log_debug(int subsys, const char *fmt, ...);
 
 
 #endif /* LOG_H */

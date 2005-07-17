@@ -15,13 +15,9 @@
 #include "cfg.h"
 #include "log.h"
 
-void
-log_print(const char *fmt, ...)
+static void
+log_print(const char *fmt, va_list ap)
 {
-	va_list ap;
-
-	va_start(ap, fmt);
-
 	if (cfg_log_console)
 		vprintf(fmt, ap);
 
@@ -36,6 +32,37 @@ log_print(const char *fmt, ...)
 	}
 
 	// FIXME: syslog?
+}
 
+void
+log_error(const char *fmt, ...)
+{
+	va_list ap;
+
+	va_start(ap, fmt);
+	log_print(fmt, ap);
+	va_end(ap);
+}
+
+void
+log_info(const char *fmt, ...)
+{
+	va_list ap;
+
+	va_start(ap, fmt);
+	log_print(fmt, ap);
+	va_end(ap);
+}
+
+void
+log_debug(int subsys, const char *fmt, ...)
+{
+	va_list ap;
+
+	if ((cfg_log_flags & subsys) == 0)
+		return;
+
+	va_start(ap, fmt);
+	log_print(fmt, ap);
 	va_end(ap);
 }

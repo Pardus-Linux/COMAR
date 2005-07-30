@@ -10,9 +10,7 @@
 #ifndef JOB_H
 #define JOB_H 1
 
-#include "rpc.h"
-
-int job_start(int cmd, struct ipc_data *ipc_msg, size_t ipc_size);
+int job_start(int cmd, char *ipc_msg, size_t ipc_size);
 
 
 #endif /* JOB_H */

@@ -11,7 +11,7 @@
 #define MODEL_H 1
 
 int model_init(void);
-int model_lookup_object(const char *path);
+int model_lookup_class(const char *path);
 int model_lookup_method(const char *path);
 int model_parent(int node_no);
 const char *model_get_method(int node_no);

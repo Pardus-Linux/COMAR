@@ -14,7 +14,7 @@
 
 #include "csl.h"
 #include "process.h"
-#include "rpc.h"
+#include "ipc.h"
 
 static PyObject *
 c_call(PyObject *self, PyObject *args)

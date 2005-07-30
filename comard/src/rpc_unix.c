@@ -20,7 +20,7 @@
 #include "model.h"
 #include "acl.h"
 #include "log.h"
-#include "rpc.h"
+#include "ipc.h"
 
 #define RPC_PIPE_NAME "/tmp/comar"
 
@@ -132,7 +132,6 @@ get_str(char **str, char **arg)
 static int
 parse_rpc(struct connection *c)
 {
-	struct ipc_data *ipc;
 	size_t size;
 	char *t, *s, *s2;
 	int no;
@@ -143,40 +142,26 @@ printf("RPC [%s]\n", c->buffer);
 		case '+':
 			// register cmd, object name, app name, file name
 			if (get_str(&t, &s)) return -1;
-			no = model_lookup_object(s);
+			no = model_lookup_class(s);
 			if (no == -1) return -1;
+			ipc_start(CMD_REGISTER, (void *)c, no);
 			if (get_str(&t, &s)) return -1;
 			if (get_str(&t, &s2)) return -1;
-			size = sizeof(struct ipc_data) + strlen(s2) + strlen(s);
-			ipc = malloc(size);
-			ipc->chan = (void *) c;
-			ipc->node = no;
-			ipc->app_len = strlen(s);
-			strcpy(&ipc->data[0], s);
-			strcpy(&ipc->data[0] + strlen(s) + 1, s2);
-			proc_send(TO_PARENT, CMD_REGISTER, ipc, size);
-			free(ipc);
+			ipc_pack_pair(s, s2);
+			ipc_send(TO_PARENT);
 			return 0;
 		case '-':
 			// app name
-			size = sizeof(struct ipc_data) + strlen(t);
-			ipc = malloc(size);
-			ipc->chan = (void *) c;
-			ipc->app_len = strlen(t);
-			strcpy(&ipc->data[0], t);
-			proc_send(TO_PARENT, CMD_REMOVE, ipc, size);
-			free(ipc);
+			ipc_start(CMD_REMOVE, (void *)c, 0);
+			ipc_pack_arg(t);
+			ipc_send(TO_PARENT);
 			return 0;
 		case '$':
 			// call cmd, method name, (app name), (args)
 			no = model_lookup_method(t);
 			if (no == -1) return -1;
-			size = sizeof(struct ipc_data);
-			ipc = malloc(size);
-			ipc->chan = (void *) c;
-			ipc->node = no;
-			proc_send(TO_PARENT, CMD_CALL, ipc, size);
-			free(ipc);
+			ipc_start(CMD_CALL, (void *)c, no);
+			ipc_send(TO_PARENT);
 			return 0;
 		default:
 			return -1;
@@ -274,7 +259,6 @@ rpc_unix_start(void)
 {
 	struct ProcChild *p;
 	struct connection *c;
-	struct ipc_data *ipc;
 	int cmd;
 	size_t size;
 
@@ -287,13 +271,13 @@ rpc_unix_start(void)
 	while (1) {
 		if (1 == proc_listen(&p, &cmd, &size, 0)) {
 			if (cmd != CMD_RESULT && cmd != CMD_FAIL) continue;
-			proc_recv(p, &ipc, size);
+			ipc_recv(p, size);
 			for (c = conns; c; c = c->next) {
-				if (c == (struct connection *) ipc->chan) {
-					send(c->sock, &ipc->data[0], ipc->app_len, 0);
+				if (c == (struct connection *) ipc_get_data()) {
+					char *s = ipc_get_arg();
+					send(c->sock, s, strlen(s), 0);
 				}
 			}
-			free(ipc);
 		}
 		pipe_listen();
 	}

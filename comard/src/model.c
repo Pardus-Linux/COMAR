@@ -19,7 +19,7 @@
 
 enum {
 	N_GROUP,
-	N_OBJECT,
+	N_CLASS,
 	N_METHOD
 };
 
@@ -151,7 +151,7 @@ model_init(void)
 			size += grp_size + 1;
 			++count;
 			for (obj = iks_first_tag(grp); obj; obj = iks_next_tag(obj)) {
-				if (iks_strcmp(iks_name(obj), "object") == 0) {
+				if (iks_strcmp(iks_name(obj), "class") == 0) {
 					obj_size = iks_strlen(iks_find_attrib(obj, "name"));
 					if (!obj_size) {
 						log_error("Broken COMAR model file '%s'\n", cfg_model_file);
@@ -183,8 +183,8 @@ model_init(void)
 		if (iks_strcmp(iks_name(grp), "group") == 0) {
 			grp_no = add_node(-1, build_path(grp, NULL, NULL), N_GROUP);
 			for (obj = iks_first_tag(grp); obj; obj = iks_next_tag(obj)) {
-				if (iks_strcmp(iks_name(obj), "object") == 0) {
-					obj_no = add_node(grp_no, build_path(grp, obj, NULL), N_OBJECT);
+				if (iks_strcmp(iks_name(obj), "class") == 0) {
+					obj_no = add_node(grp_no, build_path(grp, obj, NULL), N_CLASS);
 					for (met = iks_first_tag(obj); met; met = iks_next_tag(met)) {
 						if (iks_strcmp(iks_name(met), "method") == 0) {
 							add_node(obj_no, build_path(grp, obj, met), N_METHOD);
@@ -202,14 +202,14 @@ model_init(void)
 }
 
 int
-model_lookup_object(const char *path)
+model_lookup_class(const char *path)
 {
 	struct node *n;
 	int val;
 
 	val = hash_string(path, strlen(path)) % TABLE_SIZE;
 	for (n = node_table[val]; n; n = n->next) {
-		if (N_OBJECT == n->type && strcmp(n->path, path) == 0) {
+		if (N_CLASS == n->type && strcmp(n->path, path) == 0) {
 			return n->no;
 		}
 	}

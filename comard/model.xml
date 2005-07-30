@@ -2,10 +2,21 @@
 <model name='PARDUS'>
 
 <group name='Net'>
-	<object name='NIC'>
+	<class name='Stack'>
+	</class>
+	<class name='Link'>
 		<method name='up'/>
 		<method name='down'/>
-	</object>
+	</class>
+	<class name='Server'>
+	</class>
+</group>
+
+<group name='Time'>
+	<class name='Clock'>
+	</class>
+	<class name='Jobs'>
+	</class>
 </group>
 
 </model>

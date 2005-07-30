@@ -16,17 +16,22 @@
 #include "model.h"
 #include "data.h"
 #include "job.h"
-#include "rpc.h"
+#include "log.h"
+#include "ipc.h"
+
+void rpc_unix_start(void);
+
 
 int
 main(int argc, char *argv[])
 {
 	struct ProcChild *p, *rpc;
-	struct ipc_data *ipc;
+	char *ipc;
 	int cmd;
 	int size;
 
 	cfg_init(argc, argv);
+	log_info("COMARd v"VERSION"\n");
 
 	if (db_init() != 0) return 1;
 	proc_init();

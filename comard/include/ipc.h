@@ -7,10 +7,10 @@
 ** option) any later version. Please read the COPYING file.
 */
 
-#ifndef RPC_H
-#define RPC_H 1
+#ifndef IPC_H
+#define IPC_H 1
 
-// rpc/ipc commands
+// ipc commands
 enum {
 	CMD_DIED,
 	CMD_FAIL,
@@ -20,14 +20,16 @@ enum {
 	CMD_CALL
 };
 
-struct ipc_data {
-	void *chan;
-	int node;
-	size_t app_len;
-	char data[4];
-};
+void ipc_start(int cmd, void *caller_data, int node);
+void ipc_pack_arg(const char *arg);
+void ipc_pack_pair(const char *key, const char *value);
+void ipc_send(struct ProcChild *p);
 
-void rpc_unix_start(void);
+int ipc_recv(struct ProcChild *p, size_t size);
+int ipc_get_node(void);
+void *ipc_get_data(void);
+char *ipc_get_arg(void);
+int ipc_get_pair(char **keyp, char **valuep);
 
 
-#endif /* RPC_H */
+#endif /* IPC_H */

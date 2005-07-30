@@ -17,7 +17,7 @@
 #include "data.h"
 #include "model.h"
 #include "log.h"
-#include "rpc.h"
+#include "ipc.h"
 
 static unsigned char *
 load_file(const char *fname, int *sizeptr)
@@ -62,15 +62,10 @@ static void *chan;
 static int
 send_result(int cmd, const char *data, size_t size)
 {
-	struct ipc_data *ipc;
-
 	if (size == 0) size = strlen(data);
-	ipc = malloc(sizeof(struct ipc_data) + size);
-	ipc->chan = chan;
-	ipc->app_len = size;
-	memcpy(&ipc->data[0], data, size);
-	proc_send(TO_PARENT, cmd, ipc, sizeof(struct ipc_data) + size);
-	free(ipc);
+	ipc_start(cmd, chan, 0);
+	ipc_pack_arg(data);
+	ipc_send(TO_PARENT);
 	return 0;
 }
 
@@ -203,31 +198,34 @@ static void
 job_proc(void)
 {
 	struct ProcChild *sender;
-	struct ipc_data *ipc;
 	int cmd;
 	size_t size;
 
 	while (1) {
 		if (1 == proc_listen(&sender, &cmd, &size, 1)) break;
 	}
-	proc_recv(sender, &ipc, size);
+	ipc_recv(sender, size);
 
-	chan = ipc->chan;
+	chan = ipc_get_data();
 	switch (cmd) {
 		case CMD_REGISTER:
-			do_register(ipc->node, &ipc->data[0], &ipc->data[0] + ipc->app_len + 1);
+		{
+			char *t, *s;
+			ipc_get_pair(&t, &s);
+			do_register(ipc_get_node(), t, s);
 			break;
+		}
 		case CMD_REMOVE:
-			do_remove(&ipc->data[0]);
+			do_remove(ipc_get_arg());
 			break;
 		case CMD_CALL:
-			do_call(ipc->node);
+			do_call(ipc_get_node());
 			break;
 	}
 }
 
 int
-job_start(int cmd, struct ipc_data *ipc_msg, size_t ipc_size)
+job_start(int cmd, char *ipc_msg, size_t ipc_size)
 {
 	struct ProcChild *p;
 

@@ -1,0 +1,824 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass article
+\begin_preamble
+\usepackage{hyperref}
+\tolerance 10000
+\end_preamble
+\language turkish
+\inputencoding auto
+\fontscheme pslatex
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+ÇOMAR Mimari Belgesi
+\layout Author
+
+Gürer Özen (gurer @ uludag.org.tr)
+\layout Standard
+\pagebreak_top 
+
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset 
+
+
+\layout Section
+\pagebreak_top 
+Giriþ
+\layout Standard
+
+Bu belge, Ulusal Daðýtým'ýn yapýlandýrma yönetim sistemi olan ÇOMAR'ýn,
+ ne amaçla geliþtirildiðini, hangi sorunlara çözüm getirdiðini, yapýsýný
+ ve bileþenlerini anlatýr.
+ Hedef kitlesi, ÇOMAR'ý yakýndan tanýmak isteyen kullanýcýlar ve sistem
+ yöneticileridir.
+ Biliþim okuryazarý seviyesine göre yazýlmýþ olmakla birlikte, bazý tartýþmalarý
+ takip edebilmek için, bir iþletim sisteminin bileþenleri, ve uygulamalarýn
+ nasýl ayarlandýðý gibi sistem yönetimi konularýnda bilgi sahibi olmak gerekebil
+ir.
+\layout Section
+\pagebreak_top 
+Sorun
+\layout Standard
+
+Çeþitli uygulamalar bir sistem içinde bir araya getirildiklerinde, birbirleriyle
+ uyumlu çalýþabilmeleri için ayarlanmalarý gerekmektedir.
+ Kurulan bir uygulamanýn masaüstü menüsüne eklenmesi, açabildiði dosya tiplerini
+ sisteme bildirmesi, yeni kurulan bir spam (istenmeyen eposta) filtreleyicinin
+ mevcut eposta sunucusuna baðlanmasý gibi çok sayýda entegrasyon iþlemi
+ bulunmaktadýr.
+ Kullanýcý, bu ayarlarý yapabilmek için, kendi yapmak istediði iþin dýþýndaki
+ teknik konularda bilgi kazanmak zorunda kalmakta ve zaman kaybetmektedir.
+\layout Subsection
+
+Belgeler
+\layout Standard
+
+Özgür yazýlým camiasý, bu iþleri kolaylaþtýrmak için 
+\begin_inset Quotes eld
+\end_inset 
+
+nasýl
+\begin_inset Quotes erd
+\end_inset 
+
+ (ing.
+ howto) belgeleri adýyla çeþitli belgeler hazýrlamýþtýr.
+ Bunlar bir iþi yapabilmek için neler yapýlmasý gerektiðini adým adým anlatan
+ kýsa belgelerdir.
+ Kullanýcýlarýn belge okumak istememeleri ve belgelerin kýsýtlý sayýda senaryoyu
+ kapsamasý yüzünden faydalý olamamaktadýrlar.
+\layout Standard
+
+Burda aklýmýza, madem bir iþi adým adým belgeleyebiliyoruz, bunu bir program
+ haline getirip otomatik olarak yapýlmasýný saðlayamaz mýyýz? sorusu gelmektedir.
+ Bu yapýlabilirse, kullanýcýnýn zaman tasarrufu yanýnda, bu belgelerin çeþitli
+ dillere tercüme edilmesi gibi iþler de gereksiz hale gelecektir.
+\layout Subsection
+
+Diðer Linux Daðýtýmlarý
+\layout Standard
+
+Linux daðýtýmlarý geliþme süreçleri içerisinde bu tür entegrasyon problemleri
+ ile karþýlaþtýkça bunlara ayrý ayrý çözümler üretip kendi sistemlerine
+ (özellikle paket yönetici yazýlýmlarýnýn içine) dahil etmiþlerdir.
+ Bu çözümler, kurulu uygulamalar (menü), fontlar, açýlýþ iþlemleri (initscripts)
+ gibi tek tek alt sistemler bazýndadýr.
+\layout Standard
+
+Genellikle, uygulama paketleri, dosya sistemi üzerinde sabit bir dizine,
+ söz konusu alt sisteme neler saðladýklarýný kaydetmekte; bu alt sistemi
+ kullanacak uygulamalar ise, buraya önceden belirlenmiþ biçimde kaydedilen
+ dosyalarý tarayarak, saðlanan hizmetleri bulmaktadýr.
+ Uygulamalarýn entegrasyonu için, ya uygulamalar buradaki standartlarý bilecek
+ biçimde deðiþtirilmekte, ya da gerekli çevrimi yapacak üçüncü bir yönetici
+ uygulama araya sokulmaktadýr.
+ Kayýt ve çevrim iþlemleri için özel veri biçimleri, kabuk, Perl ya da Python
+ betikleri, bazen de bunlarýn bir karýþýmý kullanýlmaktadýr.
+\layout Standard
+
+Bir de uygulama kurulur, kaldýrýlýr ve güncellenirken çalýþan özel betikler
+ bulunmaktadýr.
+ Bunlarla güncelleme sýrasýnda eski ayarlarýn taþýnmasý gibi iþler yapýlmaktadýr.
+ Bazý sistemler (örneðin Debian'ýn debconf'u) kurulum anýnda bu betiklerin
+ kullanýcýya soru sorabilmeleri ve uygulamayý cevaplara göre ayarlamalarýný
+ saðlamaktadýr.
+\layout Standard
+
+Burda gördüðümüz noksanlýklar:
+\layout Itemize
+
+Her sorun için ayrý bir çözüm kullanýlmasý benzer iþlerin tekrar tekrar
+ yapýlmasýna yol açmaktadýr.
+ Genel bir ayar profili oluþturmayý ve yönetmeyi zor kýlmaktadýr.
+ Birbirleriyle iliþkileri eksik kaldýðý için yeterli entegrasyonu saðlayamamakta
+dýr.
+\layout Itemize
+
+Yapýlandýrma ile paket kurulumu iç içe geçmiþtir.
+ Bir paket (özellikle bir sunucu uygulamasý) kurulduðunda çalýþacak þekilde
+ yapýlandýrýlmasýnýn yanlýþ olduðunu, uygulamanýn ancak kullanýcý bir emir
+ verdiðinde, verilen emre göre yapýlandýrýlmasýnýn anlamlý olduðunu düþünüyoruz.
+ Yapýlandýrma, kurma ve kaldýrma ile ilgisi olmayan ve uygulama sistemde
+ durduðu sürece her an ihtiyaç duyulabilecek bir iþtir.
+\layout Itemize
+
+Bir sürü veri biçimi ve dil kullanýlmasý, öðrenme ve hata düzeltme süreçlerini
+ çok güçleþtirmektedir.
+\layout Itemize
+
+Bir sorun çýktýðýnda sistemi çalýþabilir bir konuma getirmek, uygulamalar
+ güncellenirken kullanýcý ayarlarýný ve sistemin tutarlýlýðýný korumak çok
+ zor olabilmektedir.
+\layout Subsection
+
+Diðer Ýþletim Sistemleri
+\layout Standard
+
+Windows, OS/2, MacOS X gibi iþletim sistemlerinde, sistemin parçalarý ve
+ kullanýcýnýn çalýþma ortamýný oluþturan uygulamalar genellikle tek bir
+ merkezden çýktýklarý için, uyum sorunlarý iþletim sisteminin çaðrýlarý
+ (API si) üzerinden çözülmektedir.
+ Ayarlarý toplu halde tutan merkezi bir kütük ile birlikte; çokluortam,
+ að protokolü, donaným yöneticisi gibi parçalar için parçalarýn yerleþebileceði
+ modül yapýlarý bulunmaktadýr.
+\layout Standard
+
+Bu yaklaþýmda þu noksanlýklarý görüyoruz:
+\layout Itemize
+
+Uygulamalarýn ayarlarýna merkezi eriþim sunulmasý, tek baþýna istenen faydayý
+ getirmemektedir.
+ Bir genel model olmadýðý için, bu bilgileri kullanmak isteyen kullanýcý
+ yada diðer uygulamalarýn, bilgiyi sunan uygulama ve ayarlarý hakkýnda detaylý
+ bilgiye sahip olmasý sorunu hala ortadadýr.
+\layout Itemize
+
+Uygulamalar ve yönetim sistemi arasýnda API düzeyinde bir iliþki, iki grubu
+ iç içe geçirip direkt baðlantý saðlayacaðý için, parçalarýn baðýmsýzlýðýný
+ azaltacaktýr.
+ Bu da, ayrý ayrý parçalarýn geliþtiricilerinin, adam/ay modelinde baðýmsýz
+ çalýþmak yerine, bir araya gelip karþýlýklý iletiþim ve senkronizasyon
+ ile çalýþmasýna, dolayýsýyla geliþtirme iþlerinin ölçeklenebilirliðinin
+ azalmasýna yol açmaktadýr.
+\layout Itemize
+
+Parçalarýn farklý ellerden çýktýklarý ve alternatiflerin bol olduðu özgür
+ yazýlým modeline uymamaktadýr.
+\layout Itemize
+
+Daðýtýmýmýza girecek uygulamalarý yeni API leri kullanacak þekilde deðiþtir\SpecialChar \-
+mek,
+ uy\SpecialChar \-
+gu\SpecialChar \-
+la\SpecialChar \-
+ma kodu üzerinde büyük deðiþiklikler yapmayý, ve yapýlan deðiþikliklerin
+ yeni sorunlara yol açmadýðýný kapsamlý olarak analiz etmeyi gerektirmektedir.
+ Bu da büyük zaman ve emek harcamasýna yol açacaktýr.
+ Kodunu deðiþtirme olanaðý olmayan uygulamalarýn sisteme entegre edilebilmesini
+ önleyecektir.
+\layout Itemize
+
+Bu API lerin her uygulamadan kullanýlabilmesi ya CORBA, COM gibi karmaþýk
+ çözümler ya da çok sayýda 
+\begin_inset Quotes eld
+\end_inset 
+
+wrapper
+\begin_inset Quotes erd
+\end_inset 
+
+ gerektirmektedir.
+\layout Itemize
+
+Bir alt sistemin yetersiz kaldýðý görülüp yeni bir alt sistem yapýsý geliþtirild
+iðinde, API deðiþikliðine yol açmamak için API üzerindeki deðer ve çaðrýlara
+ kapsamlarý dýþýnda anlamlar ve görevler yüklenmekte, ve API yi öðrenmek
+ ve kullanmak isteyenlerin iþi çok zorlaþmaktadýr.
+ Ya da API deðiþikliði yapýlmakta, ve varolan uygulamalarýn yeni API yi
+ taþýnmasý, eski ve üçüncü parti uygulamalar için uyumluluk katmanlarý hazýrlanm
+asý gibi fazladan sorunlar çýkmaktadýr.
+\layout Subsection
+
+Özel Yönetim Uygulamalarý
+\layout Standard
+
+Linux'un masaüstü ve iþ dünyasýnda kullanýmýnýn artmasýyla, bir takým genel
+ yapýlandýrma ve yönetim araçlarý da geliþtirilmiþtir.
+ YaST, LinuxConf, WebMin gibi bu araçlar kullanýcýya üst seviye bir arabirim
+ sunup, kullanýcýnýn burada yaptýðý seçimleri uygulamalarýn alt seviye ayarlarýn
+a taþýmaktadýr.
+ Ýki seviye arasýnda geçiþ yapabilmek için gereken bilgiler araçlarýn içinde
+ bir dizi kural olarak kodlanmýþtýr.
+\layout Standard
+
+Bundan baþka, bilgisayar aðlarýnýn yaygýnlaþmasýyla birlikte, birden fazla
+ bilgisayarýn merkezi yönetimini yapabilecek IBM Tivoli, HP OpenView, CIM,
+ SNMP, OSI CMIP gibi ürün ve çerçeveler ortaya çýkmýþtýr.
+ Ayrýntýlarda farklarý olmakla birlikte, genel mimarileri, yönetilecek bilgisaya
+rda bulunacak ajanlar, yönetim bilgisayarýnda bir yönetici yazýlým, bunlar
+ arasýnda bir iletiþim protokolü ve yönetilecek görev ve ayarlarý belirten
+ bilgi modellerinden oluþmaktadýr.
+ Yalnýzca yapýlandýrma ile sýnýrlý kalmayýp, hata bulma, performans ve güvenlik
+ deðerlendirmeleri, kullaným hesaplama gibi iþleri de yapmaktadýrlar.
+\layout Standard
+
+Bu araçlarda gördüðümüz yanlýþlar:
+\layout Itemize
+
+Üst düzey bir model deðil, alt düzey ayarlar yöneticiye sunulmaktadýr.
+\layout Itemize
+
+Yapýlandýrma problemlerini görev tabanlý deðil, uygulama tabanlý ele almaktadýrl
+ar.
+\layout Itemize
+
+Uygulamalara görevi yaptýrmak için gereken bilgi uygulamalarda deðil merkezde
+ (yönetici yazýlýmýn içinde) bulunmaktadýr.
+ Bu bilgiler, bir arada olduklarý ve birden fazla parçaya ait detaylarý
+ içerdikleri için, öngörülmeyen durumlarda hata ortaya çýkarma ihtimalleri
+ artmaktadýr.
+\layout Section
+\pagebreak_top 
+Gerekler
+\layout Standard
+
+Bir yapýlandýrma sisteminin iki müþterisi olacaktýr.
+ Biri sistemin çalýþacaðý bilgisayardaki kullanýcýlar, diðeri ise bu sisteme
+ paket veya yönetim araçlarý yapacak olan geliþtiricilerdir.
+\layout Subsection
+
+Kullanýcý Gerekleri
+\layout Enumerate
+
+Yapýlandýrma sorunlarý mümkün olduðunda otomatik biçimde çözülmeli, kullanýcýdan
+ ihtiyacý olmayan teknik detaylarý bilmesi ve ayarlamasý istenmemelidir.
+\layout Enumerate
+
+Otonom olarak çalýþabilmeli, gerektiðinde gömülü sistemlerde de kullanýlabilmesi
+ için grafik arayüzlerden baðýmsýz olmalýdýr.
+\layout Enumerate
+
+Görevler koþutzamanlý (concurrent) çalýþmalý, biri diðerini yavaþlatmamalýdýr.
+\layout Enumerate
+
+Kullanýcýnýn karar vermesi gereken durumlar kullanýcýya görev tabanlý bir
+ yaklaþýmla ve biliþim okuryazarýna yönelik terimlerle sunulmalýdýr.
+ Görev yerine uygulama bazýnda ayarlarýn sunulmasý, sorularýn teknik detaylara
+ ait terimlerle sorulmasý istenmemektedir.
+\layout Enumerate
+
+Otomatik yapýlacak yapýlandýrmalar veya kullanýcýnýn yapýlandýrma istekleri,
+ sistemi asla iç tutarlýlýðýný kaybetmiþ hale getirmemelidir.
+ Baþka bir sebepten bu duruma gelen sistemi tekrar tutarlý hale getirebilmek
+ mümkün olmalýdýr.
+\layout Enumerate
+
+Kullanýcýnýn istekleri farklý adlar altýnda birer profil olarak gruplanabilmeli,
+ sistem bir profilden diðerine rahatça geçebildiði gibi, gerektiðinde bu
+ profiller bir sistemde kaydedilip, diðer bir sisteme taþýnabilmelidir.
+\layout Enumerate
+
+Sistem yöneticisi diðer kullanýcýlara belirli kriterlere göre yapýlandýrma
+ kararý verme yetkisi daðýtabilmelidir.
+ Böylece kullanýcýlarýn gerektiðinde 
+\begin_inset Quotes eld
+\end_inset 
+
+kök
+\begin_inset Quotes erd
+\end_inset 
+
+ (ing.
+ root) kullanýcý olmadan da sistemin belirli bir bölümünde (örneðin að iletiþimi
+, paket kurulumu, ya da donaným) yapýlandýrma ve yönetim yapabilmesi mümkün
+ olacak, kök kullanýcýya olan baðlýlýk ortadan kaldýrýlabilecektir.
+\layout Subsection
+
+Geliþtirici Gerekleri
+\layout Enumerate
+
+Her yapýlandýrma problemi için ayný ortak alt yapýnýn kullanýlmasý, sistemin
+ bir bütün olarak modellenmesi istenmektedir.
+ Bu geliþtirme iþlerini kolaylaþtýracaktýr.
+\layout Enumerate
+
+Uygulamalar, üzerlerinde büyük deðiþiklikler yapýlarak deðil, gerekli yapýlandýr
+ma bilgisini taþýyan ufak aracýlar eklenerek sisteme entegre edilmelidir.
+\layout Enumerate
+
+Her bir uygulama pakedinin yapýlandýrma bilgisi tamamen kendi içinde olmalý,
+ ve tek bir dil ve veri biçimi ile tanýmlanmalýdýr.
+\layout Enumerate
+
+Yapýlandýrma sistemi, ilerde ortaya çýkabilecek deðiþik özellikte uygulamalarýn
+ entegrasyonunda sorun çýkartmayacak esnek bir görev modeline sahip olmalýdýr.
+\layout Enumerate
+
+Yapýlandýrma sistemi ile kurulacak iletiþimde dil veya veri biçimi baðýmlýlýðý
+ problemi olmamalýdýr.
+\layout Enumerate
+
+Sistem, kendi ile iletiþim kuran uygulamalara, sürekli bir sorma gereksinimi
+ býrakmadan, bir takým olaylarýn oluþtuðunu haber verebilmelidir.
+\layout Section
+\pagebreak_top 
+ÇOMAR
+\layout Standard
+
+Bu gerekleri saðlayacak bir sistem oluþturabilmek için ilk adým, yapýlandýrma
+ sorunlarýnýn tarif edilebileceði bir model oluþturmaktýr.
+ Genel olarak iki tip sorun vardýr.
+\layout Standard
+
+Birinci tip sorunlar iki uygulamanýn birbiriyle uyumlu çalýþmasýnýn gerektiði
+ yerlerde çýkarlar.
+ Bunlarý çözebilmek için her uygulamanýn,
+\layout Enumerate
+
+Diðer uygulamalarýn bilgilerine eriþebilmesini ve kendi bilgilerini diðer
+ uygulamalara sunabilmesini,
+\layout Enumerate
+
+Önceden belirlenmiþ görevler içinden neleri yapabildiðini sisteme bildirebilmesi
+ni,
+\layout Enumerate
+
+Kendi görevleri dýþýndaki iþlere karýþmamasýný, bunlarý ilgili uygulamalardan
+ istemesini,
+\layout Enumerate
+
+Bilgileri deðiþtiðinde, ilgilenen uygulamalarý haberdar edebilmesini saðlamak
+ gerekir.
+\layout Standard
+
+Böylece uygulamalar kendilerini birbirlerine göre ayarlayabileceklerdir.
+\layout Standard
+
+Ýkinci tip sorunlar ise tek bir uygulamanýn yapýlandýrýlmasýnda ortaya çýkarlar.
+ Ayný görevleri yapabilen uygulamalar fonksiyonel bir sýnýf oluþturmaktadýr.
+ Deðiþen þey, her birinin bu görevi yapmak için farklý þekilde ayarlanmasý
+ gerekeceðidir.
+\layout Standard
+
+Buradan, uygulamalarýn eþ görevleri olan fonksiyonel sýnýflar olarak sýnýflandýr
+ýlabileceði, ve bu sýnýflar ortogonal olarak tasarlandýðýnda, uygulamalar
+ arasý yapýlandýrma problemlerinin çözümü için gereken þartlarý saðlayabileceðim
+iz sonuçlarýna varýyoruz.
+\layout Standard
+
+Ortogonal olarak tasarlanmýþ sýnýflardan oluþan kapsayýcý bir sistem modeli
+ oluþturduktan sonra, karþýmýza modelden istenen görevleri uygulamalara
+ aktarma sorunu çýkmaktadýr.
+\layout Standard
+
+Uygulamalarý bize ait API leri kullanacak biçimde deðiþtirmek gereklerimize
+ uygun deðildir.
+ Uygulamalarýn çalýþmalarýný yönetecek bilgiler ve ayarlanmasý gerektiði
+ düþünülen seçenekler genellikle uygulama yazarlarý tarafýndan önceden düþünülüp
+, bir takým ayar dosyalarýndan, komut satýrý parametrelerinden, ve benzer
+ yollarla elde edilip kullanýlacak duruma getirilmiþtir.
+ O halde en uygun yol, birer aracý programcýk ile modeldeki görevleri, uygulamal
+arýn kendi ayar ve komutlarýna çevirmektir.
+\layout Standard
+
+Bu programcýklarý bir arada ve düzenli olarak çalýþtýrabilmek, yapýlandýrmalarý
+ profiller bazýnda yönetebilmek, kullanýcýlara görevlere eriþim yetkisi
+ verebilmek gibi gerekleri kolayca saðlayabilmek için, bir yönetici servis
+ programý gerekmektedir.
+\layout Standard
+
+Yapýlandýrma grafik arayüzleri, paket yöneticisi, üst düzey yönetim programlarý
+ bir iletiþim kanalý aracýlýðý ile bu yönetici programa baðlanýp, model
+ üzerindeki görevleri kullanabileceklerdir.
+\layout Standard
+
+Toparlarsak, gereksinimlerimizi karþýlayabilecek ve diðer benzer sistemlerdeki
+ sorunlara düþmeyecek bir yapýlandýrma yönetim çerçevesi için ihtiyacýmýz
+ olan bileþenler, bir sistem modeli, uygulamalarý bu modele oturtmak için
+ gerekli aracý programcýklar ve bu programcýklarý iþletecek bir uygulamadýr.
+ Þimdi bu bileþenlere detaylý olarak bakalým.
+\layout Subsection
+
+Sistem Modeli
+\layout Standard
+
+Sistem modeli, eþ görevleri olan uygulamalarýn fonksiyonel sýnýflarýndan
+ oluþmaktadýr.
+ Burdaki sýnýf kavramý, nesne tabanlý programlamadaki (OOP) sýnýf kavramýna
+ yakýnlýk taþýdýðýndan, ayný isimlendirmeleri kullanmak öðrenme kolaylýðý
+ saðlayacaktýr.
+\layout Standard
+
+Buna göre, bir sýnýf, bir veya birden fazla uygulamaya ait aracý programcýklar
+ (nesneler) tarafýndan saðlanan, ve üzerinde yapýlacak görevlere karþýlýk
+ gelen metotlar içeren bir tanýmlamadýr.
+\layout Standard
+
+Bu nesnelerin, metotlar dýþýnda OOP anlamýnda özniteliklere sahip olmalarý
+ gerekli görülmemiþtir.
+ Bunlar iþletilirken sistemin doðasý gereði birer fonksiyon olarak çaðrýlacak
+ ve tek parametreli bir metottan farklý olmayacaklardýr.
+\layout Standard
+
+Ayrý yapýlandýrma problemlerine yönelik olduklarýndan dolayý, sýnýflar arasýnda
+ herhangi bir kalýtým (inheritance) iliþkisi yoktur.
+ Bununla birlikte yakýn amaçlara yönelik sýnýflar (örneðin iletiþimle ilgili
+ sýnýflar, donaným tanýmayl ilgili sýnýflar, vb) bir grup ismi altýnda bir
+ araya toplanmýþtýr.
+ Grup kavramý, model üzerinde yetki denetimi tanýmlarken kolaylýk saðladýðý
+ gibi, modeli mantýksal olarak düzenli tuttuðu için tercih edilmiþtir.
+ Bir grup yalnýzca, kendine ait sýnýflarý bir arada tutar, metot ya da nesneleri
+ yoktur.
+\layout Standard
+
+Benzer biçimde, aracý programcýklar arasýnda kod paylaþýmý söz konusu deðildir.
+ Bunlarýn ihtiyaç duyacaðý ortak yordamlar, API olarak ÇOMAR tarafýndan
+ kendilerine sunulacaktýr.
+\layout Standard
+
+Böylece her bir nesne diðerinden yalýtýlmýþ olacaðýndan, nesnelerin birbirlerini
+n iç detaylarýný bilmesi, ya da baþka bir nesneye direk olarak baðlý olmasý
+ gibi durumlar oluþmayacaktýr.
+\layout Standard
+
+Her uygulama saðladýðý sýnýflara ait nesneleri yanýnda taþýr ve kurulum
+ sýrasýnda ÇOMAR'a kaydeder.
+ Bu nesneler model üzerinde ait olduklarý sýnýflara yerleþtirilir.
+\layout Subsubsection*
+
+Ýsimlendirmeler
+\layout Standard
+
+Model üzerinde gruplar direk adlarýyla gösterilir, sýnýflar grup adý ile
+ birlikte,
+\layout Quote
+
+
+\series bold 
+Grup.Sýnýf
+\layout Standard
+
+biçiminde gösterilirler, her sýnýf mutlaka bir grubun içindedir.
+ Sýnýf metotlarý ise
+\layout Quote
+
+
+\series bold 
+Grup.Sýnýf.metotAdý
+\layout Standard
+
+biçiminde yazýlýr.
+\layout Subsubsection*
+
+Tasarým Kurallarý
+\layout Standard
+
+Sistem modeli tasarlanýrken bazý noktalara dikkat edilmesi gerekmektedir.
+\layout Enumerate
+
+Belli uygulamalarýn deðil, bu uygulamalarýn yaptýðý görevlerin yapýlandýrýlmasý
+ gözetilmeli, modelin genelliði yitirilmemelidir.
+\layout Enumerate
+
+Modelin geliþen teknolojilerle birlikte eskiyip, kullanýþsýz hale gelmemesi
+ için, esnek olmasý gözetilmelidir.
+\layout Enumerate
+
+Bununla birlikte, ucu açýk, tanýmlanmamýþ bilgi ve görevler modele sokulmamalýdý
+r.
+\layout Enumerate
+
+Burda ayrýmý doðru yapabilmek için, görev ve bilgilerin genel kullanýma
+ mý, yoksa özel kullanýma mý yönelik olduðu bir kriterdir.
+ Bir nesnenin bir görevi eðer üst katmandaki her nesne tarafýndan kullanýlabiliy
+orsa geneldir, açýkça ve kesin olarak tanýmlanmalýdýr.
+ Eðer görevin kullanýmý sadece özel bir üst nesne tarafýndan yapýlabiliyorsa,
+ özeldir ve bunun bilgisi tanýmlanmaya çalýþýlmak yerine, üst nesneye hedef
+ olarak verilip, kendi aralarýndaki iliþkileri kendilerinin kurmalarý desteklenm
+elidir.
+\layout Enumerate
+
+Model, kullanýcý ve görev tabanlý tasarlanmakla birlikte, görev uygulamalarýnýn
+ ihtiyaçlarýna yönelik teknik bilgiler de taþýyacaktýr.
+ Bu durumlarýn modelde açýkça belirtilmesi önemlidir.
+\layout Subsection
+
+Aracý Programcýklar (CSL)
+\layout Standard
+
+Ne yazýk ki basit bir tanýmlama dili, görevleri uygulamalara taþýmaya yetmemekte
+dir.
+ Çünkü aracýnýn birçok durumda kendi içinde birden fazla iþlem yapmasý,
+ çeþitli kriterlere göre iþi nasýl yaptýracaðýna karar vermesi, gerektiðinde
+ uygulamayý yönetebilmek için, genel API lerin saðlayabileceðinin dýþýnda
+ fonksiyonlar kullanmasý gerekmektedir.
+ Ýterasyon, karar verme, karþýlaþtýrma, aritmetik ve string iþlem yapma
+ özellikleri olan bir dil gereklidir.
+\layout Standard
+
+Bu dilin seçimi özgür býrakýlabilir, ancak bu durumda yapýlandýrma sisteminin
+ baðýmlýlýklarý artmaktadýr.
+ En önemlisi diller arasý uyum, hata giderme iþlemleri ve öðrenme süreci
+ çok güçleþmektedir.
+ Bu nedenle tek bir dil kullanýlmalýdýr.
+\layout Standard
+
+Genel bir programlama dilinde bulunan çoðu modül ve kitaplýk (özellikle
+ grafik arayüze yönelik olanlar) gerekmeyecektir.
+ Sorun çýkmamasý için dilde bu destekler hiç olmamalý ya da kapatýlabilmelidir.
+ Ýhtiyaç duyulacak API ler, ayar dosyalarýný okuyup yazma, programlarý çalýþtýrý
+p durdurma gibi iþlere yönelik olacaktýr.
+\layout Standard
+
+Bu iþ için en uygun dil olarak gördüðümüz Python'u temel aldýk.
+ Python iþleticisini (VM), bizim belirlediðimiz bazý modülleri (string,
+ re, config modülleri, vb...) alýp, bunun üstüne ihtiyacýmýz olan diðer fonksiyonla
+rý bir modül olarak ekleyerek CSL (Çomar Scripting Language) adýný verdiðimiz
+ bir alt dil oluþturduk.
+ Nedenlerimiz:
+\layout Itemize
+
+PÝSÝ paketlerinin hazýrlama ve derleme betiklerinde de Python kullanýldýðý
+ için paket yapýcý tek bir dil öðrenip kullanarak tam bir Pardus pakedi
+ hazýrlayabilecektir.
+\layout Itemize
+
+Python VM, hýz ve kaynak kullanýmý olarak çok uygundur.
+ Bir iþletici program içinden rahatça ayarlanýp kullanýlabilen bir kitaplýk
+ halindedir.
+\layout Itemize
+
+Program yazarken sýkça karþýlaþýlan yapýlarýn (design patterns) çoðu Python'da
+ temel özellik olarak bulunduðu için kod temiz ve anlaþýlýr olmakta; implementas
+yon, mantýðý gölgelememektedir.
+\layout Itemize
+
+Minimal ve temiz sentaksý dolayýsýyla kodlarýn boyutu kýsa, okunabilirliði
+ yüksek olmaktadýr.
+\layout Subsection
+
+Yapýlandýrma Yöneticisi
+\layout Standard
+
+ÇOMAR iþletici uygulamasý (comard), kullanýcý arayüzleri, ÇOMAR destekli
+ uygulamalar ve çeþitli araçlardan gelen görev isteklerini sistem modeli
+ üzerindeki uygulama nesnelerine yaptýran bir sistem servisidir.
+\layout Standard
+
+Bu istekleri almak, ve olup biten yapýlandýrma olaylarýný baðlanan uygulamalara
+ aktarabilmek için bir iletiþim kanalý gereklidir.
+ ÇOMAR'ýn ön tanýmlý iletiþim kanalý sistemde sabit bir UNIX soket olmakla
+ birlikte, yerel baðlantýlar için DBus, uzak baðlantýlar için HTTP, SSH
+ gibi protokoller, hatta e-posta ya da SMS gibi iletiþim kanallarý modüler
+ olarak kullanýlabilir.
+\layout Standard
+
+Her bir iletiþim modülü, ÇOMAR çaðrýlarýný iletmek, ve gelen çaðrýlarýn
+ hangi kullanýcýdan geldiði, iletiþim hattýnýn þifreli olup olmadýðý, iletinin
+ elektronik imzayla doðrulanýp doðrulanmadýðý gibi bilgilere bakarak ÇOMAR'ýn
+ yetki denetim mekanizmasýndan geçirmekle sorumludur.
+ Ýþletici elindeki nesnelerle sisteme kullanýcý eklemek, alt düzey ayarlarý
+ deðiþtirmek gibi iþler yapabilmekte, bunlarý yapabilmek için en yüksek
+ yetki seviyesinde çalýþmaktadýr.
+ Güvenlik açýklarýna yol açmamak için, iletiþim modüllerinden gelen isteklerin
+ yetki denetiminden geçmeden iþleticiye geçmesine izin verilmemelidir.
+\layout Standard
+
+Yetki denetimi çaðrýyý yapanýn kimlik bilgileri ile, model üzerindeki her
+ noktada yapýlýr.
+ Böylece bir kullanýcýya ayar deðiþtirme yetkisi vermeden bilgi sorma metotlarýn
+ý çaðýrma yetkisi verilebilmesi ya da bütün bir grubun yönetiminin basitçe
+ tek bir kullanýcýya verilmesi saðlanabilir.
+\layout Standard
+
+Görevleri saðlayan nesneler paralel olarak veya çaðrý bir nesneye yönelikse
+ tek olarak iþletilir.
+ Bir nesne içinden baþka bir sýnýfa yeni bir çaðrý yapýlabilir.
+ Bir paket kurulduðunda uygulamanýn nesnelerini model kaydettiren, kaldýrýldýðýn
+da çýkaran çaðrýlar da mevcuttur.
+\layout Standard
+
+Özellikle açýlýþ esnasýnda bir sürü iþlem yapýlmaktadýr, bu iþlemler birbirlerin
+den baðýmsýz olduklarý, aralarýndaki baðýmlýlýklar çok az olduðu için paralel
+ çalýþtýrýlmalarý büyük hýz kazancý saðlayacaktýr.
+ Ýsteklerin paralel yürütülebilmesi, kullanýcýnýn interaktif iþlemlerine
+ çabuk yanýt verebilmek için de önemlidir.
+ Bu amaçla her bir nesne ayrý bir süreç olarak iþletilecektir.
+ Linux'ta yeni bir süreç yaratan fork çaðrýsý, bir performans kaybý yaratmayacak
+ kadar hýzlý çalýþmakta ve süreçlerin bellek alanlarý copy-on-write metodu
+ ile çoðaltýldýðý için gereksiz kaynak israfýna da yol açmamaktadýr.
+\layout Standard
+
+Yapýlandýrma iþlemleri sistemde sürekli ve sýk biçimde yapýlmamaktadýr.
+ Yapýlacak iþler azaldýðýnda ya da iþ olmadýðýnda minimum kaynak kullanýmýna
+ geçilebilmelidir.
+ Nesnelerin ayrý süreçler olarak iþletilmesi bunu da kolaylaþtýrmakta, iþler
+ hep ana süreç dýþýnda yapýldýðý için, bir iþ olmadýðýnda sadece temel takip
+ iþlemleri çalýþýr halde kalmaktadýr.
+\layout Standard
+
+Nesneler belirli bir durumda (bir sistem olayý ya da peryodik zaman olaylarý)
+ bir metotlarýnýn çaðrýlmasýný isteyebilirler.
+ ÇOMAR iþleticisi bu istekleri kaydeder ve ilgili olay meydana geldiðinde
+ ilgilenen nesneleri çaðýrýr.
+\layout Subsection
+
+Kullanýcý Arayüzleri
+\layout Standard
+
+ÇOMAR'ý kullanacak en temel uygulama PÝSÝ'dir.
+ Paketleri kurarken, pakede ait nesneleri ÇOMAR'a verecek ve uygulamanýn
+ sisteme entegre edilmesini saðlayacaktýr.
+ Paket kaldýrýlýrken ise ÇOMAR'a durumu bildirerek nesnelerin modelden çýkarýlma
+sýný saðlar.
+\layout Standard
+
+Kullanýcýnýn görevleri kullanmasýný ve sistemini ayarlayabilmesini saðlayacak
+ uygulama ise TASMA'dýr.
+ Bir grafik arayüzü olan TASMA, ÇOMAR'daki bilgileri kullanýcýya sunmak,
+ ve kullanýcýnýn emirlerini ÇOMAR çaðrýlarýna dönüþtürmek iþlerini yapar.
+\layout Standard
+
+Bunlar dýþýnda çeþitli arayüzler veya yönetim uygulamalarý da ÇOMAR'a baðlanýp
+ hizmetlerinden yararlanabilir.
+\layout Section
+\pagebreak_top 
+Sýkça Sorulanlar
+\layout Subsection
+
+ÇOMAR'ýn açýlýmý nedir?
+\layout Standard
+
+COnfiguration MAnageR.
+ ÇOMAR'ýn açýlýmý ilk olarak 
+\begin_inset Quotes eld
+\end_inset 
+
+Configuration by Objects, Modify and Restart
+\begin_inset Quotes erd
+\end_inset 
+
+ idi.
+ Fakat ÇOMAR'ýn tasarým sürecinde 
+\begin_inset Quotes eld
+\end_inset 
+
+Modify and Restart
+\begin_inset Quotes erd
+\end_inset 
+
+ kýsmýnýn ÇOMAR'ýn iþlevselliðini tam olarak ifade etmez hale geldiði görüldü
+ ve açýlýmýnýn 
+\begin_inset Quotes eld
+\end_inset 
+
+Configuration Manager
+\begin_inset Quotes erd
+\end_inset 
+
+ olmasýnýn daha doðru ve anlamlý olacaðýnda karar kýlýndý.
+\layout Subsection
+
+ÇOMAR bana ne fayda saðlayacak?
+\layout Standard
+
+Kurduðunuz uygulamalarý elle ayarlamaktan, sistemin zaten bildiði ve kendi
+ baþýna bulabileceði bilgileri elle girmekten, bunun için belge okuyup soru
+ sorarak zaman kaybetmekten kurtulacaksýnýz.
+\layout Standard
+
+Sistemin sürekli olarak tutarlý bir durumda kalmasýný saðlayarak, ayar sorunlarý
+ yüzünden çalýþamayan programlardan sizi kurtaracak.
+\layout Standard
+
+Sunduðu imkanlar ile tek tek uygulama ayarlamaktan ziyade, görev temelli
+ düþünülmüþ grafik arayüzler yazýlmasýný kolaylaþtýracak, bu arayüzler sayesinde
+ bilgisayara kölelik yapmak yerine kendi iþinizle uðraþabileceksiniz.
+\layout Subsection
+
+ÇOMAR desteklemeyen uygulamalarý kullanabilecek miyim?
+\layout Standard
+
+Elbette.
+ Bu uygulamalar ÇOMAR'ýn saðladýðý avantajlardan faydalanmayacaklar, ama
+ sistemde çalýþabilmelerinin önünde bir engel olmayacak.
+\layout Subsection
+
+Bir uygulamaya ÇOMAR desteði vermek zor mu?
+\layout Standard
+
+Hayýr.
+ Bunun için uygulamayý deðiþtirmenize gerek yok.
+ Yalnýzca CSL ile ÇOMAR modelindeki görevlerin uygulamaya nasýl yaptýrýlacaðýný
+ tarif eden betikler (nesneler) yazmanýz yeterli.
+\layout Subsection
+
+CSL yeni bir dil mi?
+\layout Standard
+
+Aslýnda hayýr.
+ CSL bir Python alt dili.
+ Python'un ihtiyacýmýz olmayan modülleri çýkarýlýp, bazý yeni modüllerin
+ eklenmesiyle oluþturulmuþ, ve sistem modelimizdeki sýnýflara nesne yazmak
+ için kullanýlacak hale getirilmiþ hali diyebiliriz.
+ Ýlk ÇOMAR tasarýmý ve prototipinde Javascript/C arasý ve çok kýsýtlý bir
+ dil olarak tasarlanmýþtý, ama bunun yeterli gelmediði ve basitlik saðlamadýðý
+ görülünce Python temelli olmasýna karar verildi.
+\layout Subsection
+
+ÇOMAR ile PÝSÝ arasýnda nasýl bir iliþki var?
+\layout Standard
+
+ÇOMAR ve PÝSÝ, diðer daðýtýmlarda bir arada olan kurulum ve yapýlandýrma
+ iþlerini ayýrýyor ve her iþi kendi sorumluluk sahasý içinde düzgünce tarif
+ ediyorlar.
+ Birbirlerine ihtiyaç duyduklarýnda kullanacaklarý arabirim ise düzgün bir
+ biçimde tanýmlanmýþ.
+ Böylece temiz ve basit bir çözüm saðlýyorlar.
+\layout Subsection
+
+ÇOMAR'ý devreden çýkartýrsam ne olur?
+\layout Standard
+
+Otomatik yapýlandýrma iþleri durur, ve ÇOMAR ile çalýþan yapýlandýrma arayüzleri
+niz (TASMA) artýk çalýþmaz.
+ Yani artýk kendi baþýnýzasýnýz demektir.
+ ÇOMAR'ý yeniden baþlatarak bu durumdan kurtulabilirsiniz.
+\layout Subsection
+
+ÇOMAR'ýn kconfig, gconf, elektra gibi sistemlerden farký ne?
+\layout Standard
+
+Bu sistemler 
+\begin_inset Quotes eld
+\end_inset 
+
+configuration
+\begin_inset Quotes erd
+\end_inset 
+
+ ismini kullanmalarýna raðmen aslen özel bir veri saklama (storage) sisteminden
+ baþka bir þey deðildirler.
+ Uygulama bazýnda, belirli anahtar kelimelere karþýlýk gelen verilerin saklanmas
+ý ve getirilmesini saðlarlar.
+ Bu anahtarlar sistem çapýnda tanýmlanmamýþtýr ve her uygulama için farklýdýr.
+ Uygulamalarýn alt düzey ayarlarýna eriþmenizi saðlarlar, ama bir görevi
+ yapmak için hangi ayarlarýn deðiþmesi gerektiði, ayný iþi yapan farklý
+ bir uygulamanýn bilinmeden nasýl ayarlanabileceði, ayarlar karýþtýðýnda
+ sistemin tutarlý bir hale nasýl getirilebileceði gibi sorunlara bir çözüm
+ getirmezler.
+\layout Subsection
+
+Neden baþkalarý böyle bir çözüm getirmedi?
+\layout Standard
+
+Diðer daðýtýmlar çözümlerini tarihsel geliþme süreçleri içinde adým adým
+ geliþtirdikleri ve geçmiþe uyumluluk yüküyle yollarýna devam ettikleri
+ için bu tür kapsayýcý ve düzenli çözümler getirmeleri zor.
+ Bir çok yeni giriþim ise genel bir model oluþturmayý ihmal ederek, sorunu
+ bir ayar deposu (configuration storage) olarak ele almaya devam etmekte.
+\layout Section
+\pagebreak_top 
+Emeði Geçenler
+\layout Standard
+
+Ýlk sürüm:
+\layout Standard
+
+Serdar Köylü, A.
+ Murat Eren, Gürer Özen
+\layout Standard
+
+Gözden geçirme:
+\layout Standard
+
+Barýþ Metin, S.
+ Çaðlar Onur, Onur Küçük
+\layout Standard
+
+Ýkinci sürüm:
+\layout Standard
+
+Gürer Özen, Barýþ Metin, Eray Özkural
+\the_end

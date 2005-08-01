@@ -1,5 +1,0 @@
-# time manager object
-
-method setDate(year2="", month2="", day2="") {
-	settime(year=year2,month=month2,day=day2);
-}

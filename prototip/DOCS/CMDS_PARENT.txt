@@ -1,7 +1,0 @@
-to      CHILD, LRTU_KPID  TAMGRPid          : Ana TA_MGR'in ppid'ini data kanalda bulundurur.
-from    CHILD, MRSU_NCH   RegisterNewChild  : Child, kendine yeni bir child oluşturunca, yeni child'in PID'ini parentine yollar. DC: C.PID
-from    CHILD, MRSU_LCH   LostChild         : Child kendini sonlandırınca, parenti bunu kendi parentine bildirir. DC: C.PID
-from    CHILD, LNSU_MCL   MissionComplete   : İstenen görev tamamlandı. TID = Cevaplanan TID
-from    CHILD, LNSU_KPID  GetTAMGRPid       : Ana TA_MGR'in ppid'ini ister.
-from    CHILD, IRSU_APRT  AddPIDRoutingTable: dc = new PID.
-from    CHILD, IRSU_DPRT  DelPIDRoutingTable: dc = deleted PID

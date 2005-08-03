@@ -449,7 +449,7 @@ def configureDisplay():
 	
 	# probe monitor freqs
 	mon = queryDDC()
-	# defaults for the case where dcc fails
+	# defaults for the case where ddc fails
 	if mon.hsync_min == 0 or mon.vert_min == 0:
 		mon.hsync_min = 31.5
 		mon.hsync_max = 50

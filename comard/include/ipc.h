@@ -20,16 +20,14 @@ enum {
 	CMD_CALL
 };
 
-void ipc_start(int cmd, void *caller_data, int node);
-void ipc_pack_arg(const char *arg);
-void ipc_pack_pair(const char *key, const char *value);
+void ipc_start(int cmd, void *caller_data, int id, int node);
+void ipc_pack_arg(const char *arg, size_t size);
 void ipc_send(struct ProcChild *p);
 
 int ipc_recv(struct ProcChild *p, size_t size);
 int ipc_get_node(void);
 void *ipc_get_data(void);
-char *ipc_get_arg(void);
-int ipc_get_pair(char **keyp, char **valuep);
+int ipc_get_arg(char **argp, size_t *sizep);
 
 
 #endif /* IPC_H */

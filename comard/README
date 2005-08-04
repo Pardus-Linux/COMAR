@@ -23,15 +23,17 @@ Kod stili:
 
 RPC:
 ----
-biçim:
-(komut) (parametreler) '\n'
+"/tmp/comar" adlı UNIX soketinden bağlanılır.
 
-komutlar:
-+ Register
-- Remove
-$ Call
+Gelen ve giden cevaplar:
 
-örnekler:
-+Net.NIC eth "/home/gurer/lala.csl"
--eth
-$Net.NIC.autoConfig
+cmd    datasize    id       data
+---  ------------  ---  -----------...
+(1)       (3)      (4)   (datasize) bytes
+
+biçimdedir. Burada cmd, giden komut veya dönen cevap tipi,
+data ise komutun datasize boyutundaki parametreleridir.
+32bitlik id değeri client tarafından belirlenir, ve bu değer
+ile yapılan çağrıdan gelen tüm cevaplarda aynen geri döner.
+
+Komutlar:

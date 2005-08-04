@@ -86,6 +86,7 @@ int
 csl_execute(char *code, size_t size, const char *func_name, char **resptr, int *reslen)
 {
 	PyObject *pCode, *pModule, *pDict, *pFunc, *pValue, *pStr;
+	PyObject *pArgs, *pkArgs;
 
 	pCode = PyMarshal_ReadObjectFromString(code, size);
 	if (!pCode) {
@@ -113,7 +114,18 @@ csl_execute(char *code, size_t size, const char *func_name, char **resptr, int *
 		return -CSL_NOFUNC;
 	}
 
-	pValue = PyObject_CallObject(pFunc, NULL);
+	pArgs = PyTuple_New(0);
+	pkArgs = PyDict_New();
+	while (1) {
+		PyObject *p;
+		char *t, *t2;
+		size_t sz;
+		if (ipc_get_arg(&t, &sz) == 0) break;
+		ipc_get_arg(&t2, &sz);
+		p = PyString_FromStringAndSize(t2, sz);
+		PyDict_SetItemString(pkArgs, t, p);
+	}
+	pValue = PyObject_Call(pFunc, pArgs, pkArgs);
 	if (!pValue) {
 		PyErr_Print();
 		Py_DECREF(pModule);

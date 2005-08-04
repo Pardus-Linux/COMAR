@@ -63,8 +63,8 @@ static int
 send_result(int cmd, const char *data, size_t size)
 {
 	if (size == 0) size = strlen(data);
-	ipc_start(cmd, chan, 0);
-	ipc_pack_arg(data);
+	ipc_start(cmd, chan, 0, 0);	// FIXME: id!
+	ipc_pack_arg(data, size);
 	ipc_send(TO_PARENT);
 	return 0;
 }
@@ -198,6 +198,7 @@ static void
 job_proc(void)
 {
 	struct ProcChild *sender;
+	char *t, *s;
 	int cmd;
 	size_t size;
 
@@ -209,14 +210,13 @@ job_proc(void)
 	chan = ipc_get_data();
 	switch (cmd) {
 		case CMD_REGISTER:
-		{
-			char *t, *s;
-			ipc_get_pair(&t, &s);
+			ipc_get_arg(&t, NULL);
+			ipc_get_arg(&s, NULL);
 			do_register(ipc_get_node(), t, s);
 			break;
-		}
 		case CMD_REMOVE:
-			do_remove(ipc_get_arg());
+			ipc_get_arg(&t, NULL);
+			do_remove(t);
 			break;
 		case CMD_CALL:
 			do_call(ipc_get_node());

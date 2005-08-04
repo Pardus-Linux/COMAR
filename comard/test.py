@@ -2,10 +2,10 @@
 
 import comar
 
-def up():
-	print "Ahmet"
+def up(harami):
+	print harami, "harami"
 	return "Efendi"
 
-def down():
-	print "Baran"
+def down(a,b,c):
+	print "Baran",a,b,c
 	return "Bey"

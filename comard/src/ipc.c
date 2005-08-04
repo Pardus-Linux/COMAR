@@ -16,8 +16,8 @@
 
 struct ipc_data {
 	void *chan;
+	int id;
 	int node;
-	size_t arg_len;
 	char data[4];
 };
 
@@ -28,7 +28,7 @@ static int pak_pos;
 static struct ipc_data *pak_data;
 
 void
-ipc_start(int cmd, void *caller_data, int node)
+ipc_start(int cmd, void *caller_data, int id, int node)
 {
 	if (!pak_data) {
 		pak_size = 256;
@@ -36,41 +36,28 @@ ipc_start(int cmd, void *caller_data, int node)
 	}
 	pak_cmd = cmd;
 	pak_data->chan = caller_data;
+	pak_data->id = id;
 	pak_data->node = node;
-	pak_data->arg_len = 0;
 	pak_used = sizeof(struct ipc_data) - 4;
 }
 
 void
-ipc_pack_arg(const char *arg)
+ipc_pack_arg(const char *arg, size_t size)
 {
-	pak_used += strlen(arg) + 1;
-	pak_data->arg_len = strlen(arg) + 1;
-	strcpy(&pak_data->data[0], arg);
-}
-
-void
-ipc_pack_pair(const char *key, const char *value)
-{
-	size_t len;
 	unsigned char *buf;
+	buf = (unsigned char *) pak_data;
 
-	len = strlen(key) + strlen(value) + 6;
-	if (pak_used + len >= pak_size) {
-		while (pak_used + len >= pak_size) {
+	if (pak_used + size + 3 >= pak_size) {
+		while (pak_used + size + 3 >= pak_size) {
 			pak_size *= 2;
 		}
 		pak_data = realloc(pak_data, pak_size);
 	}
-	buf = (unsigned char *) pak_data;
-	buf[pak_used++] = (strlen(key) + 1) & 0xFF;
-	buf[pak_used++] = ((strlen(key) + 1) & 0xFF00) >> 8;
-	strcpy(&buf[pak_used], key);
-	pak_used += strlen(key) + 1;
-	buf[pak_used++] = (strlen(value) + 1) & 0xFF;
-	buf[pak_used++] = ((strlen(value) + 1) & 0xFF00) >> 8;
-	strcpy(&buf[pak_used], value);
-	pak_used += strlen(value) + 1;
+	buf[pak_used++] = (size & 0xff);
+	buf[pak_used++] = (size & 0xff00) >> 8;
+	memcpy(&buf[pak_used], arg, size);
+	pak_used += size;
+	buf[pak_used++] = '\0';
 }
 
 void
@@ -93,7 +80,7 @@ ipc_recv(struct ProcChild *p, size_t size)
 	}
 
 	proc_recv_to(p, pak_data, size);
-	pak_pos = sizeof(struct ipc_data) - 4 + pak_data->arg_len;
+	pak_pos = sizeof(struct ipc_data) - 4;
 	pak_used = size;
 
 	return 0;
@@ -111,30 +98,19 @@ ipc_get_data(void)
 	return pak_data->chan;
 }
 
-char *
-ipc_get_arg(void)
-{
-	if (pak_data->arg_len)
-		return &pak_data->data[0];
-	else
-		return NULL;
-}
-
 int
-ipc_get_pair(char **keyp, char **valuep)
+ipc_get_arg(char **argp, size_t *sizep)
 {
 	unsigned char *buf;
-	int len;
+	size_t size;
 
 	if (pak_pos >= pak_used)
 		return 0;
 
 	buf = (char *) pak_data;
-	len = buf[pak_pos] + (buf[pak_pos+1] << 8);
-	*keyp = buf + pak_pos + 2;
-	pak_pos += 2 + len;
-	len = buf[pak_pos] + (buf[pak_pos+1] << 8);
-	*valuep = buf + pak_pos + 2;
-	pak_pos += 2 + len;
+	size = buf[pak_pos] + (buf[pak_pos+1] << 8);
+	if (sizep) *sizep = size;
+	if (size) *argp = buf + pak_pos + 2; else *argp = NULL;
+	pak_pos += size + 2 + 1;
 	return 1;
 }

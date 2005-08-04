@@ -444,8 +444,8 @@ Bu nesnelerin, metotlar dýþýnda OOP anlamýnda özniteliklere sahip olmalarý
 Ayrý yapýlandýrma problemlerine yönelik olduklarýndan dolayý, sýnýflar arasýnda
  herhangi bir kalýtým (inheritance) iliþkisi yoktur.
  Bununla birlikte yakýn amaçlara yönelik sýnýflar (örneðin iletiþimle ilgili
- sýnýflar, donaným tanýmayl ilgili sýnýflar, vb) bir grup ismi altýnda bir
- araya toplanmýþtýr.
+ sýnýflar, donaným tanýmayla ilgili sýnýflar, vb) bir grup ismi altýnda
+ bir araya toplanmýþtýr.
  Grup kavramý, model üzerinde yetki denetimi tanýmlarken kolaylýk saðladýðý
  gibi, modeli mantýksal olarak düzenli tuttuðu için tercih edilmiþtir.
  Bir grup yalnýzca, kendine ait sýnýflarý bir arada tutar, metot ya da nesneleri
@@ -458,7 +458,7 @@ Benzer biçimde, aracý programcýklar arasýnda kod paylaþýmý söz konusu deðildir.
 \layout Standard
 
 Böylece her bir nesne diðerinden yalýtýlmýþ olacaðýndan, nesnelerin birbirlerini
-n iç detaylarýný bilmesi, ya da baþka bir nesneye direk olarak baðlý olmasý
+n iç detaylarýný bilmesi, ya da baþka bir nesneye direkt olarak baðlý olmasý
  gibi durumlar oluþmayacaktýr.
 \layout Standard
 
@@ -470,7 +470,7 @@ Her uygulama saðladýðý sýnýflara ait nesneleri yanýnda taþýr ve kurulum
 Ýsimlendirmeler
 \layout Standard
 
-Model üzerinde gruplar direk adlarýyla gösterilir, sýnýflar grup adý ile
+Model üzerinde gruplar direkt adlarýyla gösterilir, sýnýflar grup adý ile
  birlikte,
 \layout Quote
 

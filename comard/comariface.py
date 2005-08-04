@@ -30,7 +30,7 @@ class ComarIface:
 			fmt += "h%dsB" % (len(a))
 			size += 2 + len(a) + 1
 			args2.append(len(a))
-			args2.append(a)
+			args2.append(a.encode("utf-8"))
 			args2.append(0)
 		pak = struct.pack(fmt, (cmd << 24) | size, id, *args2)
 		return pak

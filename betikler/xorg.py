@@ -371,7 +371,7 @@ class Monitor:
 def queryPanel(mon):
 	patterns = [
 	"Panel size is",
-	"Panel size is",
+	"Panel Size is",
 	"Panel Size from BIOS:",
 	"Detected panel size via",
 	"Size of device LFP",

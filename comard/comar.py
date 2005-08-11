@@ -51,8 +51,18 @@ class Link:
         pak = struct.pack(fmt, (cmd << 24) | size, id, *args2)
         return pak
     
-    def read_reply(self):
-        pass
+    def read(self):
+        try:
+            data = self.sock.recv(8)
+        except:
+            raise Error('Connection closed')
+        head = struct.unpack('!ii', str(data))
+        cmd = (head[0] & 0xff000000) >> 24
+        try:
+            data = self.sock.recv(head[0] & 0x00ffffff)
+        except:
+            raise Error('Connection closed')
+        return (cmd, head[1], data)
     
     def localize(self, localename):
         """Sets the language for translated replies.

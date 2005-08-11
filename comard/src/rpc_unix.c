@@ -232,6 +232,24 @@ read_rpc(struct connection *c)
 }
 
 static int
+write_rpc(struct connection *c, unsigned int cmd, int id, char *buffer, size_t size)
+{
+	unsigned char head[8];
+printf("writeRPC(%d,%d,%s)\n", cmd, id, buffer);
+	head[0] = cmd & 0xFF;
+	head[1] = (size >> 16) & 0xFF;
+	head[2] = (size >> 8) & 0xFF;
+	head[3] = size & 0xFF;
+	head[4] = (id >> 24) & 0xFF;
+	head[5] = (id >> 16) & 0xFF;
+	head[6] = (id >> 8) & 0xFF;
+	head[7] = id & 0xFF;
+	send(c->sock, head, 8, 0);
+	send(c->sock, buffer, size, 0);
+	return 0;
+}
+
+static int
 pipe_listen(void)
 {
 	fd_set fds;
@@ -314,10 +332,10 @@ rpc_unix_start(void)
 			ipc_recv(p, size);
 			for (c = conns; c; c = c->next) {
 				if (c == (struct connection *) ipc_get_data()) {
-/*					char *s;
+					char *s;
 					size_t sz;
 					ipc_get_arg(&s, &sz);
-					send(c->sock, s, sz, 0); */
+					write_rpc(c, cmd, ipc_get_id(), s, sz);
 				}
 			}
 		}

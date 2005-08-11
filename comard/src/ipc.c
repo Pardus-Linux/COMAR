@@ -99,6 +99,12 @@ ipc_get_data(void)
 }
 
 int
+ipc_get_id(void)
+{
+	return pak_data->id;
+}
+
+int
 ipc_get_arg(char **argp, size_t *sizep)
 {
 	unsigned char *buf;

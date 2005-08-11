@@ -27,6 +27,7 @@ void ipc_send(struct ProcChild *p);
 int ipc_recv(struct ProcChild *p, size_t size);
 int ipc_get_node(void);
 void *ipc_get_data(void);
+int ipc_get_id(void);
 int ipc_get_arg(char **argp, size_t *sizep);
 
 

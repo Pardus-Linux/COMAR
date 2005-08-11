@@ -58,12 +58,13 @@ load_file(const char *fname, int *sizeptr)
 }
 
 static void *chan;
+static int chan_id;
 
 static int
 send_result(int cmd, const char *data, size_t size)
 {
 	if (size == 0) size = strlen(data);
-	ipc_start(cmd, chan, 0, 0);	// FIXME: id!
+	ipc_start(cmd, chan, chan_id, 0);
 	ipc_pack_arg(data, size);
 	ipc_send(TO_PARENT);
 	return 0;
@@ -208,6 +209,7 @@ job_proc(void)
 	ipc_recv(sender, size);
 
 	chan = ipc_get_data();
+	chan_id = ipc_get_id();
 	switch (cmd) {
 		case CMD_REGISTER:
 			ipc_get_arg(&t, NULL);

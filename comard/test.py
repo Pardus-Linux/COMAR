@@ -2,7 +2,7 @@
 
 import comar
 
-def up(harami):
+def getInformation(harami):
 	print harami, "harami"
 	return "Efendi"
 

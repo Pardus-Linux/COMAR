@@ -605,11 +605,10 @@ Her bir iletiþim modülü, ÇOMAR çaðrýlarýný iletmek, ve gelen çaðrýlarýn
  yetki denetiminden geçmeden iþleticiye geçmesine izin verilmemelidir.
 \layout Standard
 
-Yetki denetimi çaðrýyý yapanýn kimlik bilgileri ile, model üzerindeki her
- noktada yapýlýr.
+Yetki denetimi grup, sýnýf ve metotlar üzerinde tanýmlanabilmelidir.
  Böylece bir kullanýcýya ayar deðiþtirme yetkisi vermeden bilgi sorma metotlarýn
-ý çaðýrma yetkisi verilebilmesi ya da bütün bir grubun yönetiminin basitçe
- tek bir kullanýcýya verilmesi saðlanabilir.
+ý çaðýrma yetkisi verilebilmesi ya da bütün bir grubun yönetiminin tek bir
+ kullanýcýya verilmesi kolayca tanýmlanabilir.
 \layout Standard
 
 Görevleri saðlayan nesneler paralel olarak veya çaðrý bir nesneye yönelikse

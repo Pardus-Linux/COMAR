@@ -55,7 +55,7 @@ Model Tanýmlama
  tag) içermektedir.
 \layout Section*
 
-<model>
+<comarModel>
 \layout Standard
 
 Model tanýmlamasýný kapsayan ana etikettir.

@@ -119,7 +119,7 @@ build_path(iks *g, iks *o, iks *m)
 int
 model_init(void)
 {
-	iks *doc, *model;
+	iks *model;
 	iks *grp, *obj, *met;
 	int count = 0;
 	size_t size = 0;
@@ -128,14 +128,13 @@ model_init(void)
 	int e;
 
 	// parse model file
-	e = iks_load(cfg_model_file, &doc);
+	e = iks_load(cfg_model_file, &model);
 	if (e) {
 		log_error("Cannot process model file '%s'\n", cfg_model_file);
 		return -1;
 	}
 
-	model = iks_find(doc, "model");
-	if (iks_strcmp(iks_name(doc), "comar") != 0 || model == NULL) {
+	if (iks_strcmp(iks_name(model), "comarModel") != 0) {
 		log_error("Not a COMAR model file '%s'\n", cfg_model_file);
 		return -1;
 	}

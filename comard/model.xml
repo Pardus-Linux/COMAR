@@ -1,6 +1,5 @@
 <?xml version='1.0'?>
-<comar>
-<model name='PARDUS'>
+<comarModel name='PARDUS'>
 
 <group name='System'>
 	<class name='Power'>
@@ -50,5 +49,4 @@
 	</class>
 </group>
 
-</model>
-</comar>
+</comarModel>

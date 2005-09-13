@@ -195,7 +195,7 @@ model_init(void)
 	}
 
 	// no need to keep dom tree in memory
-	iks_delete(doc);
+	iks_delete(model);
 
 	return 0;
 }

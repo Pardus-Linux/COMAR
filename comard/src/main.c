@@ -26,7 +26,7 @@ int
 main(int argc, char *argv[])
 {
 	struct ProcChild *p, *rpc;
-	char *ipc;
+	unsigned char *ipc;
 	int cmd;
 	int size;
 

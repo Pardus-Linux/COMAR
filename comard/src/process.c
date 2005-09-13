@@ -181,5 +181,6 @@ proc_recv_to(struct ProcChild *p, void *data, size_t size)
 	if (size != read(p->from, data, size)) {
 		return -1;
 	}
+	log_debug(LOG_PROC, "proc_recv_to(pid %d, size %d)\n", p->pid, size);
 	return 0;
 }

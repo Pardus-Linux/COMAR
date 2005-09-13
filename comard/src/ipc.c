@@ -44,26 +44,23 @@ ipc_start(int cmd, void *caller_data, int id, int node)
 void
 ipc_pack_arg(const char *arg, size_t size)
 {
-	unsigned char *buf;
-	buf = (unsigned char *) pak_data;
-
 	if (pak_used + size + 3 >= pak_size) {
 		while (pak_used + size + 3 >= pak_size) {
 			pak_size *= 2;
 		}
 		pak_data = realloc(pak_data, pak_size);
 	}
-	buf[pak_used++] = (size & 0xff);
-	buf[pak_used++] = (size & 0xff00) >> 8;
-	memcpy(&buf[pak_used], arg, size);
+	((unsigned char *)pak_data)[pak_used++] = (size & 0xff);
+	((unsigned char *)pak_data)[pak_used++] = (size & 0xff00) >> 8;
+	memcpy(((unsigned char *)pak_data) + pak_used, arg, size);
 	pak_used += size;
-	buf[pak_used++] = '\0';
+	((unsigned char *)pak_data)[pak_used++] = '\0';
 }
 
 void
 ipc_send(struct ProcChild *p)
 {
-	proc_send(p, pak_cmd, pak_data, pak_used);
+	proc_send(p, pak_cmd, (unsigned char *)pak_data, pak_used);
 }
 
 int
@@ -71,12 +68,11 @@ ipc_recv(struct ProcChild *p, size_t size)
 {
 	if (pak_size < size) {
 		if (pak_size == 0) {
-			pak_size = size;
 			pak_data = malloc(size);
 		} else {
-			pak_size = size;
 			pak_data = realloc(pak_data, size);
 		}
+		pak_size = size;
 	}
 
 	proc_recv_to(p, pak_data, size);
@@ -110,8 +106,11 @@ ipc_get_arg(char **argp, size_t *sizep)
 	unsigned char *buf;
 	size_t size;
 
-	if (pak_pos >= pak_used)
+	if (pak_pos >= pak_used) {
+		*sizep = 0;
+		*argp = NULL;
 		return 0;
+	}
 
 	buf = (char *) pak_data;
 	size = buf[pak_pos] + (buf[pak_pos+1] << 8);

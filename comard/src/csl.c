@@ -138,12 +138,13 @@ csl_execute(char *code, size_t size, const char *func_name, char **resptr, int *
 	Py_DECREF(pModule);
 
 	*reslen = PyString_Size(pStr);
-	*resptr = malloc(*reslen);
+	*resptr = malloc((*reslen) + 1);
 	if (!*resptr) {
 		Py_DECREF(pStr);
 		return -CSL_NOMEM;
 	}
 	memcpy(*resptr, PyString_AsString(pStr), *reslen);
+	(*resptr)[*reslen] = '\0';
 
 	return 0;
 }

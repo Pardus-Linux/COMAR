@@ -210,6 +210,7 @@ job_proc(void)
 
 	chan = ipc_get_data();
 	chan_id = ipc_get_id();
+
 	switch (cmd) {
 		case CMD_REGISTER:
 			ipc_get_arg(&t, NULL);

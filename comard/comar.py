@@ -11,6 +11,7 @@
 #
 
 import socket
+import select
 import struct
 
 class Error(Exception):
@@ -52,12 +53,15 @@ class Link:
         return pak
     
     def read(self):
+        fds = select.select([self.sock], [], [], 0)
+        if fds[0] == []:
+            return None
         try:
             data = self.sock.recv(8)
         except:
             raise Error('Connection closed')
         head = struct.unpack('!ii', str(data))
-        cmd = (head[0] & 0xff000000) >> 24
+        cmd = head[0] >> 24
         try:
             data = self.sock.recv(head[0] & 0x00ffffff)
         except:
@@ -76,7 +80,7 @@ class Link:
         """
         pass
     
-    def register(self, classname, packagename, cslfile, id = 0):
+    def register(self, classname, packagename, cslfile, id=0):
         """Registers a package script on the system model.
         """
         pak = self.__pack(self.__REGISTER, id,
@@ -84,35 +88,36 @@ class Link:
         )
         self.sock.send(pak)
     
-    def remove(self, packagename, id = 0):
+    def remove(self, packagename, id=0):
         """Remove package's all scripts from system.
         """
         pak = self.__pack(self.__REMOVE, id, [ packagename ])
         self.sock.send(pak)
     
-    def call(self, methodname, args, id = 0):
+    def call(self, methodname, args=None, id=0):
         """Makes a configuration call on the system model.
         """
         a = [ methodname ]
-        a.extend(args)
+        if args:
+            a.extend(args)
         pak =self.__pack(self.__CALL, id, a)
         self.sock.send(pak)
     
-    def call_package(self, methodname, packagename, args, id = 0):
+    def call_package(self, methodname, packagename, args, id=0):
         """Makes a configuration call directed to a package.
         """
         pass
     
-    def call_instance(self, methodname, packagename, instancename, args, id = 0):
+    def call_instance(self, methodname, packagename, instancename, args, id=0):
         # not yet decided
         pass
     
-    def get_packages(self, classname, id = 0):
+    def get_packages(self, classname, id=0):
         """Returns registered packages for a given system model class.
         """
         pass
     
-    def ask_notify(self, notifyname, id = 0):
+    def ask_notify(self, notifyname, id=0):
         """Asks for a notification event to be delivered.
         """
         pass

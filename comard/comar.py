@@ -20,6 +20,7 @@ class Error(Exception):
 class Link:
     """A class for communicating with comard."""
     
+    # rpc commands, keep in sync with rpc_unix.c
     RESULT = 0
     FAIL = 1
     RESULT_START = 2
@@ -35,12 +36,12 @@ class Link:
             self.sock = socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
             self.sock.connect(sockname)
         except:
-            raise Error('Cannot connect to COMAR daemon')
+            raise Error('Cannot connect to the COMAR daemon')
     
     def __pack(self, cmd, id, args):
         size = 0
         args2 = []
-        # NOTE: COMAR RPC is using network byte order (big endian)
+        # COMAR RPC is using network byte order (big endian)
         fmt = "!ii"
         for a in args:
                     a = str(a)      # for handling unicode
@@ -53,6 +54,17 @@ class Link:
         return pak
     
     def read(self):
+        """Read a reply from comard.
+        
+        If there isn't any data waiting at connection, this function
+        immediately returns None. If there is data, returned value
+        is a tuple of three items: (command, id, data)
+        
+        Command is a reply code defined at the start of this class.
+        ID is the original id value from the request sent to the comard.
+        Data is the return value in string format.
+        """
+        
         fds = select.select([self.sock], [], [], 0)
         if fds[0] == []:
             return None
@@ -69,7 +81,7 @@ class Link:
         return (cmd, head[1], data)
     
     def localize(self, localename):
-        """Sets the language for translated replies.
+        """Set the language for translated replies.
         
         Since comard has no way to detect caller's locale, this command
         is used for sending user's language to the comard. Afterwards,
@@ -81,7 +93,7 @@ class Link:
         pass
     
     def register(self, classname, packagename, cslfile, id=0):
-        """Registers a package script on the system model.
+        """Register a package script on the system model.
         """
         pak = self.__pack(self.__REGISTER, id,
                                   [ classname, packagename, cslfile ]
@@ -95,7 +107,7 @@ class Link:
         self.sock.send(pak)
     
     def call(self, methodname, args=None, id=0):
-        """Makes a configuration call on the system model.
+        """Make a configuration call on the system model.
         """
         a = [ methodname ]
         if args:
@@ -104,7 +116,7 @@ class Link:
         self.sock.send(pak)
     
     def call_package(self, methodname, packagename, args, id=0):
-        """Makes a configuration call directed to a package.
+        """Make a configuration call directed to a package.
         """
         pass
     
@@ -113,11 +125,11 @@ class Link:
         pass
     
     def get_packages(self, classname, id=0):
-        """Returns registered packages for a given system model class.
+        """Return registered packages for a given system model class.
         """
         pass
     
     def ask_notify(self, notifyname, id=0):
-        """Asks for a notification event to be delivered.
+        """Ask for a notification event to be delivered.
         """
         pass

@@ -22,6 +22,19 @@
 #include "log.h"
 #include "ipc.h"
 
+/* rpc commands, keep in sync with comar.py */
+enum {
+	RPC_RESULT = 0,
+	RPC_FAIL,
+	RPC_RESULT_START,
+	RPC_RESULT_END,
+	RPC_NOTIFY,
+	RPC_LOCALIZE,
+	RPC_REGISTER,
+	RPC_REMOVE,
+	RPC_CALL
+};
+
 // unpack utilities
 // NOTE: rpc uses network byte order (big endian)
 static inline unsigned int
@@ -168,7 +181,7 @@ parse_rpc(struct connection *c)
 	args.size = c->data_size;
 
 	switch (cmd) {
-		case 6:
+		case RPC_REGISTER:
 			// class name, package name, file name
 			if (get_arg(&args, &t, &sz) != 1) return -1;
 			no = model_lookup_class(t);
@@ -181,7 +194,7 @@ parse_rpc(struct connection *c)
 			if (get_arg(&args, &t, &sz) != 0) return -1;
 			ipc_send(TO_PARENT);
 			return 0;
-		case 7:
+		case RPC_REMOVE:
 			// package name
 			if (get_arg(&args, &t, &sz) != 1) return -1;
 			ipc_start(CMD_REMOVE, (void *)c, id, 0);
@@ -189,7 +202,7 @@ parse_rpc(struct connection *c)
 			if (get_arg(&args, &t, &sz) != 0) return -1;
 			ipc_send(TO_PARENT);
 			return 0;
-		case 8:
+		case RPC_CALL:
 			// method name, arg pairs (key-value)
 			if (get_arg(&args, &t, &sz) != 1) return -1;
 			no = model_lookup_method(t);

@@ -48,12 +48,10 @@ class ifconfig:
     SIOCDIFADDR = 0x8936        # delete PA address
     SIOCSIFHWBROADCAST = 0x8937 # set hardware broadcast addr
     SIOCGIFCOUNT = 0x8938       # get number of devices
-
     SIOCGIFBR = 0x8940          # Bridging support
     SIOCSIFBR = 0x8941          # Set bridging options
     SIOCGIFTXQLEN = 0x8942      # Get the tx queue length
     SIOCSIFTXQLEN = 0x8943      # Set the tx queue length
-
 
     # ARP cache control calls
     SIOCDARP = 0x8953       # delete ARP table entry
@@ -65,11 +63,9 @@ class ifconfig:
     SIOCGRARP = 0x8961      # get RARP table entry
     SIOCSRARP = 0x8962      # set RARP table entry
 
-
     # Driver configuration calls
     SIOCGIFMAP = 0x8970     # Get device parameters
     SIOCSIFMAP = 0x8971     # Set device parameters
-
 
     # DLCI configuration calls
     SIOCADDDLCI = 0x8980   # Create new DLCI device
@@ -103,13 +99,26 @@ class ifconfig:
         return fcntl.ioctl(self.sockfd.fileno(), func, args)
 
     def _getaddr(self, ifname, func):
-        ifreq = (ifname + '\0'*32)[:32]
+        arg = (ifname + '\0'*32)[:32]
         try:
-            result = self._ioctl(func, ifreq)
+            result = self._ioctl(func, arg)
         except IOError:
             return None
 
         return socket.inet_ntoa(result[20:24])
+
+    def _setaddr(self, ifname, func, ip):
+        ifreq = (ifname + '\0'*16)[:16]
+        arg = struct.pack("16si4s10x", ifreq, socket. AF_INET, socket.inet_aton(ip))
+        try:
+            result = self._ioctl(func, arg)
+        except IOError:
+            return None
+
+        if socket.inet_ntoa(result[20:24]) is ip:
+            return True
+        else:
+            return None
 
     def getInterfaceList(self):
         """ Get all interface names in a list """
@@ -135,7 +144,7 @@ class ifconfig:
         try:
             result = self._ioctl(self.SIOCGIFFLAGS, ifreq)
         except IOError:
-            return 0
+            return None
 
         # extract the interface's flags from the return value
         flags, = struct.unpack('H', result[16:18])
@@ -159,6 +168,19 @@ class ifconfig:
         """ Check whether interface is UP """
         return (self.getFlags(ifname) & self.IFF_UP) != 0
 
+    def setAddr(self, ifname, ip):
+        """ Set the inet addr for an interface """
+        return self._setaddr(ifname, self.SIOCSIFADDR, ip)
+
+    def setMask(self, ifname, ip):
+        """ Set the netmask for an interface """
+        return self._setaddr(ifname, self.SIOCSIFNETMASK, ip)
+
+    def setBroadcast(self, ifname, ip):
+        """ Set the broadcast addr for an interface """
+        return self._setaddr(ifname, self.SIOCSIFBRDADDR, ip)
+
+
 class route:
     """ ioctl stuff """
 
@@ -173,7 +195,6 @@ class route:
 
     RTF_UP = 0x0001         # Route usable
     RTF_GATEWAY = 0x0002    # Destination is a gateway
-
     RTF_HOST = 0x0004       # Host entry (net otherwise)
     RTF_REINSTATE = 0x0008  # Reinstate route after timeout
     RTF_DYNAMIC = 0x0010    # Created dyn. (by redirect)

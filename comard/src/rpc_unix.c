@@ -369,6 +369,10 @@ rpc_unix_start(void)
 					char *s;
 					size_t sz;
 					ipc_get_arg(&s, &sz);
+					if (cmd == CMD_RESULT)
+						cmd = RPC_RESULT;
+					else
+						cmd = RPC_FAIL;
 					write_rpc(c, cmd, ipc_get_id(), s, sz);
 				}
 			}

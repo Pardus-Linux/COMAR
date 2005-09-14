@@ -23,13 +23,14 @@ class Link:
     # rpc commands, keep in sync with rpc_unix.c
     RESULT = 0
     FAIL = 1
-    RESULT_START = 2
-    RESULT_END = 3
-    NOTIFY = 4
-    __LOCALIZE = 5
-    __REGISTER = 6
-    __REMOVE = 7
-    __CALL = 8
+    DENIED = 2
+    RESULT_START = 3
+    RESULT_END = 4
+    NOTIFY = 5
+    __LOCALIZE = 6
+    __REGISTER = 7
+    __REMOVE = 8
+    __CALL = 9
     
     def __init__(self, sockname="/tmp/comar"):
         try:
@@ -74,10 +75,14 @@ class Link:
             raise Error('Connection closed')
         head = struct.unpack('!ii', str(data))
         cmd = head[0] >> 24
-        try:
-            data = self.sock.recv(head[0] & 0x00ffffff)
-        except:
-            raise Error('Connection closed')
+        size = head[0] & 0x00ffffff
+        if size:
+            try:
+                data = self.sock.recv(size)
+            except:
+                raise Error('Connection closed')
+        else:
+            data = None
         return (cmd, head[1], data)
     
     def localize(self, localename):

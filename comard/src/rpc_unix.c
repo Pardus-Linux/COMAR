@@ -26,6 +26,7 @@
 enum {
 	RPC_RESULT = 0,
 	RPC_FAIL,
+	RPC_DENIED,
 	RPC_RESULT_START,
 	RPC_RESULT_END,
 	RPC_NOTIFY,
@@ -35,8 +36,23 @@ enum {
 	RPC_CALL
 };
 
+#define RPC_PIPE_NAME "/tmp/comar"
+
+struct connection {
+	struct connection *next, *prev;
+	int sock;
+	struct Creds cred;
+	char *buffer;
+	size_t size;
+	size_t data_size;
+	int pos;
+};
+
+static int pipe_fd;
+static struct connection *conns;
+
 // unpack utilities
-// NOTE: rpc uses network byte order (big endian)
+// rpc uses network byte order (big endian)
 static inline unsigned int
 get_cmd(const unsigned char *buf)
 {
@@ -61,20 +77,6 @@ get_size(const unsigned char *buf)
 	return buf[1] + (buf[0] << 8);
 }
 
-#define RPC_PIPE_NAME "/tmp/comar"
-
-struct connection {
-	struct connection *next, *prev;
-	int sock;
-	struct Creds cred;
-	char *buffer;
-	size_t size;
-	size_t data_size;
-	int pos;
-};
-
-static int pipe_fd;
-static struct connection *conns;
 
 static int
 create_pipe(const char *pipe_name)
@@ -165,6 +167,24 @@ get_arg(struct arg_s *args, char **argp, size_t *sizep)
 }
 
 static int
+write_rpc(struct connection *c, unsigned int cmd, int id, char *buffer, size_t size)
+{
+	unsigned char head[8];
+printf("writeRPC(%d,%d,%d,%s)\n", cmd, id, size, buffer);
+	head[0] = cmd & 0xFF;
+	head[1] = (size >> 16) & 0xFF;
+	head[2] = (size >> 8) & 0xFF;
+	head[3] = size & 0xFF;
+	head[4] = (id >> 24) & 0xFF;
+	head[5] = (id >> 16) & 0xFF;
+	head[6] = (id >> 8) & 0xFF;
+	head[7] = id & 0xFF;
+	send(c->sock, head, 8, 0);
+	if (size) send(c->sock, buffer, size, 0);
+	return 0;
+}
+
+static int
 parse_rpc(struct connection *c)
 {
 	struct arg_s args;
@@ -186,6 +206,7 @@ parse_rpc(struct connection *c)
 			if (get_arg(&args, &t, &sz) != 1) return -1;
 			no = model_lookup_class(t);
 			if (no == -1) return -1;
+			if (!acl_is_capable(CMD_REGISTER, no, &c->cred)) return -1;
 			ipc_start(CMD_REGISTER, (void *)c, id, no);
 			if (get_arg(&args, &t, &sz) != 1) return -1;
 			ipc_pack_arg(t, sz);
@@ -196,6 +217,7 @@ parse_rpc(struct connection *c)
 			return 0;
 		case RPC_REMOVE:
 			// package name
+			if (!acl_is_capable(CMD_REMOVE, 0, &c->cred)) return -1;
 			if (get_arg(&args, &t, &sz) != 1) return -1;
 			ipc_start(CMD_REMOVE, (void *)c, id, 0);
 			ipc_pack_arg(t, sz);
@@ -207,6 +229,10 @@ parse_rpc(struct connection *c)
 			if (get_arg(&args, &t, &sz) != 1) return -1;
 			no = model_lookup_method(t);
 			if (no == -1) return -1;
+			if (!acl_is_capable(CMD_CALL, no, &c->cred)) {
+				write_rpc(c, RPC_DENIED, id, NULL, 0);
+				return 0;
+			}
 			ipc_start(CMD_CALL, (void *)c, id, no);
 			while (1) {
 				int ret = get_arg(&args, &t, &sz);
@@ -241,24 +267,6 @@ read_rpc(struct connection *c)
 		c->data_size = 0;
 		c->pos = 0;
 	}
-	return 0;
-}
-
-static int
-write_rpc(struct connection *c, unsigned int cmd, int id, char *buffer, size_t size)
-{
-	unsigned char head[8];
-printf("writeRPC(%d,%d,%d,%s)\n", cmd, id, size, buffer);
-	head[0] = cmd & 0xFF;
-	head[1] = (size >> 16) & 0xFF;
-	head[2] = (size >> 8) & 0xFF;
-	head[3] = size & 0xFF;
-	head[4] = (id >> 24) & 0xFF;
-	head[5] = (id >> 16) & 0xFF;
-	head[6] = (id >> 8) & 0xFF;
-	head[7] = id & 0xFF;
-	send(c->sock, head, 8, 0);
-	if (size) send(c->sock, buffer, size, 0);
 	return 0;
 }
 
@@ -304,6 +312,7 @@ pipe_listen(void)
 				} else {
 					free(c->buffer);
 					free(c);
+					close(sock);
 				}
 			}
 		}

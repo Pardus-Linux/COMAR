@@ -16,5 +16,7 @@ struct Creds {
 	// there'll be other fields
 };
 
+int acl_is_capable(int cmd, int node, struct Creds *cred);
+
 
 #endif /* ACL_H */

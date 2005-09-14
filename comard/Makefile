@@ -11,6 +11,7 @@ OBJS = \
 	src/log.o \
 	src/job.o \
 	src/model.o \
+	src/acl.o \
 	src/ipc.o \
 	src/process.o \
 	src/csl.o \

@@ -12,6 +12,7 @@
 	</group>
 	<group name="Time">
 		<class name="Clock">
+			<notify name="lala"/>
 			<method name="setDate"/>
 			<method name="getDate"/>
 			<method name="loadFromHW"/>

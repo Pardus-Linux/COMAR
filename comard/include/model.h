@@ -10,9 +10,12 @@
 #ifndef MODEL_H
 #define MODEL_H 1
 
+extern int model_max_notifications;
+
 int model_init(void);
 int model_lookup_class(const char *path);
 int model_lookup_method(const char *path);
+int model_lookup_notify(const char *path);
 int model_parent(int node_no);
 const char *model_get_method(int node_no);
 const char *model_get_path(int node_no);

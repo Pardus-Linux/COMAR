@@ -12,6 +12,7 @@ OBJS = \
 	src/job.o \
 	src/model.o \
 	src/acl.o \
+	src/notify.o \
 	src/ipc.o \
 	src/process.o \
 	src/csl.o \

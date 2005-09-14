@@ -32,7 +32,8 @@ class Link:
     __REGISTER = 7
     __REMOVE = 8
     __CALL = 9
-    __CHECKACL = 10
+    __ASKNOTIFY = 10
+    __CHECKACL = 11
     
     def __init__(self, sockname="/tmp/comar"):
         try:
@@ -145,4 +146,5 @@ class Link:
     def ask_notify(self, notifyname, id=0):
         """Ask for a notification event to be delivered.
         """
-        pass
+        pak = self.__pack(self.__ASKNOTIFY, id, [ notifyname ])
+        self.sock.send(pak)

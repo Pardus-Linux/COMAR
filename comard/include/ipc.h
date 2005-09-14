@@ -17,7 +17,8 @@ enum {
 	CMD_RESULT,
 	CMD_REGISTER,
 	CMD_REMOVE,
-	CMD_CALL
+	CMD_CALL,
+	CMD_NOTIFY
 };
 
 void ipc_start(int cmd, void *caller_data, int id, int node);

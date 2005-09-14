@@ -49,6 +49,7 @@ main(int argc, char *argv[])
 					job_start(cmd, ipc, size);
 					free(ipc);
 					break;
+				case CMD_NOTIFY:
 				case CMD_RESULT:
 				case CMD_FAIL:
 					proc_recv(p, &ipc, size);

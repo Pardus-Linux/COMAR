@@ -21,6 +21,7 @@
 #include "acl.h"
 #include "log.h"
 #include "ipc.h"
+#include "notify.h"
 
 /* rpc commands, keep in sync with comar.py */
 enum {
@@ -34,6 +35,7 @@ enum {
 	RPC_REGISTER,
 	RPC_REMOVE,
 	RPC_CALL,
+	RPC_ASKNOTIFY,
 	RPC_CHECKACL
 };
 
@@ -43,6 +45,7 @@ struct connection {
 	struct connection *next, *prev;
 	int sock;
 	struct Creds cred;
+	void *notify_mask;
 	char *buffer;
 	size_t size;
 	size_t data_size;
@@ -256,6 +259,11 @@ parse_rpc(struct connection *c)
 			}
 			ipc_send(TO_PARENT);
 			return 0;
+		case RPC_ASKNOTIFY:
+			// notify name
+			if (get_arg(&args, &t, &sz) != 1) return -1;
+			if (notify_mark(c->notify_mask, t) != 0) return -1;
+			return 0;
 		default:
 			return -1;
 	}
@@ -314,6 +322,7 @@ pipe_listen(void)
 			if (sock >= 0) {
 				c = calloc(1, sizeof(struct connection));
 				c->sock = sock;
+				c->notify_mask = notify_alloc();
 				c->buffer = malloc(256);
 				c->size = 256;
 				if (0 == get_peer(sock, &c->cred)) {
@@ -362,7 +371,15 @@ rpc_unix_start(void)
 
 	while (1) {
 		if (1 == proc_listen(&p, &cmd, &size, 0)) {
-			if (cmd != CMD_RESULT && cmd != CMD_FAIL) continue;
+			if (cmd == CMD_NOTIFY) {
+				ipc_recv(p, size);
+				for (c = conns; c; c = c->next) {
+					if (notify_is_marked(c->notify_mask, ipc_get_node())) {
+						// FIXME: return argument too
+						write_rpc(c, RPC_NOTIFY, 0, NULL, 0);
+					}
+				}
+			} else if (cmd != CMD_RESULT && cmd != CMD_FAIL) continue;
 			ipc_recv(p, size);
 			for (c = conns; c; c = c->next) {
 				if (c == (struct connection *) ipc_get_data()) {

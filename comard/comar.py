@@ -27,10 +27,12 @@ class Link:
     RESULT_START = 3
     RESULT_END = 4
     NOTIFY = 5
+    # following cmds are sent by internal methods, thus not visible to outside
     __LOCALIZE = 6
     __REGISTER = 7
     __REMOVE = 8
     __CALL = 9
+    __CHECKACL = 10
     
     def __init__(self, sockname="/tmp/comar"):
         try:
@@ -109,6 +111,12 @@ class Link:
         """Remove package's all scripts from system.
         """
         pak = self.__pack(self.__REMOVE, id, [ packagename ])
+        self.sock.send(pak)
+    
+    def can_access(self, methodname, id=0):
+        """Check if user has permission to call given method.
+        """
+        pak = self.__pack(self.__CHECKACL, id, [ methodname ])
         self.sock.send(pak)
     
     def call(self, methodname, args=None, id=0):

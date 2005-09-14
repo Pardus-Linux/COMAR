@@ -33,7 +33,8 @@ enum {
 	RPC_LOCALIZE,
 	RPC_REGISTER,
 	RPC_REMOVE,
-	RPC_CALL
+	RPC_CALL,
+	RPC_CHECKACL
 };
 
 #define RPC_PIPE_NAME "/tmp/comar"
@@ -223,6 +224,17 @@ parse_rpc(struct connection *c)
 			ipc_pack_arg(t, sz);
 			if (get_arg(&args, &t, &sz) != 0) return -1;
 			ipc_send(TO_PARENT);
+			return 0;
+		case RPC_CHECKACL:
+			// method name
+			if (get_arg(&args, &t, &sz) != 1) return -1;
+			no = model_lookup_method(t);
+			if (no == -1) return -1;
+			if (!acl_is_capable(CMD_CALL, no, &c->cred)) {
+				write_rpc(c, RPC_DENIED, id, NULL, 0);
+			} else {
+				write_rpc(c, RPC_RESULT, id, NULL, 0);
+			}
 			return 0;
 		case RPC_CALL:
 			// method name, arg pairs (key-value)

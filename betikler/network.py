@@ -6,6 +6,7 @@ import fcntl
 import struct
 import socket
 import sys
+import os
 
 class ifconfig:
     """ ioctl stuff """
@@ -109,7 +110,7 @@ class ifconfig:
 
     def _setaddr(self, ifname, func, ip):
         ifreq = (ifname + '\0'*16)[:16]
-        arg = struct.pack("16si4s10x", ifreq, socket. AF_INET, socket.inet_aton(ip))
+        arg = struct.pack("16si4s8x", ifreq, socket. AF_INET, socket.inet_aton(ip))
         try:
             result = self._ioctl(func, arg)
         except IOError:
@@ -211,11 +212,81 @@ class route:
     RTF_NOPMTUDISC = 0x4000 # Do not send packets with DF
 
 
+class wireless:
+    """ ioctl stuff """
+
+#   From </usr/include/wireless.h>
+    
+    SIOCGIWNAME = 0x8B01    # get name == wireless protocol
+    SIOCGIWFREQ = 0x8B05    # get channel/frequency
+    SIOCSIWMODE = 0x8B06    # set the operation mode
+    SIOCGIWMODE = 0x8B07    # get operation mode
+    SIOCGIWSENS = 0x8B09    # get sensitivity
+    SIOCGIWAP = 0x8B15      # get AP MAC address
+    SIOCGIWRATE = 0x8B21    # get default bit rate
+    SIOCGIWRTS = 0x8B23     # get rts/cts threshold
+    SIOCGIWFRAG = 0x8B25    # get fragmention thrh
+    SIOCGIWTXPOW = 0x8B27   # get transmit power (dBm)
+    SIOCGIWRETRY = 0x8B29   # get retry limit
+    SIOCGIWRANGE = 0x8B0B   # range
+    SIOCGIWSTATS = 0x8B0F   # get wireless statistics
+    SIOCSIWESSID = 0x8B1A   # set essid
+    SIOCGIWESSID = 0x8B1B   # get essid
+    SIOCGIWPOWER = 0x8B2D   # get power managment settings
+    SIOCGIWENCODE = 0x8B2B  # get encryption information
+    
+    SIOCGIWNWID = 0x8B03    # get network id
+    SIOCSIWCOMMIT = 0x8B00  # commiting pending changes to driver
+    SIOCGIWSCAN = 0x8B19    # get scanning results
+    
+
+    def __init__(self):
+        # create a socket to communicate with system
+        self.sockfd = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    def _ioctl(self, func, args):
+        return fcntl.ioctl(self.sockfd.fileno(), func, args)
+
+    def _getaddr(self, ifname, func):
+        buffer = array.array('c', '\0' * 32)
+        addr, length = buffer.buffer_info()
+        structure = struct.pack('Pi', addr, length)
+        data = (ifname + '\0' * 16)[:16] + structure
+
+        try:
+            result = (self._ioctl(func, data))[16:]
+        except IOError:
+            return None
+
+        return buffer.tostring().strip('\x00')
+
+    def getInterfaceList(self):
+        """ Find wireless interfaces """
+        iflist = []
+        path = "/sys/class/net" # FIXME: There may be an ioctl way to do this
+        for interface in os.listdir(path):
+            if os.path.exists(os.path.join(path, interface, "wireless")):
+                iflist.append(interface)
+        return iflist
+
+    def getEssid(self, ifname):
+        """ Get the ESSID for an interface """
+        return self._getaddr(ifname, self.SIOCGIWESSID)
+
+
 if __name__ == "__main__":
     ifc = ifconfig()
     ifaces = ifc.getInterfaceList()
-    
+
+    print "Network interfaces found = ", ifaces
     for name in ifaces:
-        print "%s is %s ip %s netmask %s broadcast %s" % (name, ('DOWN', 'UP')[ifc.isUp(name)],
+        print " %s is %s ip %s netmask %s broadcast %s" % (name, ('DOWN', 'UP')[ifc.isUp(name)],
             ifc.getAddr(name), ifc.getMask(name), ifc.getBroadcast(name))
+    
+    wifi = wireless()
+    ifaces_wifi = wifi.getInterfaceList()
+    
+    print "\nWireless interfaces found = ", ifaces_wifi
+    for name in ifaces_wifi:
+        print " %s essid %s" % (name, wifi.getEssid(name))
 

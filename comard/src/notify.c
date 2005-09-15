@@ -58,7 +58,6 @@ notify_fire(const char *name)
 
 	no = model_lookup_notify(name);
 	if (no == -1) return -1;
-printf("notify fire [%s]\n", name);
 	ipc_start(CMD_NOTIFY, NULL, 0, no);
 	// FIXME: optional argument
 	ipc_send(TO_PARENT);

@@ -171,7 +171,7 @@ get_arg(struct arg_s *args, char **argp, size_t *sizep)
 }
 
 static int
-write_rpc(struct connection *c, unsigned int cmd, int id, char *buffer, size_t size)
+write_rpc(struct connection *c, unsigned int cmd, int id, const char *buffer, size_t size)
 {
 	unsigned char head[8];
 printf("writeRPC(%d,%d,%d,%s)\n", cmd, id, size, buffer);
@@ -370,15 +370,18 @@ rpc_unix_start(void)
 	log_info("RPC_UNIX: listening on %s\n", RPC_PIPE_NAME);
 
 	while (1) {
-		if (1 == proc_listen(&p, &cmd, &size, 0)) {
+		while (1 == proc_listen(&p, &cmd, &size, 0)) {
 			if (cmd == CMD_NOTIFY) {
 				ipc_recv(p, size);
 				for (c = conns; c; c = c->next) {
-					if (notify_is_marked(c->notify_mask, ipc_get_node())) {
+					int no = ipc_get_node();
+					if (notify_is_marked(c->notify_mask, no)) {
 						// FIXME: return argument too
-						write_rpc(c, RPC_NOTIFY, 0, NULL, 0);
+						const char *name = model_get_path(no);
+						write_rpc(c, RPC_NOTIFY, 0, name, strlen(name));
 					}
 				}
+				continue;
 			} else if (cmd != CMD_RESULT && cmd != CMD_FAIL) continue;
 			ipc_recv(p, size);
 			for (c = conns; c; c = c->next) {
@@ -391,6 +394,7 @@ rpc_unix_start(void)
 					else
 						cmd = RPC_FAIL;
 					write_rpc(c, cmd, ipc_get_id(), s, sz);
+					break;
 				}
 			}
 		}

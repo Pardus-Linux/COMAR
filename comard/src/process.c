@@ -73,6 +73,7 @@ proc_fork(void (*child_func)(void))
 		memset(&my_proc, 0, sizeof(struct Proc));
 		my_proc.parent.from = fdw[0];
 		my_proc.parent.to = fdr[1];
+		my_proc.parent.pid = getppid();
 		child_func();
 		while (1) sleep(1);	// FIXME: report parent
 	} else {
@@ -156,7 +157,7 @@ proc_send(struct ProcChild *p, int cmd, const void *data, size_t size)
 			return -2;
 		}
 	}
-	log_debug(LOG_PROC, "proc_send(pid %d, cmd %d, size %d)\n", p->pid, cmd, size);
+	log_debug(LOG_PROC, "proc_send(me=%d, to=%d, cmd=%d, size=%d)\n", getpid(), p->pid, cmd, size);
 	return 0;
 }
 
@@ -170,7 +171,7 @@ proc_recv(struct ProcChild *p, void *datap, size_t size)
 	if (NULL == *datap2) return -1;
 	if (proc_recv_to(p, *datap2, size)) return -2;
 
-	log_debug(LOG_PROC, "proc_recv(pid %d, size %d)\n", p->pid, size);
+	log_debug(LOG_PROC, "proc_recv(me=%d, from=%d, size=%d)\n", getpid(), p->pid, size);
 	return 0;
 }
 
@@ -181,6 +182,21 @@ proc_recv_to(struct ProcChild *p, void *data, size_t size)
 	if (size != read(p->from, data, size)) {
 		return -1;
 	}
-	log_debug(LOG_PROC, "proc_recv_to(pid %d, size %d)\n", p->pid, size);
+	log_debug(LOG_PROC, "proc_recv_to(me=%d, from=%d, size=%d)\n", getpid(), p->pid, size);
 	return 0;
+}
+
+char *
+proc_pid_name(struct ProcChild *p)
+{
+	static char buf[128];
+
+	if (p == TO_PARENT) p = &my_proc.parent;
+
+	if (p->pid == my_proc.parent.pid)
+		sprintf(buf, "parent(%d)", p->pid);
+	else
+		sprintf(buf, "%d", p->pid);
+
+	return buf;
 }

@@ -32,6 +32,9 @@ static struct logflag_struct {
 	{ "proc", LOG_PROC },
 	{ "db", LOG_DB },
 	{ "job", LOG_JOB },
+	{ "ipc", LOG_IPC },
+	{ "all", LOG_ALL },
+	{ "full", LOG_ALL },
 	{ NULL, 0 }
 };
 
@@ -78,7 +81,7 @@ print_version(void)
 void
 cfg_init(int argc, char *argv[])
 {
-	int c, i;
+	int c, i, j;
 
 	while ((c = getopt_long(argc, argv, shortopts, longopts, &i)) != -1) {
 		switch (c) {
@@ -89,14 +92,9 @@ cfg_init(int argc, char *argv[])
 				cfg_data_dir = optarg;
 				break;
 			case 'g':
-				if (strcmp(optarg, "all") == 0) {
-					cfg_log_flags = LOG_ALL;
-				} else {
-					int j;
-					for (j = 0; logflags[j].flag; ++j) {
-						if (strstr(optarg, logflags[j].flag))
-							cfg_log_flags |= logflags[j].value;
-					}
+				for (j = 0; logflags[j].flag; ++j) {
+					if (strstr(optarg, logflags[j].flag))
+						cfg_log_flags |= logflags[j].value;
 				}
 				break;
 			case 'h':

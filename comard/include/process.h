@@ -37,6 +37,7 @@ int proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeou
 int proc_send(struct ProcChild *p, int cmd, const void *data, size_t data_size);
 int proc_recv(struct ProcChild *p, void *datap, size_t size);
 int proc_recv_to(struct ProcChild *p, void *data, size_t size);
+char *proc_pid_name(struct ProcChild *p);
 
 
 #endif /* PROCESS_H */

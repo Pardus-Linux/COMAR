@@ -40,7 +40,7 @@ c_notify(PyObject *self, PyObject *args)
 
 	if (!PyArg_ParseTuple(args, "s#", &name, &size))
 		return NULL;
-printf("[%s]\n",name);
+
 	notify_fire(name);
 
 	Py_INCREF(Py_None);

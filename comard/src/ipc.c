@@ -10,9 +10,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "process.h"
 #include "ipc.h"
+#include "log.h"
 
 struct ipc_data {
 	void *chan;
@@ -26,6 +28,7 @@ static size_t pak_size;
 static int pak_used;
 static int pak_pos;
 static struct ipc_data *pak_data;
+
 
 void
 ipc_start(int cmd, void *caller_data, int id, int node)
@@ -60,12 +63,16 @@ ipc_pack_arg(const char *arg, size_t size)
 void
 ipc_send(struct ProcChild *p)
 {
+	log_debug(LOG_IPC, "ipc_send(me=%d, to=%s, cmd=%d, size=%d)\n", getpid(), proc_pid_name(p), pak_cmd, pak_used);
+
 	proc_send(p, pak_cmd, (unsigned char *)pak_data, pak_used);
 }
 
 int
 ipc_recv(struct ProcChild *p, size_t size)
 {
+	log_debug(LOG_IPC, "ipc_recv(me=%d, from=%s, size=%d)\n", getpid(), proc_pid_name(p), size);
+
 	if (pak_size < size) {
 		if (pak_size == 0) {
 			pak_data = malloc(size);

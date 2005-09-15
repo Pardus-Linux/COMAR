@@ -13,6 +13,7 @@ OBJS = \
 	src/model.o \
 	src/acl.o \
 	src/notify.o \
+	src/event.o \
 	src/ipc.o \
 	src/process.o \
 	src/csl.o \

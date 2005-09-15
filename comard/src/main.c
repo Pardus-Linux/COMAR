@@ -30,15 +30,20 @@ main(int argc, char *argv[])
 	int cmd;
 	int size;
 
+	// First phase: configuration
 	cfg_init(argc, argv);
 	log_info("COMARd v"VERSION"\n");
 
+	// Second phase: subsytem init
 	if (db_init() != 0) return 1;
 	proc_init();
 	if (model_init() != 0) return 1;
 
+	// Third phase: helper processes
+	event_start();
 	rpc = proc_fork(rpc_unix_start);
 
+	// Ready to run
 	while (1) {
 		if (1 == proc_listen(&p, &cmd, &size, 1)) {
 			switch (cmd) {

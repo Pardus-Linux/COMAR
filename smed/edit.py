@@ -30,6 +30,7 @@ class NodeEdit(QWidget):
     def _name_cb(self, text):
         if self.node:
             self.node.nodeName = unicode(self.name.text())
+            self.node.repaint()
     
     def _desc_cb(self):
         if self.node:

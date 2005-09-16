@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-3.5.dtd">
 <!-- Project file for project smed -->
-<!-- Saved: 2005-08-13, 15:42:35 -->
+<!-- Saved: 2005-09-16, 15:01:17 -->
 <!-- Copyright (C) 2005 ,  -->
 <Project version="3.5">
   <Description></Description>
@@ -16,6 +16,9 @@
     </Source>
     <Source>
       <Name>edit.py</Name>
+    </Source>
+    <Source>
+      <Name>xmlutil.py</Name>
     </Source>
   </Sources>
   <Forms>

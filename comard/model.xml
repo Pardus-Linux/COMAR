@@ -1,48 +1,65 @@
 <?xml version="1.0" ?>
 <comarModel>
-	<group name="System">
-		<class name="Power"/>
-		<class name="Users">
-			<method name="addUser"/>
-		</class>
-	</group>
-	<group name="Storage"/>
-	<group name="Parts">
-		<class name="Package"/>
-	</group>
-	<group name="Time">
-		<class name="Clock">
-			<notify name="lala"/>
-			<method name="setDate"/>
-			<method name="getDate"/>
-			<method name="loadFromHW"/>
-			<method name="saveToHW"/>
-			<method name="setTimeZone"/>
-			<method name="getTimeZone"/>
-		</class>
-		<class name="Jobs"/>
-	</group>
-	<group name="Net">
-		<class name="Stack">
-			<method name="isOnline"/>
-			<method name="goOnline"/>
-			<method name="goOffline"/>
-			<method name="getNameServers"/>
-			<method name="setNameServers"/>
-			<method name="useNameServer"/>
-			<method name="addHost"/>
-			<method name="deleteHost"/>
-		</class>
-		<class name="Link">
-			<method name="scan"/>
-			<method name="setAddress"/>
-			<method name="getInformation"/>
-			<method name="getStatus"/>
-			<method name="fineTune"/>
-			<method name="getStatistics"/>
-			<method name="getSpeedInfo"/>
-			<method name="setSpeed"/>
-		</class>
-		<class name="Server"/>
-	</group>
+
+
+<group name="System">
+<class name="Power">
+</class>
+<class name="Users">
+<method name="addUser"/>
+</class>
+</group>
+
+
+<group name="Storage">
+</group>
+
+
+<group name="Parts">
+<class name="Package">
+</class>
+</group>
+
+
+<group name="Time">
+<class name="Clock">
+<notify name="lala"/>
+<method name="setDate"/>
+<method name="getDate"/>
+<method name="loadFromHW"/>
+<method name="saveToHW"/>
+<method name="setTimeZone"/>
+<method name="getTimeZone"/>
+</class>
+<class name="Jobs">
+</class>
+</group>
+
+
+<group name="Net">
+<class name="Stack">
+<method name="isOnline"/>
+<method name="goOnline"/>
+<method name="goOffline"/>
+<method name="getNameServers"/>
+<method name="setNameServers"/>
+<method name="useNameServer"/>
+<method name="addHost"/>
+<method name="deleteHost"/>
+</class>
+<class name="Link">
+<method name="scan"/>
+<method name="setAddress"/>
+<method name="getInformation"/>
+<method name="getStatus"/>
+<method name="fineTune"/>
+<method name="getStatistics"/>
+<method name="getSpeedInfo"/>
+<method name="setSpeed"/>
+</class>
+<class name="Server">
+</class>
+</group>
+
+
 </comarModel>

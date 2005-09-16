@@ -16,41 +16,18 @@ import model
 class MainWindow(QMainWindow):
     def __init__(self, *args):
         QMainWindow.__init__(self, *args)
+        self.model = model.Model(self)
         self.setCaption(u"ÇOMAR System Model Editor")
-        self.setMinimumSize(540,320)
+        self.setMinimumSize(600, 440)
         mb = self.menuBar()
         file_ = QPopupMenu(self)
         mb.insertItem("&File", file_)
-        file_.insertItem("&Open", self._cb_open, self.CTRL + self.Key_O)
-        file_.insertItem("&Save", self._cb_save, self.CTRL + self.Key_S)
-        file_.insertItem("Save &as...", self._cb_save_as, self.CTRL + self.SHIFT + self.Key_S)
+        file_.insertItem("&Open", self.model.open, self.CTRL + self.Key_O)
+        file_.insertItem("&Save", self.model.save, self.CTRL + self.Key_S)
+        file_.insertItem("Save &as...", self.model.save_as, self.CTRL + self.SHIFT + self.Key_S)
         file_.insertSeparator()
         file_.insertItem("&Quit", main_quit, self.CTRL + self.Key_Q)
-        self.model = model.Model(self)
         self.setCentralWidget(self.model)
-        self.fileName = None
-    
-    def _cb_open(self):
-        name = QFileDialog.getOpenFileName(".", "Model Files (*.xml)", self, "lala", "Choose model file to open")
-        if not name:
-            return
-        name = unicode(name)
-        w.model.load(name)
-        self.fileName = name
-    
-    def _cb_save_as(self):
-        name = QFileDialog.getSaveFileName(".", "Model Files (*.xml)", self, "lala", "Choose model file to save")
-        if not name:
-            return
-        name = unicode(name)
-        w.model.save(name)
-        self.fileName = name
-    
-    def _cb_save(self):
-        if self.fileName:
-            w.model.save(self.fileName)
-        else:
-            self._cb_save_as()
 
 def main_quit():
     sys.exit(0)
@@ -60,5 +37,8 @@ if __name__ == "__main__":
     app.connect(app, SIGNAL("lastWindowClosed()"), main_quit)
     w = MainWindow()
     w.show()
-    w.model.clear()
+    if len(sys.argv) > 1:
+        w.model.open_as(sys.argv[1])
+    else:
+        w.model.clear()
     app.exec_loop()

@@ -262,8 +262,6 @@ class wireless:
         return buffer
 
     def _setaddr(self, ifname, func, arg):
-        a, b, c = struct.unpack("iHH", arg)
-        print a, b, c
         ifreq = (ifname + '\0'*16)[:16]
         data = ifreq + arg
         try:

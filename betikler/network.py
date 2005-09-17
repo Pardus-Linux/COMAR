@@ -238,7 +238,8 @@ class wireless:
     SIOCGIWNWID = 0x8B03    # get network id
     SIOCSIWCOMMIT = 0x8B00  # commiting pending changes to driver
     SIOCGIWSCAN = 0x8B19    # get scanning results
-    
+   
+    modes = ['Auto', 'Ad-Hoc', 'Managed', 'Master', 'Repeat', 'Second', 'Monitor']
 
     def __init__(self):
         # create a socket to communicate with system
@@ -248,7 +249,7 @@ class wireless:
         return fcntl.ioctl(self.sockfd.fileno(), func, args)
 
     def _getaddr(self, ifname, func):
-        buffer = array.array('c', '\0' * 32)
+        buffer = array.array('c', '\0' * 16)
         addr, length = buffer.buffer_info()
         structure = struct.pack('Pi', addr, length)
         data = (ifname + '\0' * 16)[:16] + structure
@@ -258,7 +259,19 @@ class wireless:
         except IOError:
             return None
 
-        return buffer.tostring().strip('\x00')
+        return buffer
+
+    def _setaddr(self, ifname, func, arg):
+        a, b, c = struct.unpack("iHH", arg)
+        print a, b, c
+        ifreq = (ifname + '\0'*16)[:16]
+        data = ifreq + arg
+        try:
+            result = self._ioctl(func, data)
+        except IOError:
+            return None
+
+        return True
 
     def getInterfaceList(self):
         """ Find wireless interfaces """
@@ -271,8 +284,22 @@ class wireless:
 
     def getEssid(self, ifname):
         """ Get the ESSID for an interface """
-        return self._getaddr(ifname, self.SIOCGIWESSID)
+        data = self._getaddr(ifname, self.SIOCGIWESSID)
+        return data.tostring().strip('\x00')
 
+    def getMode(self, ifname):
+        """ Get the ESSID for an interface """
+        data = self._getaddr(ifname, self.SIOCGIWMODE)
+        mode = struct.unpack("i", data[:4])[0]
+        return self.modes[mode]
+
+    def setEssid(self, ifname, essid):
+        """ Set the ESSID for an interface """
+        if len(essid) > 16:
+            return "ESSID should be 16 char or less" # FIXME: How shall we define error messages ?
+
+        arg = struct.pack("iHH", id(essid) + 20 , len(essid) + 1, 1)
+        return self._setaddr(ifname, self.SIOCSIWESSID, arg)
 
 if __name__ == "__main__":
     ifc = ifconfig()
@@ -288,5 +315,5 @@ if __name__ == "__main__":
     
     print "\nWireless interfaces found = ", ifaces_wifi
     for name in ifaces_wifi:
-        print " %s essid %s" % (name, wifi.getEssid(name))
+        print " %s essid %s mode %s" % (name, wifi.getEssid(name), wifi.getMode(name))
 

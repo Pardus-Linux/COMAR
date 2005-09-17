@@ -296,8 +296,13 @@ class wireless:
         if len(essid) > 16:
             return "ESSID should be 16 char or less" # FIXME: How shall we define error messages ?
 
-        arg = struct.pack("iHH", id(essid) + 20 , len(essid) + 1, 1)
+        arg = struct.pack("iHH", id(essid) + 20, len(essid) + 1, 1)
         return self._setaddr(ifname, self.SIOCSIWESSID, arg)
+
+    def setMode(self, ifname, mode):
+        """ Set the operating mode of an interface """
+        arg = struct.pack("l", self.modes.index(mode))
+        return self._setaddr(ifname, self.SIOCSIWMODE, arg)
 
 if __name__ == "__main__":
     ifc = ifconfig()

@@ -1,0 +1,29 @@
+#!/usr/bin/python
+
+from distutils.sysconfig import get_config_var as pyconf
+
+libs = [ 'db', 'm', "python2.3" ]
+libpath = [ '/usr/lib' ]
+cpppath = [ pyconf('CONFINCLUDEPY'), "include" ]
+ccflags = "-O2 -Wall -DVERSION='\"1.0\"' "
+
+source = """
+    src/main.c
+    src/cfg.c
+    src/log.c
+    src/job.c
+    src/model.c
+    src/acl.c
+    src/notify.c
+    src/event.c
+    src/ipc.c
+    src/process.c
+    src/csl.c
+    src/data.c
+    src/rpc_unix.c
+    src/iksemel.c
+"""
+
+env = Environment(CC="gcc", CCFLAGS=ccflags)
+
+env.Program("comar", Split(source), CPPPATH=cpppath, LIBS=libs, LIBPATH=libpath)

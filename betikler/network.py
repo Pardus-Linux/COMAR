@@ -13,6 +13,8 @@ class ifconfig:
 
 #   From <bits/ioctls.h>
 
+    IFNAMSIZ = 16               # interface name size
+
     # Socket configuration controls
     SIOCGIFNAME = 0x8910        # get iface name
     SIOCSIFLINK = 0x8911        # set iface channel
@@ -104,7 +106,7 @@ class ifconfig:
         if ip is None:
             data = (ifname + '\0'*32)[:32]
         else:
-            ifreq = (ifname + '\0'*16)[:16]
+            ifreq = (ifname + '\0' * self.IFNAMSIZ)[:self.IFNAMSIZ]
             data = struct.pack("16si4s8x", ifreq, socket.AF_INET, socket.inet_aton(ip))
 
         try:
@@ -191,7 +193,7 @@ class ifconfig:
 
     def setStatus(self, ifname, status):
         """ Set interface status (UP/DOWN) """
-        ifreq = (ifname + '\0' * 16)[:16]
+        ifreq = (ifname + '\0' * self.IFNAMSIZ)[:self.IFNAMSIZ]
 
         if status is "UP":
             flags = self.IFF_UP

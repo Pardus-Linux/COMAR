@@ -23,13 +23,13 @@
 
 <group name="Time">
 <class name="Clock">
-<notify name="lala"/>
 <method name="setDate"/>
 <method name="getDate"/>
 <method name="loadFromHW"/>
 <method name="saveToHW"/>
 <method name="setTimeZone"/>
 <method name="getTimeZone"/>
+<notify name="lala"/>
 </class>
 <class name="Jobs">
 </class>

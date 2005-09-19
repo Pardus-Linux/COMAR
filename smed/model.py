@@ -30,8 +30,22 @@ class Node(QListViewItem):
         "notify.png"
     ]
     
+    def last_item(self, parent):
+        f = parent.firstChild()
+        if f:
+            while 1:
+                if f.nextSibling():
+                    f = f.nextSibling()
+                else:
+                    break
+        return f
+    
     def __init__(self, parent, type, name, data=None):
-        QListViewItem.__init__(self, parent, name)
+        f = self.last_item(parent)
+        if f:
+            QListViewItem.__init__(self, parent, f, name)
+        else:
+            QListViewItem.__init__(self, parent, name)
         self.mypix = QPixmap(self.images[type])
         self.setPixmap(0, self.mypix)
         self.nodeParent = parent

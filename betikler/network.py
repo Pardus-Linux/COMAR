@@ -99,27 +99,20 @@ class ifconfig:
     def _ioctl(self, func, args):
         return fcntl.ioctl(self.sockfd.fileno(), func, args)
 
-    def _getaddr(self, ifname, func):
-        arg = (ifname + '\0'*32)[:32]
+    def _call(self, ifname, func, ip = None):
+
+        if ip is None:
+            data = (ifname + '\0'*32)[:32]
+        else:
+            ifreq = (ifname + '\0'*16)[:16]
+            data = struct.pack("16si4s8x", ifreq, socket.AF_INET, socket.inet_aton(ip))
+
         try:
-            result = self._ioctl(func, arg)
+            result = self._ioctl(func, data)
         except IOError:
             return None
 
         return socket.inet_ntoa(result[20:24])
-
-    def _setaddr(self, ifname, func, ip):
-        ifreq = (ifname + '\0'*16)[:16]
-        arg = struct.pack("16si4s8x", ifreq, socket. AF_INET, socket.inet_aton(ip))
-        try:
-            result = self._ioctl(func, arg)
-        except IOError:
-            return None
-
-        if socket.inet_ntoa(result[20:24]) is ip:
-            return True
-        else:
-            return None
 
     def getInterfaceList(self):
         """ Get all interface names in a list """
@@ -155,15 +148,15 @@ class ifconfig:
 
     def getAddr(self, ifname):
         """ Get the inet addr for an interface """
-        return self._getaddr(ifname, self.SIOCGIFADDR)
+        return self._call(ifname, self.SIOCGIFADDR)
 
-    def getMask(self, ifname):
+    def getNetmask(self, ifname):
         """ Get the netmask for an interface """
-        return self._getaddr(ifname, self.SIOCGIFNETMASK)
+        return self._call(ifname, self.SIOCGIFNETMASK)
 
     def getBroadcast(self, ifname):
         """ Get the broadcast addr for an interface """
-        return self._getaddr(ifname, self.SIOCGIFBRDADDR)
+        return self._call(ifname, self.SIOCGIFBRDADDR)
 
     def getStatus(self, ifname):
         """ Check whether interface is UP """
@@ -171,16 +164,30 @@ class ifconfig:
 
     def setAddr(self, ifname, ip):
         """ Set the inet addr for an interface """
-        return self._setaddr(ifname, self.SIOCSIFADDR, ip)
+        result = self._call(ifname, self.SIOCSIFADDR, ip)
 
-    def setMask(self, ifname, ip):
+        if result is ip:
+            return True
+        else:
+            return None
+
+    def setNetmask(self, ifname, ip):
         """ Set the netmask for an interface """
-        return self._setaddr(ifname, self.SIOCSIFNETMASK, ip)
+        result = self._call(ifname, self.SIOCSIFNETMASK, ip)
+
+        if result is ip:
+            return True
+        else:
+            return None
 
     def setBroadcast(self, ifname, ip):
         """ Set the broadcast addr for an interface """
-        return self._setaddr(ifname, self.SIOCSIFBRDADDR, ip)
+        result = self._call(ifname, self.SIOCSIFBRDADDR, ip)
 
+        if result is ip:
+            return True
+        else:
+            return None
 
 class route:
     """ ioctl stuff """
@@ -311,7 +318,7 @@ if __name__ == "__main__":
     print "Network interfaces found = ", ifaces
     for name in ifaces:
         print " %s is %s ip %s netmask %s broadcast %s" % (name, ('DOWN', 'UP')[ifc.getStatus(name)],
-            ifc.getAddr(name), ifc.getMask(name), ifc.getBroadcast(name))
+            ifc.getAddr(name), ifc.getNetmask(name), ifc.getBroadcast(name))
     
     wifi = wireless()
     ifaces_wifi = wifi.getInterfaceList()

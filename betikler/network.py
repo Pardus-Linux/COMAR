@@ -114,7 +114,7 @@ class ifconfig:
         except IOError:
             return None
 
-        return socket.inet_ntoa(result[20:24])
+        return result
 
     def getInterfaceList(self):
         """ Get all interface names in a list """
@@ -150,25 +150,34 @@ class ifconfig:
 
     def getAddr(self, ifname):
         """ Get the inet addr for an interface """
-        return self._call(ifname, self.SIOCGIFADDR)
+        result = self._call(ifname, self.SIOCGIFADDR)
+        return socket.inet_ntoa(result[20:24])
 
     def getNetmask(self, ifname):
         """ Get the netmask for an interface """
-        return self._call(ifname, self.SIOCGIFNETMASK)
+        result = self._call(ifname, self.SIOCGIFNETMASK)
+        return socket.inet_ntoa(result[20:24])
 
     def getBroadcast(self, ifname):
         """ Get the broadcast addr for an interface """
-        return self._call(ifname, self.SIOCGIFBRDADDR)
+        result = self._call(ifname, self.SIOCGIFBRDADDR)
+        return socket.inet_ntoa(result[20:24])
 
     def getStatus(self, ifname):
         """ Check whether interface is UP """
         return (self.getFlags(ifname) & self.IFF_UP) != 0
 
+    def getMTU(self, ifname):
+        """ Get the MTU size of an interface """
+        data = self._call(ifname, self.SIOCGIFMTU)
+        mtu = struct.unpack("16si12x", data)[1]
+        return mtu
+
     def setAddr(self, ifname, ip):
         """ Set the inet addr for an interface """
         result = self._call(ifname, self.SIOCSIFADDR, ip)
 
-        if result is ip:
+        if socket.inet_ntoa(result[20:24]) is ip:
             return True
         else:
             return None
@@ -177,7 +186,7 @@ class ifconfig:
         """ Set the netmask for an interface """
         result = self._call(ifname, self.SIOCSIFNETMASK, ip)
 
-        if result is ip:
+        if socket.inet_ntoa(result[20:24]) is ip:
             return True
         else:
             return None
@@ -186,7 +195,7 @@ class ifconfig:
         """ Set the broadcast addr for an interface """
         result = self._call(ifname, self.SIOCSIFBRDADDR, ip)
 
-        if result is ip:
+        if socket.inet_ntoa(result[20:24]) is ip:
             return True
         else:
             return None
@@ -339,8 +348,8 @@ if __name__ == "__main__":
 
     print "Network interfaces found = ", ifaces
     for name in ifaces:
-        print " %s is %s ip %s netmask %s broadcast %s" % (name, ('DOWN', 'UP')[ifc.getStatus(name)],
-            ifc.getAddr(name), ifc.getNetmask(name), ifc.getBroadcast(name))
+        print " %s is %s ip %s netmask %s broadcast %s mtu %i" % (name, ('DOWN', 'UP')[ifc.getStatus(name)],
+            ifc.getAddr(name), ifc.getNetmask(name), ifc.getBroadcast(name), ifc.getMTU(name))
     
     wifi = wireless()
     ifaces_wifi = wifi.getInterfaceList()

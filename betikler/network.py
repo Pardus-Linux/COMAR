@@ -134,20 +134,6 @@ class ifconfig:
 
         return iflist
 
-    def getFlags(self, ifname):
-        """ Get the flags for an interface """
-        ifreq = (ifname + '\0'*32)[:32]
-        try:
-            result = self._ioctl(self.SIOCGIFFLAGS, ifreq)
-        except IOError:
-            return None
-
-        # extract the interface's flags from the return value
-        flags, = struct.unpack('H', result[16:18])
-
-        # return "UP" bit
-        return flags
-
     def getAddr(self, ifname):
         """ Get the inet addr for an interface """
         result = self._call(ifname, self.SIOCGIFADDR)
@@ -165,7 +151,9 @@ class ifconfig:
 
     def getStatus(self, ifname):
         """ Check whether interface is UP """
-        return (self.getFlags(ifname) & self.IFF_UP) != 0
+        result = self._call(ifname, self.SIOCGIFFLAGS)
+        flags, = struct.unpack('H', result[16:18])
+        return (flags & self.IFF_UP) != 0
 
     def getMTU(self, ifname):
         """ Get the MTU size of an interface """

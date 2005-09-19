@@ -165,7 +165,7 @@ class ifconfig:
         """ Get the broadcast addr for an interface """
         return self._getaddr(ifname, self.SIOCGIFBRDADDR)
 
-    def isUp(self, ifname):
+    def getStatus(self, ifname):
         """ Check whether interface is UP """
         return (self.getFlags(ifname) & self.IFF_UP) != 0
 
@@ -286,7 +286,7 @@ class wireless:
         return data.tostring().strip('\x00')
 
     def getMode(self, ifname):
-        """ Get the ESSID for an interface """
+        """ Get the operating mode of an interface """
         data = self._getaddr(ifname, self.SIOCGIWMODE)
         mode = struct.unpack("i", data[:4])[0]
         return self.modes[mode]
@@ -310,7 +310,7 @@ if __name__ == "__main__":
 
     print "Network interfaces found = ", ifaces
     for name in ifaces:
-        print " %s is %s ip %s netmask %s broadcast %s" % (name, ('DOWN', 'UP')[ifc.isUp(name)],
+        print " %s is %s ip %s netmask %s broadcast %s" % (name, ('DOWN', 'UP')[ifc.getStatus(name)],
             ifc.getAddr(name), ifc.getMask(name), ifc.getBroadcast(name))
     
     wifi = wireless()

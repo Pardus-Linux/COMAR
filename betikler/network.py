@@ -227,7 +227,7 @@ class ifconfig:
         data = struct.pack("16si", ifreq, mtu)
         result = self._ioctl(self.SIOCSIFMTU, data)
 
-        if socket.inet_ntoa(result[16:20]) is mtu:
+        if struct.unpack("16si", result)[1] is mtu:
             return True
         else:
             return None

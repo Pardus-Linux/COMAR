@@ -189,6 +189,26 @@ class ifconfig:
         else:
             return None
 
+    def setStatus(self, ifname, status):
+        """ Set interface status (UP/DOWN) """
+        ifreq = (ifname + '\0' * 16)[:16]
+
+        if status is "UP":
+            flags = self.IFF_UP
+            flags |= self.IFF_RUNNING
+            flags |= self.IFF_BROADCAST
+            flags |= self.IFF_MULTICAST
+            flags &= ~self.IFF_NOARP
+            flags &= ~self.IFF_PROMISC
+        elif status is "DOWN":
+            flags = ~self.IFF_UP
+        else:
+            return None
+
+        data = struct.pack("16sh", ifreq, flags)
+        result = self._ioctl(self.SIOCSIFFLAGS, data)
+        return result
+
 class route:
     """ ioctl stuff """
 

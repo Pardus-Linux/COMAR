@@ -220,6 +220,19 @@ class ifconfig:
         result = self._ioctl(self.SIOCSIFFLAGS, data)
         return result
 
+    def setMTU(self, ifname, mtu):
+        """ Set the MTU size of an interface """
+        ifreq = (ifname + '\0' * self.IFNAMSIZ)[:self.IFNAMSIZ]
+
+        data = struct.pack("16si", ifreq, mtu)
+        result = self._ioctl(self.SIOCSIFMTU, data)
+
+        if socket.inet_ntoa(result[16:20]) is mtu:
+            return True
+        else:
+            return None
+
+
 class route:
     """ ioctl stuff """
 

@@ -50,14 +50,14 @@ event_proc(void)
 	sock = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_KOBJECT_UEVENT);
 	if (sock == -1) {
 		log_error("Cannot open netlink socket, event layer failed.\n");
-		exit(1);
+		return;
 	}
 
 	setsockopt(sock, SOL_SOCKET, SO_RCVBUF, &bufsize, sizeof(bufsize));
 	ret = bind(sock, (struct sockaddr *) &snl, sizeof(struct sockaddr_nl));
 	if (ret < 0) {
 		log_error("Cannot bind netlink socket, event layer failed.\n");
-		exit(1);
+		return;
 	}
 
 	while (1) {

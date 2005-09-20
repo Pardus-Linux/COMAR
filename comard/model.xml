@@ -8,16 +8,18 @@
 <class name="Users">
 <method name="addUser"/>
 </class>
+<class name="Package">
+<method name="postInstall"/>
+<method name="preRemove"/>
+</class>
+</group>
+
+
+<group name="Hardware">
 </group>
 
 
 <group name="Storage">
-</group>
-
-
-<group name="Parts">
-<class name="Package">
-</class>
 </group>
 
 

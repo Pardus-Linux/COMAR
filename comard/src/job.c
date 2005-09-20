@@ -149,7 +149,7 @@ exec_proc(void)
 }
 
 static int
-do_call(int node)		// FIXME: app, args
+do_call(int node)
 {
 	char *apps;
 
@@ -195,6 +195,16 @@ do_call(int node)		// FIXME: app, args
 	return 0;
 }
 
+static int
+do_call_package(int node, const char *app)
+{
+	log_debug(LOG_JOB, "CallPackage(%s, %s)\n", model_get_path(node), app);
+
+	do_execute(node, app);
+
+	return 0;
+}
+
 static void
 job_proc(void)
 {
@@ -223,6 +233,10 @@ job_proc(void)
 			break;
 		case CMD_CALL:
 			do_call(ipc_get_node());
+			break;
+		case CMD_CALL_PACKAGE:
+			ipc_get_arg(&t, NULL);
+			do_call_package(ipc_get_node(), t);
 			break;
 	}
 }

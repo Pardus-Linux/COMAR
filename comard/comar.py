@@ -32,8 +32,9 @@ class Link:
     __REGISTER = 7
     __REMOVE = 8
     __CALL = 9
-    __ASKNOTIFY = 10
-    __CHECKACL = 11
+    __CALL_PACKAGE = 10
+    __ASKNOTIFY = 11
+    __CHECKACL = 12
     
     def __init__(self, sockname="/tmp/comar"):
         try:
@@ -129,10 +130,14 @@ class Link:
         pak =self.__pack(self.__CALL, id, a)
         self.sock.send(pak)
     
-    def call_package(self, methodname, packagename, args, id=0):
+    def call_package(self, methodname, packagename, args=None, id=0):
         """Make a configuration call directed to a package.
         """
-        pass
+        a = [ methodname, packagename ]
+        if args:
+            a.extend(args)
+        pak =self.__pack(self.__CALL_PACKAGE, id, a)
+        self.sock.send(pak)
     
     def call_instance(self, methodname, packagename, instancename, args, id=0):
         # not yet decided

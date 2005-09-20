@@ -35,6 +35,7 @@ enum {
 	RPC_REGISTER,
 	RPC_REMOVE,
 	RPC_CALL,
+	RPC_CALL_PACKAGE,
 	RPC_ASKNOTIFY,
 	RPC_CHECKACL
 };
@@ -249,6 +250,28 @@ parse_rpc(struct connection *c)
 				return 0;
 			}
 			ipc_start(CMD_CALL, (void *)c, id, no);
+			while (1) {
+				int ret = get_arg(&args, &t, &sz);
+				if (ret == 0) break;
+				if (ret == -1) return -1;
+				ipc_pack_arg(t, sz);
+				if (get_arg(&args, &t, &sz) != 1) return -1;
+				ipc_pack_arg(t, sz);
+			}
+			ipc_send(TO_PARENT);
+			return 0;
+		case RPC_CALL_PACKAGE:
+			// method name, package name, arg pairs (key-value)
+			if (get_arg(&args, &t, &sz) != 1) return -1;
+			no = model_lookup_method(t);
+			if (no == -1) return -1;
+			if (!acl_is_capable(CMD_CALL, no, &c->cred)) {
+				write_rpc(c, RPC_DENIED, id, NULL, 0);
+				return 0;
+			}
+			ipc_start(CMD_CALL_PACKAGE, (void *)c, id, no);
+			if (get_arg(&args, &t, &sz) != 1) return -1;
+			ipc_pack_arg(t, sz);
 			while (1) {
 				int ret = get_arg(&args, &t, &sz);
 				if (ret == 0) break;

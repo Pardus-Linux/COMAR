@@ -34,7 +34,8 @@ class Link:
     __CALL = 9
     __CALL_PACKAGE = 10
     __ASKNOTIFY = 11
-    __CHECKACL = 12
+    __GETLIST = 12
+    __CHECKACL = 13
     
     def __init__(self, sockname="/tmp/comar"):
         try:
@@ -146,7 +147,8 @@ class Link:
     def get_packages(self, classname, id=0):
         """Return registered packages for a given system model class.
         """
-        pass
+        pak = self.__pack(self.__GETLIST, id, [ classname ])
+        self.sock.send(pak)
     
     def ask_notify(self, notifyname, id=0):
         """Ask for a notification event to be delivered.

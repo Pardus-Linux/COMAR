@@ -37,6 +37,7 @@ enum {
 	RPC_CALL,
 	RPC_CALL_PACKAGE,
 	RPC_ASKNOTIFY,
+	RPC_GETLIST,
 	RPC_CHECKACL
 };
 
@@ -280,6 +281,18 @@ parse_rpc(struct connection *c)
 				if (get_arg(&args, &t, &sz) != 1) return -1;
 				ipc_pack_arg(t, sz);
 			}
+			ipc_send(TO_PARENT);
+			return 0;
+		case RPC_GETLIST:
+			// class name
+			if (get_arg(&args, &t, &sz) != 1) return -1;
+			no = model_lookup_class(t);
+			if (no == -1) return -1;
+			if (!acl_is_capable(CMD_CALL, no, &c->cred)) {
+				write_rpc(c, RPC_DENIED, id, NULL, 0);
+				return 0;
+			}
+			ipc_start(CMD_GETLIST, (void *)c, id, no);
 			ipc_send(TO_PARENT);
 			return 0;
 		case RPC_ASKNOTIFY:

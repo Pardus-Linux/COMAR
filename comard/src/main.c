@@ -51,6 +51,7 @@ main(int argc, char *argv[])
 				case CMD_REMOVE:
 				case CMD_CALL:
 				case CMD_CALL_PACKAGE:
+				case CMD_GETLIST:
 					proc_recv(p, &ipc, size);
 					job_start(cmd, ipc, size);
 					free(ipc);

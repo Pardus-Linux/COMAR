@@ -63,9 +63,11 @@ static int chan_id;
 static int
 send_result(int cmd, const char *data, size_t size)
 {
-	if (size == 0) size = strlen(data);
 	ipc_start(cmd, chan, chan_id, 0);
-	ipc_pack_arg(data, size);
+	if (data) {
+		if (size == 0) size = strlen(data);
+		ipc_pack_arg(data, size);
+	}
 	ipc_send(TO_PARENT);
 	return 0;
 }
@@ -205,6 +207,21 @@ do_call_package(int node, const char *app)
 	return 0;
 }
 
+static int
+do_getlist(int node)
+{
+	char *apps;
+
+	log_debug(LOG_JOB, "GetList(%s)\n", model_get_path(node));
+
+	if (db_get_apps(node, &apps) != 0) {
+		send_result(CMD_RESULT, NULL, 0);
+	} else {
+		send_result(CMD_RESULT, apps, 0);
+	}
+	return 0;
+}
+
 static void
 job_proc(void)
 {
@@ -237,6 +254,9 @@ job_proc(void)
 		case CMD_CALL_PACKAGE:
 			ipc_get_arg(&t, NULL);
 			do_call_package(ipc_get_node(), t);
+			break;
+		case CMD_GETLIST:
+			do_getlist(ipc_get_node());
 			break;
 	}
 }

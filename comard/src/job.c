@@ -158,13 +158,15 @@ do_call(int node)
 	log_debug(LOG_JOB, "Call(%s)\n", model_get_path(node));
 
 	if (db_get_apps(model_parent(node), &apps) != 0) {
-		send_result(CMD_RESULT, "no app", 6);
+		send_result(CMD_FAIL, "no app", 6);
 		exit(1);
 	}
 
 	if (strchr(apps, '/') == NULL) {
+		// there is only one script
 		do_execute(node, apps);
 	} else {
+		// multiple scripts, run concurrently
 		char *t, *s;
 		struct ProcChild *p;
 		int cmd;
@@ -182,13 +184,12 @@ do_call(int node)
 			p = proc_fork(exec_proc);
 			if (p) ++cnt;
 		}
-		while(cnt && proc_listen(&p, &cmd, &size, 1) == 1) {
+		while(1) {
 			struct ipc_data *ipc;
-			if (cmd == CMD_RESULT || cmd == CMD_FAIL) {
-				proc_recv(p, &ipc, size);
-				proc_send(TO_PARENT, cmd, ipc, size);
-				--cnt;
-			}
+			proc_listen(&p, &cmd, &size, -1);
+			proc_recv(p, &ipc, size);
+			proc_send(TO_PARENT, cmd, ipc, size);
+			//--cnt;
 		}
 	}
 

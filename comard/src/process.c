@@ -34,7 +34,11 @@ add_child(pid_t pid, int to, int from)
 
 	i = my_proc.nr_children;
 	if (i >= my_proc.max_children) {
-		my_proc.max_children *= 2;
+		if (i == 0) {
+			my_proc.max_children = 4;
+		} else {
+			my_proc.max_children *= 2;
+		}
 		my_proc.children = realloc(my_proc.children,
 			my_proc.max_children * sizeof(struct ProcChild)
 		);

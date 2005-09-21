@@ -46,6 +46,7 @@ main(int argc, char *argv[])
 	// Ready to run
 	while (1) {
 		if (1 == proc_listen(&p, &cmd, &size, 1)) {
+			log_debug(LOG_IPC, "Main switch, cmd=%d\n", cmd);
 			switch (cmd) {
 				case CMD_REGISTER:
 				case CMD_REMOVE:

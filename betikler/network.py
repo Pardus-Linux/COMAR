@@ -107,7 +107,7 @@ class ifconfig:
             data = (ifname + '\0'*32)[:32]
         else:
             ifreq = (ifname + '\0' * self.IFNAMSIZ)[:self.IFNAMSIZ]
-            data = struct.pack("16si4s8x", ifreq, socket.AF_INET, socket.inet_aton(ip))
+            data = struct.pack("16si4s10x", ifreq, socket.AF_INET, socket.inet_aton(ip))
 
         try:
             result = self._ioctl(func, data)
@@ -249,6 +249,29 @@ class route:
     RTF_NOFORWARD = 0x1000  # Forwarding inhibited
     RTF_THROW = 0x2000      # Go to next class
     RTF_NOPMTUDISC = 0x4000 # Do not send packets with DF
+
+    INADDR_ANY = '\0' * 4   # Any Internet Address
+
+    def __init__(self):
+        # create a socket to communicate with system
+        self.sockfd = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    def _ioctl(self, func, args):
+        return fcntl.ioctl(self.sockfd.fileno(), func, args)
+
+    def _call(self, func, arg):
+        data = struct.pack("Li4s10xi4s10xi4s10xHhL", 0, socket.AF_INET, self.INADDR_ANY, socket.AF_INET, socket.inet_aton(arg), 0, '\0' * 4,
+               self.RTF_GATEWAY, 0, 0)
+
+        try:
+            result = self._ioctl(func, data)
+        except IOError:
+            return None
+
+        return result
+
+    def delDefaultRoute(self, ip):
+        self._call(self.SIOCDELRT, ip)
 
 
 class wireless:

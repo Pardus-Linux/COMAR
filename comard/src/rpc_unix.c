@@ -23,7 +23,7 @@
 #include "ipc.h"
 #include "notify.h"
 
-/* rpc commands, keep in sync with comar.py */
+/* rpc commands, keep in sync with bindings */
 enum {
 	RPC_RESULT = 0,
 	RPC_FAIL,

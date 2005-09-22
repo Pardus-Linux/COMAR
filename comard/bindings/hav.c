@@ -56,6 +56,9 @@ static void
 do_register(char *argv[])
 {
 	comar_t *com;
+	int cmd;
+	unsigned int id;
+	char *ret;
 
 	com = comar_connect();
 	if (!com) {
@@ -76,7 +79,9 @@ do_register(char *argv[])
 	);
 
 	if (opt_wait) {
-		sleep(5);
+		while(comar_read(com, &cmd, &id, &ret, -1)) {
+			printf("cmd=%d, id=%d, arg=[%s]\n", cmd, id, ret);
+		}
 	}
 
 	comar_disconnect(com);
@@ -85,6 +90,31 @@ do_register(char *argv[])
 static void
 do_remove(char *argv[])
 {
+	comar_t *com;
+
+	com = comar_connect();
+	if (!com) {
+		puts("Cannot connect to COMAR daemon");
+		exit(2);
+	}
+
+	if (!argv[optind]) {
+		print_usage();
+		exit(1);
+	}
+
+	comar_send(
+		com, 1,
+		COMAR_REMOVE,
+		argv[optind],
+		NULL
+	);
+
+	if (opt_wait) {
+		sleep(5);
+	}
+
+	comar_disconnect(com);
 }
 
 static void

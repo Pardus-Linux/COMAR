@@ -19,6 +19,27 @@
 
 #include "libcomar.h"
 
+// unpack utilities
+// rpc uses network byte order (big endian)
+static inline unsigned int
+get_cmd(const unsigned char *buf)
+{
+	return buf[0];
+}
+
+static inline unsigned int
+get_data_size(const unsigned char *buf)
+{
+	return buf[3] + (buf[2] << 8) + (buf[1] << 16);
+}
+
+static inline unsigned int
+get_id(const unsigned char *buf)
+{
+	return buf[3] + (buf[2] << 8) + (buf[1] << 16) + (buf[0] << 24);
+}
+
+
 struct comar_struct {
 	int sock;
 };
@@ -48,6 +69,12 @@ comar_connect(void)
 		return NULL;
 	}
 	return com;
+}
+
+int
+comar_get_fd(comar_t *com)
+{
+	return com->sock;
 }
 
 int
@@ -95,22 +122,41 @@ comar_send(comar_t *com, unsigned int id, int cmd, ...)
 	return 0;
 }
 
+int
+comar_read(comar_t *com, int *cmdp, unsigned int *idp, char **strp, int timeout)
+{
+	fd_set fds;
+	struct timeval tv;
+	struct timeval *tvp;
+	size_t size;
+	char head[8];
+	char *buf;
+
+	FD_ZERO(&fds);
+	FD_SET(com->sock, &fds);
+	tv.tv_sec = timeout;
+	tv.tv_usec = 0;
+	if (timeout != -1) tvp = &tv; else tvp = NULL;
+
+	if (select(com->sock + 1, &fds, NULL, NULL, tvp) > 0) {
+		recv(com->sock, head, 8, 0);
+		*cmdp = get_cmd(head);
+		*idp = get_id(head);
+		*strp = NULL;
+		size = get_data_size(head + 4);
+		if (size) {
+			buf = malloc(size + 1);
+			recv(com->sock, buf, size, 0);
+			buf[size] = '\0';
+			*strp = buf;
+		}
+	}
+	return 1;
+}
+
 void
 comar_disconnect(comar_t *com)
 {
 	close(com->sock);
 	free(com);
 }
-
-#ifdef COMAR_TEST
-int
-main(int argc, char *argv[])
-{
-	comar_t *com;
-
-	com = comar_connect();
-	comar_send(com, 0, COMAR_CALL, "Time.Clock.getDate", NULL);
-
-	return 0;
-}
-#endif

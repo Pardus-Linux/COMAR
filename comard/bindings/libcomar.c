@@ -129,7 +129,8 @@ comar_read(comar_t *com, int *cmdp, unsigned int *idp, char **strp, int timeout)
 	struct timeval tv;
 	struct timeval *tvp;
 	size_t size;
-	char head[8];
+	size_t len;
+	unsigned char head[8];
 	char *buf;
 
 	FD_ZERO(&fds);
@@ -141,12 +142,15 @@ comar_read(comar_t *com, int *cmdp, unsigned int *idp, char **strp, int timeout)
 	if (select(com->sock + 1, &fds, NULL, NULL, tvp) > 0) {
 		recv(com->sock, head, 8, 0);
 		*cmdp = get_cmd(head);
-		*idp = get_id(head);
+		*idp = get_id(head + 4);
 		*strp = NULL;
-		size = get_data_size(head + 4);
+		size = get_data_size(head);
 		if (size) {
 			buf = malloc(size + 1);
-			recv(com->sock, buf, size, 0);
+			len = 0;
+			while (len < size) {
+				len += recv(com->sock, buf + len, size - len, 0);
+			}
 			buf[size] = '\0';
 			*strp = buf;
 		}

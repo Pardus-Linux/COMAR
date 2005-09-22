@@ -81,7 +81,11 @@ csl_compile(char *str, char *name, char **codeptr, size_t *sizeptr)
 	}
 
 	// serialize code object
+#if PY_MINOR_VERSION == 3
 	pStr = PyMarshal_WriteObjectToString(pCode);
+#else
+	pStr = PyMarshal_WriteObjectToString(pCode, 0);
+#endif
 	Py_DECREF(pCode);
 	if (!pStr) {
 		return -CSL_NOMEM;

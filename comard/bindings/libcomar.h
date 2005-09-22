@@ -14,21 +14,21 @@
 
 // comar rpc commands, keep in sync with rpc_unix.c
 // commands from the daemon
-#define COMAR_RESULT = 0
-#define COMAR_FAIL = 1
-#define COMAR_DENIED = 2
-#define COMAR_RESULT_START = 3
-#define COMAR_RESULT_END = 4
-#define COMAR_NOTIFY = 5
+#define COMAR_RESULT 0
+#define COMAR_FAIL 1
+#define COMAR_DENIED 2
+#define COMAR_RESULT_START 3
+#define COMAR_RESULT_END 4
+#define COMAR_NOTIFY 5
 // commands to the daemon
-#define COMAR_LOCALIZE = 6
-#define COMAR_REGISTER = 7
-#define COMAR_REMOVE = 8
-#define COMAR_CALL = 9
-#define COMAR_CALL_PACKAGE = 10
-#define COMAR_ASKNOTIFY = 11
-#define COMAR_GETLIST = 12
-#define COMAR_CHECKACL = 13
+#define COMAR_LOCALIZE 6
+#define COMAR_REGISTER 7
+#define COMAR_REMOVE 8
+#define COMAR_CALL 9
+#define COMAR_CALL_PACKAGE 10
+#define COMAR_ASKNOTIFY 11
+#define COMAR_GETLIST 12
+#define COMAR_CHECKACL 13
 
 struct comar_struct;
 typedef struct comar_struct comar_t;

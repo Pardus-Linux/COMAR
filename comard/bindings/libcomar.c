@@ -69,6 +69,7 @@ comar_send(comar_t *com, unsigned int id, int cmd, ...)
 		str = va_arg(ap, char*);
 		if (!str) break;
 		len = strlen(str);
+		buf = realloc(buf, size + 2 + len + 1);
 		p[0] = len >> 8;
 		p[1] = len & 0xFF;
 		p += 2;
@@ -100,3 +101,16 @@ comar_disconnect(comar_t *com)
 	close(com->sock);
 	free(com);
 }
+
+#ifdef COMAR_TEST
+int
+main(int argc, char *argv[])
+{
+	comar_t *com;
+
+	com = comar_connect();
+	comar_send(com, 0, COMAR_CALL, "Time.Clock.getDate", NULL);
+
+	return 0;
+}
+#endif

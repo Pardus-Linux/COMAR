@@ -90,6 +90,18 @@ class Link:
             data = None
         return (cmd, head[1], data)
     
+    def read_cmd(self):
+        """Read a reply from comard.
+        
+        This method behaves like read method, except that it waits until
+        a full message comes from the COMAR daemon.
+        """
+        while 1:
+            fds = select.select([self.sock], [], [], 0)
+            if fds[0] != []:
+                break
+        return self.read()
+    
     def localize(self, localename):
         """Set the language for translated replies.
         
@@ -155,3 +167,51 @@ class Link:
         """
         pak = self.__pack(self.__ASKNOTIFY, id, [ notifyname ])
         self.sock.send(pak)
+
+
+# Test functions for basic COMAR functionality
+# Useful for debugging
+
+def test_basic(class_="Time.Clock", package="hwclock", script="../betikler/clock.py"):
+    com = Link()
+    print "Calling register..."
+    com.register(class_, package, script)
+    while 1:
+        reply = com.read_cmd()
+        print "Reply", reply
+        if reply[0] == com.RESULT:
+            break
+        elif reply[1] == com.FAIL:
+            print "Oops, test failed!"
+            return
+    print "Checking list..."
+    com.get_packages(class_)
+    while 1:
+        reply = com.read_cmd()
+        print "Reply", reply
+        if reply[0] == com.RESULT:
+            break
+        elif reply[1] == com.FAIL:
+            print "Oops, test failed!"
+            return
+    print "Removing the package..."
+    com.remove(package)
+    while 1:
+        reply = com.read_cmd()
+        print "Reply", reply
+        if reply[0] == com.RESULT:
+            break
+        elif reply[1] == com.FAIL:
+            print "Oops, test failed!"
+            return
+    print "Checking list again..."
+    com.get_packages(class_)
+    while 1:
+        reply = com.read_cmd()
+        print "Reply", reply
+        if reply[0] == com.RESULT:
+            break
+        elif reply[1] == com.FAIL:
+            print "Oops, test failed!"
+            return
+    print "Basic functionality is OK :)"

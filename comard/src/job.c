@@ -27,33 +27,25 @@ load_file(const char *fname, int *sizeptr)
 	size_t size;
 	unsigned char *data;
 
-	// FIXME: this function sucks
-	if (stat (fname, &fs) != 0) {
-		printf ("Cannot stat file '%s'\n", fname);
-		return NULL;
-	}
+	if (stat(fname, &fs) != 0) return NULL;
 	size = fs.st_size;
 	if (sizeptr) *sizeptr = size;
 
-	data = malloc (size + 1);
-	if (!data) {
-		printf ("Cannot allocate %d bytes\n", size);
-		return NULL;
-	}
+	data = malloc(size + 1);
+	if (!data) return NULL;
 	memset(data, 0, size + 1);
 
-	f = fopen (fname, "rb");
+	f = fopen(fname, "rb");
 	if (!f) {
-		printf ("Cannot open file '%s'\n", fname);
+		free(data);
 		return NULL;
 	}
-
-	if (fread (data, size, 1, f) < 1) {
-		printf ("Read error in file '%s'\n", fname);
+	if (fread(data, size, 1, f) < 1) {
+		free(data);
 		return NULL;
 	}
+	fclose(f);
 
-	fclose (f);
 	return data;
 }
 
@@ -111,6 +103,9 @@ do_remove(const char *app)
 	log_debug(LOG_JOB, "Remove(%s)\n", app);
 
 	db_del_app(app);
+
+	send_result(CMD_RESULT, "removed", 7);
+
 	return 0;
 }
 

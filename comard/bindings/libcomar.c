@@ -69,12 +69,12 @@ comar_send(comar_t *com, unsigned int id, int cmd, ...)
 		str = va_arg(ap, char*);
 		if (!str) break;
 		len = strlen(str);
-		buf = realloc(buf, size + 2 + len + 1);
+		buf = realloc(buf, 8 + size + 2 + len + 1);
+		p = buf + 8 + size;
 		p[0] = len >> 8;
 		p[1] = len & 0xFF;
 		p += 2;
 		strcpy(p, str);
-		p += len + 1;
 		size += 2 + len + 1;
 	}
 	va_end(ap);

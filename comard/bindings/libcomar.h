@@ -10,6 +10,10 @@
 #ifndef COMAR_H
 #define COMAR_H 1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define COMAR_PIPE_NAME "/tmp/comar"
 
 // comar rpc commands, keep in sync with rpc_unix.c
@@ -37,5 +41,9 @@ comar_t *comar_connect(void);
 int comar_send(comar_t *com, unsigned int id, int cmd, ...);
 void comar_disconnect(comar_t *com);
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* COMAR_H */

@@ -310,28 +310,19 @@ class wireless:
     def _ioctl(self, func, args):
         return fcntl.ioctl(self.sockfd.fileno(), func, args)
 
-    def _getaddr(self, ifname, func):
-        buffer = array.array('c', '\0' * 16)
-        addr, length = buffer.buffer_info()
-        structure = struct.pack('Pi', addr, length)
-        data = (ifname + '\0' * 16)[:16] + structure
+    def _call(self, ifname, func, arg = None):
 
-        try:
-            result = (self._ioctl(func, data))[16:]
-        except IOError:
-            return None
+        if arg is None:
+            data = (ifname + '\0' * 32)[:32]
+        else:
+            data = (ifname + '\0' * 16)[:16] + arg
 
-        return buffer
-
-    def _setaddr(self, ifname, func, arg):
-        ifreq = (ifname + '\0'*16)[:16]
-        data = ifreq + arg
         try:
             result = self._ioctl(func, data)
         except IOError:
             return None
 
-        return True
+        return result
 
     def getInterfaceList(self):
         """ Find wireless interfaces """
@@ -344,13 +335,17 @@ class wireless:
 
     def getEssid(self, ifname):
         """ Get the ESSID for an interface """
-        data = self._getaddr(ifname, self.SIOCGIWESSID)
-        return data.tostring().strip('\x00')
+        buffer = array.array('c', '\0' * 16)
+        addr, length = buffer.buffer_info()
+        arg = struct.pack('Pi', addr, length)
+
+        self._call(ifname, self.SIOCGIWESSID, arg)
+        return buffer.tostring().strip('\x00')
 
     def getMode(self, ifname):
         """ Get the operating mode of an interface """
-        data = self._getaddr(ifname, self.SIOCGIWMODE)
-        mode = struct.unpack("i", data[:4])[0]
+        result = self._call(ifname, self.SIOCGIWMODE)
+        mode = struct.unpack("i", result[16:20])[0]
         return self.modes[mode]
 
     def setEssid(self, ifname, essid):
@@ -359,12 +354,22 @@ class wireless:
             return "ESSID should be 16 char or less" # FIXME: How shall we define error messages ?
 
         arg = struct.pack("iHH", id(essid) + 20, len(essid) + 1, 1)
-        return self._setaddr(ifname, self.SIOCSIWESSID, arg)
+        self._call(ifname, self.SIOCSIWESSID, arg)
+
+        if self.getEssid is essid:
+            return True
+        else:
+            return None
 
     def setMode(self, ifname, mode):
         """ Set the operating mode of an interface """
         arg = struct.pack("l", self.modes.index(mode))
-        return self._setaddr(ifname, self.SIOCSIWMODE, arg)
+        self._call(ifname, self.SIOCSIWMODE, arg)
+
+        if self.getMode is mode:
+            return True
+        else:
+            return None
 
 if __name__ == "__main__":
     ifc = ifconfig()

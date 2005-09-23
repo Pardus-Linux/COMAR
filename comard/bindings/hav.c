@@ -84,7 +84,7 @@ do_register(char *argv[])
 			puts("Connection closed by COMAR daemon");
 			exit(2);
 		}
-		printf("cmd=%d, id=%d, arg=[%s]\n", cmd, id, ret);
+		printf("%s id=%d, arg=[%s]\n", comar_cmd_name(cmd), id, ret);
 	}
 
 	comar_disconnect(com);
@@ -122,7 +122,7 @@ do_remove(char *argv[])
 			puts("Connection closed by COMAR daemon");
 			exit(2);
 		}
-		printf("cmd=%d, id=%d, arg=[%s]\n", cmd, id, ret);
+		printf("%s id=%d, arg=[%s]\n", comar_cmd_name(cmd), id, ret);
 	}
 
 	comar_disconnect(com);
@@ -159,7 +159,7 @@ do_list(char *argv[])
 		puts("Connection closed by COMAR daemon");
 		exit(2);
 	}
-	printf("cmd=%d, id=%d, arg=[%s]\n", cmd, id, ret);
+	printf("%s id=%d, arg=[%s]\n", comar_cmd_name(cmd), id, ret);
 
 	comar_disconnect(com);
 }

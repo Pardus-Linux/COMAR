@@ -34,11 +34,29 @@ extern "C" {
 #define COMAR_GETLIST 12
 #define COMAR_CHECKACL 13
 
+#define COMAR_CMD_MAX 14
+#define COMAR_CMD_NAMES \
+	"Result", \
+	"Fail", \
+	"Denied", \
+	"ResultStart", \
+	"ResultEnd", \
+	"Notify", \
+	"Localize", \
+	"Register", \
+	"Remove", \
+	"Call", \
+	"CallPackage", \
+	"AskNotify", \
+	"GetList", \
+	"CheckACL",
+
 struct comar_struct;
 typedef struct comar_struct comar_t;
 
 comar_t *comar_connect(void);
 int comar_get_fd(comar_t *com);
+const char *comar_cmd_name(int cmd);
 int comar_send(comar_t *com, unsigned int id, int cmd, ...);
 int comar_wait(comar_t *com, int timeout);
 int comar_read(comar_t *com, int *cmdp, unsigned int *idp, char **strp);

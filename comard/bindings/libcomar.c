@@ -39,6 +39,10 @@ get_id(const unsigned char *buf)
 	return buf[3] + (buf[2] << 8) + (buf[1] << 16) + (buf[0] << 24);
 }
 
+static const char *cmdnames[] = {
+	COMAR_CMD_NAMES
+};
+
 
 struct comar_struct {
 	int sock;
@@ -75,6 +79,15 @@ int
 comar_get_fd(comar_t *com)
 {
 	return com->sock;
+}
+
+const char *
+comar_cmd_name(int cmd)
+{
+	if (cmd >= 0 || cmd < COMAR_CMD_MAX)
+		return cmdnames[cmd];
+	else
+		return "Unknown";
 }
 
 int

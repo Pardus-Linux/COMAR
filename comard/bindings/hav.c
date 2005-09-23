@@ -48,8 +48,35 @@ print_usage(void)
 static void
 do_call(char *argv[])
 {
-	for(; argv[optind]; optind++)
-		printf("args[%s]\n",argv[optind]);
+	comar_t *com;
+	int cmd;
+	unsigned int id;
+	char *ret;
+
+	com = comar_connect();
+	if (!com) {
+		puts("Cannot connect to COMAR daemon");
+		exit(2);
+	}
+
+	comar_send_start(com, 1, COMAR_CALL);
+
+	for(; argv[optind]; optind++) {
+		comar_send_arg(com, argv[optind], 0);
+	}
+
+	comar_send_finish(com);
+
+	if (opt_wait) {
+		comar_wait(com, -1);
+		if (!comar_read(com, &cmd, &id, &ret)) {
+			puts("Connection closed by COMAR daemon");
+			exit(2);
+		}
+		printf("%s id=%d, arg=[%s]\n", comar_cmd_name(cmd), id, ret);
+	}
+
+	comar_disconnect(com);
 }
 
 static void

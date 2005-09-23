@@ -46,6 +46,11 @@ static const char *cmdnames[] = {
 
 struct comar_struct {
 	int sock;
+	unsigned int id;
+	int cmd;
+	unsigned char *buffer;
+	size_t max;
+	size_t size;
 };
 
 comar_t *
@@ -90,49 +95,79 @@ comar_cmd_name(int cmd)
 		return "Unknown";
 }
 
+void
+comar_send_start(comar_t *com, unsigned int id, int cmd)
+{
+	com->id = id;
+	com->cmd = cmd;
+}
+
+int
+comar_send_arg(comar_t *com, const char *str, size_t size)
+{
+	size_t need;
+	unsigned char *p;
+
+	if (0 == size) size = strlen(str);
+
+	need = com->size + 2 + size + 1;
+	if (com->max < need) {
+		if (0 == com->max) {
+			com->max = 128;
+		} else {
+			while (com->max < need) com->max *= 2;
+		}
+		com->buffer = realloc(com->buffer, com->max);
+		if (!com->buffer) return 0;
+	}
+	p = com->buffer + 8 + com->size;
+	p[0] = size >> 8;
+	p[1] = size & 0xFF;
+	p += 2;
+	strcpy(p, str);
+	com->size = need;
+	return 1;
+}
+
+int
+comar_send_finish(comar_t *com)
+{
+	unsigned char *buf;
+
+	buf = com->buffer;
+	// cmd + size
+	buf[0] = com->cmd;
+	buf[1] = (com->size >> 16) & 0xFF;
+	buf[2] = (com->size >> 8) & 0xFF;
+	buf[3] = com->size & 0xFF;
+	// id
+	buf[4] = com->id >> 24;
+	buf[5] = (com->id >> 16) & 0xFF;
+	buf[6] = (com->id >> 8) & 0xFF;
+	buf[7] = com->id & 0xFF;
+
+	send(com->sock, buf, 8 + com->size, 0);
+
+	return 1;
+}
+
 int
 comar_send(comar_t *com, unsigned int id, int cmd, ...)
 {
 	va_list ap;
-	size_t size = 0;
-	size_t len;
 	char *str;
-	char *buf;
-	char *p;
 
-	buf = malloc(8);
+	comar_send_start(com, id, cmd);
 
-	// arguments
 	va_start(ap, cmd);
-	p = buf + 8;
 	while (1) {
 		str = va_arg(ap, char*);
 		if (!str) break;
-		len = strlen(str);
-		buf = realloc(buf, 8 + size + 2 + len + 1);
-		p = buf + 8 + size;
-		p[0] = len >> 8;
-		p[1] = len & 0xFF;
-		p += 2;
-		strcpy(p, str);
-		size += 2 + len + 1;
+		comar_send_arg(com, str, 0);
 	}
 	va_end(ap);
 
-	// cmd + size
-	buf[0] = cmd;
-	buf[1] = (size >> 16) & 0xFF;
-	buf[2] = (size >> 8) & 0xFF;
-	buf[3] = size & 0xFF;
-	// id
-	buf[4] = id >> 24;
-	buf[5] = (id >> 16) & 0xFF;
-	buf[6] = (id >> 8) & 0xFF;
-	buf[7] = id & 0xFF;
-
-	send(com->sock, buf, 8 + size, 0);
-
-	return 0;
+	return comar_send_finish(com);
 }
 
 int
@@ -184,5 +219,6 @@ void
 comar_disconnect(comar_t *com)
 {
 	close(com->sock);
+	if (com->buffer) free(com->buffer);
 	free(com);
 }

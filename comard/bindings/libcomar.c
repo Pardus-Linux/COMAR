@@ -21,19 +21,19 @@
 
 // unpack utilities
 // rpc uses network byte order (big endian)
-static inline unsigned int
+static unsigned int
 get_cmd(const unsigned char *buf)
 {
 	return buf[0];
 }
 
-static inline unsigned int
+static unsigned int
 get_data_size(const unsigned char *buf)
 {
 	return buf[3] + (buf[2] << 8) + (buf[1] << 16);
 }
 
-static inline unsigned int
+static unsigned int
 get_id(const unsigned char *buf)
 {
 	return buf[3] + (buf[2] << 8) + (buf[1] << 16) + (buf[0] << 24);
@@ -123,15 +123,11 @@ comar_send(comar_t *com, unsigned int id, int cmd, ...)
 }
 
 int
-comar_read(comar_t *com, int *cmdp, unsigned int *idp, char **strp, int timeout)
+comar_wait(comar_t *com, int timeout)
 {
 	fd_set fds;
 	struct timeval tv;
 	struct timeval *tvp;
-	size_t size;
-	size_t len;
-	unsigned char head[8];
-	char *buf;
 
 	FD_ZERO(&fds);
 	FD_SET(com->sock, &fds);
@@ -140,20 +136,33 @@ comar_read(comar_t *com, int *cmdp, unsigned int *idp, char **strp, int timeout)
 	if (timeout != -1) tvp = &tv; else tvp = NULL;
 
 	if (select(com->sock + 1, &fds, NULL, NULL, tvp) > 0) {
-		recv(com->sock, head, 8, 0);
-		*cmdp = get_cmd(head);
-		*idp = get_id(head + 4);
-		*strp = NULL;
-		size = get_data_size(head);
-		if (size) {
-			buf = malloc(size + 1);
-			len = 0;
-			while (len < size) {
-				len += recv(com->sock, buf + len, size - len, 0);
-			}
-			buf[size] = '\0';
-			*strp = buf;
+		return 1;
+	}
+	return 0;
+}
+
+int
+comar_read(comar_t *com, int *cmdp, unsigned int *idp, char **strp)
+{
+	size_t size;
+	size_t len;
+	unsigned char head[8];
+	char *buf;
+
+	len = recv(com->sock, head, 8, 0);
+	if (len < 8) return 0;
+	*cmdp = get_cmd(head);
+	*idp = get_id(head + 4);
+	*strp = NULL;
+	size = get_data_size(head);
+	if (size) {
+		buf = malloc(size + 1);
+		len = 0;
+		while (len < size) {
+			len += recv(com->sock, buf + len, size - len, 0);
 		}
+		buf[size] = '\0';
+		*strp = buf;
 	}
 	return 1;
 }

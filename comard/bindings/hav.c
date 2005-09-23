@@ -18,12 +18,12 @@
 #include "libcomar.h"
 
 /* wait for comar reply */
-int opt_wait = 0;
+int opt_wait = 1;
 
 static struct option longopts[] = {
 	{ "help", 0, 0, 'h' },
 	{ "version", 0, 0, 'v' },
-	{ "wait", 0, 0, 'w' },
+	{ "nowait", 0, 0, 'w' },
 	{ 0, 0, 0, 0 }
 };
 static char *shortopts = "hvw";
@@ -40,7 +40,7 @@ print_usage(void)
 		"   remove <package-name>\n"
 		"   list <class>\n"
 		"options:\n"
-		"   -w, --wait\n"
+		"   -w, --nowait\n"
 		"report bugs to <gurer@uludag.org.tr>"
 	);
 }
@@ -79,9 +79,12 @@ do_register(char *argv[])
 	);
 
 	if (opt_wait) {
-		while(comar_read(com, &cmd, &id, &ret, -1)) {
-			printf("cmd=%d, id=%d, arg=[%s]\n", cmd, id, ret);
+		comar_wait(com, -1);
+		if (!comar_read(com, &cmd, &id, &ret)) {
+			puts("Connection closed by COMAR daemon");
+			exit(2);
 		}
+		printf("cmd=%d, id=%d, arg=[%s]\n", cmd, id, ret);
 	}
 
 	comar_disconnect(com);
@@ -91,6 +94,9 @@ static void
 do_remove(char *argv[])
 {
 	comar_t *com;
+	int cmd;
+	unsigned int id;
+	char *ret;
 
 	com = comar_connect();
 	if (!com) {
@@ -111,7 +117,12 @@ do_remove(char *argv[])
 	);
 
 	if (opt_wait) {
-		sleep(5);
+		comar_wait(com, -1);
+		if (!comar_read(com, &cmd, &id, &ret)) {
+			puts("Connection closed by COMAR daemon");
+			exit(2);
+		}
+		printf("cmd=%d, id=%d, arg=[%s]\n", cmd, id, ret);
 	}
 
 	comar_disconnect(com);
@@ -120,6 +131,37 @@ do_remove(char *argv[])
 static void
 do_list(char *argv[])
 {
+	comar_t *com;
+	int cmd;
+	unsigned int id;
+	char *ret;
+
+	com = comar_connect();
+	if (!com) {
+		puts("Cannot connect to COMAR daemon");
+		exit(2);
+	}
+
+	if (!argv[optind]) {
+		print_usage();
+		exit(1);
+	}
+
+	comar_send(
+		com, 1,
+		COMAR_GETLIST,
+		argv[optind],
+		NULL
+	);
+
+	comar_wait(com, -1);
+	if (!comar_read(com, &cmd, &id, &ret)) {
+		puts("Connection closed by COMAR daemon");
+		exit(2);
+	}
+	printf("cmd=%d, id=%d, arg=[%s]\n", cmd, id, ret);
+
+	comar_disconnect(com);
 }
 
 static struct cmd_s {
@@ -147,7 +189,7 @@ main(int argc, char *argv[])
 				puts("hav 1.0");
 				exit(0);
 			case 'w':
-				opt_wait = 1;
+				opt_wait = 0;
 				break;
 		}
 	}

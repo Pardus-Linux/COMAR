@@ -40,7 +40,8 @@ typedef struct comar_struct comar_t;
 comar_t *comar_connect(void);
 int comar_get_fd(comar_t *com);
 int comar_send(comar_t *com, unsigned int id, int cmd, ...);
-int comar_read(comar_t *com, int *cmdp, unsigned int *idp, char **strp, int timeout);
+int comar_wait(comar_t *com, int timeout);
+int comar_read(comar_t *com, int *cmdp, unsigned int *idp, char **strp);
 void comar_disconnect(comar_t *com);
 
 

@@ -1,0 +1,6 @@
+#!/usr/bin/python
+
+env = Environment(CCFLAGS="-O2 -Wall")
+
+env.SharedLibrary("libcomar", [ "libcomar.c" ])
+env.Program("hav", [ "libcomar.c", "hav.c" ])

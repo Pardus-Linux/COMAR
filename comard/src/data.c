@@ -258,6 +258,11 @@ db_del_app(const char *app)
 			if (k) {
 				if (k[sa] == '/') ++sa;
 				memmove(k, k + sa, strlen(k) - sa + 1);
+				sa = strlen(list2);
+				if (sa > 0) {
+					if (list2[sa-1] == '/')
+						list2[sa-1] = '\0';
+				}
 				e = put_data(model_db, t, list2, strlen(list2) + 1);
 				if (e) goto out;
 			}

@@ -303,6 +303,11 @@ class wireless:
    
     modes = ['Auto', 'Ad-Hoc', 'Managed', 'Master', 'Repeat', 'Second', 'Monitor']
 
+    # KILO is not 2^10 in wireless tools, what the...
+    KILO = 10**3
+    MEGA = 10**6
+    GIGA = 10**9
+
     def __init__(self):
         # create a socket to communicate with system
         self.sockfd = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -348,6 +353,27 @@ class wireless:
         mode = struct.unpack("i", result[16:20])[0]
         return self.modes[mode]
 
+    def getBitrate(self, ifname):
+        """ Get the bitrate of an interface """
+
+        result = self._call(ifname, self.SIOCGIWRATE)
+
+        size = struct.calcsize('ihbb')
+        m, e, i, pad = struct.unpack('ihbb', result[16:16+size])
+        if e == 0:
+            bitrate =  m
+        else:
+            bitrate = float(m) * 10**e
+
+        if bitrate >= self.GIGA:
+            return "%i Gb/s" %(bitrate/self.GIGA)
+
+        if bitrate >= self.MEGA:
+            return "%i Mb/s" %(bitrate/self.MEGA)
+
+        if bitrate >= self.KILO:
+            return "%i Kb/s" %(bitrate/self.KILO)
+
     def setEssid(self, ifname, essid):
         """ Set the ESSID for an interface """
         if len(essid) > 16:
@@ -385,5 +411,5 @@ if __name__ == "__main__":
     
     print "\nWireless interfaces found = ", ifaces_wifi
     for name in ifaces_wifi:
-        print " %s essid %s mode %s" % (name, wifi.getEssid(name), wifi.getMode(name))
+        print " %s essid %s mode %s bitrate %s" % (name, wifi.getEssid(name), wifi.getMode(name), wifi.getBitrate(name))
 

@@ -39,8 +39,9 @@ print_usage(void)
 		"   register <class> <package-name> <script-file>\n"
 		"   remove <package-name>\n"
 		"   list <class>\n"
+		"   listen <notify-name>...\n"
 		"options:\n"
-		"   -w, --nowait\n"
+		"   -w, --nowait        Do not wait for an answer.\n"
 		"report bugs to <gurer@uludag.org.tr>"
 	);
 }
@@ -191,6 +192,37 @@ do_list(char *argv[])
 	comar_disconnect(com);
 }
 
+static void
+do_listen(char *argv[])
+{
+	comar_t *com;
+	int cmd;
+	unsigned int id;
+	char *ret;
+
+	com = comar_connect();
+	if (!com) {
+		puts("Cannot connect to COMAR daemon");
+		exit(2);
+	}
+
+	while (argv[optind]) {
+		comar_send(com, 1, COMAR_ASKNOTIFY, argv[optind], NULL);
+		++optind;
+	}
+
+	while (1) {
+		comar_wait(com, -1);
+		if (!comar_read(com, &cmd, &id, &ret)) {
+			puts("Connection closed by COMAR daemon");
+			exit(2);
+		}
+		printf("%s id=%d, arg=[%s]\n", comar_cmd_name(cmd), id, ret);
+	}
+
+	comar_disconnect(com);
+}
+
 static struct cmd_s {
 	const char *cmd;
 	void (*func)(char *argv[]);
@@ -199,6 +231,7 @@ static struct cmd_s {
 	{ "register", do_register },
 	{ "remove", do_remove },
 	{ "list", do_list },
+	{ "listen", do_listen }
 };
 
 int

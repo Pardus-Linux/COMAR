@@ -464,7 +464,8 @@ def configureDisplay():
 		if a[0] != 0:
 			print "X -configure failed!"
 			return -1
-		f = file("/xorg.conf.new")
+		home = os.getenv("HOME", "")
+		f = file(home + "/xorg.conf.new")
 		conf = f.readlines()
 		f.close()
 		drv = grepini(conf, 'Section "Device"', "\tDriver")

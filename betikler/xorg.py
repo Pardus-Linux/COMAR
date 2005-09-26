@@ -340,7 +340,7 @@ Section "Monitor"
 	HorizSync    %(HSYNC)s
 	VertRefresh  %(VREF)s
 	
-	%(MODELINES)s
+%(MODELINES)s
 	
 EndSection
 """
@@ -414,7 +414,7 @@ def queryDDC():
 			mon.vert_min = atoi(line)
 			mon.vert_max = atoi(line[line.find("-") + 1:])
 		if line[:8] == "ModeLine":
-			mon.modes.append(line)
+			mon.modes.append("    " +line)
 	
 	for m in mon.modes:
 		mon.res = m[m.find("ModeLine"):].split()[1] + " " + mon.res

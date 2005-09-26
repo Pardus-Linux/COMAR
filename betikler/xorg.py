@@ -468,6 +468,7 @@ def configureDisplay():
 		f = file(home + "/xorg.conf.new")
 		conf = f.readlines()
 		f.close()
+		unlink(home + "/xorg.conf.new")
 		drv = grepini(conf, 'Section "Device"', "\tDriver")
 	else:
 		drv = a[1][0].rstrip('\n')

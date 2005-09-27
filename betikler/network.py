@@ -116,6 +116,16 @@ class ifconfig:
 
         return result
 
+    def _readsys(self, ifname, f):
+        try:
+            fp = file(os.path.join("/sys/class/net", ifname, f))
+            result = fp.readline().rstrip('\n')
+            fp.close()
+        except IOError:
+            return None
+            
+        return result
+
     def getInterfaceList(self):
         """ Get all interface names in a list """
         # get interface list
@@ -160,6 +170,21 @@ class ifconfig:
         data = self._call(ifname, self.SIOCGIFMTU)
         mtu = struct.unpack("16si12x", data)[1]
         return mtu
+
+    def getMAC(self, ifname):
+        """ Get MAC address of an interface """
+        mac = self._readsys(ifname, "address")
+        return mac
+
+    def getRX(self, ifname):
+        """ Get received bytes of an interface """
+        rx = self._readsys(ifname, "statistics/rx_bytes")
+        return int(rx)
+
+    def getTX(self, ifname):
+        """ Get transferred bytes of an interface """
+        tx = self._readsys(ifname, "statistics/tx_bytes")
+        return int(tx)
 
     def setAddr(self, ifname, ip):
         """ Set the inet addr for an interface """
@@ -428,8 +453,8 @@ if __name__ == "__main__":
 
     print "Network interfaces found = ", ifaces
     for name in ifaces:
-        print " %s is %s ip %s netmask %s broadcast %s mtu %i" % (name, ('DOWN', 'UP')[ifc.getStatus(name)],
-            ifc.getAddr(name), ifc.getNetmask(name), ifc.getBroadcast(name), ifc.getMTU(name))
+        print " %s is %s ip %s netmask %s broadcast %s mtu %i mac %s rx %i tx %i" % (name, ('DOWN', 'UP')[ifc.getStatus(name)],
+            ifc.getAddr(name), ifc.getNetmask(name), ifc.getBroadcast(name), ifc.getMTU(name), ifc.getMAC(name), ifc.getRX(name), ifc.getTX(name))
     
     wifi = wireless()
     ifaces_wifi = wifi.getInterfaceList()

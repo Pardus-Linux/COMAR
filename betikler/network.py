@@ -329,6 +329,16 @@ class wireless:
 
         return result
 
+    def _readsys(self, ifname, f):
+        try:
+            fp = file(os.path.join("/sys/class/net", ifname, f))
+            result = fp.readline().rstrip('\n')
+            fp.close()
+        except IOError:
+            return None
+            
+        return result
+
     def getInterfaceList(self):
         """ Find wireless interfaces """
         iflist = []
@@ -376,18 +386,18 @@ class wireless:
 
     def getLinkStatus(self, ifname):
         """ Get link status of an interface """
-        self.link = file(os.path.join("/sys/class/net", ifname, "wireless/link")).readline().strip()
-        return int(self.link)
+        link = self._readsys(ifname, "wireless/link")
+        return int(link)
 
     def getNoiseStatus(self, ifname):
         """ Get noise level of an interface """
-        self.noise = file(os.path.join("/sys/class/net", ifname, "wireless/noise")).readline().strip()
-        return int(self.noise) - 256
+        noise = self._readsys(ifname, "wireless/noise")
+        return int(noise) - 256
 
     def getSignalStatus(self, ifname):
         """ Get signal status of an interface """
-        self.signal = file(os.path.join("/sys/class/net", ifname, "wireless/level")).readline().strip()
-        return int(self.signal) - 256
+        signal = self._readsys(ifname, "wireless/level")
+        return int(signal) - 256
 
     def setEssid(self, ifname, essid):
         """ Set the ESSID for an interface """
@@ -426,6 +436,6 @@ if __name__ == "__main__":
     
     print "\nWireless interfaces found = ", ifaces_wifi
     for name in ifaces_wifi:
-        print " %s essid: %s mode %s bitrate %s link %s noise %s dBm signal %s dBm" % (name, wifi.getEssid(name), wifi.getMode(name), wifi.getBitrate(name),
+        print " %s essid: %s mode %s bitrate %s link %i noise %i dBm signal %i dBm" % (name, wifi.getEssid(name), wifi.getMode(name), wifi.getBitrate(name),
             wifi.getLinkStatus(name), wifi.getNoiseStatus(name), wifi.getSignalStatus(name))
 

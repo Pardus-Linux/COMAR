@@ -33,6 +33,21 @@ c_call(PyObject *self, PyObject *args)
 }
 
 static PyObject *
+c_fail(PyObject *self, PyObject *args)
+{
+	const char *name;
+	size_t size;
+
+	if (!PyArg_ParseTuple(args, "s#", &name, &size))
+		return NULL;
+
+	// FIXME: fail here :)
+
+	Py_INCREF(Py_None);
+	return Py_None;
+}
+
+static PyObject *
 c_notify(PyObject *self, PyObject *args)
 {
 	const char *name;
@@ -48,6 +63,7 @@ c_notify(PyObject *self, PyObject *args)
 }
 
 static PyMethodDef methods[] = {
+	{ "fail", c_fail, METH_VARARGS, "Abort script and return a fail message" },
 	{ "call", c_call, METH_VARARGS, "Call a method from COMAR system model" },
 	{ "notify", c_notify, METH_VARARGS, "Send a notification event" },
 	{ NULL, NULL, 0, NULL }

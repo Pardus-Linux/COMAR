@@ -21,24 +21,26 @@ extern "C" {
 #define COMAR_RESULT 0
 #define COMAR_FAIL 1
 #define COMAR_DENIED 2
-#define COMAR_RESULT_START 3
-#define COMAR_RESULT_END 4
-#define COMAR_NOTIFY 5
+#define COMAR_ERROR 3
+#define COMAR_RESULT_START 4
+#define COMAR_RESULT_END 5
+#define COMAR_NOTIFY 6
 // commands to the daemon
-#define COMAR_LOCALIZE 6
-#define COMAR_REGISTER 7
-#define COMAR_REMOVE 8
-#define COMAR_CALL 9
-#define COMAR_CALL_PACKAGE 10
-#define COMAR_ASKNOTIFY 11
-#define COMAR_GETLIST 12
-#define COMAR_CHECKACL 13
+#define COMAR_LOCALIZE 7
+#define COMAR_REGISTER 8
+#define COMAR_REMOVE 9
+#define COMAR_CALL 10
+#define COMAR_CALL_PACKAGE 11
+#define COMAR_ASKNOTIFY 12
+#define COMAR_GETLIST 13
+#define COMAR_CHECKACL 14
 
-#define COMAR_CMD_MAX 14
+#define COMAR_CMD_MAX 15
 #define COMAR_CMD_NAMES \
 	"Result", \
 	"Fail", \
 	"Denied", \
+	"Error", \
 	"ResultStart", \
 	"ResultEnd", \
 	"Notify", \

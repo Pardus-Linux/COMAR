@@ -24,18 +24,19 @@ class Link:
     RESULT = 0
     FAIL = 1
     DENIED = 2
-    RESULT_START = 3
-    RESULT_END = 4
-    NOTIFY = 5
+    ERROR = 3
+    RESULT_START = 4
+    RESULT_END = 5
+    NOTIFY = 6
     # following cmds are sent by internal methods, thus not visible to outside
-    __LOCALIZE = 6
-    __REGISTER = 7
-    __REMOVE = 8
-    __CALL = 9
-    __CALL_PACKAGE = 10
-    __ASKNOTIFY = 11
-    __GETLIST = 12
-    __CHECKACL = 13
+    __LOCALIZE = 7
+    __REGISTER = 8
+    __REMOVE = 9
+    __CALL = 10
+    __CALL_PACKAGE = 11
+    __ASKNOTIFY = 12
+    __GETLIST = 13
+    __CHECKACL = 14
     
     def __init__(self, sockname="/tmp/comar"):
         try:
@@ -181,7 +182,7 @@ def test_basic(class_="Time.Clock", package="hwclock", script="../betikler/clock
         print "Reply", reply
         if reply[0] == com.RESULT:
             break
-        elif reply[1] == com.FAIL:
+        elif reply[1] == com.ERROR:
             print "Oops, test failed!"
             return
     print "Checking list..."
@@ -191,7 +192,7 @@ def test_basic(class_="Time.Clock", package="hwclock", script="../betikler/clock
         print "Reply", reply
         if reply[0] == com.RESULT:
             break
-        elif reply[1] == com.FAIL:
+        elif reply[1] == com.ERROR:
             print "Oops, test failed!"
             return
     print "Removing the package..."
@@ -201,7 +202,7 @@ def test_basic(class_="Time.Clock", package="hwclock", script="../betikler/clock
         print "Reply", reply
         if reply[0] == com.RESULT:
             break
-        elif reply[1] == com.FAIL:
+        elif reply[1] == com.ERROR:
             print "Oops, test failed!"
             return
     print "Checking list again..."
@@ -211,7 +212,7 @@ def test_basic(class_="Time.Clock", package="hwclock", script="../betikler/clock
         print "Reply", reply
         if reply[0] == com.RESULT:
             break
-        elif reply[1] == com.FAIL:
+        elif reply[1] == com.ERROR:
             print "Oops, test failed!"
             return
     print "Basic functionality is OK :)"

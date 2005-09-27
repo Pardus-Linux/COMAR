@@ -50,7 +50,7 @@
 <method name="deleteHost"/>
 </class>
 <class name="Link">
-<method name="scan"/>
+<method name="getActiveLinks"/>
 <method name="setAddress"/>
 <method name="getInformation"/>
 <method name="getStatus"/>

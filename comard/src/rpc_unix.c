@@ -25,12 +25,15 @@
 
 /* rpc commands, keep in sync with bindings */
 enum {
+	// outgoing
 	RPC_RESULT = 0,
 	RPC_FAIL,
 	RPC_DENIED,
+	RPC_ERROR,
 	RPC_RESULT_START,
 	RPC_RESULT_END,
 	RPC_NOTIFY,
+	// incoming
 	RPC_LOCALIZE,
 	RPC_REGISTER,
 	RPC_REMOVE,
@@ -335,7 +338,7 @@ pipe_listen(void)
 	int sock, max;
 
 	tv.tv_sec = 0;
-	tv.tv_usec = 500000;
+	tv.tv_usec = 250000;
 
 	FD_ZERO(&fds);
 	max = 0;
@@ -392,6 +395,23 @@ pipe_listen(void)
 }
 
 void
+forward_reply(struct ProcChild *p, size_t size, int cmd)
+{
+	struct connection *c;
+	char *s;
+	size_t sz;
+
+	ipc_recv(p, size);
+	for (c = conns; c; c = c->next) {
+		if (c == (struct connection *) ipc_get_data()) {
+			ipc_get_arg(&s, &sz);
+			write_rpc(c, cmd, ipc_get_id(), s, sz);
+			return;
+		}
+	}
+}
+
+void
 rpc_unix_start(void)
 {
 	struct ProcChild *p;
@@ -407,31 +427,37 @@ rpc_unix_start(void)
 
 	while (1) {
 		while (1 == proc_listen(&p, &cmd, &size, 0)) {
-			if (cmd == CMD_NOTIFY) {
-				ipc_recv(p, size);
-				for (c = conns; c; c = c->next) {
-					int no = ipc_get_node();
-					if (notify_is_marked(c->notify_mask, no)) {
-						// FIXME: return argument too
-						const char *name = model_get_path(no);
-						write_rpc(c, RPC_NOTIFY, 0, name, strlen(name));
+			switch (cmd) {
+				case CMD_NOTIFY:
+					ipc_recv(p, size);
+					for (c = conns; c; c = c->next) {
+						int no = ipc_get_node();
+						if (notify_is_marked(c->notify_mask, no)) {
+							// FIXME: return argument too
+							const char *name = model_get_path(no);
+							write_rpc(c, RPC_NOTIFY, 0, name, strlen(name));
+						}
 					}
-				}
-				continue;
-			} else if (cmd != CMD_RESULT && cmd != CMD_FAIL) continue;
-			ipc_recv(p, size);
-			for (c = conns; c; c = c->next) {
-				if (c == (struct connection *) ipc_get_data()) {
-					char *s;
-					size_t sz;
-					ipc_get_arg(&s, &sz);
-					if (cmd == CMD_RESULT)
-						cmd = RPC_RESULT;
-					else
-						cmd = RPC_FAIL;
-					write_rpc(c, cmd, ipc_get_id(), s, sz);
+					continue;
+				case CMD_RESULT_START:
+					forward_reply(p, size, RPC_RESULT_START);
 					break;
-				}
+				case CMD_RESULT_END:
+					forward_reply(p, size, RPC_RESULT_END);
+					break;
+				case CMD_RESULT:
+					forward_reply(p, size, RPC_RESULT);
+					break;
+				case CMD_FAIL:
+					forward_reply(p, size, RPC_FAIL);
+					break;
+				case CMD_ERROR:
+					forward_reply(p, size, RPC_ERROR);
+					break;
+				default:
+					// this shouldn't happen, warn and skip
+					log_error("RPC: Unexpected internal command %d\n", cmd);
+					ipc_recv(p, size);
 			}
 		}
 		pipe_listen();

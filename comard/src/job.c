@@ -78,13 +78,13 @@ do_register(int node, const char *app, const char *fname)
 
 	buf = load_file(fname, NULL);
 	if (!buf) {
-		send_result(CMD_FAIL, "no file", 7);
+		send_result(CMD_ERROR, "no file", 7);
 		return -1;
 	}
 
 	e = csl_compile(buf, "test", &code, &codelen);
 	if (e) {
-		send_result(CMD_FAIL, "compile error", 13);
+		send_result(CMD_ERROR, "compile error", 13);
 		return -1;
 	}
 
@@ -125,7 +125,7 @@ do_execute(int node, const char *app)
 	if (0 != db_get_code(model_parent(node), app, &code, &code_size)) return -1;
 	e = csl_execute(code, code_size, model_get_method(node), &res, &res_size);
 	if (e) {
-		send_result(CMD_FAIL, "err", 3);
+		send_result(CMD_ERROR, "err", 3);
 	} else {
 		send_result(CMD_RESULT, res, res_size);
 	}
@@ -153,7 +153,7 @@ do_call(int node)
 	log_debug(LOG_JOB, "Call(%s)\n", model_get_path(node));
 
 	if (db_get_apps(model_parent(node), &apps) != 0) {
-		send_result(CMD_FAIL, "no app", 6);
+		send_result(CMD_ERROR, "no app", 6);
 		exit(1);
 	}
 
@@ -168,6 +168,8 @@ do_call(int node)
 		int cnt = 0;
 		size_t size;
 
+		// FIXME: package count, error msg for fork
+		send_result(CMD_RESULT_START, NULL, 0);
 		for (t = apps; t; t = s) {
 			s = strchr(t, '/');
 			if (s) {
@@ -186,6 +188,7 @@ do_call(int node)
 			proc_send(TO_PARENT, cmd, ipc, size);
 			//--cnt;
 		}
+		send_result(CMD_RESULT_END, NULL, 0);
 	}
 
 	free(apps);
@@ -213,6 +216,10 @@ do_getlist(int node)
 	if (db_get_apps(node, &apps) != 0) {
 		send_result(CMD_RESULT, NULL, 0);
 	} else {
+		char *t;
+		for (t = apps; *t; t++) {
+			if (*t == '/') *t = ' ';
+		}
 		send_result(CMD_RESULT, apps, 0);
 	}
 	return 0;

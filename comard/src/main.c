@@ -59,7 +59,10 @@ main(int argc, char *argv[])
 					break;
 				case CMD_NOTIFY:
 				case CMD_RESULT:
+				case CMD_RESULT_START:
+				case CMD_RESULT_END:
 				case CMD_FAIL:
+				case CMD_ERROR:
 					proc_recv(p, &ipc, size);
 					proc_send(rpc, cmd, ipc, size);
 					free(ipc);

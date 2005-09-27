@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include "process.h"
 #include "log.h"
@@ -56,7 +57,13 @@ rem_child(int nr)
 {
 	--my_proc.nr_children;
 	if (0 == my_proc.nr_children) return;
-//	my_proc.to_children[nr] = my_proc.to_children[my_proc.nr_children];
+	(my_proc.children)[nr] = (my_proc.children)[my_proc.nr_children];
+}
+
+static void
+proc_finish(void)
+{
+	exit(0);
 }
 
 struct ProcChild *
@@ -79,7 +86,8 @@ proc_fork(void (*child_func)(void))
 		my_proc.parent.to = fdr[1];
 		my_proc.parent.pid = getppid();
 		child_func();
-		while (1) sleep(1);	// FIXME: report parent
+		proc_finish();
+		while (1) {} // to keep gcc happy
 	} else {
 		// parent process continues
 		close(fdw[0]);
@@ -137,8 +145,12 @@ proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout)
 					*sizep = (ipc & 0x00FFFFFF);
 					return 1;
 				} else {
-					//printf("Child %d dead\n", my_proc.children[i].pid);
-					// FIXME: handle dead child
+					printf("Child %d,%d dead\n", i, my_proc.children[i].pid);
+					rem_child(i);
+					*senderp = NULL;
+					*cmdp = 0xFF;
+					*sizep = 0;
+					return 1;
 				}
 			}
 		}

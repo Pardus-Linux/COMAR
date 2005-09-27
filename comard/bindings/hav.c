@@ -75,6 +75,16 @@ do_call(char *argv[])
 			exit(2);
 		}
 		printf("%s id=%d, arg=[%s]\n", comar_cmd_name(cmd), id, ret);
+		if (cmd == COMAR_RESULT_START) {
+			while (cmd != COMAR_RESULT_END) {
+				comar_wait(com, -1);
+				if (!comar_read(com, &cmd, &id, &ret)) {
+					puts("Connection closed by COMAR daemon");
+					exit(2);
+				}
+				printf("%s id=%d, arg=[%s]\n", comar_cmd_name(cmd), id, ret);
+			}
+		}
 	}
 
 	comar_disconnect(com);

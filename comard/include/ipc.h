@@ -25,6 +25,8 @@ enum {
 	CMD_NOTIFY
 };
 
+#define CMD_FINISH 0xFF
+
 void ipc_start(int cmd, void *caller_data, int id, int node);
 void ipc_pack_arg(const char *arg, size_t size);
 void ipc_send(struct ProcChild *p);

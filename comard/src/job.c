@@ -184,9 +184,13 @@ do_call(int node)
 		while(1) {
 			struct ipc_data *ipc;
 			proc_listen(&p, &cmd, &size, -1);
+			if (cmd == CMD_FINISH) {
+				--cnt;
+				if (!cnt) break;
+			} else {
 			proc_recv(p, &ipc, size);
 			proc_send(TO_PARENT, cmd, ipc, size);
-			//--cnt;
+			}
 		}
 		send_result(CMD_RESULT_END, NULL, 0);
 	}

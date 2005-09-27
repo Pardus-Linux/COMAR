@@ -40,7 +40,7 @@ main(int argc, char *argv[])
 	if (model_init() != 0) return 1;
 
 	// Third phase: helper processes
-	event_start();
+	//event_start();
 	rpc = proc_fork(rpc_unix_start);
 
 	// Ready to run

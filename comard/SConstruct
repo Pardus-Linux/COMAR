@@ -38,7 +38,7 @@ opts.Update(env)
 Export('env')
 
 # build our bindings too
-#SConscript(['bindings/SConscript'])
+SConscript(['bindings/SConscript'])
 
 comar = env.Program("comar", Split(source), CPPPATH=cpppath, LIBS=libs, LIBPATH=libpath)
 

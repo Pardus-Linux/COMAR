@@ -185,7 +185,7 @@ do_call(int node)
 			}
 			bk_node = node;
 			bk_app = t;
-			p = proc_fork(exec_proc);
+			p = proc_fork(exec_proc, "SubJob");
 			if (p) {
 				++cnt;
 			} else {
@@ -282,7 +282,7 @@ job_start(int cmd, char *ipc_msg, size_t ipc_size)
 {
 	struct ProcChild *p;
 
-	p = proc_fork(job_proc);
+	p = proc_fork(job_proc, "Job");
 	if (!p) return -1;
 	if (proc_send(p, cmd, ipc_msg, ipc_size)) return -1;
 	return 0;

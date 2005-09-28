@@ -15,6 +15,7 @@
 #include <sys/wait.h>
 
 #include "process.h"
+#include "ipc.h"
 #include "log.h"
 
 struct Proc my_proc;
@@ -25,12 +26,13 @@ proc_init(void)
 	memset(&my_proc, 0, sizeof(struct Proc));
 	my_proc.parent.to = -1;
 	my_proc.parent.from = -1;
+	my_proc.desc = "MainSwitch";
 	my_proc.max_children = 8;
 	my_proc.children = calloc(8, sizeof(struct ProcChild));
 }
 
 static struct ProcChild *
-add_child(pid_t pid, int to, int from)
+add_child(pid_t pid, int to, int from, const char *desc)
 {
 	int i;
 
@@ -49,6 +51,7 @@ add_child(pid_t pid, int to, int from)
 	my_proc.children[i].from = from;
 	my_proc.children[i].to = to;
 	my_proc.children[i].pid = pid;
+	my_proc.children[i].desc = desc;
 	++my_proc.nr_children;
 	return &my_proc.children[i];
 }
@@ -71,7 +74,7 @@ proc_finish(void)
 }
 
 struct ProcChild *
-proc_fork(void (*child_func)(void))
+proc_fork(void (*child_func)(void), const char *desc)
 {
 	pid_t pid;
 	int fdr[2], fdw[2];
@@ -89,6 +92,8 @@ proc_fork(void (*child_func)(void))
 		my_proc.parent.from = fdw[0];
 		my_proc.parent.to = fdr[1];
 		my_proc.parent.pid = getppid();
+		my_proc.desc = desc;
+		log_debug(LOG_PROC, "%s process %d started\n", desc, getpid());
 		child_func();
 		proc_finish();
 		while (1) {} // to keep gcc happy
@@ -96,7 +101,7 @@ proc_fork(void (*child_func)(void))
 		// parent process continues
 		close(fdw[0]);
 		close(fdr[1]);
-		return add_child(pid, fdw[1], fdr[0]);
+		return add_child(pid, fdw[1], fdr[0], desc);
 	}
 }
 
@@ -149,10 +154,11 @@ proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout)
 					*sizep = (ipc & 0x00FFFFFF);
 					return 1;
 				} else {
-printf("Child %d,%d dead\n", i, my_proc.children[i].pid);
+					log_debug(LOG_PROC, "%s process %d finished\n",
+						my_proc.children[i].desc, my_proc.children[i].pid);
 					rem_child(i);
 					*senderp = NULL;
-					*cmdp = 0xFF;
+					*cmdp = CMD_FINISH;
 					*sizep = 0;
 					return 1;
 				}
@@ -177,7 +183,7 @@ proc_send(struct ProcChild *p, int cmd, const void *data, size_t size)
 			return -2;
 		}
 	}
-	log_debug(LOG_PROC, "proc_send(me=%d, to=%d, cmd=%d, size=%d)\n", getpid(), p->pid, cmd, size);
+	log_debug(LOG_IPC, "proc_send(me=%d, to=%d, cmd=%d, size=%d)\n", getpid(), p->pid, cmd, size);
 	return 0;
 }
 
@@ -191,7 +197,7 @@ proc_recv(struct ProcChild *p, void *datap, size_t size)
 	if (NULL == *datap2) return -1;
 	if (proc_recv_to(p, *datap2, size)) return -2;
 
-	log_debug(LOG_PROC, "proc_recv(me=%d, from=%d, size=%d)\n", getpid(), p->pid, size);
+	log_debug(LOG_IPC, "proc_recv(me=%d, from=%d, size=%d)\n", getpid(), p->pid, size);
 	return 0;
 }
 
@@ -202,7 +208,7 @@ proc_recv_to(struct ProcChild *p, void *data, size_t size)
 	if (size != read(p->from, data, size)) {
 		return -1;
 	}
-	log_debug(LOG_PROC, "proc_recv_to(me=%d, from=%d, size=%d)\n", getpid(), p->pid, size);
+	log_debug(LOG_IPC, "proc_recv_to(me=%d, from=%d, size=%d)\n", getpid(), p->pid, size);
 	return 0;
 }
 

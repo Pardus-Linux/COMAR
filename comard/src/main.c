@@ -41,7 +41,7 @@ main(int argc, char *argv[])
 
 	// Third phase: helper processes
 	//event_start();
-	rpc = proc_fork(rpc_unix_start);
+	rpc = proc_fork(rpc_unix_start, "RpcUnix");
 
 	// Ready to run
 	while (1) {

@@ -14,11 +14,13 @@ struct ProcChild {
 	int from;
 	int to;
 	pid_t pid;
+	const char *desc;
 };
 
 struct Proc {
 	// parent info
 	struct ProcChild parent;
+	const char *desc;
 	// children info
 	int nr_children;
 	int max_children;
@@ -32,7 +34,7 @@ extern struct Proc my_proc;
 #define TO_PARENT NULL
 
 void proc_init(void);
-struct ProcChild *proc_fork(void (*child_func)(void));
+struct ProcChild *proc_fork(void (*child_func)(void), const char *desc);
 void proc_finish(void);
 int proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout);
 int proc_send(struct ProcChild *p, int cmd, const void *data, size_t data_size);

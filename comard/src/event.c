@@ -85,6 +85,6 @@ event_start(void)
 {
 	struct ProcChild *p;
 
-	p = proc_fork(event_proc);
+	p = proc_fork(event_proc, "EventHandler");
 	if (!p) exit(1);
 }

@@ -51,6 +51,7 @@ struct comar_struct {
 	unsigned char *buffer;
 	size_t max;
 	size_t size;
+	char *pakname;
 };
 
 comar_t *
@@ -204,15 +205,39 @@ comar_read(comar_t *com, int *cmdp, unsigned int *idp, char **strp)
 	*strp = NULL;
 	size = get_data_size(head);
 	if (size) {
-		buf = malloc(size + 1);
+		if (size >= com->max) {
+			if (0 == com->max) {
+				com->max = size + 1;
+			} else {
+				while (com->max < size) com->max *= 2;
+			}
+			com->buffer = realloc(com->buffer, com->max);
+		}
 		len = 0;
+		buf = com->buffer;
 		while (len < size) {
 			len += recv(com->sock, buf + len, size - len, 0);
 		}
 		buf[size] = '\0';
+		if (*cmdp == COMAR_RESULT) {
+			char *t;
+			t = strchr(buf, ' ');
+			if (t) {
+				*t = '\0';
+				com->pakname = buf;
+				*strp = t + 1;
+			}
+			return 1;
+		}
 		*strp = buf;
 	}
 	return 1;
+}
+
+char *
+comar_package_name(comar_t *com)
+{
+	return com->pakname;
 }
 
 void

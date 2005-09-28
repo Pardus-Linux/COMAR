@@ -65,11 +65,23 @@ class Link:
         
         If there isn't any data waiting at connection, this function
         immediately returns None. If there is data, returned value
-        is a tuple of three items: (command, id, data)
+        is a tuple of three or four items: (command, id, data, package)
         
         Command is a reply code defined at the start of this class.
         ID is the original id value from the request sent to the comard.
         Data is the return value in string format.
+        Last item package is only available in RESULT replies and indicates
+        which package's script that the reply came from.
+        
+        Reply code meanings:
+        RESULT: Operation successful.
+        FAIL: Called script had a problem while trying to perform operation.
+        DENIED: You aren't allowed to do that operation.
+        ERROR: Comar had a problem while trying to perform operation.
+        RESULT_START: Class is implemented by multiple scripts, and their
+        result will follow.
+        RESULT_END: All of the class' scripts run.
+        NOTIFY: You got a notification event.
         """
         
         fds = select.select([self.sock], [], [], 0)
@@ -89,7 +101,11 @@ class Link:
                 raise Error('Connection closed')
         else:
             data = None
-        return (cmd, head[1], data)
+        if cmd == self.RESULT:
+            t = data.split(' ', 1)
+            return (cmd, head[1], t[0], t[1])
+        else:
+            return (cmd, head[1], data)
     
     def read_cmd(self):
         """Read a reply from comard.

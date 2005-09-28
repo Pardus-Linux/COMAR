@@ -65,6 +65,7 @@ int comar_send_finish(comar_t *com);
 int comar_send(comar_t *com, unsigned int id, int cmd, ...);
 int comar_wait(comar_t *com, int timeout);
 int comar_read(comar_t *com, int *cmdp, unsigned int *idp, char **strp);
+char *comar_package_name(comar_t *com);
 void comar_disconnect(comar_t *com);
 
 

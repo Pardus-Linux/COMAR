@@ -59,7 +59,10 @@ send_result(int cmd, const char *data, size_t size)
 {
 	ipc_start(cmd, chan, chan_id, 0);
 	if (CMD_RESULT == cmd) {
-		ipc_pack_arg(bk_app, strlen(bk_app));
+		if (bk_app)
+			ipc_pack_arg(bk_app, strlen(bk_app));
+		else
+			ipc_pack_arg("comar", 5);
 	}
 	if (data) {
 		if (size == 0) size = strlen(data);

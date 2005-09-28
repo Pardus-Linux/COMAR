@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-#define COMAR_PIPE_NAME "/tmp/comar"
+#define COMAR_PIPE_NAME "/var/run/comar.socket"
 
 // comar rpc commands, keep in sync with rpc_unix.c
 // commands from the daemon

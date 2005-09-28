@@ -38,7 +38,7 @@ class Link:
     __GETLIST = 13
     __CHECKACL = 14
     
-    def __init__(self, sockname="/tmp/comar"):
+    def __init__(self, sockname="/var/run/comar.socket"):
         try:
             self.sock = socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
             self.sock.connect(sockname)

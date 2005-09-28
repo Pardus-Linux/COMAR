@@ -44,7 +44,7 @@ enum {
 	RPC_CHECKACL
 };
 
-#define RPC_PIPE_NAME "/tmp/comar"
+#define RPC_PIPE_NAME "/var/run/comar.socket"
 
 struct connection {
 	struct connection *next, *prev;

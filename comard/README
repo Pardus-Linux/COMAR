@@ -7,10 +7,14 @@ Modüller:
 * main.c		Ana süreç
 * model.c		Sistem modelini yükleme/indeksleme
 * data.c		Veritabanı (acl, script, apps, model, config)
+* acl.c			Yetki denetimi
 * csl.c			CSL - Python VM yardımcıları
 * job.c			İş yapan süreçler (Register, Execute, Remove script)
 * process.c		Süreç yönetimi ve süreçler arası iletişim
+* ipc.c			Süreçler arası iletişim yardımcıları
 * cfg.c			Komut satırı parametreleri
+* log.c			Hata ve bilgi kayıtları
+* event.c		Olay bildirim sistemi
 * rpc_unix.c	Unix soket üzerinden comar çağrısı modülü
 * iksemel.c		Model dosyasını okumak için dahili minimal XML parser
 
@@ -23,7 +27,7 @@ Kod stili:
 
 RPC:
 ----
-"/tmp/comar" adlı UNIX soketinden bağlanılır.
+"/var/run/comar.socket" adlı UNIX soketinden bağlanılır.
 
 Gelen ve giden cevaplar:
 

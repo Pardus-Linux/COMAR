@@ -28,6 +28,24 @@ def sysValue(path, dir, file_):
     f.close()
     return data
 
+def queryPCI(vendor, device):
+    # dependency to pciutils!
+    f = file("/usr/share/misc/pci.ids")
+    flag = 0
+    company = ""
+    for line in f.readlines():
+        if flag == 0:
+            if line.startswith(vendor):
+                flag = 1
+                company = line[5:].strip("\n")
+        else:
+            if line.startswith("\t"):
+                if line.startswith("\t" + device):
+                    return company + line[6:].strip("\n")
+            else:
+                flag = 0
+    return "Unknown"
+
 # Net.Link API
 
 def getActiveLinks():
@@ -35,5 +53,14 @@ def getActiveLinks():
         path = "/sys/class/net"
         for iface in os.listdir(path):
             if atoi(sysValue(path, iface, "type")) == ARPHRD_ETHER:
-                iflist.append(iface)
+                ifdata = iface + " net"
+                if atoi(sysValue(path, iface, "flags")) & 0x1:
+                    ifdata += " up"
+                else:
+                    ifdata += " down"
+                vendor = sysValue(path, iface, "device/vendor").lstrip('0x')
+                device = sysValue(path, iface, "device/device").lstrip('0x')
+                ifdata += " " + vendor + ":" + device
+                ifdata += queryPCI(vendor, device)
+                iflist.append(ifdata)
         return "\n".join(iflist)

@@ -82,7 +82,10 @@ do_call(char *argv[])
 					puts("Connection closed by COMAR daemon");
 					exit(2);
 				}
-				printf("%s id=%d, arg=[%s]\n", comar_cmd_name(cmd), id, ret);
+				if (cmd == COMAR_RESULT)
+					printf("%s id=%d, pak=[%s], arg=[%s]\n", comar_cmd_name(cmd), id, comar_package_name(com), ret);
+				else
+					printf("%s id=%d, arg=[%s]\n", comar_cmd_name(cmd), id, ret);
 			}
 		}
 	}

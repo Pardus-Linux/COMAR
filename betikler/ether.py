@@ -28,7 +28,7 @@ def sysValue(path, dir, file_):
     f.close()
     return data
 
-# Net.Link API
+# Net.Link API
 
 def getActiveLinks():
         iflist = []

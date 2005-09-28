@@ -12,6 +12,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
+#include <sys/wait.h>
 
 #include "process.h"
 #include "log.h"
@@ -55,12 +56,15 @@ add_child(pid_t pid, int to, int from)
 static void
 rem_child(int nr)
 {
+	int status;
+
+	waitpid(my_proc.children[nr].pid, &status, 0);
 	--my_proc.nr_children;
 	if (0 == my_proc.nr_children) return;
 	(my_proc.children)[nr] = (my_proc.children)[my_proc.nr_children];
 }
 
-static void
+void
 proc_finish(void)
 {
 	exit(0);
@@ -145,7 +149,7 @@ proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout)
 					*sizep = (ipc & 0x00FFFFFF);
 					return 1;
 				} else {
-					printf("Child %d,%d dead\n", i, my_proc.children[i].pid);
+printf("Child %d,%d dead\n", i, my_proc.children[i].pid);
 					rem_child(i);
 					*senderp = NULL;
 					*cmdp = 0xFF;

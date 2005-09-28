@@ -69,7 +69,6 @@ main(int argc, char *argv[])
 					break;
 			}
 		}
-//		puts("tick");
 	}
 
 	return 0;

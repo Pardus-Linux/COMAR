@@ -33,6 +33,7 @@ extern struct Proc my_proc;
 
 void proc_init(void);
 struct ProcChild *proc_fork(void (*child_func)(void));
+void proc_finish(void);
 int proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout);
 int proc_send(struct ProcChild *p, int cmd, const void *data, size_t data_size);
 int proc_recv(struct ProcChild *p, void *datap, size_t size);

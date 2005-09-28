@@ -51,11 +51,16 @@ load_file(const char *fname, int *sizeptr)
 
 static void *chan;
 static int chan_id;
+int bk_node;
+char *bk_app;
 
 static int
 send_result(int cmd, const char *data, size_t size)
 {
 	ipc_start(cmd, chan, chan_id, 0);
+	if (CMD_RESULT == cmd) {
+		ipc_pack_arg(bk_app, strlen(bk_app));
+	}
 	if (data) {
 		if (size == 0) size = strlen(data);
 		ipc_pack_arg(data, size);
@@ -120,6 +125,8 @@ do_execute(int node, const char *app)
 
 	log_debug(LOG_JOB, "Execute(%s,%s)\n", model_get_path(node), app);
 
+	bk_app = (char *) app;
+
 	csl_setup();
 
 	if (0 != db_get_code(model_parent(node), app, &code, &code_size)) return -1;
@@ -135,9 +142,6 @@ do_execute(int node, const char *app)
 
 	return e;
 }
-
-int bk_node;
-char *bk_app;
 
 static void
 exec_proc(void)
@@ -168,7 +172,7 @@ do_call(int node)
 		int cnt = 0;
 		size_t size;
 
-		// FIXME: package count, error msg for fork
+		// FIXME: package count
 		send_result(CMD_RESULT_START, NULL, 0);
 		for (t = apps; t; t = s) {
 			s = strchr(t, '/');
@@ -179,7 +183,11 @@ do_call(int node)
 			bk_node = node;
 			bk_app = t;
 			p = proc_fork(exec_proc);
-			if (p) ++cnt;
+			if (p) {
+				++cnt;
+			} else {
+				send_result(CMD_ERROR, "fork failed", 11);
+			}
 		}
 		while(1) {
 			struct ipc_data *ipc;
@@ -188,14 +196,12 @@ do_call(int node)
 				--cnt;
 				if (!cnt) break;
 			} else {
-			proc_recv(p, &ipc, size);
-			proc_send(TO_PARENT, cmd, ipc, size);
+				proc_recv(p, &ipc, size);
+				proc_send(TO_PARENT, cmd, ipc, size);
 			}
 		}
 		send_result(CMD_RESULT_END, NULL, 0);
 	}
-
-	free(apps);
 
 	return 0;
 }

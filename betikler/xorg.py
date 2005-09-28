@@ -417,7 +417,9 @@ def queryDDC():
 			mon.modes.append("    " +line)
 	
 	for m in mon.modes:
-		mon.res = m[m.find("ModeLine"):].split()[1] + " " + mon.res
+		t = m[m.find("ModeLine"):].split()[1]
+		if t not in mon.res:
+			mon.res = t + " " + mon.res
 	
 	if mon.res == "":
 		mon.res = '"800x600" "640x480"'

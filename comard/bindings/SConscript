@@ -1,6 +1,12 @@
 #!/usr/bin/python
 
-env = Environment(CCFLAGS="-O2 -Wall")
+import os
 
-env.SharedLibrary("libcomar", [ "libcomar.c" ])
-env.Program("hav", [ "libcomar.c", "hav.c" ])
+Import('env')
+prefix = ARGUMENTS.get('prefix', "")
+
+libcomar = env.SharedLibrary("libcomar", [ "libcomar.c" ])
+hav = env.Program("hav", [ "libcomar.c", "hav.c" ])
+env.Install(os.path.join(prefix, 'usr/include'), 'libcomar.h')
+env.Install(os.path.join(prefix, 'usr/lib'), libcomar)
+env.Install(os.path.join(prefix, 'usr/bin'), hav)

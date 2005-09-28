@@ -17,11 +17,10 @@
 #include "cfg.h"
 
 /* global option variables with defaults */
-// FIXME: test only, proper defaults are given in comments
-char *cfg_model_file = "model.xml";	// /etc/comar/system_model.xml
-char *cfg_data_dir = "db"; // /var/lib/comar
-int cfg_log_console = 1;	// 0
-int cfg_log_file = 0;
+char *cfg_model_file = "/etc/comar/model.xml";
+char *cfg_data_dir = "/var/db/comar";
+int cfg_log_console = 1;	// FIXME: log file should be default for
+int cfg_log_file = 0;		// production release
 char *cfg_log_file_name = "log.txt";
 int cfg_log_flags = 0;
 

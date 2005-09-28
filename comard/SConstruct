@@ -1,10 +1,8 @@
 #!/usr/bin/python
 
+import os
 import sys
 from distutils.sysconfig import get_config_var as pyconf
-
-# build our bindings too
-SConscript(['bindings/SConscript'])
 
 if sys.version_info[1] == 3:
     libs = [ 'db', 'm', "python2.3" ]
@@ -33,5 +31,13 @@ source = """
 """
 
 env = Environment(CCFLAGS=ccflags)
+prefix = ARGUMENTS.get('prefix', "")
 
-env.Program("comar", Split(source), CPPPATH=cpppath, LIBS=libs, LIBPATH=libpath)
+Export('env')
+
+# build our bindings too
+SConscript(['bindings/SConscript'])
+
+comar = env.Program("comar", Split(source), CPPPATH=cpppath, LIBS=libs, LIBPATH=libpath)
+env.Install(os.path.join(prefix, 'usr/bin'), comar)
+env.Install(os.path.join(prefix, 'etc/comar/'), 'model.xml')

@@ -43,6 +43,7 @@ env = Environment(CCFLAGS=ccflags, CPPPATH=cpppath, LIBS=libs, LIBPATH=libpath)
 
 # Build
 
+env.SConsignFile("sconsign")
 Export('env')
 comar = SConscript('src/SConscript', build_dir='build', duplicate=0)
 libcomar, hav = SConscript('bindings/SConscript', build_dir='build/bindings', duplicate=0)

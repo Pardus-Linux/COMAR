@@ -190,7 +190,7 @@ write_rpc(struct connection *c, unsigned int cmd, int id, const char *buffer, si
 		size_t sz;
 
 		ipc_get_arg(&s, &sz);
-printf("writeRPC(%d,%d,%d,%s,%d,%s)\n", cmd, id, sz, s, size, buffer);
+//printf("writeRPC(%d,%d,%d,%s,%d,%s)\n", cmd, id, sz, s, size, buffer);
 
 		head[0] = cmd & 0xFF;
 		head[1] = ((size + 1 + sz) >> 16) & 0xFF;
@@ -203,7 +203,7 @@ printf("writeRPC(%d,%d,%d,%s,%d,%s)\n", cmd, id, sz, s, size, buffer);
 		return 0;
 	}
 
-printf("writeRPC(%d,%d,%d,%s)\n", cmd, id, size, buffer);
+//printf("writeRPC(%d,%d,%d,%s)\n", cmd, id, size, buffer);
 	head[0] = cmd & 0xFF;
 	head[1] = (size >> 16) & 0xFF;
 	head[2] = (size >> 8) & 0xFF;
@@ -225,7 +225,7 @@ parse_rpc(struct connection *c)
 	cmd = get_cmd(c->buffer);
 	id = get_id(c->buffer + 4);
 
-printf("RPC cmd %d, id %d, size %d\n", cmd, id, c->data_size);
+//printf("RPC cmd %d, id %d, size %d\n", cmd, id, c->data_size);
 
 	args.buffer = c->buffer + 8;
 	args.pos = 0;

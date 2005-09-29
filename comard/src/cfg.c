@@ -19,9 +19,9 @@
 /* global option variables with defaults */
 char *cfg_model_file = "/etc/comar/model.xml";
 char *cfg_data_dir = "/var/db/comar";
-int cfg_log_console = 1;	// FIXME: log file should be default for
-int cfg_log_file = 0;		// production release
-char *cfg_log_file_name = "log.txt";
+int cfg_log_console = 0;
+int cfg_log_file = 1;
+char *cfg_log_file_name = "/var/log/comar.log";
 int cfg_log_flags = 0;
 
 static struct logflag_struct {

@@ -55,12 +55,14 @@ libdir = os.path.join(prefix, 'usr/lib')
 incdir = os.path.join(prefix, 'usr/include')
 etcdir = os.path.join(prefix, 'etc/comar')
 initdir = os.path.join(prefix, 'etc/init.d')
+pydir = os.path.join(prefix, 'usr/lib/python2.3/site-packages')
 
 targets = []
 targets.append(env.Install(bindir, comar))
 targets.append(env.Install(etcdir, 'model.xml'))
 targets.append(env.Install(incdir, 'bindings/libcomar.h'))
 targets.append(env.Install(libdir, libcomar))
+targets.append(env.Install(pydir, 'bindings/comar.py'))
 targets.append(env.Install(bindir, hav))
 targets.append(env.Install(initdir, 'comard'))
 

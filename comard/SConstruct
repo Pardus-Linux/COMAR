@@ -4,6 +4,32 @@ import os
 import sys
 from distutils.sysconfig import get_config_var as pyconf
 
+# Parameters
+
+version = ARGUMENTS.get('version', '1.0')
+prefix = ARGUMENTS.get('prefix', 'install')
+
+# Source Distribution
+
+distfiles = """
+    SConstruct
+    README
+    model.xml
+    src/*.c
+    src/SConscript
+    include/*.h
+    bindings/SConscript
+    bindings/comar.py
+    bindings/*.c
+    bindings/*.h
+"""
+
+if 'dist' in sys.argv:
+    os.popen("tar -czf %s %s" % ("comar-" + version + ".tar.gz", " ".join(Split(distfiles))))
+    Exit(0)
+
+# Configuration
+
 if sys.version_info[1] == 3:
     libs = [ 'db', 'm', "python2.3" ]
 else:
@@ -11,15 +37,17 @@ else:
 
 libpath = [ '/usr/lib' ]
 cpppath = [ pyconf('CONFINCLUDEPY'), "../include" ]
-ccflags = "-O2 -Wall -DVERSION='\"1.0\"' "
+ccflags = "-O2 -Wall -DVERSION='\"%s\"' " % version
 
 env = Environment(CCFLAGS=ccflags, CPPPATH=cpppath, LIBS=libs, LIBPATH=libpath)
+
+# Build
 
 Export('env')
 comar = SConscript('src/SConscript', build_dir='build', duplicate=0)
 libcomar, hav = SConscript('bindings/SConscript', build_dir='build/bindings', duplicate=0)
 
-prefix = ARGUMENTS.get('prefix', 'install')
+# Install
 
 bindir = os.path.join(prefix, 'usr/bin')
 libdir = os.path.join(prefix, 'usr/lib')

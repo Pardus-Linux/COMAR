@@ -1,0 +1,15 @@
+#!/sbin/runscript
+
+start() {
+        ebegin "Starting COMAR Daemon"
+        start-stop-daemon --start --quiet --pidfile /var/run/comar.pid --make-pidfile \
+                --exec comar > /dev/null &
+        eend $?
+}
+
+stop() {
+        ebegin "Stopping COMAR Daemon"
+        start-stop-daemon --stop --quiet --pidfile /var/run/comar.pid
+        eend $?
+}
+

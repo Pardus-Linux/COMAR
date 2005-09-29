@@ -55,10 +55,11 @@ libdir = os.path.join(prefix, 'usr/lib')
 incdir = os.path.join(prefix, 'usr/include')
 etcdir = os.path.join(prefix, 'etc/comar')
 
-env.Install(bindir, comar)
-env.Install(etcdir, 'model.xml')
-env.Install(incdir, 'bindings/libcomar.h')
-env.Install(libdir, libcomar)
-env.Install(bindir, hav)
+targets = []
+targets.append(env.Install(bindir, comar))
+targets.append(env.Install(etcdir, 'model.xml'))
+targets.append(env.Install(incdir, 'bindings/libcomar.h'))
+targets.append(env.Install(libdir, libcomar))
+targets.append(env.Install(bindir, hav))
 
-env.Alias('install', [ bindir, etcdir, libdir, incdir ])
+env.Alias('install', targets)

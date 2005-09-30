@@ -22,7 +22,7 @@ class nameserver:
     def setNameServers(self, *args):
         """ Set nameservers """
         try:
-            f = file("yazilii", "w")
+            f = file("/etc/resolv.conf", "w")
             for arg in args:
                 data = "nameserver " + arg.strip() + '\n' 
                 f.write(data)

@@ -39,7 +39,7 @@ class dhcpc:
             for line in f.readlines():
                 if not line.find("DNS="):
                     return line[line.find("DNS=")+4:].rstrip('\n').split(',')
-            f.close
+            f.close()
         except IOError:
             return "Could not open file" # FIXME: put an error message here
 

@@ -28,6 +28,7 @@ enum {
 	// outgoing
 	RPC_RESULT = 0,
 	RPC_FAIL,
+	RPC_NONE,
 	RPC_DENIED,
 	RPC_ERROR,
 	RPC_RESULT_START,
@@ -475,6 +476,9 @@ rpc_unix_start(void)
 					break;
 				case CMD_ERROR:
 					forward_reply(p, size, RPC_ERROR);
+					break;
+				case CMD_NONE:
+					forward_reply(p, size, RPC_NONE);
 					break;
 				default:
 					// this shouldn't happen, warn and skip

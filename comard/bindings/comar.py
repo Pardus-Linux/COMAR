@@ -23,20 +23,21 @@ class Link:
     # rpc commands, keep in sync with rpc_unix.c
     RESULT = 0
     FAIL = 1
-    DENIED = 2
-    ERROR = 3
-    RESULT_START = 4
-    RESULT_END = 5
-    NOTIFY = 6
+    NONE = 2
+    DENIED = 3
+    ERROR = 4
+    RESULT_START = 5
+    RESULT_END = 6
+    NOTIFY = 7
     # following cmds are sent by internal methods, thus not visible to outside
-    __LOCALIZE = 7
-    __REGISTER = 8
-    __REMOVE = 9
-    __CALL = 10
-    __CALL_PACKAGE = 11
-    __ASKNOTIFY = 12
-    __GETLIST = 13
-    __CHECKACL = 14
+    __LOCALIZE = 8
+    __REGISTER = 9
+    __REMOVE = 10
+    __CALL = 11
+    __CALL_PACKAGE = 12
+    __ASKNOTIFY = 13
+    __GETLIST = 14
+    __CHECKACL = 15
     
     def __init__(self, sockname="/var/run/comar.socket"):
         try:
@@ -76,6 +77,7 @@ class Link:
         Reply code meanings:
         RESULT: Operation successful.
         FAIL: Called script had a problem while trying to perform operation.
+        NONE: There isn't any script registered for given class.
         DENIED: You aren't allowed to do that operation.
         ERROR: Comar had a problem while trying to perform operation.
         RESULT_START: Class is implemented by multiple scripts, and their

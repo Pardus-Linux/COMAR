@@ -63,6 +63,7 @@ main(int argc, char *argv[])
 				case CMD_RESULT_END:
 				case CMD_FAIL:
 				case CMD_ERROR:
+				case CMD_NONE:
 					proc_recv(p, &ipc, size);
 					proc_send(rpc, cmd, ipc, size);
 					free(ipc);

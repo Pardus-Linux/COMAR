@@ -132,7 +132,10 @@ do_execute(int node, const char *app)
 
 	csl_setup();
 
-	if (0 != db_get_code(model_parent(node), app, &code, &code_size)) return -1;
+	if (0 != db_get_code(model_parent(node), app, &code, &code_size)) {
+		send_result(CMD_ERROR, "noapp", 5);
+		return -1;
+	}
 	e = csl_execute(code, code_size, model_get_method(node), &res, &res_size);
 	if (e) {
 		send_result(CMD_ERROR, "err", 3);

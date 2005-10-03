@@ -138,7 +138,10 @@ do_execute(int node, const char *app)
 	}
 	e = csl_execute(code, code_size, model_get_method(node), &res, &res_size);
 	if (e) {
-		send_result(CMD_ERROR, "err", 3);
+		if (e == CSL_BADCODE)
+			send_result(CMD_NONE, "nomethod", 8);
+		else
+			send_result(CMD_ERROR, "err", 3);
 	} else {
 		send_result(CMD_RESULT, res, res_size);
 	}

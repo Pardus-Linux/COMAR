@@ -35,7 +35,8 @@ print_usage(void)
 		"Command line COMAR interface."
 		"usage: hav [options] <command> [args]\n"
 		"commands:\n"
-		"   call <method-name> [parameter=value]...\n"
+		"   call <method-name> [parameter value]...\n"
+		"   call-package <method-name> <package-name> [parameter value]...\n"
 		"   register <class> <package-name> <script-file>\n"
 		"   remove <package-name>\n"
 		"   list <class>\n"
@@ -88,6 +89,40 @@ do_call(char *argv[])
 					printf("%s id=%d, arg=[%s]\n", comar_cmd_name(cmd), id, ret);
 			}
 		}
+	}
+
+	comar_disconnect(com);
+}
+
+static void
+do_call_package(char *argv[])
+{
+	comar_t *com;
+	int cmd;
+	unsigned int id;
+	char *ret;
+
+	com = comar_connect();
+	if (!com) {
+		puts("Cannot connect to COMAR daemon");
+		exit(2);
+	}
+
+	comar_send_start(com, 1, COMAR_CALL_PACKAGE);
+
+	for(; argv[optind]; optind++) {
+		comar_send_arg(com, argv[optind], 0);
+	}
+
+	comar_send_finish(com);
+
+	if (opt_wait) {
+		comar_wait(com, -1);
+		if (!comar_read(com, &cmd, &id, &ret)) {
+			puts("Connection closed by COMAR daemon");
+			exit(2);
+		}
+		printf("%s id=%d, arg=[%s]\n", comar_cmd_name(cmd), id, ret);
 	}
 
 	comar_disconnect(com);
@@ -241,6 +276,7 @@ static struct cmd_s {
 	void (*func)(char *argv[]);
 } commands[] = {
 	{ "call", do_call },
+	{ "call-package", do_call_package },
 	{ "register", do_register },
 	{ "remove", do_remove },
 	{ "list", do_list },

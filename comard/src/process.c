@@ -20,6 +20,32 @@
 
 struct Proc my_proc;
 
+static void
+handle_sigterm(int signum)
+{
+	int i;
+
+	// forward to children
+	if (my_proc.nr_children) {
+		for (i = 0; i < my_proc.nr_children; i++) {
+			kill(my_proc.children[i].pid, SIGTERM);
+		}
+	}
+	proc_finish();
+}
+
+static void
+handle_signals(void)
+{
+	struct sigaction act;
+
+	act.sa_handler = handle_sigterm;
+	sigemptyset(&act.sa_mask);
+	act.sa_flags = 0;
+
+	sigaction(SIGTERM, &act, NULL);
+}
+
 void
 proc_init(void)
 {
@@ -29,6 +55,7 @@ proc_init(void)
 	my_proc.desc = "MainSwitch";
 	my_proc.max_children = 8;
 	my_proc.children = calloc(8, sizeof(struct ProcChild));
+	handle_signals();
 }
 
 static struct ProcChild *
@@ -93,6 +120,7 @@ proc_fork(void (*child_func)(void), const char *desc)
 		my_proc.parent.to = fdr[1];
 		my_proc.parent.pid = getppid();
 		my_proc.desc = desc;
+		handle_signals();
 		log_debug(LOG_PROC, "%s process %d started\n", desc, getpid());
 		child_func();
 		proc_finish();

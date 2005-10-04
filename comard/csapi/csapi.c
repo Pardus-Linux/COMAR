@@ -8,6 +8,7 @@
 */
 
 #include <Python.h>
+#include <sys/time.h>
 
 static PyObject *
 csapi_atoi(PyObject *self, PyObject *args)
@@ -25,7 +26,18 @@ csapi_atoi(PyObject *self, PyObject *args)
 static PyObject *
 csapi_settimeofday(PyObject *self, PyObject *args)
 {
+	struct timeval tv;
 
+	// FIXME: args, retval check, ...
+	if (!PyArg_ParseTuple(args, "II", &sec, &usec))
+		return NULL;
+
+	tv.tv_sec = sec;
+	tv.tv_usec = usec;
+	settimeofday(&tv, NULL);
+
+	Py_INCREF(Py_None);
+	return Py_None;
 }
 
 static PyMethodDef methods[] = {

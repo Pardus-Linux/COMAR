@@ -1,8 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import comar
-
 import time
 import os
 import popen2
@@ -39,7 +37,7 @@ def setDate(year=None, month=None, day=None, hour=None, minute=None, second=None
     return a[1][0]
 
 def getDate():
-    comar.notify("Time.Clock.lala")
+    notify("Time.Clock.lala")
     return time.strftime("%Y %m %d %H %M %S %Z")
 
 def saveToHW():

@@ -31,6 +31,7 @@ handle_sigterm(int signum)
 			kill(my_proc.children[i].pid, SIGTERM);
 		}
 	}
+	// FIXME: we should complete/abort db transactions, etc first
 	proc_finish();
 }
 

@@ -18,21 +18,6 @@
 #include "notify.h"
 
 static PyObject *
-c_call(PyObject *self, PyObject *args)
-{
-	const char *func;
-	size_t size;
-
-	if (!PyArg_ParseTuple(args, "s#", &func, &size))
-		return NULL;
-
-	proc_send(TO_PARENT, CMD_CALL, func, size);
-
-	Py_INCREF(Py_None);
-	return Py_None;
-}
-
-static PyObject *
 c_fail(PyObject *self, PyObject *args)
 {
 	const char *name;
@@ -64,7 +49,6 @@ c_notify(PyObject *self, PyObject *args)
 
 static PyMethodDef methods[] = {
 	{ "fail", c_fail, METH_VARARGS, "Abort script and return a fail message" },
-	{ "call", c_call, METH_VARARGS, "Call a method from COMAR system model" },
 	{ "notify", c_notify, METH_VARARGS, "Send a notification event" },
 	{ NULL, NULL, 0, NULL }
 };
@@ -73,7 +57,6 @@ void
 csl_setup(void)
 {
 	Py_Initialize();
-	Py_InitModule("comar", methods);
 }
 
 int
@@ -87,13 +70,13 @@ csl_compile(char *str, char *name, char **codeptr, size_t *sizeptr)
 	n = PyParser_SimpleParseString(str, Py_file_input);
 	if (!n) {
 		PyErr_Print();
-		return -CSL_BADCODE;
+		return CSL_BADCODE;
 	}
 	pCode = (PyObject *) PyNode_Compile(n, name);
 	PyNode_Free(n);
 	if (!pCode) {
 		PyErr_Print();
-		return -CSL_BADCODE;
+		return CSL_BADCODE;
 	}
 
 	// serialize code object
@@ -104,13 +87,13 @@ csl_compile(char *str, char *name, char **codeptr, size_t *sizeptr)
 #endif
 	Py_DECREF(pCode);
 	if (!pStr) {
-		return -CSL_NOMEM;
+		return CSL_NOMEM;
 	}
 	size = PyString_Size(pStr);
 	*codeptr = malloc(size);
 	if (!*codeptr) {
 		Py_DECREF(pStr);
-		return -CSL_NOMEM;
+		return CSL_NOMEM;
 	}
 	memcpy(*codeptr, PyString_AsString(pStr), size);
 	*sizeptr = size;
@@ -128,27 +111,28 @@ csl_execute(char *code, size_t size, const char *func_name, char **resptr, int *
 	pCode = PyMarshal_ReadObjectFromString(code, size);
 	if (!pCode) {
 		PyErr_Print();
-		return -CSL_BADCODE;
+		return CSL_BADCODE;
 	}
-	pModule = PyImport_ExecCodeModule("csl", pCode);
+	pModule = PyImport_ExecCodeModule("comard", pCode);
 	Py_DECREF(pCode);
+
 	if (!pModule || !PyModule_Check(pModule)) {
 		puts("no module");
-		return -CSL_BADCODE;
+		return CSL_BADCODE;
 	}
 
 	pDict = PyModule_GetDict(pModule);
 	if (!pDict) {
 		puts("no dict");
 		Py_DECREF(pModule);
-		return -CSL_BADCODE;
+		return CSL_BADCODE;
 	}
 
 	pFunc = PyDict_GetItemString(pDict, func_name);
 	if (!pFunc || !PyCallable_Check(pFunc)) {
 		PyErr_Print();
 		Py_DECREF(pModule);
-		return -CSL_NOFUNC;
+		return CSL_NOFUNC;
 	}
 
 	pArgs = PyTuple_New(0);
@@ -162,11 +146,14 @@ csl_execute(char *code, size_t size, const char *func_name, char **resptr, int *
 		p = PyString_FromStringAndSize(t2, sz);
 		PyDict_SetItemString(pkArgs, t, p);
 	}
+
+	Py_InitModule("comard", methods);
+
 	pValue = PyObject_Call(pFunc, pArgs, pkArgs);
 	if (!pValue) {
 		PyErr_Print();
 		Py_DECREF(pModule);
-		return -CSL_FUNCERR;
+		return CSL_FUNCERR;
 	}
 
 	pStr = PyObject_Str(pValue);
@@ -178,7 +165,7 @@ csl_execute(char *code, size_t size, const char *func_name, char **resptr, int *
 	*resptr = malloc((*reslen) + 1);
 	if (!*resptr) {
 		Py_DECREF(pStr);
-		return -CSL_NOMEM;
+		return CSL_NOMEM;
 	}
 	memcpy(*resptr, PyString_AsString(pStr), *reslen);
 	(*resptr)[*reslen] = '\0';

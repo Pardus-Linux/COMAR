@@ -138,7 +138,8 @@ do_execute(int node, const char *app)
 	}
 	e = csl_execute(code, code_size, model_get_method(node), &res, &res_size);
 	if (e) {
-		if (e == CSL_NOFUNC)
+printf("nedir lan %d\n",e);
+		if (e == -CSL_NOFUNC)
 			send_result(CMD_NONE, "nomethod", 8);
 		else
 			send_result(CMD_ERROR, "err", 3);

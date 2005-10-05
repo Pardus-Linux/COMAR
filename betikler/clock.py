@@ -4,6 +4,7 @@
 import time
 import os
 import popen2
+import csapi
 
 # api
 def capture(cmd):
@@ -31,13 +32,9 @@ def setDate(year=None, month=None, day=None, hour=None, minute=None, second=None
     if hour: new[3] = int(hour)
     if minute: new[4] = int(minute)
     if second: new[5] = int(second)
-    # it seems python is missing settimeofday
-    # i'll add it to the api and remove this ugly hack
-    a = capture("/usr/bin/date " + time.strftime("%m%d%H%M%Y.%S", new))
-    return a[1][0]
+    csapi.settimeofday(time.mktime(new))
 
 def getDate():
-    notify("Time.Clock.lala")
     return time.strftime("%Y %m %d %H %M %S %Z")
 
 def saveToHW():

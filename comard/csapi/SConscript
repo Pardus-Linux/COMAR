@@ -1,0 +1,25 @@
+#!/usr/bin/python
+
+import os
+import distutils.sysconfig
+
+vars = distutils.sysconfig.get_config_vars('CC', 'CXX', 'OPT', 'BASECFLAGS', 'CCSHARED', 'LDSHARED', 'SO')
+for i in range(len(vars)):
+    if vars[i] is None:
+        vars[i] = ""
+
+(cc, cxx, opt, basecflags, ccshared, ldshared, so_ext) = vars
+
+csapi = SharedLibrary("csapi",
+                    ["csapi.c"],
+                    CC=cc,
+                    SHLINK=ldshared,
+                    SHLINKFLAGS=[],
+                    SHLIBPREFIX="",
+                    SHLIBSUFFIX=so_ext,
+                    CPPPATH=[distutils.sysconfig.get_python_inc()],
+                    CPPFLAGS=basecflags + " " + opt)
+
+if type(csapi) == type([]): csapi = csapi[0]
+
+Return('csapi')

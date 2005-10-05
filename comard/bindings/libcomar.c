@@ -10,11 +10,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <stddef.h>
 #include <errno.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "libcomar.h"
 
 // unpack utilities

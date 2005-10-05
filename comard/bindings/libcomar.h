@@ -10,11 +10,11 @@
 #ifndef COMAR_H
 #define COMAR_H 1
 
-#include <unistd.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <stddef.h>
 
 #define COMAR_PIPE_NAME "/var/run/comar.socket"
 

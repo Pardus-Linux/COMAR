@@ -18,11 +18,27 @@ def capture(cmd):
 	return (a.wait(), out)
 
 # real script
-def getTimeZone():
-    print "bork"
 
-def setTimeZone():
-    print "dork"
+tz_file = "/etc/localtime"
+tz_zones = "/usr/share/zoneinfo/"
+
+def getTimeZone():
+    if os.path.islink(tz_file):
+        path = os.path.realpath(tz_file)
+        if path[:len(tz_zones)] == tz_zones:
+            path = path[len(tz_zones):]
+        # else?
+        return path
+    else:
+        # KDE copies timezone data for supporting nfs mounted /usr partitions
+        # we dont :)
+        # anyone knows how to extract zone name from zoneinfo file?
+        return "Switch again please"
+
+def setTimeZone(zone=None):
+    if zone:
+        os.unlink(tz_file)
+        os.symlink(os.path.join(tz_zones, zone), tz_file)
 
 def setDate(year=None, month=None, day=None, hour=None, minute=None, second=None):
     new = list(time.localtime())
@@ -38,7 +54,7 @@ def getDate():
     return time.strftime("%Y %m %d %H %M %S %Z")
 
 def saveToHW():
-    pass
+    capture("/sbin/hwclock --systohc")
 
 def loadFromHW():
-    pass
+    capture("/sbin/hwclock --hctosys")

@@ -15,7 +15,8 @@
 #include <sys/un.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include "libcomar.h"
+
+#include "comar.h"
 
 // unpack utilities
 // rpc uses network byte order (big endian)

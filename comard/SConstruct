@@ -64,7 +64,7 @@ pydir = os.path.join(prefix, pyprefix)
 targets = []
 targets.append(env.Install(bindir, comar))
 targets.append(env.Install(etcdir, 'model.xml'))
-targets.append(env.Install(incdir, 'bindings/libcomar.h'))
+targets.append(env.Install(incdir, 'bindings/comar.h'))
 targets.append(env.Install(libdir, libcomar))
 targets.append(env.Install(pydir, 'bindings/comar.py'))
 targets.append(env.Install(pydir, csapi))

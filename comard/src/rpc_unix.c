@@ -443,7 +443,7 @@ rpc_unix_start(void)
 	size_t size;
 
 	if (create_pipe(RPC_PIPE_NAME) != 0) {
-		log_error("RPC_UNIX: Cannot create listening pipe");
+		log_error("RPC_UNIX: Cannot create listening pipe\n");
 		return;
 	}
 	log_info("RPC_UNIX: listening on %s\n", RPC_PIPE_NAME);

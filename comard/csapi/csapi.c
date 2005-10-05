@@ -27,14 +27,15 @@ static PyObject *
 csapi_settimeofday(PyObject *self, PyObject *args)
 {
 	struct timeval tv;
+	double t;
 
-	// FIXME: args, retval check, ...
-	if (!PyArg_ParseTuple(args, "II", &sec, &usec))
+	if (!PyArg_ParseTuple(args, "d", &t))
 		return NULL;
 
-	tv.tv_sec = sec;
-	tv.tv_usec = usec;
-	settimeofday(&tv, NULL);
+	tv.tv_sec = t;
+	tv.tv_usec = 0;
+	if (0 != settimeofday(&tv, NULL))
+		return NULL;
 
 	Py_INCREF(Py_None);
 	return Py_None;

@@ -47,6 +47,8 @@ env.SConsignFile("sconsign")
 Export('env')
 comar = SConscript('src/SConscript', build_dir='build', duplicate=0)
 libcomar, hav = SConscript('bindings/SConscript', build_dir='build/bindings', duplicate=0)
+csapi = SConscript('csapi/SConscript', build_dir='build/csapi', duplicate=0)
+
 
 # Install
 
@@ -63,6 +65,7 @@ targets.append(env.Install(etcdir, 'model.xml'))
 targets.append(env.Install(incdir, 'bindings/libcomar.h'))
 targets.append(env.Install(libdir, libcomar))
 targets.append(env.Install(pydir, 'bindings/comar.py'))
+targets.append(env.Install(pydir, csapi))
 targets.append(env.Install(bindir, hav))
 targets.append(env.Install(initdir, 'comard'))
 

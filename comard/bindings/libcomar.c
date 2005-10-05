@@ -15,8 +15,6 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/stat.h>
-#include <unistd.h>
-
 #include "libcomar.h"
 
 // unpack utilities

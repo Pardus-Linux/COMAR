@@ -15,7 +15,7 @@
 #include <getopt.h>
 #include <sys/stat.h>
 
-#include "libcomar.h"
+#include "comar.h"
 
 /* wait for comar reply */
 int opt_wait = 1;

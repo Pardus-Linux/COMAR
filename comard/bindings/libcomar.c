@@ -99,6 +99,7 @@ comar_send_start(comar_t *com, unsigned int id, int cmd)
 {
 	com->id = id;
 	com->cmd = cmd;
+	com->size = 0;
 }
 
 int

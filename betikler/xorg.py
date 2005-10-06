@@ -259,7 +259,7 @@ Section "dri"
 EndSection
 
 Section "Files"
-	RgbPath  "/usr/X11R6/lib/X11/rgb"
+	RgbPath  "/usr/lib/X11/rgb"
 	FontPath "/usr/share/fonts/ttf-bitstream-vera/"
 	FontPath "/usr/share/fonts/local/"
 	FontPath "/usr/share/fonts/misc/"
@@ -378,7 +378,7 @@ def queryPanel(mon):
 	"Size of device DFP",
 	"Detected LCD/plasma panel ("
 	]
-	a = capture("/usr/X11R6/bin/X -probeonly -allowMouseOpenFail -logfile /var/log/xlog")
+	a = capture("/usr/bin/X -probeonly -allowMouseOpenFail -logfile /var/log/xlog")
 	if a[0] != 0:
 		print "X -probeonly failed!"
 		return
@@ -462,7 +462,7 @@ def configureDisplay():
 	# if discover db has no data, try X -configure
 	a = capture("/usr/bin/discover --data-path=xfree86/server/device/driver --data-version=4.3.0 display")
 	if a[1] == [ '\n' ] or a[0] > 0:
-		a = capture("/usr/X11R6/bin/X -configure -logfile /var/log/xlog")
+		a = capture("/usr/bin/X -configure -logfile /var/log/xlog")
 		if a[0] != 0:
 			print "X -configure failed!"
 			return -1

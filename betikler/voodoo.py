@@ -7,7 +7,6 @@ import struct
 import socket
 import sys
 import os
-import csapi
 
 class ifconfig:
     """ ioctl stuff """
@@ -279,29 +278,26 @@ class route:
     INADDR_ANY = '\0' * 4   # Any Internet Address
 
     def __init__(self):
-        # Nothing to see here, yet ?
+        # create a socket to communicate with system
+        self.sockfd = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    def delRoute(self, gw, dst = "0.0.0.0", mask = "0.0.0.0"):
-        """ Delete a route entry from kernel routing table """
+    def _ioctl(self, func, args):
+        return fcntl.ioctl(self.sockfd.fileno(), func, args)
+
+    def _call(self, func, arg):
+        data = struct.pack("Li4s10xi4s10xi4s10xHhL", 0, socket.AF_INET, self.INADDR_ANY, socket.AF_INET, socket.inet_aton(arg), 0, '\0' * 4,
+               self.RTF_GATEWAY, 0, 0)
+
         try:
-            csapi.changeroute(self.SIOCDELRT, gw, dst, mask)
-        except:
-            pass
+            result = self._ioctl(func, data)
+        except IOError:
+            return None
 
-    def delDefaultRoute(self):
-        """ Delete the default gw, which is a route entry with gateway to Any Internet Address """
-        self.delRoute("0.0.0.0")
+        return result
 
-    def setDefaultRoute(self, gw, dst = "0.0.0.0", mask = "0.0.0.0"):
-        """ Set the default gateway. To do this we must delete the previous default gateway
-            and the route entry set for gw, if any, or we will end up with multiple entries """
+    def delDefaultRoute(self, ip):
+        self._call(self.SIOCDELRT, ip)
 
-        self.delDefaultRoute()
-        self.delRoute(gw)
-        try:
-            csapi.changeroute(self.SIOCADDRT, gw, dst, mask)
-        except:
-            pass
 
 class wireless:
     """ ioctl stuff """

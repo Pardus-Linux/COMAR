@@ -67,6 +67,8 @@ class Model(QHBox):
     def __init__(self, *args):
         QHBox.__init__(self, *args)
         vb = QVBox(self)
+        vb.layout().setMargin(2)
+        vb.layout().setSpacing(2)
         self.list = QListView(vb)
         list = self.list
         list.setRootIsDecorated(True)

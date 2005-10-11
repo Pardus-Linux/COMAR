@@ -16,6 +16,9 @@
 <method name="installCritical"/>
 <method name="getInstalled"/>
 <method name="getUpgradable"/>
+<method name="getPackageInfo"/>
+<method name="getRepositories"/>
+<method name="setRepositories"/>
 </class>
 </group>
 

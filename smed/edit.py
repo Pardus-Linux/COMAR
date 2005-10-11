@@ -15,6 +15,8 @@ class NodeEdit(QWidget):
     def __init__(self, *args):
         QWidget.__init__(self, *args)
         vb = QVBoxLayout(self)
+        vb.setSpacing(2)
+        vb.setMargin(2)
         lab = QLabel("Name:", self)
         vb.addWidget(lab)
         self.name = QLineEdit(self)

@@ -58,7 +58,10 @@ class Node(QListViewItem):
         self.setOpen(True)
     
     def text(self, column):
-        return self.nodeName
+        if self.__dict__.has_key("nodeName"):
+            return self.nodeName
+        else:
+            return ""
 
 class Model(QHBox):
     def __init__(self, *args):
@@ -71,15 +74,21 @@ class Model(QHBox):
         list.setSorting(-1)
         self.connect(list, SIGNAL("selectionChanged()"), self._change)
         hb = QHButtonGroup(vb)
-        self.bt_group = QPushButton(QIconSet(QPixmap(Node.images[Node.GROUP])), "Group", hb)
+        self.bt_group = QPushButton(QIconSet(QPixmap(Node.images[Node.GROUP])), "", hb)
+        QToolTip.add(self.bt_group, "Add group")
         self.connect(self.bt_group, SIGNAL("clicked()"), self._add_group)
-        self.bt_class = QPushButton(QIconSet(QPixmap(Node.images[Node.CLASS])), "Class", hb)
+        self.bt_class = QPushButton(QIconSet(QPixmap(Node.images[Node.CLASS])), "", hb)
+        QToolTip.add(self.bt_class, "Add class")
         self.connect(self.bt_class, SIGNAL("clicked()"), self._add_class)
-        hb2 = QHButtonGroup(vb)
-        self.bt_method = QPushButton(QIconSet(QPixmap(Node.images[Node.METHOD])), "Method", hb2)
+        self.bt_method = QPushButton(QIconSet(QPixmap(Node.images[Node.METHOD])), "", hb)
+        QToolTip.add(self.bt_method, "Add method")
         self.connect(self.bt_method, SIGNAL("clicked()"), self._add_method)
-        self.bt_notify = QPushButton(QIconSet(QPixmap(Node.images[Node.NOTIFY])), "Notify", hb2)
-        self.connect(self.bt_method, SIGNAL("clicked()"), self._add_notify)
+        self.bt_notify = QPushButton(QIconSet(QPixmap(Node.images[Node.NOTIFY])), "", hb)
+        QToolTip.add(self.bt_notify, "Add notify")
+        self.connect(self.bt_notify, SIGNAL("clicked()"), self._add_notify)
+        self.bt_remove = QPushButton("X", hb)
+        QToolTip.add(self.bt_remove, "Remove node")
+        self.connect(self.bt_remove, SIGNAL("clicked()"), self._remove)
         self.clear()
         self.editor = edit.NodeEdit(self)
     
@@ -114,6 +123,12 @@ class Model(QHBox):
         if (item.parent() is None) or (item.parent().parent() != self.list_top):
             return
         Node(item, Node.NOTIFY, "(new_notify)")
+    
+    def _remove(self):
+        item = self.list.selectedItem()
+        if item:
+            item.parent().takeItem(item)
+            del item
     
     def clear(self):
         self.list.clear()

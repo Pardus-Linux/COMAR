@@ -5,12 +5,17 @@
 <group name="System">
 <class name="Power">
 </class>
-<class name="Users">
-<method name="addUser"/>
-</class>
 <class name="Package">
 <method name="postInstall"/>
 <method name="preRemove"/>
+</class>
+<class name="Manager">
+<method name="installPackage"/>
+<method name="removePackage"/>
+<method name="updateIndex"/>
+<method name="installCritical"/>
+<method name="getInstalled"/>
+<method name="getUpgradable"/>
 </class>
 </group>
 

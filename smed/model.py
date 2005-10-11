@@ -22,12 +22,13 @@ class Node(QListViewItem):
     METHOD = 3
     NOTIFY = 4
     
+    img_path = "/usr/share/icons/Tulliana-1.0/16x16/apps/"
     images = [
-        "model.png",
-        "class.png",
-        "group.png",
-        "method.png",
-        "notify.png"
+        img_path + "mycomputer.png",
+        img_path + "kwikdisk.png",
+        img_path + "kuser.png",
+        img_path + "kservices.png",
+        img_path + "remote.png"
     ]
     
     def last_item(self, parent):

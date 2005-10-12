@@ -19,6 +19,7 @@
 <method name="getPackageInfo"/>
 <method name="getRepositories"/>
 <method name="setRepositories"/>
+<notify name="progress"/>
 </class>
 </group>
 

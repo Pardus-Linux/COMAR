@@ -17,16 +17,21 @@
 #include "ipc.h"
 #include "notify.h"
 
+int job_send_result(int cmd, const char *data, size_t size);
+
+
 static PyObject *
 c_fail(PyObject *self, PyObject *args)
 {
-	const char *name;
+	const char *errstr;
 	size_t size;
 
-	if (!PyArg_ParseTuple(args, "s#", &name, &size))
+	if (!PyArg_ParseTuple(args, "s#", &errstr, &size))
 		return NULL;
 
-	// FIXME: fail here :)
+	job_send_result(CMD_FAIL, errstr, size);
+	proc_finish();
+	// process terminated at this point
 
 	Py_INCREF(Py_None);
 	return Py_None;
@@ -35,13 +40,13 @@ c_fail(PyObject *self, PyObject *args)
 static PyObject *
 c_notify(PyObject *self, PyObject *args)
 {
-	const char *name;
-	size_t size;
+	const char *name, *msg;
+	size_t size, msize;
 
-	if (!PyArg_ParseTuple(args, "s#", &name, &size))
+	if (!PyArg_ParseTuple(args, "s#s#", &name, &size, &msg, &msize))
 		return NULL;
 
-	notify_fire(name);
+	notify_fire(name, msg);
 
 	Py_INCREF(Py_None);
 	return Py_None;

@@ -72,6 +72,13 @@ send_result(int cmd, const char *data, size_t size)
 	return 0;
 }
 
+// FIXME: refactor
+int
+job_send_result(int cmd, const char *data, size_t size)
+{
+	return send_result(cmd, data, size);
+}
+
 static int
 do_register(int node, const char *app, const char *fname)
 {

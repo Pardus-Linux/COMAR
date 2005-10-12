@@ -8,6 +8,7 @@
 */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "model.h"
 #include "notify.h"
@@ -52,14 +53,14 @@ notify_is_marked(void *mask, int no)
 }
 
 int
-notify_fire(const char *name)
+notify_fire(const char *name, const char *msg)
 {
 	int no;
 
 	no = model_lookup_notify(name);
 	if (no == -1) return -1;
 	ipc_start(CMD_NOTIFY, NULL, 0, no);
-	// FIXME: optional argument
+	if (msg) ipc_pack_arg(msg, strlen(msg));
 	ipc_send(TO_PARENT);
 	return 0;
 }

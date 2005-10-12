@@ -441,6 +441,8 @@ rpc_unix_start(void)
 	struct connection *c;
 	int cmd;
 	size_t size;
+	char *s;
+	size_t sz;
 
 	if (create_pipe(RPC_PIPE_NAME) != 0) {
 		log_error("RPC_UNIX: Cannot create listening pipe\n");
@@ -453,12 +455,11 @@ rpc_unix_start(void)
 			switch (cmd) {
 				case CMD_NOTIFY:
 					ipc_recv(p, size);
+					ipc_get_arg(&s, &sz);
 					for (c = conns; c; c = c->next) {
 						int no = ipc_get_node();
 						if (notify_is_marked(c->notify_mask, no)) {
-							// FIXME: return argument too
-							const char *name = model_get_path(no);
-							write_rpc(c, RPC_NOTIFY, 0, name, strlen(name));
+							write_rpc(c, RPC_NOTIFY, 0, s, sz);
 						}
 					}
 					continue;

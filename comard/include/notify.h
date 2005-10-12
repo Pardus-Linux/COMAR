@@ -13,7 +13,7 @@
 void *notify_alloc(void);
 int notify_mark(void *mask, const char *name);
 int notify_is_marked(void *mask, int no);
-int notify_fire(const char *name);
+int notify_fire(const char *name, const char *msg);
 
 
 #endif /* NOTIFY_H */

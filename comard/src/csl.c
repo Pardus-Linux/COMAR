@@ -16,6 +16,7 @@
 #include "process.h"
 #include "ipc.h"
 #include "notify.h"
+#include "log.h"
 
 int job_send_result(int cmd, const char *data, size_t size);
 
@@ -64,6 +65,30 @@ csl_setup(void)
 	Py_Initialize();
 }
 
+static void
+log_exception(void)
+{
+	PyObject *pType;
+	PyObject *pValue;
+	PyObject *pTrace;
+	PyObject *eStr;
+	PyObject *vStr;
+
+	PyErr_Fetch(&pType, &pValue, &pTrace);
+	if (!pType) {
+		log_error("csl.c log_exception() called when there isn't an exception\n");
+		return;
+	}
+
+	eStr = PyObject_Str(pType);
+	vStr = PyObject_Str(pValue);
+	// FIXME: log traceback too
+
+	log_error("Python Exception [%s]: %s\n",
+		PyString_AsString(eStr), PyString_AsString(vStr)
+	);
+}
+
 int
 csl_compile(char *str, char *name, char **codeptr, size_t *sizeptr)
 {
@@ -74,13 +99,13 @@ csl_compile(char *str, char *name, char **codeptr, size_t *sizeptr)
 	// compile into a code object
 	n = PyParser_SimpleParseString(str, Py_file_input);
 	if (!n) {
-		PyErr_Print();
+		log_exception();
 		return CSL_BADCODE;
 	}
 	pCode = (PyObject *) PyNode_Compile(n, name);
 	PyNode_Free(n);
 	if (!pCode) {
-		PyErr_Print();
+		log_exception();
 		return CSL_BADCODE;
 	}
 
@@ -115,7 +140,7 @@ csl_execute(char *code, size_t size, const char *func_name, char **resptr, int *
 
 	pCode = PyMarshal_ReadObjectFromString(code, size);
 	if (!pCode) {
-		PyErr_Print();
+		log_exception();
 		return CSL_BADCODE;
 	}
 	pModule = PyImport_ExecCodeModule("comard", pCode);
@@ -135,7 +160,6 @@ csl_execute(char *code, size_t size, const char *func_name, char **resptr, int *
 
 	pFunc = PyDict_GetItemString(pDict, func_name);
 	if (!pFunc || !PyCallable_Check(pFunc)) {
-		PyErr_Print();
 		Py_DECREF(pModule);
 		return CSL_NOFUNC;
 	}
@@ -156,7 +180,7 @@ csl_execute(char *code, size_t size, const char *func_name, char **resptr, int *
 
 	pValue = PyObject_Call(pFunc, pArgs, pkArgs);
 	if (!pValue) {
-		PyErr_Print();
+		log_exception();
 		Py_DECREF(pModule);
 		return CSL_FUNCERR;
 	}

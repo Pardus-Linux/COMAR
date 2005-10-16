@@ -132,13 +132,17 @@ user %s
 	def runPPPD(self, dev):
 		""" Run the PPP daemon """
 
-		cmd = "/usr/sbin/pppd 115200 " + dev + " connect '/usr/sbin/chat -V -v -f /etc/ppp/chatscript." + dev + "'"
+		# PPPD does some isatty and ttyname checks, so we shall satisfy it for symlinks and softmodems
+		cmd = "/usr/sbin/pppd /dev/" + dev + " 115200 connect '/usr/sbin/chat -V -v -f /etc/ppp/chatscript." + dev + "'"
 		i, output = self.capture(cmd)
+
 		return output
 
-	def dial(self, phone, user, pwd, dev = "modem"):
+	def dial(self, phone, user, pwd, modem = "modem"):
 		""" Dial a server and try to login """
-		
+	
+		dev = modem.lstrip("/dev/")
+
 		if self.createSecrets(user, pwd) is True:
 			return "Could not manage authentication files"
 

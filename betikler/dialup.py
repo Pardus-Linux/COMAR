@@ -69,10 +69,19 @@ user %s
 
 	def getDNS(self):
 		""" Try to get DNS server adress provided by remote peer """
-		if os.getenv("USEPEERDNS") is not None:
-			return os.getenv("DNS1") + "," + os.getenv("DNS2")
-		return None
-		
+		list = []
+
+		try:
+		    f = file("/etc/ppp/resolv.conf", "r")
+		    for line in f.readlines():
+		        if line.strip().startswith("nameserver"):
+		            list.append(line[line.find("nameserver") + 10:].rstrip('\n').strip())
+		    f.close()
+		except IOError:
+		    return None
+
+		return list
+
 	def createOptions(self, dev, user):
 		""" Create options file for the desired device """
 
@@ -87,7 +96,7 @@ user %s
 		return None
 
 	def createChatscript(self, dev, phone):
-		""" Create options file for the desired device """
+		""" Create a script to have a chat with the modem in the frame of respect and love """
 
 		self.silentUnlink("/etc/ppp/chatscript." + dev)
 		try:

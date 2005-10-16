@@ -22,6 +22,7 @@ ABORT           '\\nRINGING\\r\\n\\r\\nRINGING\\r'
 ''              \\rAT
 'OK-+++\c-OK'   ATH0
 TIMEOUT         30
+OK              ATL%s
 OK              ATDT%s
 CONNECT         ''
 """
@@ -37,6 +38,7 @@ usehostname
 usepeerdns
 linkname %s
 user %s
+%s
 """
 
 	def silentUnlink(self, path):
@@ -84,26 +86,26 @@ user %s
 
 		return list
 
-	def createOptions(self, dev, user):
+	def createOptions(self, dev, user, speed):
 		""" Create options file for the desired device """
 
 		self.silentUnlink("/etc/ppp/options." + dev)
 		try:
 			f = open("/etc/ppp/options." + dev, "w")
-			f.write(self.tmpl_options % (dev, user))
+			f.write(self.tmpl_options % (dev, user, speed))
 			f.close()
 		except:
 			return True
 
 		return None
 
-	def createChatscript(self, dev, phone):
+	def createChatscript(self, dev, phone, vol):
 		""" Create a script to have a chat with the modem in the frame of respect and love """
 
 		self.silentUnlink("/etc/ppp/chatscript." + dev)
 		try:
 			f = open("/etc/ppp/chatscript." + dev, "w")
-			f.write(self.tmpl_chat % phone)
+			f.write(self.tmpl_chat % (vol, phone))
 			f.close()
 		except:
 			return True
@@ -152,12 +154,12 @@ user %s
 		""" Run the PPP daemon """
 
 		# PPPD does some isatty and ttyname checks, so we shall satisfy it for symlinks and softmodems
-		cmd = "/usr/sbin/pppd /dev/" + dev + " 115200 connect '/usr/sbin/chat -V -v -f /etc/ppp/chatscript." + dev + "'"
+		cmd = "/usr/sbin/pppd /dev/" + dev + " connect '/usr/sbin/chat -V -v -f /etc/ppp/chatscript." + dev + "'"
 		i, output = self.capture(cmd)
 
 		return output
 
-	def dial(self, phone, user, pwd, modem = "modem"):
+	def dial(self, phone, user, pwd, speed, vol, modem = "modem"):
 		""" Dial a server and try to login """
 	
 		dev = modem.lstrip("/dev/")
@@ -165,10 +167,10 @@ user %s
 		if self.createSecrets(user, pwd) is True:
 			return "Could not manage authentication files"
 
-		if self.createOptions(dev, user) is True:
+		if self.createOptions(dev, user, speed) is True:
 			return "Could not manage pppd parameters"
 
-		if self.createChatscript(dev, phone) is True:
+		if self.createChatscript(dev, phone, vol) is True:
 			return "Could not manage chat script"
 
 		output = self.runPPPD(dev)
@@ -176,4 +178,4 @@ user %s
 
 if __name__ == "__main__":
 	dup = dialup()
-	print dup.dial("145", "tatu@ttnet", "welovetox", "ttySHSF0")
+	print dup.dial("145", "tatu@ttnet", "welovetox", "115200", "1", "ttySHSF0")

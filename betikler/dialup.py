@@ -3,7 +3,8 @@
 
 import popen2
 import os
-
+from csapi import atoi
+from signal import SIGTERM
 
 class dialup:
 	""" Dialup client functions for Hayes compatible modems, using pppd """
@@ -69,8 +70,8 @@ user %s
 
 	def getDNS(self):
 		""" Try to get DNS server adress provided by remote peer """
-		list = []
 
+		list = []
 		try:
 		    f = file("/etc/ppp/resolv.conf", "r")
 		    for line in f.readlines():
@@ -128,6 +129,23 @@ user %s
 		f.close()
 
 		return None
+
+	def stopPPPD(self, dev):
+		""" Stop the connection and hangup the modem """
+
+		try:
+			f = open("/var/lock/LCK.." + dev, "r")
+			pid = atoi(f.readline())
+			f.close()
+		except:
+			return "Could not open lockfile"
+
+		try:
+		    os.kill(pid, SIGTERM)
+		except OSError:
+		    return "Could not stop the process"
+
+		return "Killed"
 
 	def runPPPD(self, dev):
 		""" Run the PPP daemon """

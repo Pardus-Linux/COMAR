@@ -35,6 +35,7 @@ defaultroute
 noauth
 usehostname
 usepeerdns
+linkname %s
 user %s
 """
 
@@ -89,7 +90,7 @@ user %s
 		self.silentUnlink("/etc/ppp/options." + dev)
 		try:
 			f = open("/etc/ppp/options." + dev, "w")
-			f.write(self.tmpl_options % user)
+			f.write(self.tmpl_options % (dev, user))
 			f.close()
 		except:
 			return True
@@ -124,7 +125,7 @@ user %s
 			return True
 			
 		f = open("/etc/ppp/pap-secrets", "w")
-		data = "\"%s\" * \"%s\"\n" %(user, pwd)
+		data = "\"%s\" * \"%s\"\n" % (user, pwd)
 		f.write(data)
 		f.close()
 

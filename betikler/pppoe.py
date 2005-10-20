@@ -23,9 +23,6 @@ class pppoe:
 # When you configure a variable, DO NOT leave spaces around the "=" sign.
 
 # Ethernet card connected to ADSL modem
-#
-# NB: Gentoo overrides ETH when adsl-start is called from the
-# networking scripts.  This setting has no effect in that case.
 ETH=\"%s\"
 
 # ADSL user name.  You may have to supply "@provider.com"  Sympatico
@@ -92,8 +89,6 @@ PING="."
 #   $PIDFILE.pppoe contains PID of pppoe process
 #   $PIDFILE.pppd  contains PID of pppd process
 #
-# NB: Gentoo overrides PIDFILE when adsl-start is run from the
-# networking scripts.  This setting has no effect in that case.
 # PIDFILE="/var/run/$CF_BASE-adsl.pid"
 PIDFILE="/var/run/adsl.pid"
 

@@ -40,7 +40,7 @@ DEMAND=no
 
 # DNS type: SERVER=obtain from server; SPECIFY=use DNS1 and DNS2;
 # NOCHANGE=do not adjust.
-DNSTYPE=SERVER
+DNSTYPE=COMAR
 
 # Obtain DNS server addresses from the peer (recent versions of pppd only)
 # In old config files, this used to be called USEPEERDNS.  Changed to

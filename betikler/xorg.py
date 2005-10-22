@@ -485,7 +485,7 @@ def configureDisplay():
 	keys["DRIVER"] = drv
 	keys["HSYNC"] = str(mon.hsync_min) + "-" + str(mon.hsync_max)
 	keys["VREF"] = str(mon.vert_min) + "-" + str(mon.vert_max)
-	if mon.panel_h:
+	if mon.panel_h and mon.panel_w:
 		keys["MODELINES"] = calcModeLine(mon.panel_w, mon.panel_h, 60)
 		keys["MODES"] = '"%dx%d" "800x600" "640x480" "1024x768"' % (mon.panel_w,mon.panel_h)
 	else:

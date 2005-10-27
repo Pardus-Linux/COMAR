@@ -13,28 +13,12 @@ class wireless:
 
 #   From </usr/include/wireless.h>
     
-    SIOCGIWNAME = 0x8B01    # get name == wireless protocol
-    SIOCGIWFREQ = 0x8B05    # get channel/frequency
     SIOCSIWMODE = 0x8B06    # set the operation mode
     SIOCGIWMODE = 0x8B07    # get operation mode
-    SIOCGIWSENS = 0x8B09    # get sensitivity
-    SIOCGIWAP = 0x8B15      # get AP MAC address
     SIOCGIWRATE = 0x8B21    # get default bit rate
-    SIOCGIWRTS = 0x8B23     # get rts/cts threshold
-    SIOCGIWFRAG = 0x8B25    # get fragmention thrh
-    SIOCGIWTXPOW = 0x8B27   # get transmit power (dBm)
-    SIOCGIWRETRY = 0x8B29   # get retry limit
-    SIOCGIWRANGE = 0x8B0B   # range
-    SIOCGIWSTATS = 0x8B0F   # get wireless statistics
     SIOCSIWESSID = 0x8B1A   # set essid
     SIOCGIWESSID = 0x8B1B   # get essid
-    SIOCGIWPOWER = 0x8B2D   # get power managment settings
-    SIOCGIWENCODE = 0x8B2B  # get encryption information
     
-    SIOCGIWNWID = 0x8B03    # get network id
-    SIOCSIWCOMMIT = 0x8B00  # commiting pending changes to driver
-    SIOCGIWSCAN = 0x8B19    # get scanning results
-   
     modes = ['Auto', 'Ad-Hoc', 'Managed', 'Master', 'Repeat', 'Second', 'Monitor']
 
     def __init__(self):

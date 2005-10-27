@@ -149,7 +149,7 @@ if __name__ == "__main__":
     wifi = wireless()
     ifaces_wifi = wifi.getInterfaceList()
     
-    print "\nWireless interfaces found = ", ifaces_wifi
+    print "Wireless interfaces found = ", ifaces_wifi
     for name in ifaces_wifi:
         print " %s essid: %s mode %s bitrate %s link %i noise %i dBm signal %i dBm" % (name, wifi.getEssid(name), wifi.getMode(name), wifi.getBitrate(name),
             wifi.getLinkStatus(name), wifi.getNoiseStatus(name), wifi.getSignalStatus(name))

@@ -277,9 +277,6 @@ class route:
 
     INADDR_ANY = '\0' * 4   # Any Internet Address
 
-    def __init__(self):
-        # Nothing to see here, yet ?
-
     def delRoute(self, gw, dst = "0.0.0.0", mask = "0.0.0.0"):
         """ Delete a route entry from kernel routing table """
         try:

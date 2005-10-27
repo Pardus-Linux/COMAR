@@ -5,7 +5,6 @@ import array
 import fcntl
 import struct
 import socket
-import sys
 import os
 import csapi
 

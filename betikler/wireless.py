@@ -7,7 +7,6 @@ import struct
 import socket
 import sys
 import os
-import csapi
 
 class wireless:
     """ ioctl stuff """

@@ -5,9 +5,9 @@ import popen2
 import os
 
 class pppoe:
-	""" Functions to configure and run PPP over Ethernet connections  """
+    """ Functions to configure and run PPP over Ethernet connections  """
 
-	tmpl_pppoe_conf = """
+    tmpl_pppoe_conf = """
 #***********************************************************************
 #
 # /etc/ppp/pppoe.conf
@@ -142,8 +142,8 @@ PPPD_EXTRA=""
 # If you want adsl-connect to exit when connection drops:
 # RETRY_ON_FAILURE=no
 """
-	
-	tmpl_options = """
+    
+    tmpl_options = """
 noipdefault
 hide-password
 defaultroute
@@ -151,127 +151,127 @@ persist
 lock
 """
 
-	def silentUnlink(self, path):
-		""" Try to unlink a file, if exists """
+    def silentUnlink(self, path):
+        """ Try to unlink a file, if exists """
 
-		try:
-			os.unlink(path)
-		except:
-			pass
+        try:
+            os.unlink(path)
+        except:
+            pass
 
-	def capture(self, cmd):
-		""" Run a command and capture the output """
+    def capture(self, cmd):
+        """ Run a command and capture the output """
 
-		out = []
-		a = popen2.Popen4(cmd)
-		while 1:
-			b = a.fromchild.readline()
-			if b == None or b == "":
-				break
-			out.append(b)
-		return (a.wait(), out)
+        out = []
+        a = popen2.Popen4(cmd)
+        while 1:
+            b = a.fromchild.readline()
+            if b == None or b == "":
+                break
+            out.append(b)
+        return (a.wait(), out)
 
-	def getDNS(self):
-		""" Try to get DNS server adress provided by remote peer """
+    def getDNS(self):
+        """ Try to get DNS server adress provided by remote peer """
 
-		list = []
-		try:
-		    f = file("/etc/ppp/resolv.conf", "r")
-		    for line in f.readlines():
-		        if line.strip().startswith("nameserver"):
-		            list.append(line[line.find("nameserver") + 10:].rstrip('\n').strip())
-		    f.close()
-		except IOError:
-		    return None
+        list = []
+        try:
+            f = file("/etc/ppp/resolv.conf", "r")
+            for line in f.readlines():
+                if line.strip().startswith("nameserver"):
+                    list.append(line[line.find("nameserver") + 10:].rstrip('\n').strip())
+            f.close()
+        except IOError:
+            return None
 
-		return list
+        return list
 
-	def createConf(self, dev, user):
-		""" Create configuration file for pppoe connections """
+    def createConf(self, dev, user):
+        """ Create configuration file for pppoe connections """
 
-		self.silentUnlink("/etc/ppp/pppoe.conf")
-		try:
-			f = open("/etc/ppp/pppoe.conf", "w")
-			f.write(self.tmpl_pppoe_conf % (dev, user))
-			f.close()
-		except:
-			return True
+        self.silentUnlink("/etc/ppp/pppoe.conf")
+        try:
+            f = open("/etc/ppp/pppoe.conf", "w")
+            f.write(self.tmpl_pppoe_conf % (dev, user))
+            f.close()
+        except:
+            return True
 
-		return None
+        return None
 
-	def createOptions(self):
-		""" Create options file for pppoe connections """
+    def createOptions(self):
+        """ Create options file for pppoe connections """
 
-		self.silentUnlink("/etc/ppp/options-pppoe")
-		try:
-			f = open("/etc/ppp/options-pppoe", "w")
-			f.write(self.tmpl_options)
-			f.close()
-		except:
-			return True
+        self.silentUnlink("/etc/ppp/options-pppoe")
+        try:
+            f = open("/etc/ppp/options-pppoe", "w")
+            f.write(self.tmpl_options)
+            f.close()
+        except:
+            return True
 
-		return None
+        return None
 
-	def createSecrets(self, user, pwd):
-		""" Create authentication files """
+    def createSecrets(self, user, pwd):
+        """ Create authentication files """
 
-		try:
-			# Ugly way to clean up secrets and recreate
-			self.silentUnlink("/etc/ppp/pap-secrets")
-			self.silentUnlink("/etc/ppp/chap-secrets")
-			f = os.open("/etc/ppp/pap-secrets", os.O_CREAT, 0600)
-			os.close(f)
-			os.symlink("/etc/ppp/pap-secrets", "/etc/ppp/chap-secrets")
-		except:
-			return True
-			
-		f = open("/etc/ppp/pap-secrets", "w")
-		data = "\"%s\" * \"%s\"\n" % (user, pwd)
-		f.write(data)
-		f.close()
+        try:
+            # Ugly way to clean up secrets and recreate
+            self.silentUnlink("/etc/ppp/pap-secrets")
+            self.silentUnlink("/etc/ppp/chap-secrets")
+            f = os.open("/etc/ppp/pap-secrets", os.O_CREAT, 0600)
+            os.close(f)
+            os.symlink("/etc/ppp/pap-secrets", "/etc/ppp/chap-secrets")
+        except:
+            return True
+            
+        f = open("/etc/ppp/pap-secrets", "w")
+        data = "\"%s\" * \"%s\"\n" % (user, pwd)
+        f.write(data)
+        f.close()
 
-		return None
+        return None
 
-	def getStatus(self):
-		""" Stop the pppoe connection """
+    def getStatus(self):
+        """ Stop the pppoe connection """
 
-		cmd = "/usr/sbin/adsl-status"
-		i, output = self.capture(cmd)
+        cmd = "/usr/sbin/adsl-status"
+        i, output = self.capture(cmd)
 
-		return output
+        return output
 
-	def stopPPPD(self):
-		""" Stop the pppoe connection """
+    def stopPPPD(self):
+        """ Stop the pppoe connection """
 
-		cmd = "/usr/sbin/adsl-stop"
-		i, output = self.capture(cmd)
+        cmd = "/usr/sbin/adsl-stop"
+        i, output = self.capture(cmd)
 
-		return output
+        return output
 
-	def startPPPD(self):
-		""" Start the PPP daemon """
+    def startPPPD(self):
+        """ Start the PPP daemon """
 
-		cmd = "/usr/sbin/adsl-start"
-		i, output = self.capture(cmd)
+        cmd = "/usr/sbin/adsl-start"
+        i, output = self.capture(cmd)
 
-		return output
+        return output
 
-	def connect(self, dev, user, pwd):
-		""" Try to start a pppoe connection through dev and login """
-	
-		if self.createConf(dev, user) is True:
-			return "Could not manage pppoe configuration"
+    def connect(self, dev, user, pwd):
+        """ Try to start a pppoe connection through dev and login """
+    
+        if self.createConf(dev, user) is True:
+            return "Could not manage pppoe configuration"
 
-		if self.createOptions() is True:
-			return "Could not manage pppd parameters"
+        if self.createOptions() is True:
+            return "Could not manage pppd parameters"
 
-		if self.createSecrets(user, pwd) is True:
-			return "Could not manage authentication files"
+        if self.createSecrets(user, pwd) is True:
+            return "Could not manage authentication files"
 
-		output = self.startPPPD()
-		return output
+        output = self.startPPPD()
+        return output
 
 if __name__ == "__main__":
-	rp = pppoe()
-	rp.connect("eth0", "parbusman@uludag", "pek gizli")
+    rp = pppoe()
+    rp.connect("eth0", "parbusman@uludag", "pek gizli")
 

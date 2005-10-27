@@ -266,25 +266,6 @@ class route:
     SIOCDELRT = 0x890C      # delete routing table entry
     SIOCRTMSG = 0x890D      # call to routing system
 
-#   From <net/route.h>
-
-    RTF_UP = 0x0001         # Route usable
-    RTF_GATEWAY = 0x0002    # Destination is a gateway
-    RTF_HOST = 0x0004       # Host entry (net otherwise)
-    RTF_REINSTATE = 0x0008  # Reinstate route after timeout
-    RTF_DYNAMIC = 0x0010    # Created dyn. (by redirect)
-    RTF_MODIFIED = 0x0020   # Modified dyn. (by redirect)
-    RTF_MTU = 0x0040        # Specific MTU for this route
-    RTF_MSS = RTF_MTU       # Compatibility
-    RTF_WINDOW = 0x0080     # Per route window clamping
-    RTF_IRTT = 0x0100       # Initial round trip time
-    RTF_REJECT = 0x0200     # Reject route
-    RTF_STATIC = 0x0400     # Manually injected route
-    RTF_XRESOLVE = 0x0800   # External resolver
-    RTF_NOFORWARD = 0x1000  # Forwarding inhibited
-    RTF_THROW = 0x2000      # Go to next class
-    RTF_NOPMTUDISC = 0x4000 # Do not send packets with DF
-
     INADDR_ANY = '\0' * 4   # Any Internet Address
 
     def delRoute(self, gw, dst = "0.0.0.0", mask = "0.0.0.0"):

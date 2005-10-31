@@ -10,6 +10,9 @@ start() {
 stop() {
         ebegin "Stopping COMAR Daemon"
         start-stop-daemon --stop --quiet --pidfile /var/run/comar.pid
+        # Sometimes comar.pid and comar.socket not closed/removed,
+        # maybe a bug?
+        rm -f /var/run/comar.*
         eend $?
 }
 

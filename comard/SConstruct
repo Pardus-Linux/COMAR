@@ -15,6 +15,7 @@ distfiles = """
     SConstruct
     README
     model.xml
+    comar
     src/*.c
     src/SConscript
     include/*.h
@@ -69,6 +70,6 @@ targets.append(env.Install(libdir, libcomar))
 targets.append(env.Install(pydir, 'bindings/comar.py'))
 targets.append(env.Install(pydir, csapi))
 targets.append(env.Install(bindir, hav))
-targets.append(env.Install(initdir, 'comard'))
+targets.append(env.Install(initdir, 'comar'))
 
 env.Alias('install', targets)

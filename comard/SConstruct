@@ -23,6 +23,8 @@ distfiles = """
     bindings/comar.py
     bindings/*.c
     bindings/*.h
+    csapi/SConscript
+    csapi/*.c
 """
 
 if 'dist' in sys.argv:

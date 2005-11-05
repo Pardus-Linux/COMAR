@@ -384,6 +384,7 @@ def queryPanel(mon):
 	"Panel Size is",
 	"Panel Size from BIOS:",
 	"Detected panel size via",
+	"Size of device LFP (local flat panel) is",
 	"Size of device LFP",
 	"Size of device DFP",
 	"Detected LCD/plasma panel ("
@@ -471,7 +472,7 @@ def configureDisplay():
 	# detect graphic card
 	# if discover db has no data, try X -configure
 	a = capture("/usr/bin/discover --data-path=xfree86/server/device/driver --data-version=4.3.0 display")
-	if a[1] == [ '\n' ] or a[0] > 0:
+	if a[1][0] == '\n' or a[0] > 0:
 		a = capture("/usr/bin/X -configure -logfile /var/log/xlog")
 		if a[0] != 0:
 			print "X -configure failed!"

@@ -2,7 +2,8 @@
 
 Import('env')
 
-libcomar = env.SharedLibrary("libcomar", [ "libcomar.c" ])
-hav = env.Program("hav", [ "libcomar.c", "hav.c" ])
+env2 = env.Copy(LIBS='')
+libcomar = env2.SharedLibrary("libcomar", [ "libcomar.c" ])
+hav = env2.Program("hav", [ "libcomar.c", "hav.c" ])
 
 Return('libcomar hav')

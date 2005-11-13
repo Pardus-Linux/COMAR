@@ -16,10 +16,36 @@
 
 #include "cfg.h"
 #include "data.h"
+#include "model.h"
 #include "log.h"
 
 static DB_ENV *my_env;
 static int nr_open_dbs;
+
+static void
+fix_old_db(void)
+{
+	// FIXME: delete old db format, remove this code before release
+	// beware: quickly and badly written temporary code :)
+	FILE *f;
+	struct stat fs;
+	char *t;
+	t = malloc(strlen(cfg_data_dir) + 7 + 1);
+	sprintf(t, "%s%s", cfg_data_dir, "/format");
+	if (stat(t, &fs) != 0) {
+		free(t);
+		t = malloc(strlen(cfg_data_dir) + 9 + 1);
+		sprintf(t, "rm -rf %s/*", cfg_data_dir);
+		system(t);
+		free(t);
+		t = malloc(strlen(cfg_data_dir) + 7 + 1);
+		sprintf(t, "%s%s", cfg_data_dir, "/format");
+		f = fopen(t, "w");
+		fwrite("1", 1, 1, f);
+		fclose(f);
+	}
+	free(t);
+}
 
 int
 db_init(void)
@@ -34,6 +60,7 @@ db_init(void)
 	} else {
 		// FIXME: check perms and owner
 	}
+	fix_old_db();
 	// FIXME: check and recover db files
 	return 0;
 }
@@ -139,15 +166,26 @@ del_data(DB *db, const char *name)
 static char *
 make_key(int node_no, const char *app)
 {
-	// FIXME: lame
-	static char buf[128];
+	static char *key = NULL;
+	static size_t max = 0;
+	const char *path;
+	size_t size;
+
+	path = model_get_path(node_no);
+	size = strlen(path) + 1;
+	if (app) size += strlen(app) + 1;
+
+	if (size > max) {
+		key = realloc(key, size);
+		max = size;
+	}
 
 	if (app)
-		sprintf(buf, "%d/%s", node_no, app);
+		sprintf(key, "%s/%s", path, app);
 	else
-		sprintf(buf, "%d", node_no);
+		sprintf(key, "%s", path);
 
-	return buf;
+	return key;
 }
 
 static char *

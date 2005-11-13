@@ -8,6 +8,7 @@ from distutils.sysconfig import get_config_var as pyconf
 
 version = ARGUMENTS.get('version', '1.0')
 prefix = ARGUMENTS.get('prefix', 'install')
+pyprefix = ARGUMENTS.get('pythondir', 'auto')
 
 # Source Distribution
 
@@ -33,12 +34,20 @@ if 'dist' in sys.argv:
 
 # Configuration
 
+if os.path.exists("/etc/pardus-release"):
+    # Jolly good, we are on a Pardus system
+    # Pisi and Comar python modules goes to the /usr/lib/pardus for reliability
+    # Python is patched to import from this directory first
+    pyprefix = 'usr/lib/pardus'
+
 if sys.version_info[1] == 3:
     libs = [ 'db', 'm', "python2.3" ]
-    pyprefix = 'usr/lib/python2.3/site-packages'
+    if pyprefix == 'auto':
+        pyprefix = 'usr/lib/python2.3/site-packages'
 else:
     libs = [ 'db', 'm', "python2.4" ]
-    pyprefix = 'usr/lib/python2.4/site-packages'
+    if pyprefix == 'auto':
+        pyprefix = 'usr/lib/python2.4/site-packages'
 
 libpath = [ '/usr/lib' ]
 cpppath = [ pyconf('CONFINCLUDEPY'), "../include" ]

@@ -20,6 +20,7 @@
 #include "model.h"
 #include "acl.h"
 #include "log.h"
+#include "cfg.h"
 #include "ipc.h"
 #include "notify.h"
 
@@ -44,8 +45,6 @@ enum {
 	RPC_GETLIST,
 	RPC_CHECKACL
 };
-
-#define RPC_PIPE_NAME "/var/run/comar.socket"
 
 struct connection {
 	struct connection *next, *prev;
@@ -444,11 +443,11 @@ rpc_unix_start(void)
 	char *s;
 	size_t sz;
 
-	if (create_pipe(RPC_PIPE_NAME) != 0) {
-		log_error("RPC_UNIX: Cannot create listening pipe\n");
+	if (create_pipe(cfg_socket_name) != 0) {
+		log_error("RPC_UNIX: Cannot create listening pipe '%s'\n", cfg_socket_name);
 		return;
 	}
-	log_info("RPC_UNIX: listening on %s\n", RPC_PIPE_NAME);
+	log_info("RPC_UNIX: listening on %s\n", cfg_socket_name);
 
 	while (1) {
 		while (1 == proc_listen(&p, &cmd, &size, 0)) {

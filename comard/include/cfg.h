@@ -12,6 +12,7 @@
 
 extern char *cfg_model_file;
 extern char *cfg_data_dir;
+extern char *cfg_socket_name;
 extern int cfg_log_console;
 extern int cfg_log_file;
 extern char *cfg_log_file_name;

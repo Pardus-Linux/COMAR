@@ -2,7 +2,12 @@
 
 import os
 import sys
+import glob
+import shutil
 from distutils.sysconfig import get_config_var as pyconf
+
+import SCons.Warnings
+SCons.Warnings.warningAsException(1)
 
 # Parameters
 
@@ -29,7 +34,23 @@ distfiles = """
 """
 
 if 'dist' in sys.argv:
-    os.popen("tar -czf %s %s" % ("comar-" + version + ".tar.gz", " ".join(Split(distfiles))))
+    distdir = "comar-%s" % version
+    list = []
+    for t in Split(distfiles):
+        list.extend(glob.glob(t))
+    if os.path.exists(distdir):
+        shutil.rmtree(distdir)
+    os.mkdir(distdir)
+    for file_ in list:
+        cum = distdir[:]
+        for d in os.path.dirname(file_).split('/'):
+            dn = os.path.join(cum, d)
+            cum = dn[:]
+            if not os.path.exists(dn):
+                os.mkdir(dn)
+        shutil.copy(file_, os.path.join(distdir, file_))
+    os.popen("tar -czf %s %s" % ("comar-" + version + ".tar.gz", distdir))
+    shutil.rmtree(distdir)
     Exit(0)
 
 # Configuration

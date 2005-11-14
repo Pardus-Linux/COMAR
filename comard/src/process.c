@@ -13,26 +13,20 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <sys/time.h>
 
 #include "process.h"
 #include "ipc.h"
 #include "log.h"
 
 struct Proc my_proc;
+static int shutdown_activated = 0;
+
 
 static void
 handle_sigterm(int signum)
 {
-	int i;
-
-	// forward to children
-	if (my_proc.nr_children) {
-		for (i = 0; i < my_proc.nr_children; i++) {
-			kill(my_proc.children[i].pid, SIGTERM);
-		}
-	}
-	// FIXME: we should complete/abort db transactions, etc first
-	proc_finish();
+	shutdown_activated = 1;
 }
 
 static void
@@ -89,15 +83,75 @@ rem_child(int nr)
 {
 	int status;
 
+	log_debug(LOG_PROC, "%s process %d finished\n",
+		my_proc.children[nr].desc, my_proc.children[nr].pid);
+
 	waitpid(my_proc.children[nr].pid, &status, 0);
 	--my_proc.nr_children;
 	if (0 == my_proc.nr_children) return;
 	(my_proc.children)[nr] = (my_proc.children)[my_proc.nr_children];
 }
 
+static void
+stop_children(void)
+{
+	struct timeval start;
+	struct timeval cur;
+	struct timeval tv;
+	unsigned long msec;
+	fd_set fds;
+	int i, sock, max;
+	int len;
+	char tmp[100];
+
+	// hey kiddo, finish your homework and go to bed
+	for (i = 0; i < my_proc.nr_children; i++) {
+		kill(my_proc.children[i].pid, SIGTERM);
+	}
+
+	gettimeofday(&start, NULL);
+	msec = 0;
+
+	while (my_proc.nr_children && msec < 3000) {
+		// 1/5 second precision for the 3 second maximum shutdown time
+		tv.tv_sec = 0;
+		tv.tv_usec = 200000;
+		max = 0;
+		FD_ZERO(&fds);
+		for (i = 0; i < my_proc.nr_children; i++) {
+			sock = my_proc.children[i].from;
+			FD_SET(sock, &fds);
+			if (sock > max) max = sock;
+		}
+		++max;
+
+		if (select(max, &fds, NULL, NULL, &tv) > 0) {
+			for (i = 0; i < my_proc.nr_children; i++) {
+				sock = my_proc.children[i].from;
+				if (FD_ISSET(sock, &fds)) {
+					len = read(sock, &tmp, sizeof(tmp));
+					if (0 == len) {
+						rem_child(i);
+					}
+				}
+			}
+		}
+
+		gettimeofday(&cur, NULL);
+		msec = (cur.tv_sec * 1000) + (cur.tv_usec / 1000);
+		msec -= (start.tv_sec * 1000) + (start.tv_usec / 1000);
+	}
+
+	// sorry kids, play time is over
+	for (i = 0; i < my_proc.nr_children; i++) {
+		kill(my_proc.children[i].pid, SIGKILL);
+	}
+}
+
 void
 proc_finish(void)
 {
+	log_debug(LOG_PROC, "%s process %d started\n", my_proc.desc, getpid());
 	exit(0);
 }
 
@@ -143,6 +197,11 @@ proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout)
 	int i, sock, max;
 	int len;
 
+	if (shutdown_activated) {
+		stop_children();
+		proc_finish();
+	}
+
 	tv.tv_sec = 0;
 	tv.tv_usec = 0;
 
@@ -168,6 +227,7 @@ proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout)
 		sock = my_proc.parent.from;
 		if (sock != -1 && FD_ISSET(sock, &fds)) {
 			len = read(sock, &ipc, sizeof(ipc));
+			// FIXME: handle parent's death case
 			*senderp = &my_proc.parent;
 			*cmdp = (ipc & 0xFF000000) >> 24;
 			*sizep = (ipc & 0x00FFFFFF);
@@ -183,8 +243,6 @@ proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout)
 					*sizep = (ipc & 0x00FFFFFF);
 					return 1;
 				} else {
-					log_debug(LOG_PROC, "%s process %d finished\n",
-						my_proc.children[i].desc, my_proc.children[i].pid);
 					rem_child(i);
 					*senderp = NULL;
 					*cmdp = CMD_FINISH;

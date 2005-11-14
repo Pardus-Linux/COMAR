@@ -43,23 +43,25 @@ static struct option longopts[] = {
 	{ "datadir", required_argument, NULL, 'd' },
 	{ "socket", required_argument, NULL, 's' },
 	{ "debug", required_argument, NULL, 'g' },
+	{ "print", 0, NULL, 'p' },
 	{ "help", 0, NULL, 'h' },
 	{ "version", 0, NULL, 'v' },
 	{ NULL, 0, NULL, 0 }
 };
 
-static char *shortopts = "m:d:s:g:hv";
+static char *shortopts = "m:d:s:g:phv";
 
 static void
 print_usage(void)
 {
 	puts(
-		_("Usage: comard [OPTIONS]\n"
+		_("Usage: comar [OPTIONS]\n"
 		"Pardus configuration manager.\n"
 		" -m, --model [FILE]  Use the given xml model file.\n"
 		" -d, --datadir [DIR] Data storage directory.\n"
 		" -s, --socket [NAME] RPC unix socket name.\n"
 		" -g, --debug [FLAGS] Enable debug output.\n"
+		" -p, --print         Print debug messages to console.\n"
 		" -h, --help          Print this text and exit.\n"
 		" -v, --version       Print version and exit.\n"
 		"Report bugs to http://bugs.uludag.org.tr")
@@ -70,7 +72,7 @@ static void
 print_version(void)
 {
 	printf(
-		_("COMARd %s\n"
+		_("COMAR %s\n"
 		"Copyright (c) 2005, TUBITAK/UEKAE\n"
 		"This program is free software; you can redistribute it and/or modify it\n"
 		"under the terms of the GNU General Public License as published by the\n"
@@ -101,6 +103,9 @@ cfg_init(int argc, char *argv[])
 					if (strstr(optarg, logflags[j].flag))
 						cfg_log_flags |= logflags[j].value;
 				}
+				break;
+			case 'p':
+				cfg_log_console = 1;
 				break;
 			case 'h':
 				print_usage();

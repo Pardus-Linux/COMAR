@@ -11,12 +11,26 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <time.h>
 
 #include "cfg.h"
 #include "log.h"
 
 static void
-log_print(const char *fmt, va_list ap)
+timestamp(FILE *f)
+{
+	static char buf[128];
+	time_t t;
+	struct tm *bt;
+
+	time(&t);
+	bt = gmtime(&t);
+	strftime(buf, 127, "%F %T ", bt);
+	fputs(buf, f);
+}
+
+static void
+log_print(const char *fmt, va_list ap, int error)
 {
 	if (cfg_log_console)
 		vprintf(fmt, ap);
@@ -26,6 +40,8 @@ log_print(const char *fmt, va_list ap)
 
 		f = fopen(cfg_log_file_name, "a");
 		if (f) {
+			timestamp(f);
+			if (error) fprintf(f, "Error: ");
 			vfprintf(f, fmt, ap);
 			fclose(f);
 		}
@@ -40,7 +56,7 @@ log_error(const char *fmt, ...)
 	va_list ap;
 
 	va_start(ap, fmt);
-	log_print(fmt, ap);
+	log_print(fmt, ap, 1);
 	va_end(ap);
 }
 
@@ -50,7 +66,7 @@ log_info(const char *fmt, ...)
 	va_list ap;
 
 	va_start(ap, fmt);
-	log_print(fmt, ap);
+	log_print(fmt, ap, 0);
 	va_end(ap);
 }
 
@@ -63,6 +79,6 @@ log_debug(int subsys, const char *fmt, ...)
 		return;
 
 	va_start(ap, fmt);
-	log_print(fmt, ap);
+	log_print(fmt, ap, 0);
 	va_end(ap);
 }

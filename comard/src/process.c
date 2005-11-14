@@ -83,7 +83,7 @@ rem_child(int nr)
 {
 	int status;
 
-	log_debug(LOG_PROC, "%s process %d finished\n",
+	log_debug(LOG_PROC, "%s process %d ended\n",
 		my_proc.children[nr].desc, my_proc.children[nr].pid);
 
 	waitpid(my_proc.children[nr].pid, &status, 0);
@@ -151,7 +151,7 @@ stop_children(void)
 void
 proc_finish(void)
 {
-	log_debug(LOG_PROC, "%s process %d started\n", my_proc.desc, getpid());
+	log_debug(LOG_PROC, "%s process %d finished\n", my_proc.desc, getpid());
 	exit(0);
 }
 
@@ -227,7 +227,13 @@ proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout)
 		sock = my_proc.parent.from;
 		if (sock != -1 && FD_ISSET(sock, &fds)) {
 			len = read(sock, &ipc, sizeof(ipc));
-			// FIXME: handle parent's death case
+			if (0 == len) {
+				// parent process left us
+				// tell me that there is something worth living for tonight
+				log_error("Parent left %s process %d\n", my_proc.desc, getpid());
+				stop_children();
+				proc_finish();
+			}
 			*senderp = &my_proc.parent;
 			*cmdp = (ipc & 0xFF000000) >> 24;
 			*sizep = (ipc & 0x00FFFFFF);

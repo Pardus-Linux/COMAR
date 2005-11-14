@@ -10,6 +10,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stddef.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "cfg.h"
 #include "process.h"
@@ -22,6 +27,37 @@
 void rpc_unix_start(void);
 
 
+static void
+stop_running_comar(void)
+{
+	const char check[] = { 42, 0, 0, 0, 0, 0, 0, 0 };
+	char buf[100];
+	struct sockaddr_un name;
+	size_t size;
+	int sock;
+
+	sock = socket(PF_LOCAL, SOCK_STREAM, 0);
+	if (sock == -1) return;
+
+	name.sun_family = AF_LOCAL;
+	strncpy(name.sun_path, cfg_socket_name, sizeof (name.sun_path));
+	size = (offsetof (struct sockaddr_un, sun_path) + strlen (name.sun_path) + 1);
+	if (connect(sock, (struct sockaddr *) &name, size) != 0) {
+		// no old comar running, continue with initialization
+		close(sock);
+		return;
+	}
+
+	// send retirement check
+	write(sock, &check, sizeof(check));
+
+	while (1) {
+		int len;
+		len = read(sock, &buf, sizeof(buf));
+		if (len <= 0) break;
+	}
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -33,6 +69,9 @@ main(int argc, char *argv[])
 	// First phase: configuration
 	cfg_init(argc, argv);
 	log_info("COMARd v"VERSION"\n");
+
+	// Shutdown old COMAR
+	stop_running_comar();
 
 	// Second phase: subsytem init
 	if (db_init() != 0) return 1;
@@ -48,6 +87,11 @@ main(int argc, char *argv[])
 		if (1 == proc_listen(&p, &cmd, &size, 1)) {
 			log_debug(LOG_IPC, "Main switch, cmd=%d\n", cmd);
 			switch (cmd) {
+				case CMD_SHUTDOWN:
+					// our job here is finished, leave the building
+					log_info("Shutdown requested.\n");
+					proc_finish();
+					break;
 				case CMD_REGISTER:
 				case CMD_REMOVE:
 				case CMD_CALL:

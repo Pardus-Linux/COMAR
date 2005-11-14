@@ -47,7 +47,7 @@ proc_init(void)
 	memset(&my_proc, 0, sizeof(struct Proc));
 	my_proc.parent.to = -1;
 	my_proc.parent.from = -1;
-	my_proc.desc = "MainSwitch";
+	my_proc.desc = "Main";
 	my_proc.max_children = 8;
 	my_proc.children = calloc(8, sizeof(struct ProcChild));
 	handle_signals();
@@ -151,6 +151,7 @@ stop_children(void)
 void
 proc_finish(void)
 {
+	if (my_proc.nr_children) stop_children();
 	log_debug(LOG_PROC, "%s process %d finished\n", my_proc.desc, getpid());
 	exit(0);
 }
@@ -198,7 +199,6 @@ proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout)
 	int len;
 
 	if (shutdown_activated) {
-		stop_children();
 		proc_finish();
 	}
 
@@ -231,7 +231,6 @@ proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout)
 				// parent process left us
 				// tell me that there is something worth living for tonight
 				log_error("Parent left %s process %d\n", my_proc.desc, getpid());
-				stop_children();
 				proc_finish();
 			}
 			*senderp = &my_proc.parent;

@@ -46,6 +46,8 @@ enum {
 	RPC_CHECKACL
 };
 
+#define RPC_SHUTDOWN 42
+
 struct connection {
 	struct connection *next, *prev;
 	int sock;
@@ -232,6 +234,12 @@ parse_rpc(struct connection *c)
 	args.size = c->data_size;
 
 	switch (cmd) {
+		case RPC_SHUTDOWN:
+			// no parameter
+			if (!acl_is_capable(CMD_SHUTDOWN, 0, &c->cred)) return -1;
+			ipc_start(CMD_SHUTDOWN, 0, 0, 0);
+			ipc_send(TO_PARENT);
+			return 0;
 		case RPC_REGISTER:
 			// class name, package name, file name
 			if (get_arg(&args, &t, &sz) != 1) return -1;

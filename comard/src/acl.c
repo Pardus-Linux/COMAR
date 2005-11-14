@@ -10,24 +10,24 @@
 #include <stdlib.h>
 
 #include "acl.h"
+#include "process.h"
+#include "ipc.h"
 
 int
 acl_is_capable(int cmd, int node, struct Creds *cred)
 {
-	/* normal policy
+	// test policy: allow calls for everyone
 	switch (cmd) {
 		case CMD_REGISTER:
 		case CMD_REMOVE:
-			// only root allowed for administration
-			if (cred->uid == 0)return 1;
+		case CMD_SHUTDOWN:
+			// only root allowed
+			if (cred->uid == 0) return 1;
 			break;
 		case CMD_CALL:
-			// must check acl db
+			// FIXME: must check acl db
+			// test policy: allow calls for everyone
 			return 1;
 	}
 	return 0;
-	*/
-
-	// test policy: allow everyone
-	return 1;
 }

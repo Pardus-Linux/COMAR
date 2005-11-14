@@ -24,7 +24,8 @@ enum {
 	CMD_CALL,
 	CMD_CALL_PACKAGE,
 	CMD_GETLIST,
-	CMD_NOTIFY
+	CMD_NOTIFY,
+	CMD_SHUTDOWN
 };
 
 void ipc_start(int cmd, void *caller_data, int id, int node);

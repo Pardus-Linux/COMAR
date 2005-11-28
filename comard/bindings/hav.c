@@ -32,7 +32,7 @@ static void
 print_usage(void)
 {
 	puts(
-		"Command line COMAR interface."
+		"Command line COMAR interface.\n"
 		"usage: hav [options] <command> [args]\n"
 		"commands:\n"
 		"   call <method-name> [parameter value]...\n"
@@ -41,6 +41,7 @@ print_usage(void)
 		"   remove <package-name>\n"
 		"   list <class>\n"
 		"   listen <notify-name>...\n"
+		"   dump\n"
 		"options:\n"
 		"   -w, --nowait        Do not wait for an answer.\n"
 		"report bugs to <gurer@uludag.org.tr>"
@@ -271,6 +272,42 @@ do_listen(char *argv[])
 	comar_disconnect(com);
 }
 
+static void
+do_dump(char *argv[])
+{
+	comar_t *com;
+	int cmd;
+	unsigned int id;
+	char *ret;
+
+	com = comar_connect();
+	if (!com) {
+		puts("Cannot connect to COMAR daemon");
+		exit(2);
+	}
+
+	if (!argv[optind]) {
+		print_usage();
+		exit(1);
+	}
+
+	comar_send(
+		com, 1,
+		COMAR_DUMP_PROFILE,
+		argv[optind],
+		NULL
+	);
+
+	comar_wait(com, -1);
+	if (!comar_read(com, &cmd, &id, &ret)) {
+		puts("Connection closed by COMAR daemon");
+		exit(2);
+	}
+	printf("%s id=%d, arg=[%s]\n", comar_cmd_name(cmd), id, ret);
+
+	comar_disconnect(com);
+}
+
 static struct cmd_s {
 	const char *cmd;
 	void (*func)(char *argv[]);
@@ -280,7 +317,8 @@ static struct cmd_s {
 	{ "register", do_register },
 	{ "remove", do_remove },
 	{ "list", do_list },
-	{ "listen", do_listen }
+	{ "listen", do_listen },
+	{ "dump", do_dump }
 };
 
 int

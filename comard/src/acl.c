@@ -21,6 +21,7 @@ acl_is_capable(int cmd, int node, struct Creds *cred)
 		case CMD_REGISTER:
 		case CMD_REMOVE:
 		case CMD_SHUTDOWN:
+		case CMD_DUMP_PROFILE:
 			// only root allowed
 			if (cred->uid == 0) return 1;
 			break;

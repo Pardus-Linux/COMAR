@@ -37,8 +37,9 @@ extern "C" {
 #define COMAR_ASKNOTIFY 13
 #define COMAR_GETLIST 14
 #define COMAR_CHECKACL 15
+#define COMAR_DUMP_PROFILE 16
 
-#define COMAR_CMD_MAX 16
+#define COMAR_CMD_MAX 17
 #define COMAR_CMD_NAMES \
 	"Result", \
 	"Fail", \
@@ -55,7 +56,8 @@ extern "C" {
 	"CallPackage", \
 	"AskNotify", \
 	"GetList", \
-	"CheckACL",
+	"CheckACL", \
+	"DumpProfile",
 
 struct comar_struct;
 typedef struct comar_struct comar_t;

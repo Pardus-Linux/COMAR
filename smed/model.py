@@ -13,15 +13,11 @@ from qt import *
 import codecs
 
 from xmlutil import *
+from enums import *
 import edit
 
+
 class Node(QListViewItem):
-    MODEL = 0
-    CLASS = 1
-    GROUP = 2
-    METHOD = 3
-    NOTIFY = 4
-    
     img_path = "/usr/share/icons/Tulliana-1.0/16x16/apps/"
     images = [
         img_path + "mycomputer.png",
@@ -52,10 +48,29 @@ class Node(QListViewItem):
         self.nodeParent = parent
         self.nodeType = type
         self.nodeName = name
+        self.nodeDesc = ""
+        self.nodeProfile = NONE
+        self.nodeArguments = []
+        
         if data is not None:
             self.nodeDesc = getNodeText(data, "description", "")
-        else:
-            self.nodeDesc = ""
+            
+            tmp = data.getAttribute("profile")
+            if tmp == "global":
+                self.nodeProfile = GLOBAL
+            elif tmp == "package":
+                self.nodeProfile = PACKAGE
+            elif tmp == "":
+                pass
+            else:
+                print "Method '%s' has unknown profile mode '%s'." % (self.nodeName, tmp)
+            
+            for item in getTagsByName(data, "instance"):
+                self.nodeArguments.append((item.firstChild.data, True))
+
+            for item in getTagsByName(data, "argument"):
+                self.nodeArguments.append((item.firstChild.data, False))
+
         self.setOpen(True)
     
     def text(self, column):
@@ -63,6 +78,7 @@ class Node(QListViewItem):
             return self.nodeName
         else:
             return ""
+
 
 class Model(QHBox):
     def __init__(self, *args):
@@ -77,23 +93,23 @@ class Model(QHBox):
         list.setSorting(-1)
         self.connect(list, SIGNAL("selectionChanged()"), self._change)
         hb = QHButtonGroup(vb)
-        self.bt_group = QPushButton(QIconSet(QPixmap(Node.images[Node.GROUP])), "", hb)
+        self.bt_group = QPushButton(QIconSet(QPixmap(Node.images[GROUP])), "", hb)
         QToolTip.add(self.bt_group, "Add group")
         self.connect(self.bt_group, SIGNAL("clicked()"), self._add_group)
-        self.bt_class = QPushButton(QIconSet(QPixmap(Node.images[Node.CLASS])), "", hb)
+        self.bt_class = QPushButton(QIconSet(QPixmap(Node.images[CLASS])), "", hb)
         QToolTip.add(self.bt_class, "Add class")
         self.connect(self.bt_class, SIGNAL("clicked()"), self._add_class)
-        self.bt_method = QPushButton(QIconSet(QPixmap(Node.images[Node.METHOD])), "", hb)
+        self.bt_method = QPushButton(QIconSet(QPixmap(Node.images[METHOD])), "", hb)
         QToolTip.add(self.bt_method, "Add method")
         self.connect(self.bt_method, SIGNAL("clicked()"), self._add_method)
-        self.bt_notify = QPushButton(QIconSet(QPixmap(Node.images[Node.NOTIFY])), "", hb)
+        self.bt_notify = QPushButton(QIconSet(QPixmap(Node.images[NOTIFY])), "", hb)
         QToolTip.add(self.bt_notify, "Add notify")
         self.connect(self.bt_notify, SIGNAL("clicked()"), self._add_notify)
         self.bt_remove = QPushButton("X", hb)
         QToolTip.add(self.bt_remove, "Remove node")
         self.connect(self.bt_remove, SIGNAL("clicked()"), self._remove)
-        self.clear()
         self.editor = edit.NodeEdit(self)
+        self.clear()
     
     def _change(self):
         item = self.list.selectedItem()
@@ -101,7 +117,7 @@ class Model(QHBox):
             self.editor.use_node(item)
     
     def _add_group(self):
-        Node(self.list_top, Node.GROUP, "(new_group)")
+        Node(self.list_top, GROUP, "(new_group)")
     
     def _add_class(self):
         item = self.list.selectedItem()
@@ -109,7 +125,7 @@ class Model(QHBox):
             return
         if item.parent() != self.list_top:
             return
-        Node(item, Node.CLASS, "(new_class)")
+        Node(item, CLASS, "(new_class)")
     
     def _add_method(self):
         item = self.list.selectedItem()
@@ -117,7 +133,7 @@ class Model(QHBox):
             return
         if (item.parent() is None) or (item.parent().parent() != self.list_top):
             return
-        Node(item, Node.METHOD, "(new_method)")
+        Node(item, METHOD, "(new_method)")
     
     def _add_notify(self):
         item = self.list.selectedItem()
@@ -125,7 +141,7 @@ class Model(QHBox):
             return
         if (item.parent() is None) or (item.parent().parent() != self.list_top):
             return
-        Node(item, Node.NOTIFY, "(new_notify)")
+        Node(item, NOTIFY, "(new_notify)")
     
     def _remove(self):
         item = self.list.selectedItem()
@@ -135,20 +151,21 @@ class Model(QHBox):
     
     def clear(self):
         self.list.clear()
-        self.list_top = Node(self.list, Node.MODEL, "Model")
+        self.list_top = Node(self.list, MODEL, "Model")
+        self.editor.use_node(self.list_top)
     
     def open_as(self, model_file):
         self.clear()
         doc = parseDocument(model_file, "comarModel")
         
         for group in getTagsByName(doc.documentElement, "group"):
-            groupItem = Node(self.list_top, Node.GROUP, group.getAttribute("name"), group)
+            groupItem = Node(self.list_top, GROUP, group.getAttribute("name"), group)
             for class_ in getTagsByName(group, "class"):
-                classItem = Node(groupItem, Node.CLASS, class_.getAttribute("name"), class_)
+                classItem = Node(groupItem, CLASS, class_.getAttribute("name"), class_)
                 for method in getTagsByName(class_, "method"):
-                    Node(classItem, Node.METHOD, method.getAttribute("name"), method)
+                    Node(classItem, METHOD, method.getAttribute("name"), method)
                 for method in getTagsByName(class_, "notify"):
-                    Node(classItem, Node.NOTIFY, method.getAttribute("name"), method)
+                    Node(classItem, NOTIFY, method.getAttribute("name"), method)
         
         doc.unlink()
         self.fileName = model_file
@@ -168,8 +185,21 @@ class Model(QHBox):
                 addText(doc, ce, "\n")
                 m = c.firstChild()
                 while m:
-                    if m.nodeType == Node.METHOD:
+                    if m.nodeType == METHOD:
                         me = addNode(doc, ce, "method")
+                        if m.nodeProfile != NONE:
+                            if m.nodeProfile == GLOBAL:
+                                me.setAttribute("profile", "global")
+                            elif m.nodeProfile == PACKAGE:
+                                me.setAttribute("profile", "package")
+                        
+                        for arg in m.nodeArguments:
+                            addText(doc, me, "\n")
+                            if arg[1]:
+                                addTextNode(doc, me, "instance", unicode(arg[0]))
+                            else:
+                                addTextNode(doc, me, "argument", unicode(arg[0]))
+                        
                     else:
                         me = addNode(doc, ce, "notify")
                     me.setAttribute("name", m.nodeName)

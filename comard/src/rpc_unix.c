@@ -43,7 +43,8 @@ enum {
 	RPC_CALL_PACKAGE,
 	RPC_ASKNOTIFY,
 	RPC_GETLIST,
-	RPC_CHECKACL
+	RPC_CHECKACL,
+	RPC_DUMP_PROFILE
 };
 
 #define RPC_SHUTDOWN 42
@@ -237,9 +238,11 @@ parse_rpc(struct connection *c)
 		case RPC_SHUTDOWN:
 			// no parameter
 			if (!acl_is_capable(CMD_SHUTDOWN, 0, &c->cred)) return -1;
+			write_rpc(c, RPC_RESULT, id, NULL, 0);
 			ipc_start(CMD_SHUTDOWN, 0, 0, 0);
 			ipc_send(TO_PARENT);
 			return 0;
+
 		case RPC_REGISTER:
 			// class name, package name, file name
 			if (get_arg(&args, &t, &sz) != 1) return -1;
@@ -254,6 +257,7 @@ parse_rpc(struct connection *c)
 			if (get_arg(&args, &t, &sz) != 0) return -1;
 			ipc_send(TO_PARENT);
 			return 0;
+
 		case RPC_REMOVE:
 			// package name
 			if (!acl_is_capable(CMD_REMOVE, 0, &c->cred)) return -1;
@@ -263,6 +267,7 @@ parse_rpc(struct connection *c)
 			if (get_arg(&args, &t, &sz) != 0) return -1;
 			ipc_send(TO_PARENT);
 			return 0;
+
 		case RPC_CHECKACL:
 			// method name
 			if (get_arg(&args, &t, &sz) != 1) return -1;
@@ -274,6 +279,7 @@ parse_rpc(struct connection *c)
 				write_rpc(c, RPC_RESULT, id, NULL, 0);
 			}
 			return 0;
+
 		case RPC_CALL:
 			// method name, arg pairs (key-value)
 			if (get_arg(&args, &t, &sz) != 1) return -1;
@@ -288,12 +294,14 @@ parse_rpc(struct connection *c)
 				int ret = get_arg(&args, &t, &sz);
 				if (ret == 0) break;
 				if (ret == -1) return -1;
+				if (!model_has_argument(no,  t)) return -1;
 				ipc_pack_arg(t, sz);
 				if (get_arg(&args, &t, &sz) != 1) return -1;
 				ipc_pack_arg(t, sz);
 			}
 			ipc_send(TO_PARENT);
 			return 0;
+
 		case RPC_CALL_PACKAGE:
 			// method name, package name, arg pairs (key-value)
 			if (get_arg(&args, &t, &sz) != 1) return -1;
@@ -310,12 +318,14 @@ parse_rpc(struct connection *c)
 				int ret = get_arg(&args, &t, &sz);
 				if (ret == 0) break;
 				if (ret == -1) return -1;
+				if (!model_has_argument(no,  t)) return -1;
 				ipc_pack_arg(t, sz);
 				if (get_arg(&args, &t, &sz) != 1) return -1;
 				ipc_pack_arg(t, sz);
 			}
 			ipc_send(TO_PARENT);
 			return 0;
+
 		case RPC_GETLIST:
 			// class name
 			if (get_arg(&args, &t, &sz) != 1) return -1;
@@ -328,11 +338,20 @@ parse_rpc(struct connection *c)
 			ipc_start(CMD_GETLIST, (void *)c, id, no);
 			ipc_send(TO_PARENT);
 			return 0;
+
 		case RPC_ASKNOTIFY:
 			// notify name
 			if (get_arg(&args, &t, &sz) != 1) return -1;
 			if (notify_mark(c->notify_mask, t) != 0) return -1;
 			return 0;
+
+		case RPC_DUMP_PROFILE:
+			// no parameter
+			if (!acl_is_capable(CMD_DUMP_PROFILE, 0, &c->cred)) return -1;
+			ipc_start(CMD_DUMP_PROFILE, (void *)c, id, 0);
+			ipc_send(TO_PARENT);
+			return 0;
+
 		default:
 			return -1;
 	}

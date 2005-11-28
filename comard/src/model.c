@@ -24,10 +24,20 @@ enum {
 	N_NOTIFY
 };
 
+enum {
+	P_NONE,
+	P_GLOBAL,
+	P_PACKAGE
+};
+
 struct node {
 	const char *path;
 	const char *method;
 	struct node *next;
+	const char *args;
+	int nr_instances;
+	int nr_args;
+	int profile_mode;
 	int parent_no;
 	int type;
 	int no;
@@ -89,33 +99,54 @@ add_node(int parent_no, const char *path, int type)
 	return n->no;
 }
 
+static char *path_ptr = NULL;
+
 static char *
 build_path(iks *g, iks *o, iks *m)
 {
-	static char *ptr = NULL;
-
-	if (ptr) {
-		ptr += strlen(ptr) + 1;
+	if (path_ptr) {
+		path_ptr += strlen(path_ptr) + 1;
 	} else {
-		ptr = paths;
+		path_ptr = paths;
 	}
 
 	if (m) {
-		sprintf(ptr, "%s.%s.%s",
+		sprintf(path_ptr, "%s.%s.%s",
 			iks_find_attrib(g, "name"),
 			iks_find_attrib(o, "name"),
 			iks_find_attrib(m, "name")
 		);
 	} else if (o) {
-		sprintf(ptr, "%s.%s",
+		sprintf(path_ptr, "%s.%s",
 			iks_find_attrib(g, "name"),
 			iks_find_attrib(o, "name")
 		);
 	} else {
-		strcpy(ptr, iks_find_attrib(g, "name"));
+		strcpy(path_ptr, iks_find_attrib(g, "name"));
 	}
 
-	return ptr;
+	return path_ptr;
+}
+
+static char *
+build_arg(int no, int is_instance, const char *name)
+{
+	if (path_ptr) {
+		path_ptr += strlen(path_ptr) + 1;
+	} else {
+		path_ptr = paths;
+	}
+
+	if (is_instance)
+		nodes[no].nr_instances++;
+	else
+		nodes[no].nr_args++;
+	
+	strcpy(path_ptr, name);
+	if (NULL == nodes[no].args)
+		nodes[no].args = path_ptr;
+
+	return path_ptr;
 }
 
 int
@@ -140,6 +171,8 @@ model_init(void)
 		log_error("Not a COMAR model file '%s'\n", cfg_model_file);
 		return -1;
 	}
+
+	// FIXME: ugly code ahead, split into functions and simplify
 
 	// scan the model
 	for (grp = iks_first_tag(model); grp; grp = iks_next_tag(grp)) {
@@ -171,6 +204,15 @@ model_init(void)
 							size += grp_size + obj_size + met_size + 3;
 							++count;
 						}
+						if (iks_strcmp(iks_name(met), "method") == 0) {
+							iks *arg;
+							for (arg = iks_first_tag(met); arg; arg = iks_next_tag(arg)) {
+								if (iks_strcmp(iks_name(arg), "argument") == 0
+									|| iks_strcmp(iks_name(arg), "instance") == 0) {
+									size += iks_cdata_size(iks_child(arg)) + 1;
+								}
+							}
+						}
 					}
 				}
 			}
@@ -189,7 +231,27 @@ model_init(void)
 					obj_no = add_node(grp_no, build_path(grp, obj, NULL), N_CLASS);
 					for (met = iks_first_tag(obj); met; met = iks_next_tag(met)) {
 						if (iks_strcmp(iks_name(met), "method") == 0) {
-							add_node(obj_no, build_path(grp, obj, met), N_METHOD);
+							iks *arg;
+							int no;
+							char *prof;
+							no = add_node(obj_no, build_path(grp, obj, met), N_METHOD);
+							prof = iks_find_attrib(met, "profile");
+							if (prof) {
+								if (strcmp(prof, "global") == 0)
+									nodes[no].profile_mode = P_GLOBAL;
+								if (strcmp(prof, "package") == 0)
+									nodes[no].profile_mode = P_PACKAGE;
+							}
+							for (arg = iks_first_tag(met); arg; arg = iks_next_tag(arg)) {
+								if (iks_strcmp(iks_name(arg), "instance") == 0) {
+									build_arg(no, 1, iks_cdata(iks_child(arg)));
+								}
+							}
+							for (arg = iks_first_tag(met); arg; arg = iks_next_tag(arg)) {
+								if (iks_strcmp(iks_name(arg), "argument") == 0) {
+									build_arg(no, 0, iks_cdata(iks_child(arg)));
+								}
+							}
 						} else if (iks_strcmp(iks_name(met), "notify") == 0) {
 							add_node(obj_no, build_path(grp, obj, met), N_NOTIFY);
 							++model_max_notifications;
@@ -276,4 +338,63 @@ model_get_path(int node_no)
 
 	n = &nodes[node_no];
 	return n->path;
+}
+
+int
+model_has_argument(int node_no, const char *argname)
+{
+	struct node *n;
+	int max, i;
+	const char *t;
+
+	if (!argname || argname[0] == '\0') return 0;
+
+	n = &nodes[node_no];
+	max = n->nr_instances + n->nr_args;
+	if (!max) return 0;
+	t = n->args;
+	for (i = 0; i < max; i++) {
+		if (strcmp(t, argname) == 0) return 1;
+		t += strlen(t) + 1;
+	}
+	return 0;
+}
+
+int
+model_global_profile(int node_no)
+{
+	if (nodes[node_no].profile_mode == P_GLOBAL) return 1;
+	return 0;
+}
+
+int
+model_package_profile(int node_no)
+{
+	if (nodes[node_no].profile_mode == P_PACKAGE) return 1;
+	return 0;
+}
+
+int
+model_has_instances(int node_no)
+{
+	if (nodes[node_no].nr_instances) return 1;
+	return 0;
+}
+
+int
+model_is_instance(int node_no, const char *argname)
+{
+	struct node *n;
+	int max, i;
+	const char *t;
+
+	n = &nodes[node_no];
+	max = n->nr_instances;
+	if (!max) return 0;
+	t = n->args;
+	for (i = 0; i < max; i++) {
+		if (strcmp(t, argname) == 0) return 1;
+		t += strlen(t) + 1;
+	}
+	return 0;
 }

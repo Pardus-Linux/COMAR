@@ -18,6 +18,8 @@
 #include "data.h"
 #include "model.h"
 #include "log.h"
+#include "process.h"
+#include "ipc.h"
 
 static DB_ENV *my_env;
 static int nr_open_dbs;
@@ -367,5 +369,99 @@ db_get_code(int node_no, const char *app, char **bufferp, size_t *sizep)
 	ret = 0;
 out:
 	close_db(code_db);
+	return ret;
+}
+
+static char *
+make_pkey(char *old, const char *part)
+{
+	char *ret;
+
+	if (old) {
+		ret = malloc(strlen(old) + 1 + strlen(part) + 1);
+		strcpy(ret, old);
+		ret[strlen(old)] = '/';
+		strcpy(ret + 1 + strlen(old), part);
+		free(old);
+	} else {
+		ret = strdup(part);
+	}
+	return ret;
+}
+
+int
+db_put_profile(int node_no, const char *app, const char *args, size_t args_size)
+{
+	DB *profile_db = NULL;
+	int e, ret = -1;
+	char *key;
+
+	profile_db = open_db("profile.db");
+	if (!profile_db) goto out;
+
+	key = make_pkey(NULL, model_get_path(node_no));
+	if (app) key = make_pkey(key, app);
+
+	ipc_use_data(args, args_size);
+	while (1) {
+		char *t;
+		size_t sz;
+		if (ipc_get_arg(&t, &sz) == 0) break;
+		if (model_is_instance(node_no, t)) {
+			ipc_get_arg(&t, &sz);
+			key = make_pkey(key, t);
+		} else {
+			ipc_get_arg(&t, &sz);
+		}
+	}
+
+	e = put_data(profile_db, key, args, args_size);
+	free(key);
+	if (e) goto out;
+
+	ret = 0;
+out:
+	if (profile_db) close_db(profile_db);
+	return ret;
+}
+
+int
+db_get_profile(int node_no, const char *app, char **argsp, size_t *args_sizep)
+{
+	return -1;
+}
+
+int
+db_get_instances(int node_no, const char *app, char *key, char **instancep)
+{
+	return -1;
+}
+
+int
+db_dump_profile(void)
+{
+	DB *profile_db = NULL;
+	DBC *cursor = NULL;
+	DBT pair[2];
+	int e, ret = -1;
+
+	memset(&pair[0], 0, sizeof(DBT) * 2);
+
+	profile_db = open_db("profile.db");
+	if (!profile_db) goto out;
+
+	profile_db->cursor(profile_db, NULL, &cursor, 0);
+
+	while ((e = cursor->c_get(cursor, &pair[0], &pair[1], DB_NEXT)) == 0) {
+		printf("key [%s]\n", (char *) pair[0].data);
+	}
+	if (e != DB_NOTFOUND) {
+		goto out;
+	}
+
+	ret = 0;
+out:
+	if (cursor) cursor->c_close(cursor);
+	if (profile_db) close_db(profile_db);
 	return ret;
 }

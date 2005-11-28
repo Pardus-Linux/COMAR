@@ -20,5 +20,11 @@ int model_parent(int node_no);
 const char *model_get_method(int node_no);
 const char *model_get_path(int node_no);
 
+int model_has_argument(int node_no, const char *argname);
+int model_global_profile(int node_no);
+int model_package_profile(int node_no);
+int model_has_instances(int node_no);
+int model_is_instance(int node_no, const char *argname);
+
 
 #endif /* MODEL_H */

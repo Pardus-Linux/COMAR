@@ -126,3 +126,26 @@ ipc_get_arg(char **argp, size_t *sizep)
 	pak_pos += size + 2 + 1;
 	return 1;
 }
+
+void
+ipc_copy_data(char **argsp, size_t *sizep)
+{
+	size_t size;
+
+	size = pak_used - (sizeof(struct ipc_data) - 4);
+	*sizep = size;
+	*argsp = malloc(size);
+	memcpy(*argsp, &pak_data->data, size);
+}
+
+void
+ipc_use_data(const char *args, size_t size)
+{
+	if (size + (sizeof(struct ipc_data) - 4) >= pak_size) {
+		pak_size = size + (sizeof(struct ipc_data) - 4);
+		pak_data = realloc(pak_data, pak_size);
+	}
+	pak_pos = sizeof(struct ipc_data) - 4;
+	pak_used = size + (sizeof(struct ipc_data) - 4);
+	memcpy(&pak_data->data, args, size);
+}

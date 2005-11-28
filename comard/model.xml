@@ -1,5 +1,4 @@
-<?xml version="1.0" ?>
-<comarModel>
+<?xml version="1.0" ?><comarModel>
 
 
 <group name="System">
@@ -34,13 +33,19 @@
 
 <group name="Time">
 <class name="Clock">
-<method name="setDate"/>
+<method name="setDate">
+<argument>year</argument>
+<argument>month</argument>
+<argument>day</argument>
+<argument>hour</argument>
+<argument>minute</argument>
+<argument>second</argument></method>
 <method name="getDate"/>
 <method name="loadFromHW"/>
 <method name="saveToHW"/>
-<method name="setTimeZone"/>
+<method name="setTimeZone">
+<argument>zone</argument></method>
 <method name="getTimeZone"/>
-<notify name="lala"/>
 </class>
 <class name="Jobs">
 </class>

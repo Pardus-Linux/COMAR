@@ -25,6 +25,7 @@ enum {
 	CMD_CALL_PACKAGE,
 	CMD_GETLIST,
 	CMD_NOTIFY,
+	CMD_DUMP_PROFILE,
 	CMD_SHUTDOWN
 };
 
@@ -37,6 +38,9 @@ int ipc_get_node(void);
 void *ipc_get_data(void);
 int ipc_get_id(void);
 int ipc_get_arg(char **argp, size_t *sizep);
+
+void ipc_copy_data(char **argsp, size_t *sizep);
+void ipc_use_data(const char *args, size_t size);
 
 
 #endif /* IPC_H */

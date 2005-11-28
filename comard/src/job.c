@@ -137,6 +137,15 @@ do_execute(int node, const char *app)
 
 	bk_app = (char *) app;
 
+	// FIXME: only store when call is succesful?
+	if (model_package_profile(node)) {
+		char *args;
+		size_t args_size;
+		ipc_copy_data(&args, &args_size);
+		db_put_profile(node, app, args, args_size);
+		free(args);
+	}
+
 	csl_setup();
 
 	if (0 != db_get_code(model_parent(node), app, &code, &code_size)) {
@@ -171,6 +180,15 @@ do_call(int node)
 	char *apps;
 
 	log_debug(LOG_JOB, "Call(%s)\n", model_get_path(node));
+
+	// FIXME: only store when call is succesful?
+	if (model_global_profile(node)) {
+		char *args;
+		size_t args_size;
+		ipc_copy_data(&args, &args_size);
+		db_put_profile(node, NULL, args, args_size);
+		free(args);
+	}
 
 	if (db_get_apps(model_parent(node), &apps) != 0) {
 		send_result(CMD_NONE, "noapp", 5);
@@ -251,6 +269,18 @@ do_getlist(int node)
 	return 0;
 }
 
+static int
+do_dump_profile(void)
+{
+	log_debug(LOG_JOB, "DumpProfile()\n");
+
+	db_dump_profile();
+	// FIXME: send dump to the requester
+	send_result(CMD_RESULT, NULL, 0);
+
+	return 0;
+}
+
 static void
 job_proc(void)
 {
@@ -286,6 +316,9 @@ job_proc(void)
 			break;
 		case CMD_GETLIST:
 			do_getlist(ipc_get_node());
+			break;
+		case CMD_DUMP_PROFILE:
+			do_dump_profile();
 			break;
 	}
 }

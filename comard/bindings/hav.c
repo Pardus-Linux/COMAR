@@ -137,15 +137,15 @@ do_register(char *argv[])
 	unsigned int id;
 	char *ret;
 
+	if (!argv[optind] || !argv[optind+1] || !argv[optind+2]) {
+		print_usage();
+		exit(1);
+	}
+
 	com = comar_connect();
 	if (!com) {
 		puts("Cannot connect to COMAR daemon");
 		exit(2);
-	}
-
-	if (!argv[optind] || !argv[optind+1] || !argv[optind+2]) {
-		print_usage();
-		exit(1);
 	}
 
 	comar_send(
@@ -175,15 +175,15 @@ do_remove(char *argv[])
 	unsigned int id;
 	char *ret;
 
+	if (!argv[optind]) {
+		print_usage();
+		exit(1);
+	}
+
 	com = comar_connect();
 	if (!com) {
 		puts("Cannot connect to COMAR daemon");
 		exit(2);
-	}
-
-	if (!argv[optind]) {
-		print_usage();
-		exit(1);
 	}
 
 	comar_send(
@@ -213,15 +213,15 @@ do_list(char *argv[])
 	unsigned int id;
 	char *ret;
 
+	if (!argv[optind]) {
+		print_usage();
+		exit(1);
+	}
+
 	com = comar_connect();
 	if (!com) {
 		puts("Cannot connect to COMAR daemon");
 		exit(2);
-	}
-
-	if (!argv[optind]) {
-		print_usage();
-		exit(1);
 	}
 
 	comar_send(
@@ -286,15 +286,9 @@ do_dump(char *argv[])
 		exit(2);
 	}
 
-	if (!argv[optind]) {
-		print_usage();
-		exit(1);
-	}
-
 	comar_send(
 		com, 1,
 		COMAR_DUMP_PROFILE,
-		argv[optind],
 		NULL
 	);
 

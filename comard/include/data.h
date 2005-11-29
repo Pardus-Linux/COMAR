@@ -18,6 +18,7 @@ int db_get_apps(int node_no, char **bufferp);
 int db_get_code(int node_no, const char *app, char **bufferp, size_t *sizep);
 
 int db_put_profile(int node_no, const char *app, const char *args, size_t args_size);
+int db_get_instances(int node_no, const char *app, const char *key, void (*func)(char *str, size_t size));
 int db_dump_profile(void);
 
 

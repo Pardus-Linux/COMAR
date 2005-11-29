@@ -136,6 +136,7 @@ do_execute(int node, const char *app)
 	log_debug(LOG_JOB, "Execute(%s,%s)\n", model_get_path(node), app);
 
 	bk_app = (char *) app;
+	bk_node = node;
 
 	// FIXME: only store when call is succesful?
 	if (model_package_profile(node)) {
@@ -160,8 +161,8 @@ do_execute(int node, const char *app)
 			send_result(CMD_ERROR, "err", 3);
 	} else {
 		send_result(CMD_RESULT, res, res_size);
+		free(res);
 	}
-	free(res);
 
 	csl_cleanup();
 
@@ -243,7 +244,7 @@ do_call(int node)
 static int
 do_call_package(int node, const char *app)
 {
-	log_debug(LOG_JOB, "CallPackage(%s, %s)\n", model_get_path(node), app);
+	log_debug(LOG_JOB, "CallPackage(%s,%s)\n", model_get_path(node), app);
 
 	do_execute(node, app);
 

@@ -17,8 +17,13 @@
 #include "ipc.h"
 #include "notify.h"
 #include "log.h"
+#include "model.h"
+#include "data.h"
 
+// FIXME: cleanup
 int job_send_result(int cmd, const char *data, size_t size);
+extern int bk_node;
+extern char *bk_app;
 
 
 static PyObject *
@@ -53,9 +58,49 @@ c_notify(PyObject *self, PyObject *args)
 	return Py_None;
 }
 
+static PyObject *c_instances_list;
+
+static void
+c_instances_adder(char *str, size_t size)
+{
+	PyObject *p;
+
+	p = PyString_FromStringAndSize(str, size);
+	PyList_Append(c_instances_list, p);
+}
+
+static PyObject *
+c_instances(PyObject *self, PyObject *args)
+{
+	const char *node = NULL, *key = NULL;
+	char *app;
+	int node_no;
+
+	c_instances_list = PyList_New(0);
+
+	if (!PyArg_ParseTuple(args, "|ss", &node, &key))
+		return NULL;
+
+	if (node)
+		node_no = model_lookup_method(node);
+	else
+		node_no = bk_node;
+
+	if (model_package_profile(node_no))
+		app = bk_app;
+	else
+		app = NULL;
+
+	db_get_instances(node_no, app, key, c_instances_adder);
+
+	return c_instances_list;
+}
+
 static PyMethodDef methods[] = {
 	{ "fail", c_fail, METH_VARARGS, "Abort script and return a fail message" },
 	{ "notify", c_notify, METH_VARARGS, "Send a notification event" },
+	{ "instances", c_instances, METH_VARARGS, "Get list of method's instances from profile" },
+//	{ "get", c_get, METH_VARARGS, "Get method's arguments from profile" },
 	{ NULL, NULL, 0, NULL }
 };
 
@@ -143,7 +188,7 @@ csl_execute(char *code, size_t size, const char *func_name, char **resptr, int *
 		log_exception();
 		return CSL_BADCODE;
 	}
-	pModule = PyImport_ExecCodeModule("comard", pCode);
+	pModule = PyImport_ExecCodeModule("comar", pCode);
 	Py_DECREF(pCode);
 
 	if (!pModule || !PyModule_Check(pModule)) {
@@ -176,7 +221,7 @@ csl_execute(char *code, size_t size, const char *func_name, char **resptr, int *
 		PyDict_SetItemString(pkArgs, t, p);
 	}
 
-	Py_InitModule("comard", methods);
+	Py_InitModule("comar", methods);
 
 	pValue = PyObject_Call(pFunc, pArgs, pkArgs);
 	if (!pValue) {

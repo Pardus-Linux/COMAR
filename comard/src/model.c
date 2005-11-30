@@ -398,3 +398,9 @@ model_is_instance(int node_no, const char *argname)
 	}
 	return 0;
 }
+
+const char *
+model_get_instance(int node_no)
+{
+	return nodes[node_no].args;
+}

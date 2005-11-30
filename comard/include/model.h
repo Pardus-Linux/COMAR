@@ -25,6 +25,7 @@ int model_global_profile(int node_no);
 int model_package_profile(int node_no);
 int model_has_instances(int node_no);
 int model_is_instance(int node_no, const char *argname);
+const char *model_get_instance(int node_no);
 
 
 #endif /* MODEL_H */

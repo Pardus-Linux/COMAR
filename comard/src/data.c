@@ -427,9 +427,41 @@ out:
 }
 
 int
-db_get_profile(int node_no, const char *app, char **argsp, size_t *args_sizep)
+db_get_profile(int node_no, const char *app, const char *instance, char **argsp, size_t *args_sizep)
 {
-	return -1;
+	DB *profile_db = NULL;
+	DBT pair[2];
+	int e, ret = -1;
+	char *key;
+
+	profile_db = open_db("profile.db");
+	if (!profile_db) goto out;
+
+	// FIXME: multiple instance keys?
+	key = make_pkey(NULL, model_get_path(node_no), '/');
+	if (app) key = make_pkey(key, app, '/');
+	if (instance) {
+		key = make_pkey(key, model_get_instance(node_no), '/');
+		key = make_pkey(key, instance, '=');
+	}
+
+	memset(&pair[0], 0, sizeof(DBT) * 2);
+	pair[0].data = key;
+	pair[0].size = strlen(key);
+	pair[1].flags = DB_DBT_MALLOC;
+
+	e = profile_db->get(profile_db, NULL, &pair[0], &pair[1], 0);
+	free(key);
+	// FIXME: handle notfound separately, see also csl.c/c_get_profile()
+	if (e) goto out;
+
+	*argsp = pair[1].data;
+	*args_sizep = pair[1].size;
+
+	ret = 0;
+out:
+	if (profile_db) close_db(profile_db);
+	return ret;
 }
 
 int

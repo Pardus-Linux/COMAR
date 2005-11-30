@@ -96,11 +96,55 @@ c_instances(PyObject *self, PyObject *args)
 	return c_instances_list;
 }
 
+static PyObject *
+c_get_profile(PyObject *self, PyObject *args)
+{
+	const char *node = NULL, *key = NULL;
+	char *app;
+	int node_no;
+	char *prf_args;
+	size_t size;
+	PyObject *dict;
+
+	dict = PyDict_New();
+
+	if (!PyArg_ParseTuple(args, "|ss", &node, &key))
+		return NULL;
+
+	if (node)
+		node_no = model_lookup_method(node);
+	else
+		node_no = bk_node;
+
+	if (model_package_profile(node_no))
+		app = bk_app;
+	else
+		app = NULL;
+
+	if (0 != db_get_profile(node_no, app, key, &prf_args, &size)) {
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+
+	ipc_use_data(prf_args, size);
+	while (1) {
+		PyObject *p;
+		char *t, *t2;
+		size_t sz;
+		if (ipc_get_arg(&t, &sz) == 0) break;
+		ipc_get_arg(&t2, &sz);
+		p = PyString_FromStringAndSize(t2, sz);
+		PyDict_SetItemString(dict, t, p);
+	}
+
+	return dict;
+}
+
 static PyMethodDef methods[] = {
 	{ "fail", c_fail, METH_VARARGS, "Abort script and return a fail message" },
 	{ "notify", c_notify, METH_VARARGS, "Send a notification event" },
 	{ "instances", c_instances, METH_VARARGS, "Get list of method's instances from profile" },
-//	{ "get", c_get, METH_VARARGS, "Get method's arguments from profile" },
+	{ "get_profile", c_get_profile, METH_VARARGS, "Get method's arguments from profile" },
 	{ NULL, NULL, 0, NULL }
 };
 

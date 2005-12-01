@@ -94,8 +94,6 @@
     <instance>name</instance>
 </method>
 
-<notify name="stateChanged"/>
-
 </class>
 <class name="Server">
 </class>

@@ -278,10 +278,8 @@ def setState(name=None, state=None):
     if state == "up":
         lala.setAddr(dict["device"], dict["address"])
         lala.setStatus(dict["device"], "UP")
-        notify("Net.Link.stateChanged", "%s up" % name)
     else:
         lala.setStatus(dict["device"], "DOWN")
-        notify("Net.Link.stateChanged", "%s down" % name)
 
 def connections():
     list = instances("Net.Link.setConnection", "name")

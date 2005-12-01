@@ -63,8 +63,16 @@ comar_connect(void)
 	com = calloc(1, sizeof(struct comar_struct));
 	if (!com) return NULL;
 
+	com->max = 128;
+	com->buffer = malloc(com->max);
+	if (!com->buffer) {
+		free(com);
+		return NULL;
+	}
+
 	com->sock = socket(PF_LOCAL, SOCK_STREAM, 0);
 	if (com->sock == -1) {
+		free(com->buffer);
 		free(com);
 		return NULL;
 	}
@@ -74,6 +82,7 @@ comar_connect(void)
 	size = (offsetof (struct sockaddr_un, sun_path) + strlen (name.sun_path) + 1);
 	if (connect(com->sock, (struct sockaddr *) &name, size) != 0) {
 		close(com->sock);
+		free(com->buffer);
 		free(com);
 		return NULL;
 	}
@@ -113,11 +122,7 @@ comar_send_arg(comar_t *com, const char *str, size_t size)
 
 	need = com->size + 2 + size + 1;
 	if (com->max < need) {
-		if (0 == com->max) {
-			com->max = 128;
-		} else {
-			while (com->max < need) com->max *= 2;
-		}
+		while (com->max < need) com->max *= 2;
 		com->buffer = realloc(com->buffer, com->max);
 		if (!com->buffer) return 0;
 	}

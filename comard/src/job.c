@@ -144,7 +144,8 @@ do_execute(int node, const char *app)
 		size_t args_size;
 		ipc_copy_data(&args, &args_size);
 		db_put_profile(node, app, args, args_size);
-		free(args);
+		ipc_use_data(args, args_size);
+        free(args);
 	}
 
 	csl_setup();
@@ -188,7 +189,8 @@ do_call(int node)
 		size_t args_size;
 		ipc_copy_data(&args, &args_size);
 		db_put_profile(node, NULL, args, args_size);
-		free(args);
+		ipc_use_data(args, args_size);
+        free(args);
 	}
 
 	if (db_get_apps(model_parent(node), &apps) != 0) {

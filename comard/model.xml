@@ -64,14 +64,38 @@
 <method name="deleteHost"/>
 </class>
 <class name="Link">
-<method name="getActiveLinks"/>
-<method name="setAddress"/>
-<method name="getInformation"/>
-<method name="getStatus"/>
-<method name="fineTune"/>
-<method name="getStatistics"/>
-<method name="getSpeedInfo"/>
-<method name="setSpeed"/>
+<method name="modes"/>
+<method name="deviceList"/>
+<method name="setConnection" profile="package">
+    <instance>name</instance>
+    <argument>device</argument>
+</method>
+<method name="setAddress" profile="package">
+    <instance>name</instance>
+    <argument>address</argument>
+    <argument>mask</argument>
+</method>
+<method name="setRemote" profile="package">
+    <instance>name</instance>
+    <argument>remote</argument>
+</method>
+<method name="setState" profile="package">
+    <instance>name</instance>
+    <argument>state</argument>
+</method>
+<method name="connections"/>
+<method name="connectionInfo">
+    <instance>name</instance>
+</method>
+<method name="getAddress">
+    <instance>name</instance>
+</method>
+<method name="getStatus">
+    <instance>name</instance>
+</method>
+
+<notify name="stateChanged"/>
+
 </class>
 <class name="Server">
 </class>

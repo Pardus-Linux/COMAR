@@ -105,7 +105,7 @@ class Link:
             data = None
         if cmd == self.RESULT:
             t = data.split(' ', 1)
-            return (cmd, head[1], t[0], t[1])
+            return (cmd, head[1], t[1], t[0])
         else:
             return (cmd, head[1], data)
     
@@ -159,7 +159,7 @@ class Link:
         a = [ methodname ]
         if args:
             a.extend(args)
-        pak =self.__pack(self.__CALL, id, a)
+        pak = self.__pack(self.__CALL, id, a)
         self.sock.send(pak)
     
     def call_package(self, methodname, packagename, args=None, id=0):
@@ -168,12 +168,8 @@ class Link:
         a = [ methodname, packagename ]
         if args:
             a.extend(args)
-        pak =self.__pack(self.__CALL_PACKAGE, id, a)
+        pak = self.__pack(self.__CALL_PACKAGE, id, a)
         self.sock.send(pak)
-    
-    def call_instance(self, methodname, packagename, instancename, args, id=0):
-        # not yet decided
-        pass
     
     def get_packages(self, classname, id=0):
         """Return registered packages for a given system model class.

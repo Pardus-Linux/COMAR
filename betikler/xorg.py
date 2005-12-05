@@ -271,7 +271,6 @@ EndSection
 Section "Files"
 	RgbPath  "/usr/lib/X11/rgb"
 	FontPath "/usr/share/fonts/ttf-bitstream-vera/"
-	FontPath "/usr/share/fonts/local/"
 	FontPath "/usr/share/fonts/misc/"
 	FontPath "/usr/share/fonts/75dpi/:unscaled"
 	FontPath "/usr/share/fonts/100dpi/:unscaled"
@@ -283,7 +282,6 @@ Section "Files"
 	FontPath "/usr/share/fonts/75dpi/"
 	FontPath "/usr/share/fonts/100dpi/"
 	FontPath "/usr/share/fonts/corefonts"
-	FontPath "/usr/share/fonts/CID/"
 	FontPath "/usr/share/fonts/encodings/"
 EndSection
 

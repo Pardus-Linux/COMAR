@@ -320,7 +320,7 @@ Section "Screen"
 	Identifier "Screen0"
 	Device     "DisplayController0"
 	Monitor    "Monitor0"
-	DefaultDepth 24
+	DefaultDepth 16
 	Subsection "Display"
 		Depth    8
 		Modes    %(MODES)s
@@ -349,6 +349,7 @@ Section "Monitor"
 	ModelName   "Model"
 	HorizSync    %(HSYNC)s
 	VertRefresh  %(VREF)s
+	Option      "DPMS" "off"
 	
 %(MODELINES)s
 	

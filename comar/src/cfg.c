@@ -23,7 +23,8 @@ char *cfg_socket_name = "/var/run/comar.socket";
 int cfg_log_console = 0;
 int cfg_log_file = 1;
 char *cfg_log_file_name = "/var/log/comar.log";
-int cfg_log_flags = LOG_JOB;	// FIXME: for alpha releases
+int cfg_log_flags = 0;
+int cfg_stop_only = 0;
 
 static struct logflag_struct {
 	const char *flag;
@@ -43,6 +44,7 @@ static struct option longopts[] = {
 	{ "datadir", required_argument, NULL, 'd' },
 	{ "socket", required_argument, NULL, 's' },
 	{ "debug", required_argument, NULL, 'g' },
+	{ "stop", 0, NULL, 'q' },
 	{ "print", 0, NULL, 'p' },
 	{ "help", 0, NULL, 'h' },
 	{ "version", 0, NULL, 'v' },
@@ -62,6 +64,7 @@ print_usage(void)
 		" -s, --socket [NAME] RPC unix socket name.\n"
 		" -g, --debug [FLAGS] Enable debug output.\n"
 		" -p, --print         Print debug messages to console.\n"
+		"     --stop          Stop running comar and exit.\n"
 		" -h, --help          Print this text and exit.\n"
 		" -v, --version       Print version and exit.\n"
 		"Report bugs to http://bugs.uludag.org.tr")
@@ -106,6 +109,9 @@ cfg_init(int argc, char *argv[])
 				break;
 			case 'p':
 				cfg_log_console = 1;
+				break;
+			case 'q':
+				cfg_stop_only = 1;
 				break;
 			case 'h':
 				print_usage();

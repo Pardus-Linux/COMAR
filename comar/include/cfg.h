@@ -17,6 +17,7 @@ extern int cfg_log_console;
 extern int cfg_log_file;
 extern char *cfg_log_file_name;
 extern int cfg_log_flags;
+extern int cfg_stop_only;
 
 void cfg_init(int argc, char *argv[]);
 

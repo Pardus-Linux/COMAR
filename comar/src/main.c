@@ -48,6 +48,8 @@ stop_running_comar(void)
 		return;
 	}
 
+	log_info("Stopping old COMAR...\n");
+
 	// send retirement check
 	write(sock, &check, sizeof(check));
 
@@ -68,10 +70,11 @@ main(int argc, char *argv[])
 
 	// First phase: configuration
 	cfg_init(argc, argv);
-	log_info("COMARd v"VERSION"\n");
+	log_info("COMAR v"VERSION"\n");
 
 	// Shutdown old COMAR
 	stop_running_comar();
+	if (cfg_stop_only) exit(0);
 
 	// Second phase: subsytem init
 	if (db_init() != 0) return 1;

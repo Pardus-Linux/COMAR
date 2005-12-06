@@ -116,7 +116,7 @@ class Link:
         a full message comes from the COMAR daemon.
         """
         while 1:
-            fds = select.select([self.sock], [], [], 0)
+            fds = select.select([self.sock], [], [])
             if fds[0] != []:
                 break
         return self.read()

@@ -441,25 +441,21 @@ out:
 	return ret;
 }
 
-int
-db_get_profile(int node_no, const char *app, const char *instance, char **argsp, size_t *args_sizep)
+struct pack *
+db_get_profile(int node_no, const char *app, const char *instance)
 {
+	struct pack *p = NULL;
 	DB *profile_db = NULL;
 	DBT pair[2];
-	int e, ret = -1;
+	int e;
 	char *key;
-return -1;
+
 	profile_db = open_db("profile.db");
 	if (!profile_db) goto out;
 
 	// FIXME: multiple instance keys?
-/*	key = make_pkey(NULL, model_get_path(node_no), '/');
-	if (app) key = make_pkey(key, app, '/');
-	if (instance) {
-		key = make_pkey(key, model_get_instance(node_no), '/');
-		key = make_pkey(key, instance, '=');
-	}
-*/
+	key = make_profile_key(node_no, app, model_get_instance(node_no), instance);
+
 	memset(&pair[0], 0, sizeof(DBT) * 2);
 	pair[0].data = key;
 	pair[0].size = strlen(key);
@@ -470,13 +466,11 @@ return -1;
 	// FIXME: handle notfound separately, see also csl.c/c_get_profile()
 	if (e) goto out;
 
-	*argsp = pair[1].data;
-	*args_sizep = pair[1].size;
+	p = pack_wrap(pair[1].data, pair[1].size);
 
-	ret = 0;
 out:
 	if (profile_db) close_db(profile_db);
-	return ret;
+	return p;
 }
 
 int
@@ -523,6 +517,7 @@ db_dump_profile(void)
 	int e, ret = -1;
 
 	memset(&pair[0], 0, sizeof(DBT) * 2);
+	pair[1].flags = DB_DBT_MALLOC;
 
 	profile_db = open_db("profile.db");
 	if (!profile_db) goto out;

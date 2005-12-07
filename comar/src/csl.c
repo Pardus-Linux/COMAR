@@ -19,6 +19,7 @@
 #include "log.h"
 #include "model.h"
 #include "data.h"
+#include "utility.h"
 
 // FIXME: cleanup
 int job_send_result(int cmd, const char *data, size_t size);
@@ -99,11 +100,12 @@ c_instances(PyObject *self, PyObject *args)
 static PyObject *
 c_get_profile(PyObject *self, PyObject *args)
 {
+	struct pack *p;
 	const char *node = NULL, *key = NULL;
 	char *app;
 	int node_no;
-	char *prf_args;
-	size_t size;
+	char *t;
+	size_t ts;
 	PyObject *dict;
 
 	dict = PyDict_New();
@@ -121,20 +123,18 @@ c_get_profile(PyObject *self, PyObject *args)
 	else
 		app = NULL;
 
-	if (0 != db_get_profile(node_no, app, key, &prf_args, &size)) {
+	p = db_get_profile(node_no, app, key);
+	if (!p) {
 		Py_INCREF(Py_None);
 		return Py_None;
 	}
 
-	//ipc_use_data(prf_args, size);
-	while (1) {
-		PyObject *p;
-		char *t, *t2;
-		size_t sz;
-		if (ipc_get_arg(&t, &sz) == 0) break;
-		ipc_get_arg(&t2, &sz);
-		p = PyString_FromStringAndSize(t2, sz);
-		PyDict_SetItemString(dict, t, p);
+	while (pack_get(p, &t, &ts)) {
+		PyObject *val;
+		char *t2;
+		pack_get(p, &t2, &ts);
+		val = PyString_FromStringAndSize(t2, ts);
+		PyDict_SetItemString(dict, t, val);
 	}
 
 	return dict;

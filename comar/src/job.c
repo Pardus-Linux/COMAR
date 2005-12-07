@@ -140,12 +140,10 @@ do_execute(int node, const char *app)
 
 	// FIXME: only store when call is succesful?
 	if (model_package_profile(node)) {
-		char *args;
-		size_t args_size;
-		ipc_copy_data(&args, &args_size);
-		db_put_profile(node, app, args, args_size);
-		ipc_use_data(args, args_size);
-        free(args);
+		struct pack *p;
+		p = ipc_into_pack();
+		db_put_profile(node, app, p);
+		pack_delete(p);
 	}
 
 	csl_setup();
@@ -185,12 +183,10 @@ do_call(int node)
 
 	// FIXME: only store when call is succesful?
 	if (model_global_profile(node)) {
-		char *args;
-		size_t args_size;
-		ipc_copy_data(&args, &args_size);
-		db_put_profile(node, NULL, args, args_size);
-		ipc_use_data(args, args_size);
-        free(args);
+		struct pack *p;
+		p = ipc_into_pack();
+		db_put_profile(node, NULL, p);
+		pack_delete(p);
 	}
 
 	if (db_get_apps(model_parent(node), &apps) != 0) {

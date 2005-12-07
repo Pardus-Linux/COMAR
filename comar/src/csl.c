@@ -126,7 +126,7 @@ c_get_profile(PyObject *self, PyObject *args)
 		return Py_None;
 	}
 
-	ipc_use_data(prf_args, size);
+	//ipc_use_data(prf_args, size);
 	while (1) {
 		PyObject *p;
 		char *t, *t2;

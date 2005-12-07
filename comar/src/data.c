@@ -20,6 +20,7 @@
 #include "log.h"
 #include "process.h"
 #include "ipc.h"
+#include "utility.h"
 
 static DB_ENV *my_env;
 static int nr_open_dbs;
@@ -373,50 +374,64 @@ out:
 }
 
 static char *
-make_pkey(char *old, const char *part, char sep)
+make_profile_key(int method, const char *app, const char *inst_key, const char *inst_value)
 {
-	char *ret;
+	size_t len;
+	const char *node;
+	char *inst_sep = "";
+	char *key;
 
-	if (old) {
-		ret = malloc(strlen(old) + 1 + strlen(part) + 1);
-		strcpy(ret, old);
-		ret[strlen(old)] = sep;
-		strcpy(ret + 1 + strlen(old), part);
-		free(old);
-	} else {
-		ret = strdup(part);
+// key format: Node / [App] / [instance = [ value ] ]
+
+	if (inst_key)
+		// instances belongs to the class
+		node = model_get_path(model_parent(method));
+	else
+		// globals belongs to the method
+		node = model_get_path(method);
+
+	len = strlen(node) + 3;
+
+	if (app) len += strlen(app);
+	if (inst_key) {
+		if (!inst_value) inst_value = "";
+		len += strlen(inst_key) + 1 + strlen(inst_value);
+		inst_sep = "=";
 	}
-	return ret;
+
+	key = malloc(len);
+	snprintf(key, len, "%s/%s/%s%s%s", node, app, inst_key, inst_sep, inst_value);
+
+	return key;
 }
 
 int
-db_put_profile(int node_no, const char *app, const char *args, size_t args_size)
+db_put_profile(int node_no, const char *app, struct pack *args)
 {
 	DB *profile_db = NULL;
 	int e, ret = -1;
 	char *key;
+	char *inst_key = NULL;
+	char *inst_value = NULL;
 
 	profile_db = open_db("profile.db");
 	if (!profile_db) goto out;
 
-	key = make_pkey(NULL, model_get_path(node_no), '/');
-	if (app) key = make_pkey(key, app, '/');
-
-	ipc_use_data(args, args_size);
 	while (1) {
 		char *t;
 		size_t sz;
-		if (ipc_get_arg(&t, &sz) == 0) break;
+		if (pack_get(args, &t, &sz) == 0) break;
 		if (model_is_instance(node_no, t)) {
-			key = make_pkey(key, t, '/');
-			ipc_get_arg(&t, &sz);
-			key = make_pkey(key, t, '=');
+			inst_key = t;
+			pack_get(args, &t, &sz);
+			inst_value = t;
 		} else {
-			ipc_get_arg(&t, &sz);
+			pack_get(args, &t, &sz);
 		}
 	}
 
-	e = put_data(profile_db, key, args, args_size);
+	key = make_profile_key(node_no, app, inst_key, inst_value);
+	e = put_data(profile_db, key, args->buffer, args->used);
 	free(key);
 	if (e) goto out;
 
@@ -433,18 +448,18 @@ db_get_profile(int node_no, const char *app, const char *instance, char **argsp,
 	DBT pair[2];
 	int e, ret = -1;
 	char *key;
-
+return -1;
 	profile_db = open_db("profile.db");
 	if (!profile_db) goto out;
 
 	// FIXME: multiple instance keys?
-	key = make_pkey(NULL, model_get_path(node_no), '/');
+/*	key = make_pkey(NULL, model_get_path(node_no), '/');
 	if (app) key = make_pkey(key, app, '/');
 	if (instance) {
 		key = make_pkey(key, model_get_instance(node_no), '/');
 		key = make_pkey(key, instance, '=');
 	}
-
+*/
 	memset(&pair[0], 0, sizeof(DBT) * 2);
 	pair[0].data = key;
 	pair[0].size = strlen(key);
@@ -481,17 +496,9 @@ db_get_instances(int node_no, const char *app, const char *key, void (*func)(cha
 	profile_db->cursor(profile_db, NULL, &cursor, 0);
 
 	// FIXME: multiple instance keys?
-	match = make_pkey(NULL, model_get_path(node_no), '/');
-	if (app) match = make_pkey(match, app, '/');
-	if (key) {
-		match = make_pkey(match, key, '/');
-		match = make_pkey(match, "", '=');
-	} else {
-		match = make_pkey(match, "", '/');
-	}
+	match = make_profile_key(node_no, app, key, NULL);
 
 	while ((e = cursor->c_get(cursor, &pair[0], &pair[1], DB_NEXT)) == 0) {
-//printf("match [%s] pair [%.*s]\n",match,pair[0].size,pair[0].data);
 		if (strncmp(match, pair[0].data, strlen(match)) == 0)
 			func(((char *) pair[0].data) + strlen(match), pair[0].size - strlen(match));
 	}
@@ -509,6 +516,7 @@ out:
 int
 db_dump_profile(void)
 {
+	struct pack *p;
 	DB *profile_db = NULL;
 	DBC *cursor = NULL;
 	DBT pair[2];
@@ -522,7 +530,16 @@ db_dump_profile(void)
 	profile_db->cursor(profile_db, NULL, &cursor, 0);
 
 	while ((e = cursor->c_get(cursor, &pair[0], &pair[1], DB_NEXT)) == 0) {
-		printf("key [%.*s]\n", pair[0].size, (char *) pair[0].data);
+		char *t;
+		size_t ts;
+		printf("profile [%.*s]\n", pair[0].size, (char *) pair[0].data);
+		p = pack_wrap(pair[1].data, pair[1].size);
+		while (pack_get(p, &t, &ts)) {
+			printf("    key [%.*s] ", ts, t);
+			pack_get(p, &t, &ts);
+			printf("value [%.*s]\n", ts, t);
+		}
+		pack_delete(p);
 	}
 	if (e != DB_NOTFOUND) {
 		goto out;

@@ -16,6 +16,7 @@ source = """
     csl.c
     data.c
     rpc_unix.c
+    utility.c
     iksemel.c
 """
 

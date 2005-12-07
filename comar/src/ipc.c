@@ -15,6 +15,7 @@
 #include "process.h"
 #include "ipc.h"
 #include "log.h"
+#include "utility.h"
 
 struct ipc_data {
 	void *chan;
@@ -127,25 +128,21 @@ ipc_get_arg(char **argp, size_t *sizep)
 	return 1;
 }
 
-void
-ipc_copy_data(char **argsp, size_t *sizep)
+struct pack *
+ipc_into_pack(void)
 {
+	struct pack *p;
+	char *arg;
 	size_t size;
+	int pos;
 
-	size = pak_used - (sizeof(struct ipc_data) - 4);
-	*sizep = size;
-	*argsp = malloc(size);
-	memcpy(*argsp, &pak_data->data, size);
-}
+	p = pack_new(pak_used);
 
-void
-ipc_use_data(const char *args, size_t size)
-{
-	if (size + (sizeof(struct ipc_data) - 4) >= pak_size) {
-		pak_size = size + (sizeof(struct ipc_data) - 4);
-		pak_data = realloc(pak_data, pak_size);
+	pos = pak_pos;
+	while (ipc_get_arg(&arg, &size)) {
+		pack_put(p, arg, size);
 	}
-	pak_pos = sizeof(struct ipc_data) - 4;
-	pak_used = size + (sizeof(struct ipc_data) - 4);
-	memcpy(&pak_data->data, args, size);
+	pak_pos = pos;
+
+	return p;
 }

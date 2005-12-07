@@ -10,6 +10,8 @@
 #ifndef IPC_H
 #define IPC_H 1
 
+#include "utility.h"
+
 // ipc commands
 enum {
 	CMD_FINISH = 0,
@@ -39,8 +41,7 @@ void *ipc_get_data(void);
 int ipc_get_id(void);
 int ipc_get_arg(char **argp, size_t *sizep);
 
-void ipc_copy_data(char **argsp, size_t *sizep);
-void ipc_use_data(const char *args, size_t size);
+struct pack *ipc_into_pack(void);
 
 
 #endif /* IPC_H */

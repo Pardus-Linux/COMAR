@@ -101,7 +101,7 @@ static PyObject *
 c_get_profile(PyObject *self, PyObject *args)
 {
 	struct pack *p;
-	const char *node = NULL, *key = NULL;
+	const char *node = NULL;
 	char *app;
 	int node_no;
 	char *t;
@@ -110,7 +110,7 @@ c_get_profile(PyObject *self, PyObject *args)
 
 	dict = PyDict_New();
 
-	if (!PyArg_ParseTuple(args, "|ss", &node, &key))
+	if (!PyArg_ParseTuple(args, "|s", &node))
 		return NULL;
 
 	if (node)
@@ -123,7 +123,47 @@ c_get_profile(PyObject *self, PyObject *args)
 	else
 		app = NULL;
 
-	p = db_get_profile(node_no, app, key);
+	p = db_get_profile(node_no, app, NULL, NULL);
+	if (!p) {
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+
+	while (pack_get(p, &t, &ts)) {
+		PyObject *val;
+		char *t2;
+		pack_get(p, &t2, &ts);
+		val = PyString_FromStringAndSize(t2, ts);
+		PyDict_SetItemString(dict, t, val);
+	}
+
+	return dict;
+}
+
+static PyObject *
+c_get_instance(PyObject *self, PyObject *args)
+{
+	struct pack *p;
+	const char *inst_key = NULL, *inst_value = NULL;
+	char *app;
+	char *t;
+	size_t ts;
+	PyObject *dict;
+
+	dict = PyDict_New();
+
+	if (!PyArg_ParseTuple(args, "|ss", &inst_key, &inst_value))
+		return NULL;
+
+	if (inst_key && !inst_value)
+		return NULL;
+
+	if (model_package_profile(bk_node))
+		app = bk_app;
+	else
+		app = NULL;
+
+	p = db_get_profile(bk_node, app, inst_key, inst_value);
 	if (!p) {
 		Py_INCREF(Py_None);
 		return Py_None;
@@ -145,6 +185,7 @@ static PyMethodDef methods[] = {
 	{ "notify", c_notify, METH_VARARGS, "Send a notification event" },
 	{ "instances", c_instances, METH_VARARGS, "Get list of method's instances from profile" },
 	{ "get_profile", c_get_profile, METH_VARARGS, "Get method's arguments from profile" },
+	{ "get_instance", c_get_instance, METH_VARARGS, "Get instance's argument from profile" },
 	{ NULL, NULL, 0, NULL }
 };
 

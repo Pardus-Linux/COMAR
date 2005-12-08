@@ -465,7 +465,7 @@ out:
 }
 
 struct pack *
-db_get_profile(int node_no, const char *app, const char *instance)
+db_get_profile(int node_no, const char *app, const char *inst_key, const char *inst_value)
 {
 	struct pack *p = NULL;
 	DB *profile_db = NULL;
@@ -477,7 +477,7 @@ db_get_profile(int node_no, const char *app, const char *instance)
 	if (!profile_db) goto out;
 
 	// FIXME: multiple instance keys?
-	key = make_profile_key(node_no, app, model_get_instance(node_no), instance);
+	key = make_profile_key(node_no, app, inst_key, inst_value);
 
 	memset(&pair[0], 0, sizeof(DBT) * 2);
 	pair[0].data = key;

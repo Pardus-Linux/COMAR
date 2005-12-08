@@ -73,26 +73,21 @@ c_instances_adder(char *str, size_t size)
 static PyObject *
 c_instances(PyObject *self, PyObject *args)
 {
-	const char *node = NULL, *key = NULL;
+	const char *key = NULL;
 	char *app;
-	int node_no;
 
 	c_instances_list = PyList_New(0);
 
-	if (!PyArg_ParseTuple(args, "|ss", &node, &key))
+	if (!PyArg_ParseTuple(args, "s", &key))
 		return NULL;
 
-	if (node)
-		node_no = model_lookup_method(node);
-	else
-		node_no = bk_node;
-
-	if (model_package_profile(node_no))
+	// FIXME: no global instances for now, handle nicely in model.xml
+	//if (model_package_profile(bk_node))
 		app = bk_app;
-	else
-		app = NULL;
+	//else
+	//	app = NULL;
 
-	db_get_instances(node_no, app, key, c_instances_adder);
+	db_get_instances(bk_node, app, key, c_instances_adder);
 
 	return c_instances_list;
 }
@@ -158,10 +153,11 @@ c_get_instance(PyObject *self, PyObject *args)
 	if (inst_key && !inst_value)
 		return NULL;
 
-	if (model_package_profile(bk_node))
+	// FIXME: no global instances for now, handle nicely in model.xml
+	//if (model_package_profile(bk_node))
 		app = bk_app;
-	else
-		app = NULL;
+	//else
+	//	app = NULL;
 
 	p = db_get_profile(bk_node, app, inst_key, inst_value);
 	if (!p) {
@@ -183,9 +179,9 @@ c_get_instance(PyObject *self, PyObject *args)
 static PyMethodDef methods[] = {
 	{ "fail", c_fail, METH_VARARGS, "Abort script and return a fail message" },
 	{ "notify", c_notify, METH_VARARGS, "Send a notification event" },
-	{ "instances", c_instances, METH_VARARGS, "Get list of method's instances from profile" },
+	{ "instances", c_instances, METH_VARARGS, "Get list of class's instances from profile" },
 	{ "get_profile", c_get_profile, METH_VARARGS, "Get method's arguments from profile" },
-	{ "get_instance", c_get_instance, METH_VARARGS, "Get instance's argument from profile" },
+	{ "get_instance", c_get_instance, METH_VARARGS, "Get instance's arguments from profile" },
 	{ NULL, NULL, 0, NULL }
 };
 

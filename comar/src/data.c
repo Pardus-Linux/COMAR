@@ -384,15 +384,19 @@ make_profile_key(int method, const char *app, const char *inst_key, const char *
 // key format: Node / [App] / [instance = [ value ] ]
 
 	if (inst_key)
-		// instances belongs to the class
+		// instances belong to the class
 		node = model_get_path(model_parent(method));
 	else
-		// globals belongs to the method
+		// globals belong to the method
 		node = model_get_path(method);
 
 	len = strlen(node) + 3;
 
-	if (app) len += strlen(app);
+	if (app)
+		len += strlen(app);
+	else
+		app = "";
+
 	if (inst_key) {
 		if (!inst_value) inst_value = "";
 		len += strlen(inst_key) + 1 + strlen(inst_value);
@@ -514,7 +518,6 @@ db_get_instances(int node_no, const char *app, const char *key, void (*func)(cha
 
 	// FIXME: multiple instance keys?
 	match = make_profile_key(node_no, app, key, NULL);
-
 	while ((e = cursor->c_get(cursor, &pair[0], &pair[1], DB_NEXT)) == 0) {
 		if (strncmp(match, pair[0].data, strlen(match)) == 0)
 			func(((char *) pair[0].data) + strlen(match), pair[0].size - strlen(match));

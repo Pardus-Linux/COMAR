@@ -102,13 +102,32 @@ pack_get(struct pack *p, char **argp, size_t *sizep)
 void
 pack_replace(struct pack *p, const char *arg, const char *value, size_t size)
 {
+	unsigned char *ptr;
 	char *t;
 	size_t ts;
+	size_t old_size;
+	size_t diff;
 
 	p->pos = 0;
 	while (pack_get(p, &t, &ts)) {
 		if (strcmp(t, arg) == 0) {
 			// found it, replace the old value
+			ptr = p->buffer + p->pos;
+			old_size =  ptr[0] + (ptr[1] << 8);
+			diff = size - old_size;
+			if (old_size < size && p->max - p->used < diff) {
+				pack_ensure_size(p, p->max + diff);
+				ptr = p->buffer + p->pos;
+			}
+			if (diff) {
+				memmove(ptr + old_size + 3 + diff, ptr + old_size + 3, abs(diff));
+			}
+			*ptr++ = (size & 0xff);
+			*ptr++ = (size & 0xff00) >> 8;
+			memcpy(ptr, value, size);
+			ptr += size;
+			*ptr = '\0';
+			p->used += diff;
 			return;
 		}
 		// skip the argument's value

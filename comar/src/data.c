@@ -408,35 +408,58 @@ make_profile_key(int method, const char *app, const char *inst_key, const char *
 int
 db_put_profile(int node_no, const char *app, struct pack *args)
 {
+	struct pack *old_args = NULL;
 	DB *profile_db = NULL;
+	DBT pair[2];
 	int e, ret = -1;
-	char *key;
+	char *key = NULL;
 	char *inst_key = NULL;
 	char *inst_value = NULL;
+	char *t, *t2;
+	size_t ts;
 
 	profile_db = open_db("profile.db");
 	if (!profile_db) goto out;
 
-	while (1) {
-		char *t;
-		size_t sz;
-		if (pack_get(args, &t, &sz) == 0) break;
+	while (pack_get(args, &t, &ts)) {
 		if (model_is_instance(node_no, t)) {
 			inst_key = t;
-			pack_get(args, &t, &sz);
+			pack_get(args, &t, &ts);
 			inst_value = t;
 		} else {
-			pack_get(args, &t, &sz);
+			pack_get(args, &t, &ts);
 		}
 	}
 
 	key = make_profile_key(node_no, app, inst_key, inst_value);
-	e = put_data(profile_db, key, args->buffer, args->used);
-	free(key);
+
+	memset(&pair[0], 0, sizeof(DBT) * 2);
+	pair[0].data = key;
+	pair[0].size = strlen(key);
+	pair[1].flags = DB_DBT_MALLOC;
+
+	e = profile_db->get(profile_db, NULL, &pair[0], &pair[1], 0);
+	// FIXME: handle notfound separately, see also csl.c/c_get_profile()
+	if (e && e != DB_NOTFOUND) goto out;
+
+	if (!e) {
+		old_args = pack_wrap(pair[1].data, pair[1].size);
+		args->pos = 0;
+		while (pack_get(args, &t, &ts)) {
+			pack_get(args,&t2, &ts);
+			pack_replace(old_args, t, t2, ts);
+		}
+		e = put_data(profile_db, key, old_args->buffer, old_args->used);
+	} else {
+		e = put_data(profile_db, key, args->buffer, args->used);
+	}
+
 	if (e) goto out;
 
 	ret = 0;
 out:
+	if (old_args) pack_delete(old_args);
+	if (key) free(key);
 	if (profile_db) close_db(profile_db);
 	return ret;
 }

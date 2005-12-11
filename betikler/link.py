@@ -276,7 +276,9 @@ def deviceList():
     iflist = []
     for iface in os.listdir(sysfs_path):
         if csapi.atoi(sysValue(sysfs_path, iface, "type")) == ARPHRD_ETHER:
-            iflist.append(_device_uid(iface))
+            uid = _device_uid(iface)
+            info = _device_info(uid)
+            iflist.append("%s %s" % (uid, info))
     return "\n".join(iflist)
 
 def setConnection(name=None, device=None):

@@ -235,9 +235,35 @@ def queryPCI(vendor, device):
 ARPHRD_ETHER = 1
 sysfs_path = "/sys/class/net"
 
-def _device_id(dev):
+def _device_uid(dev):
     vendor = sysValue(sysfs_path, dev, "device/vendor").lstrip('0x')
     device = sysValue(sysfs_path, dev, "device/device").lstrip('0x')
+    return "pci:%s_%s_%s" % (vendor, device, dev)
+
+def _device_check(dev, uid):
+    dev_uid = _device_uid(dev)
+    t1 = uid.rsplit("_", 1)
+    t2 = uid.rsplit("_", 1)
+    return t1[0] == t2[0]
+
+def _device_dev(uid):
+    t = uid.rsplit("_", 1)
+    if _device_check(t[1], uid):
+        return t[1]
+    iflist = []
+    for iface in os.listdir(sysfs_path):
+        if csapi.atoi(sysValue(sysfs_path, iface, "type")) == ARPHRD_ETHER:
+            iflist.append(_device_uid(iface))
+    for dev in iflist:
+        if _device_check(dev, uid):
+            return dev
+    return None
+
+def _device_info(uid):
+    t = uid.split(':', 1)
+    if len(t) < 2:
+        return "Unknown (%s)" % uid
+    vendor, device, dev = t[1].split('_')
     name = queryPCI(vendor, device)
     return "%s (%s:%s) %s" % (name[1], vendor, device, name[0])
 
@@ -250,9 +276,7 @@ def deviceList():
     iflist = []
     for iface in os.listdir(sysfs_path):
         if csapi.atoi(sysValue(sysfs_path, iface, "type")) == ARPHRD_ETHER:
-            ifdata = iface[:] + " "
-            ifdata += _device_id(iface)
-            iflist.append(ifdata)
+            iflist.append(_device_uid(iface))
     return "\n".join(iflist)
 
 def setConnection(name=None, device=None):
@@ -267,47 +291,48 @@ def setRemote(name=None, remote=None):
 def setState(name=None, state=None):
     if state != "up" and state != "down":
         fail("unknown state")
-    dict = get_profile("Net.Link.setConnection", name)
+    dict = get_instance("name", name)
     if not dict:
         fail("No such connection")
-    t = get_profile("Net.Link.setAddress", name)
-    if t:
-        dict.update(t)
+    
+    dev = _device_dev(dict["device"])
+    if not dev:
+        fail("Device not found")
     
     lala = ifconfig()
     if state == "up":
-        lala.setAddr(dict["device"], dict["address"])
-        lala.setStatus(dict["device"], "UP")
+        lala.setAddr(dev, dict["address"])
+        lala.setStatus(dev, "UP")
     else:
-        lala.setStatus(dict["device"], "DOWN")
+        lala.setStatus(dev, "DOWN")
 
 def connections():
-    list = instances("Net.Link.setConnection", "name")
+    list = instances("name")
     if list:
         return "\n".join(list)
     return None
 
 def connectionInfo(name=None):
-    dict = get_profile("Net.Link.setConnection", name)
+    dict = get_instance("name", name)
     if not dict:
         fail("No such connection")
-    s = dict["device"] + " " + _device_id(dict["device"])
+    s = "\n".join([name, dict["device"], _device_info(dict["device"])])
     return s
 
 def getAddress(name=None):
-    dict = get_profile("Net.Link.setAddress", name)
+    dict = get_instance("name", name)
     if not dict:
         fail("No such connection")
     if dict["address"] == "auto":
         # FIXME: query interface
-        s = "fixme"
+        s = "\n".join([name, "fixme"])
     else:
-        s = dict["address"]
+        s = "\n".join([name, dict["address"]])
         if dict.has_key("mask"):
-            s += " " + dict["mask"]
+            s += "\n" + dict["mask"]
     return s
 
 def getStatus(name=None):
-    dict = get_profile("Net.Link.setConnection", name)
+    dict = get_instance("name", name)
     if not dict:
         fail("No such connection")

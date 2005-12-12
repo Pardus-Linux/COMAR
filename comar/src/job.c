@@ -127,6 +127,7 @@ do_remove(const char *app)
 static int
 do_execute(int node, const char *app)
 {
+	struct pack *p = NULL;
 	char *code;
 	char *res;
 	size_t code_size;
@@ -138,12 +139,8 @@ do_execute(int node, const char *app)
 	bk_app = (char *) app;
 	bk_node = node;
 
-	// FIXME: only store when call is succesful?
 	if (model_package_profile(node)) {
-		struct pack *p;
 		p = ipc_into_pack();
-		db_put_profile(node, app, p);
-		pack_delete(p);
 	}
 
 	csl_setup();
@@ -163,7 +160,12 @@ do_execute(int node, const char *app)
 		free(res);
 	}
 
-	csl_cleanup();
+	if (model_package_profile(node)) {
+		if (0 == e) db_put_profile(node, app, p);
+		pack_delete(p);
+	}
+
+    csl_cleanup();
 
 	return e;
 }
@@ -177,26 +179,26 @@ exec_proc(void)
 static int
 do_call(int node)
 {
+	struct pack *p = NULL;
 	char *apps;
+	int ok = 0;
 
 	log_debug(LOG_JOB, "Call(%s)\n", model_get_path(node));
 
-	// FIXME: only store when call is succesful?
 	if (model_global_profile(node)) {
-		struct pack *p;
 		p = ipc_into_pack();
-		db_put_profile(node, NULL, p);
-		pack_delete(p);
 	}
 
 	if (db_get_apps(model_parent(node), &apps) != 0) {
 		send_result(CMD_NONE, "noapp", 5);
+		// FIXME: ok diyecek betik yoksa profile kayıt etmeli mi acaba
 		exit(1);
 	}
 
 	if (strchr(apps, '/') == NULL) {
 		// there is only one script
-		do_execute(node, apps);
+		if (0 == do_execute(node, apps))
+			ok = 1;
 	} else {
 		// multiple scripts, run concurrently
 		char *t, *s;
@@ -229,11 +231,17 @@ do_call(int node)
 				--cnt;
 				if (!cnt) break;
 			} else {
+				if (cmd == CMD_RESULT) ok++;
 				proc_recv(p, &ipc, size);
 				proc_send(TO_PARENT, cmd, ipc, size);
 			}
 		}
 		send_result(CMD_RESULT_END, NULL, 0);
+	}
+
+    if (model_global_profile(node) && ok) {
+		db_put_profile(node, NULL, p);
+		pack_delete(p);
 	}
 
 	return 0;

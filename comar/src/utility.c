@@ -120,7 +120,8 @@ pack_replace(struct pack *p, const char *arg, const char *value, size_t size)
 				ptr = p->buffer + p->pos;
 			}
 			if (diff) {
-				memmove(ptr + old_size + 3 + diff, ptr + old_size + 3, abs(diff));
+				size_t len = p->used - (p->pos + old_size + 3);
+				memmove(ptr + old_size + 3 + diff, ptr + old_size + 3, len);
 			}
 			*ptr++ = (size & 0xff);
 			*ptr++ = (size & 0xff00) >> 8;

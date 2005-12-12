@@ -206,6 +206,39 @@ class ifconfig:
             return None
 
 
+class Route:
+    """ ioctl stuff """
+
+    # From <bits/ioctls.h>
+
+    SIOCADDRT = 0x890B      # add routing table entry
+    SIOCDELRT = 0x890C      # delete routing table entry
+    SIOCRTMSG = 0x890D      # call to routing system
+    INADDR_ANY = '\0' * 4   # Any Internet Address
+
+    def delRoute(self, gw, dst = "0.0.0.0", mask = "0.0.0.0"):
+        """ Delete a route entry from kernel routing table """
+        try:
+            csapi.changeroute(self.SIOCDELRT, gw, dst, mask)
+        except:
+            pass
+
+    def delDefaultRoute(self):
+        """ Delete the default gw, which is a route entry with gateway to Any Internet Address """
+        self.delRoute("0.0.0.0")
+
+    def setDefaultRoute(self, gw, dst = "0.0.0.0", mask = "0.0.0.0"):
+        """ Set the default gateway. To do this we must delete the previous default gateway
+            and the route entry set for gw, if any, or we will end up with multiple entries """
+
+        self.delDefaultRoute()
+        self.delRoute(gw)
+        try:
+            csapi.changeroute(self.SIOCADDRT, gw, dst, mask)
+        except:
+            pass
+
+
 def sysValue(path, dir, file_):
     f = file(os.path.join(path, dir, file_))
     data = f.read().rstrip('\n')
@@ -267,6 +300,39 @@ def _device_info(uid):
     name = queryPCI(vendor, device)
     return "%s (%s:%s) %s" % (name[1], vendor, device, name[0])
 
+def _get(dict, key, default):
+    val = default
+    if dict and dict.has_key(key):
+        val = dict[key]
+    return val
+
+class Dev:
+    def __init__(self, name):
+        dict = get_instance("name", name)
+        self.uid = _get(dict, "device", None)
+        self.dev = None
+        if self.uid:
+            self.dev = _device_dev(self.uid)
+        self.state = _get(dict, "state", "down")
+        self.mode = _get(dict, "mode", "auto")
+        self.address = _get(dict, "address", None)
+        self.gateway = _get(dict, "gateway", None)
+        self.mask = _get(dict, "mask", None)
+    
+    def up(self):
+        ifc = ifconfig()
+        if self.address:
+            ifc.setAddr(self.dev, self.address)
+        if self.gateway:
+            route = Route()
+            route.setDefaultRoute(self.gateway)
+        ifc.setStatus(self.dev, "UP")
+    
+    def down(self):
+        ifc = ifconfig()
+        ifc.setStatus(self.dev, "DOWN")
+
+
 # Net.Link API
 
 def modes():
@@ -284,29 +350,28 @@ def deviceList():
 def setConnection(name=None, device=None):
     pass
 
-def setAddress(name=None, address=None, mask=None):
-    pass
+def setAddress(name=None, mode=None, address=None, mask=None, gateway=None):
+    dev = Dev(name)
+    if dev.state == "up":
+        dev.address = address
+        dev.gateway = gateway
+        dev.up()
 
 def setRemote(name=None, remote=None):
-    pass
+    fail("Not supported")
 
 def setState(name=None, state=None):
+    dev = Dev(name)
     if state != "up" and state != "down":
         fail("unknown state")
-    dict = get_instance("name", name)
-    if not dict:
-        fail("No such connection")
     
-    dev = _device_dev(dict["device"])
-    if not dev:
+    if not dev.dev:
         fail("Device not found")
     
-    lala = ifconfig()
     if state == "up":
-        lala.setAddr(dev, dict["address"])
-        lala.setStatus(dev, "UP")
+        dev.up()
     else:
-        lala.setStatus(dev, "DOWN")
+        dev.down()
 
 def connections():
     list = instances("name")

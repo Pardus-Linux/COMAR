@@ -90,6 +90,9 @@
 <method name="connectionInfo">
     <instance>name</instance>
 </method>
+<method name="getRemote">
+    <instance>name</instance>
+</method>
 <method name="getAddress">
     <instance>name</instance>
 </method>

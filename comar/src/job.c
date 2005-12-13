@@ -269,7 +269,7 @@ do_getlist(int node)
 	} else {
 		char *t;
 		for (t = apps; *t; t++) {
-			if (*t == '/') *t = ' ';
+			if (*t == '/') *t = '\n';
 		}
 		send_result(CMD_RESULT, apps, 0);
 	}

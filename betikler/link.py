@@ -336,7 +336,14 @@ class Dev:
 # Net.Link API
 
 def modes():
-    return "auto"
+    return "device,net,auto"
+
+def linkInfo():
+    return "\n".join([
+        "net",
+        "Ethernet network",
+        ""
+    ])
 
 def deviceList():
     iflist = []

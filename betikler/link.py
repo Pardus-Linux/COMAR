@@ -352,9 +352,10 @@ def deviceList():
     iflist = []
     for iface in os.listdir(sysfs_path):
         if csapi.atoi(sysValue(sysfs_path, iface, "type")) == ARPHRD_ETHER:
-            uid = _device_uid(iface)
-            info = _device_info(uid)
-            iflist.append("%s %s" % (uid, info))
+            if not os.path.exists(os.path.join(sysfs_path, iface, "wireless")):
+                uid = _device_uid(iface)
+                info = _device_info(uid)
+                iflist.append("%s %s" % (uid, info))
     return "\n".join(iflist)
 
 def setConnection(name=None, device=None):
@@ -390,7 +391,7 @@ def connections():
     list = instances("name")
     if list:
         return "\n".join(list)
-    return None
+    return ""
 
 def connectionInfo(name=None):
     dict = get_instance("name", name)

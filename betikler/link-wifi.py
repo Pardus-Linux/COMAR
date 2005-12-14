@@ -517,7 +517,7 @@ def connections():
     list = instances("name")
     if list:
         return "\n".join(list)
-    return None
+    return ""
 
 def connectionInfo(name=None):
     dict = get_instance("name", name)

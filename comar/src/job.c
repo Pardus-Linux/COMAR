@@ -164,9 +164,9 @@ do_execute(int node, const char *app)
 	if (model_flags(node) & P_PACKAGE) {
 		if (0 == e) {
 			if (model_flags(node) & P_DELETE)
-				db_del_profile(node, app, p);
+				db_del_profile(node, bk_app, p);
 			else
-				db_put_profile(node, app, p);
+				db_put_profile(node, bk_app, p);
 		}
 		pack_delete(p);
 	}

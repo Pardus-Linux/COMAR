@@ -447,7 +447,7 @@ class Dev:
         ifc = ifconfig()
         if self.remote:
             wifi = Wireless()
-            wifi.setEssid(self.remote)
+            wifi.setEssid(self.dev, self.remote)
         if self.address:
             ifc.setAddr(self.dev, self.address)
         ifc.setStatus(self.dev, "UP")

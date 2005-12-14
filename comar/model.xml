@@ -103,6 +103,7 @@
     <instance>name</instance>
 </method>
 <notify name="stateChanged"/>
+<notify name="connectionChanged"/>
 </class>
 <class name="Server">
 </class>

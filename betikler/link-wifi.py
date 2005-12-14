@@ -433,6 +433,7 @@ class Dev:
         dict = get_instance("name", name)
         self.uid = _get(dict, "device", None)
         self.dev = None
+        self.name = name
         if self.uid:
             self.dev = _device_dev(self.uid)
         self.state = _get(dict, "state", "down")
@@ -453,10 +454,12 @@ class Dev:
             route = Route()
             route.setDefaultRoute(self.gateway)
         ifc.setStatus(self.dev, "UP")
+        notify("Net.Link.stateChanged", self.name + "\nup")
     
     def down(self):
         ifc = ifconfig()
         ifc.setStatus(self.dev, "DOWN")
+        notify("Net.Link.stateChanged", self.name + "\ndown")
 
 
 # Net.Link API
@@ -482,6 +485,9 @@ def deviceList():
     return "\n".join(iflist)
 
 def setConnection(name=None, device=None):
+    pass
+
+def deleteConnection(name=None):
     pass
 
 def setAddress(name=None, mode=None, address=None, mask=None, gateway=None):

@@ -485,10 +485,12 @@ def deviceList():
     return "\n".join(iflist)
 
 def setConnection(name=None, device=None):
-    pass
+    dict = get_instance("name", name)
+    if dict == {}:
+        notify("Net.Link.connectionChanged", "added " + name)
 
 def deleteConnection(name=None):
-    pass
+    notify("Net.Link.connectionChanged", "deleted " + name)
 
 def setAddress(name=None, mode=None, address=None, mask=None, gateway=None):
     dev = Dev(name)
@@ -533,16 +535,17 @@ def getRemote(name=None):
     return name + "\n" + dev.remote
 
 def getAddress(name=None):
-    dict = get_instance("name", name)
-    if not dict:
+    dev = Dev(name)
+    if not dev:
         fail("No such connection")
-    if dict["address"] == "auto":
+
+    if dev.mode == "auto":
         # FIXME: query interface
-        s = "\n".join([name, "fixme"])
+        s = "\n".join([name, dev.mode, "fixme"])
     else:
-        s = "\n".join([name, dict["address"]])
-        if dict.has_key("mask"):
-            s += "\n" + dict["mask"]
+        s = "\n".join([name, dev.mode, dev.address, dev.gateway])
+        if dev.mask:
+            s += "\n" + dev.mask
     return s
 
 def getState(name=None):

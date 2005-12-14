@@ -324,10 +324,10 @@ class Dev:
         ifc = ifconfig()
         if self.address:
             ifc.setAddr(self.dev, self.address)
+        ifc.setStatus(self.dev, "UP")
         if self.gateway:
             route = Route()
             route.setDefaultRoute(self.gateway)
-        ifc.setStatus(self.dev, "UP")
         notify("Net.Link.stateChanged", self.name + "\nup")
     
     def down(self):

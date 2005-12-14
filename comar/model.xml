@@ -71,6 +71,9 @@
     <instance>name</instance>
     <argument>device</argument>
 </method>
+<method name="deleteConnection" profile="package" profileOp="delete">
+    <instance>name</instance>
+</method>
 <method name="setAddress" profile="package">
     <instance>name</instance>
     <argument>mode</argument>
@@ -82,7 +85,7 @@
     <instance>name</instance>
     <argument>remote</argument>
 </method>
-<method name="setState" profile="package">
+<method name="setState" profile="package" profileOp="startup">
     <instance>name</instance>
     <argument>state</argument>
 </method>

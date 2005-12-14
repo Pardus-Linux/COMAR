@@ -139,7 +139,7 @@ do_execute(int node, const char *app)
 	bk_app = (char *) app;
 	bk_node = node;
 
-	if (model_package_profile(node)) {
+	if (model_flags(node) & P_PACKAGE) {
 		p = ipc_into_pack();
 	}
 
@@ -160,8 +160,13 @@ do_execute(int node, const char *app)
 		free(res);
 	}
 
-	if (model_package_profile(node)) {
-		if (0 == e) db_put_profile(node, app, p);
+	if (model_flags(node) & P_PACKAGE) {
+		if (0 == e) {
+			if (model_flags(node) & P_DELETE)
+				db_del_profile(node, app, p);
+			else
+				db_put_profile(node, app, p);
+		}
 		pack_delete(p);
 	}
 
@@ -185,7 +190,7 @@ do_call(int node)
 
 	log_debug(LOG_JOB, "Call(%s)\n", model_get_path(node));
 
-	if (model_global_profile(node)) {
+	if (model_flags(node) & P_GLOBAL) {
 		p = ipc_into_pack();
 	}
 
@@ -239,7 +244,7 @@ do_call(int node)
 		send_result(CMD_RESULT_END, NULL, 0);
 	}
 
-    if (model_global_profile(node) && ok) {
+    if ((model_flags(node) & P_GLOBAL) && ok) {
 		db_put_profile(node, NULL, p);
 		pack_delete(p);
 	}

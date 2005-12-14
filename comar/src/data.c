@@ -500,6 +500,38 @@ out:
 	return p;
 }
 
+void
+db_del_profile(int node_no, const char *app, struct pack *args)
+{
+	DB *profile_db = NULL;
+	char *key = NULL;
+	char *inst_key = NULL;
+	char *inst_value = NULL;
+	char *t;
+	size_t ts;
+
+	profile_db = open_db("profile.db");
+	if (!profile_db) goto out;
+
+	while (pack_get(args, &t, &ts)) {
+		if (model_is_instance(node_no, t)) {
+			inst_key = t;
+			pack_get(args, &t, &ts);
+			inst_value = t;
+		} else {
+			pack_get(args, &t, &ts);
+		}
+	}
+
+	key = make_profile_key(node_no, app, inst_key, inst_value);
+
+	del_data(profile_db, key);
+
+out:
+	if (key) free(key);
+	if (profile_db) close_db(profile_db);
+}
+
 int
 db_get_instances(int node_no, const char *app, const char *key, void (*func)(char *str, size_t size))
 {

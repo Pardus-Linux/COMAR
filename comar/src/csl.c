@@ -113,7 +113,7 @@ c_get_profile(PyObject *self, PyObject *args)
 	else
 		node_no = bk_node;
 
-	if (model_package_profile(node_no))
+	if (model_flags(node_no) & P_PACKAGE)
 		app = bk_app;
 	else
 		app = NULL;

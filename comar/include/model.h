@@ -10,6 +10,11 @@
 #ifndef MODEL_H
 #define MODEL_H 1
 
+#define P_GLOBAL 1
+#define P_PACKAGE 2
+#define P_DELETE 4
+#define P_STARTUP 8
+
 extern int model_max_notifications;
 
 int model_init(void);
@@ -21,8 +26,7 @@ const char *model_get_method(int node_no);
 const char *model_get_path(int node_no);
 
 int model_has_argument(int node_no, const char *argname);
-int model_global_profile(int node_no);
-int model_package_profile(int node_no);
+int model_flags(int node_no);
 int model_has_instances(int node_no);
 int model_is_instance(int node_no, const char *argname);
 

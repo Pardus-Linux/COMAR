@@ -24,12 +24,6 @@ enum {
 	N_NOTIFY
 };
 
-enum {
-	P_NONE,
-	P_GLOBAL,
-	P_PACKAGE
-};
-
 struct node {
 	const char *path;
 	const char *method;
@@ -37,7 +31,7 @@ struct node {
 	const char *args;
 	int nr_instances;
 	int nr_args;
-	int profile_mode;
+	int flags;
 	int parent_no;
 	int type;
 	int no;
@@ -238,9 +232,16 @@ model_init(void)
 							prof = iks_find_attrib(met, "profile");
 							if (prof) {
 								if (strcmp(prof, "global") == 0)
-									nodes[no].profile_mode = P_GLOBAL;
+									nodes[no].flags |= P_GLOBAL;
 								if (strcmp(prof, "package") == 0)
-									nodes[no].profile_mode = P_PACKAGE;
+									nodes[no].flags |= P_PACKAGE;
+							}
+							prof = iks_find_attrib(met, "profileOp");
+							if (prof) {
+								if (strcmp(prof, "delete") == 0)
+									nodes[no].flags |= P_DELETE;
+								if (strcmp(prof, "package") == 0)
+									nodes[no].flags |= P_STARTUP;
 							}
 							for (arg = iks_first_tag(met); arg; arg = iks_next_tag(arg)) {
 								if (iks_strcmp(iks_name(arg), "instance") == 0) {
@@ -361,17 +362,9 @@ model_has_argument(int node_no, const char *argname)
 }
 
 int
-model_global_profile(int node_no)
+model_flags(int node_no)
 {
-	if (nodes[node_no].profile_mode == P_GLOBAL) return 1;
-	return 0;
-}
-
-int
-model_package_profile(int node_no)
-{
-	if (nodes[node_no].profile_mode == P_PACKAGE) return 1;
-	return 0;
+	return nodes[node_no].flags;
 }
 
 int

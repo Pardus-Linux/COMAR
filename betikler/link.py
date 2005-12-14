@@ -359,10 +359,12 @@ def deviceList():
     return "\n".join(iflist)
 
 def setConnection(name=None, device=None):
-    pass
+    dict = get_instance("name", name)
+    if dict == {}:
+        notify("Net.Link.connectionChanged", "added " + name)
 
 def deleteConnection(name=None):
-    pass
+    notify("Net.Link.connectionChanged", "deleted " + name)
 
 def setAddress(name=None, mode=None, address=None, mask=None, gateway=None):
     dev = Dev(name)

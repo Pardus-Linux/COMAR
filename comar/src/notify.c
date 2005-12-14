@@ -67,7 +67,7 @@ notify_fire(const char *name, const char *msg)
 	ipc_start(CMD_NOTIFY, NULL, 0, no);
 	if (msg) {
 		tmp = malloc(strlen(msg) + strlen(bk_app) + strlen(name) + 3);
-		sprintf(tmp, "%s %s\n%s", name, bk_app, msg);
+		sprintf(tmp, "%s\n%s\n%s", name, bk_app, msg);
 		ipc_pack_arg(tmp, strlen(tmp));
 		free(tmp);
 	} else {

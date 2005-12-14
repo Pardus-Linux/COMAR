@@ -7,6 +7,7 @@
 ** option) any later version. Please read the COPYING file.
 */
 
+#define _GNU_SOURCE 1
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,6 +33,74 @@
 #define UEVENT_BUFFER_SIZE		1024
 #define NETLINK_KOBJECT_UEVENT 15
 
+static int trig_node;
+static char *trig_app;
+static const char *trig_key;
+
+static void
+trig_instance(char *str, size_t size)
+{
+	struct pack *p;
+	char *tmp, *t;
+	size_t ts;
+
+	tmp = strndup(str, size);
+	p = db_get_profile(trig_node, trig_app, trig_key, tmp);
+
+	ipc_start(CMD_CALL_PACKAGE, NULL, 0, trig_node);
+	ipc_pack_arg(trig_app, strlen(trig_app));
+	while (pack_get(p, &t, &ts)) {
+		if (model_has_argument(trig_node, t)) {
+			ipc_pack_arg(t, ts);
+			pack_get(p, &t, &ts);
+			ipc_pack_arg(t, ts);
+		} else {
+			pack_get(p, &t, &ts);
+		}
+	}
+	ipc_send(TO_PARENT);
+	pack_delete(p);
+}
+
+static void
+trigger_startup_methods(void)
+{
+	int node;
+	int flags;
+	char *apps;
+	const char *key;
+	char *s, *t;
+
+	for (node = 0; node < model_nr_nodes; node++) {
+		flags = model_flags(node);
+		if ((flags & P_STARTUP) == 0)
+			continue;
+
+		key = model_instance_key(node);
+		
+		if (flags & P_PACKAGE) {
+			if (0 != db_get_apps(model_parent(node), &apps))
+				continue;
+			
+			for (t = apps; t; t = s) {
+				s = strchr(t, '/');
+				if (s) {
+					*s = '\0';
+					++s;
+				}
+				
+				if (key) {
+					trig_node = node;
+					trig_app = t;
+					trig_key = key;
+				
+					db_get_instances(node, t, key, trig_instance);
+				}
+			}
+
+		}
+	}
+}
 
 static void
 event_proc(void)
@@ -41,6 +110,10 @@ event_proc(void)
 	char buf[UEVENT_BUFFER_SIZE + 512];
 	int sock;
 	int ret;
+
+	// FIXME: first of our events is startup, others are not used yet
+	trigger_startup_methods();
+	return;
 
 	memset(&snl, 0x00, sizeof(struct sockaddr_nl));
 	snl.nl_family = AF_NETLINK;

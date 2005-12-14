@@ -16,6 +16,7 @@
 #define P_STARTUP 8
 
 extern int model_max_notifications;
+extern int model_nr_nodes;
 
 int model_init(void);
 int model_lookup_class(const char *path);
@@ -29,6 +30,7 @@ int model_has_argument(int node_no, const char *argname);
 int model_flags(int node_no);
 int model_has_instances(int node_no);
 int model_is_instance(int node_no, const char *argname);
+const char *model_instance_key(int node_no);
 
 
 #endif /* MODEL_H */

@@ -40,7 +40,7 @@ struct node {
 #define TABLE_SIZE 367
 
 int model_max_notifications;
-static int nr_nodes;
+int model_nr_nodes;
 static struct node **node_table;
 static struct node *nodes;
 static char *paths;
@@ -73,7 +73,7 @@ add_node(int parent_no, const char *path, int type)
 	int val;
 	int len = strlen(path);
 
-	n = &nodes[nr_nodes];
+	n = &nodes[model_nr_nodes];
 	n->path = path;
 	if (type == N_METHOD) {
 		n->method = path + len;
@@ -84,7 +84,7 @@ add_node(int parent_no, const char *path, int type)
 	}
 	n->parent_no = parent_no;
 	n->type = type;
-	n->no = nr_nodes++;
+	n->no = model_nr_nodes++;
 
 	val = hash_string(path, len) % TABLE_SIZE;
 	n->next = node_table[val];
@@ -240,7 +240,7 @@ model_init(void)
 							if (prof) {
 								if (strcmp(prof, "delete") == 0)
 									nodes[no].flags |= P_DELETE;
-								if (strcmp(prof, "package") == 0)
+								if (strcmp(prof, "startup") == 0)
 									nodes[no].flags |= P_STARTUP;
 							}
 							for (arg = iks_first_tag(met); arg; arg = iks_next_tag(arg)) {
@@ -390,4 +390,10 @@ model_is_instance(int node_no, const char *argname)
 		t += strlen(t) + 1;
 	}
 	return 0;
+}
+
+const char *
+model_instance_key(int node_no)
+{
+	return nodes[node_no].args;
 }

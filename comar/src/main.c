@@ -25,6 +25,7 @@
 #include "ipc.h"
 
 void rpc_unix_start(void);
+void event_start(void);
 
 
 static void
@@ -82,8 +83,8 @@ main(int argc, char *argv[])
 	if (model_init() != 0) return 1;
 
 	// Third phase: helper processes
-	//event_start();
 	rpc = proc_fork(rpc_unix_start, "RpcUnix");
+	event_start();
 
 	// Ready to run
 	while (1) {

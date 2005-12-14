@@ -136,7 +136,7 @@ do_execute(int node, const char *app)
 
 	log_debug(LOG_JOB, "Execute(%s,%s)\n", model_get_path(node), app);
 
-	bk_app = (char *) app;
+	bk_app = strdup(app);
 	bk_node = node;
 
 	if (model_flags(node) & P_PACKAGE) {
@@ -149,6 +149,7 @@ do_execute(int node, const char *app)
 		send_result(CMD_NONE, "noapp", 5);
 		return -1;
 	}
+
 	e = csl_execute(code, code_size, model_get_method(node), &res, &res_size);
 	if (e) {
 		if (e == CSL_NOFUNC)
@@ -170,7 +171,7 @@ do_execute(int node, const char *app)
 		pack_delete(p);
 	}
 
-    csl_cleanup();
+	csl_cleanup();
 
 	return e;
 }

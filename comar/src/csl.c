@@ -48,9 +48,8 @@ static PyObject *
 c_notify(PyObject *self, PyObject *args)
 {
 	const char *name, *msg;
-	size_t size, msize;
 
-	if (!PyArg_ParseTuple(args, "s#s#", &name, &size, &msg, &msize))
+	if (!PyArg_ParseTuple(args, "ss", &name, &msg))
 		return NULL;
 
 	notify_fire(name, msg);

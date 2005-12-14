@@ -63,7 +63,6 @@ notify_fire(const char *name, const char *msg)
 	if (no == -1) return -1;
 
 	ipc_start(CMD_NOTIFY, NULL, 0, no);
-
 	if (msg) {
 		tmp = malloc(strlen(msg) + strlen(name) + 2);
 		sprintf(tmp, "%s\n%s", name, msg);
@@ -72,7 +71,6 @@ notify_fire(const char *name, const char *msg)
 	} else {
 		ipc_pack_arg(name, strlen(name));
 	}
-
 	ipc_send(TO_PARENT);
 	return 0;
 }

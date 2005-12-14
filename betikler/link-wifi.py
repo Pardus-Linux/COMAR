@@ -545,7 +545,8 @@ def getAddress(name=None):
             s += "\n" + dict["mask"]
     return s
 
-def getStatus(name=None):
-    dict = get_instance("name", name)
-    if not dict:
+def getState(name=None):
+    dev = Dev(name)
+    if not dev:
         fail("No such connection")
+    return name + "\n" + dev.state

@@ -7,6 +7,7 @@
 ** option) any later version. Please read the COPYING file.
 */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -56,11 +57,22 @@ int
 notify_fire(const char *name, const char *msg)
 {
 	int no;
+	char *tmp;
 
 	no = model_lookup_notify(name);
 	if (no == -1) return -1;
+
 	ipc_start(CMD_NOTIFY, NULL, 0, no);
-	if (msg) ipc_pack_arg(msg, strlen(msg));
+
+	if (msg) {
+		tmp = malloc(strlen(msg) + strlen(name) + 2);
+		sprintf(tmp, "%s\n%s", name, msg);
+		ipc_pack_arg(tmp, strlen(tmp));
+		free(tmp);
+	} else {
+		ipc_pack_arg(name, strlen(name));
+	}
+
 	ipc_send(TO_PARENT);
 	return 0;
 }

@@ -486,7 +486,7 @@ def deviceList():
 
 def setConnection(name=None, device=None):
     dict = get_instance("name", name)
-    if dict == {}:
+    if dict == None:
         notify("Net.Link.connectionChanged", "added " + name)
 
 def deleteConnection(name=None):

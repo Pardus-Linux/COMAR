@@ -456,7 +456,7 @@ def queryMouse(keys):
 
 xorg_conf = "/etc/X11/xorg.conf"
 
-def configureDisplay():
+def autoConfigureDisplay():
     #if os.path.exists(xorg_conf):
     #    return
     
@@ -508,5 +508,5 @@ def configureDisplay():
     write_tmpl(template_main, keys, xorg_conf)
 
 # test
-configureDisplay()
+autoConfigureDisplay()
 

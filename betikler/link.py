@@ -380,7 +380,7 @@ class Dev:
                 route.setDefaultRoute(self.gateway)
         else:
             dd = Dhcp()
-            print dd.start(self.dev, timeout=5)
+            print dd.start(self.dev, timeout="5")
         notify("Net.Link.stateChanged", self.name + "\nup")
     
     def down(self):

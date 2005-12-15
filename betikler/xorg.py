@@ -14,7 +14,7 @@
 import os
 import popen2
 
-# api
+### api ###
 def unlink(path):
     try:
         os.unlink(path)
@@ -294,7 +294,7 @@ Section "InputDevice"
     Driver     "kbd"
     Option     "AutoRepeat" "500 30"
     Option     "XkbModel" "pc105"
-    Option     "XkbLayout" "tr"
+    Option     "XkbLayout" "%(KEYMAP)s"
 EndSection
 
 Section "InputDevice"
@@ -452,6 +452,29 @@ def queryMouse(keys):
     except:
         pass
 
+def get_keymap():
+    try:
+        f = file("/etc/conf.d/keymaps")
+        for line in f.readlines():
+            if line.strip().startswith("KEYMAP="):
+                kmap = line.split('"')[1].strip()
+        f.close()
+    except:
+        # Fallback is trq
+        kmap = "tr"
+
+    # Console keymaps and xorg keymaps differ in name ...
+    # Very dumb hack to support trq and tr_f keyboards and "not break"
+    # other programs like kxkb. The right way to do this is to patch 
+    # change the layout defs in xorg and add a few lines to kxkb so it
+
+    if kmap == "trq":
+        kmap = "tr"
+    elif kmap == "trf":
+        kmap = "tr_f"
+
+    return kmap
+
 # om call
 
 xorg_conf = "/etc/X11/xorg.conf"
@@ -504,6 +527,7 @@ def autoConfigureDisplay():
         keys["MODES"] = mon.res
 
     queryMouse(keys)
+    keys["KEYMAP"] = get_keymap()
 
     write_tmpl(template_main, keys, xorg_conf)
 

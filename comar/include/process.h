@@ -34,6 +34,7 @@ extern struct Proc my_proc;
 #define TO_PARENT NULL
 
 void proc_init(void);
+struct ProcChild *proc_get_rpc(void);
 struct ProcChild *proc_fork(void (*child_func)(void), const char *desc);
 void proc_finish(void);
 int proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout);

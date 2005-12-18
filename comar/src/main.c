@@ -114,7 +114,7 @@ main(int argc, char *argv[])
 				case CMD_ERROR:
 				case CMD_NONE:
 					proc_recv(p, &ipc, size);
-					proc_send(rpc, cmd, ipc, size);
+					proc_send(proc_get_rpc(), cmd, ipc, size);
 					free(ipc);
 					break;
 			}

@@ -53,6 +53,12 @@ proc_init(void)
 	handle_signals();
 }
 
+struct ProcChild *
+proc_get_rpc(void)
+{
+	return &my_proc.children[0];
+}
+
 static struct ProcChild *
 add_child(pid_t pid, int to, int from, const char *desc)
 {

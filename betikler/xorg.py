@@ -461,18 +461,7 @@ def get_keymap():
         f.close()
     except:
         # Fallback is trq
-        kmap = "tr"
-
-    # Console keymaps and xorg keymaps differ in name ...
-    # Very dumb hack to support trq and tr_f keyboards and "not break"
-    # other programs like kxkb. The right way to do this is to change 
-    # the layout defs in xorg and add a few lines to kxkb, though it probably
-    # will break lots of other stuff
-
-    if kmap == "trq":
-        kmap = "tr"
-    elif kmap == "trf":
-        kmap = "tr_f"
+        kmap = "trq"
 
     return kmap
 

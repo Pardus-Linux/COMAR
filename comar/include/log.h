@@ -14,6 +14,7 @@
 #define LOG_DB 2
 #define LOG_JOB 4
 #define LOG_IPC 8
+#define LOG_PERF 16
 #define LOG_ALL 0xffffffff
 
 void log_error(const char *fmt, ...);

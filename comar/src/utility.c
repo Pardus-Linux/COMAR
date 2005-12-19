@@ -13,6 +13,17 @@
 
 #include "utility.h"
 
+/* returns in miliseconds (1/1000 second) */
+unsigned long
+time_diff (struct timeval *start, struct timeval *end)
+{
+	unsigned long msec;
+
+	msec = (end->tv_sec * 1000) + (end->tv_usec / 1000);
+	msec -= (start->tv_sec * 1000) + (start->tv_usec / 1000);
+	return msec;
+}
+
 struct pack *
 pack_new(size_t min_size)
 {

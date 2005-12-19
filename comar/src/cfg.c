@@ -34,6 +34,7 @@ static struct logflag_struct {
 	{ "db", LOG_DB },
 	{ "job", LOG_JOB },
 	{ "ipc", LOG_IPC },
+	{ "perf", LOG_PERF },
 	{ "all", LOG_ALL },
 	{ "full", LOG_ALL },
 	{ NULL, 0 }

@@ -10,6 +10,10 @@
 #ifndef UTILITY_H
 #define UTILITY_H 1
 
+#include <sys/time.h>
+
+unsigned long time_diff (struct timeval *start, struct timeval *end);
+
 struct pack {
 	unsigned char *buffer;
 	size_t max;

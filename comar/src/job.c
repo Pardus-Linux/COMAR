@@ -18,6 +18,7 @@
 #include "model.h"
 #include "log.h"
 #include "ipc.h"
+#include "utility.h"
 
 static unsigned char *
 load_file(const char *fname, int *sizeptr)
@@ -127,6 +128,8 @@ do_remove(const char *app)
 static int
 do_execute(int node, const char *app)
 {
+	struct timeval start, end;
+	unsigned long msec;
 	struct pack *p = NULL;
 	char *code;
 	char *res;
@@ -150,7 +153,9 @@ do_execute(int node, const char *app)
 		return -1;
 	}
 
+	gettimeofday (&start, NULL);
 	e = csl_execute(code, code_size, model_get_method(node), &res, &res_size);
+	gettimeofday (&end, NULL);
 	if (e) {
 		if (e == CSL_NOFUNC)
 			send_result(CMD_NONE, "nomethod", 8);
@@ -159,6 +164,13 @@ do_execute(int node, const char *app)
 	} else {
 		send_result(CMD_RESULT, res, res_size);
 		free(res);
+	}
+
+	msec = time_diff(&start, &end);
+	if (msec > 60*1000) {
+		log_info("Script %s took %d seconds for %s call.\n", app, msec / 1000, model_get_path(node));
+	} else {
+		log_debug(LOG_PERF, "Script %s took %d miliseconds for %s call.\n", app, msec, model_get_path(node));
 	}
 
 	if (model_flags(node) & P_PACKAGE) {

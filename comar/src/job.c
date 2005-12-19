@@ -168,9 +168,9 @@ do_execute(int node, const char *app)
 
 	msec = time_diff(&start, &end);
 	if (msec > 60*1000) {
-		log_info("Script %s took %d seconds for %s call.\n", app, msec / 1000, model_get_path(node));
+		log_info("Script %s took %d seconds for %s call.\n", bk_app, msec / 1000, model_get_path(node));
 	} else {
-		log_debug(LOG_PERF, "Script %s took %d miliseconds for %s call.\n", app, msec, model_get_path(node));
+		log_debug(LOG_PERF, "Script %s took %d miliseconds for %s call.\n", bk_app, msec, model_get_path(node));
 	}
 
 	if (model_flags(node) & P_PACKAGE) {

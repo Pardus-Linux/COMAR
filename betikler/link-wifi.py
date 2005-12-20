@@ -447,7 +447,7 @@ def _device_uid(dev):
 
 def _device_check(dev, uid):
     dev_uid = _device_uid(dev)
-    t1 = uid.rsplit("_", 1)
+    t1 = dev_uid.rsplit("_", 1)
     t2 = uid.rsplit("_", 1)
     return t1[0] == t2[0]
 

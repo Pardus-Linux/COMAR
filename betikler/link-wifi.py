@@ -430,19 +430,24 @@ def queryPCI(vendor, device):
         else:
             if line.startswith("\t"):
                 if line.startswith("\t" + device):
-                    return (company, line[6:].strip())
+                    return "%s - %s" % (line[6:].strip(), company)
             elif not line.startswith("#"):
                 flag = 0
-    return ("Unknown", "Unknown")
+    return "Unknown (%s:%s)" % (vendor, device)
 
 # Internal functions
 
 ARPHRD_ETHER = 1
 sysfs_path = "/sys/class/net"
 
+def lremove(str, pre):
+	if str.startswith(pre):
+		return str[len(pre):]
+	return str
+
 def _device_uid(dev):
-    vendor = sysValue(sysfs_path, dev, "device/vendor").lstrip('0x')
-    device = sysValue(sysfs_path, dev, "device/device").lstrip('0x')
+    vendor = lremove(sysValue(sysfs_path, dev, "device/vendor"), '0x')
+    device = lremove(sysValue(sysfs_path, dev, "device/device"), '0x')
     return "pci:%s_%s_%s" % (vendor, device, dev)
 
 def _device_check(dev, uid):
@@ -469,8 +474,7 @@ def _device_info(uid):
     if len(t) < 2:
         return "Unknown (%s)" % uid
     vendor, device, dev = t[1].split('_')
-    name = queryPCI(vendor, device)
-    return "%s (%s:%s) %s" % (name[1], vendor, device, name[0])
+    return queryPCI(vendor, device)
 
 def _get(dict, key, default):
     val = default

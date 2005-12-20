@@ -187,7 +187,9 @@ class ifconfig:
             flags &= ~self.IFF_NOARP
             flags &= ~self.IFF_PROMISC
         elif status is "DOWN":
-            flags = ~self.IFF_UP
+            result = self._call(ifname, self.SIOCGIFFLAGS)
+            flags, = struct.unpack('H', result[16:18])
+            flags &= ~self.IFF_UP
         else:
             return None
 
@@ -440,7 +442,8 @@ def setState(name=None, state=None):
     if state == "up":
         dev.up()
     else:
-        dev.down()
+        if dev.state == "up":
+            dev.down()
 
 def connections():
     list = instances("name")

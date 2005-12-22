@@ -320,11 +320,15 @@ do_getlist(int node)
 static int
 do_dump_profile(void)
 {
+	char *dump;
+
 	log_debug(LOG_JOB, "DumpProfile()\n");
 
-	db_dump_profile();
-	// FIXME: send dump to the requester
-	send_result(CMD_RESULT, NULL, 0);
+	dump = db_dump_profile();
+	if (dump) {
+		send_result(CMD_RESULT, dump, strlen(dump));
+		free(dump);
+	}
 
 	return 0;
 }

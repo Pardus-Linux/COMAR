@@ -21,6 +21,7 @@
 #include "process.h"
 #include "ipc.h"
 #include "utility.h"
+#include "iksemel.h"
 
 static DB_ENV *my_env;
 static int nr_open_dbs;
@@ -565,14 +566,16 @@ out:
 	return ret;
 }
 
-int
+char *
 db_dump_profile(void)
 {
 	struct pack *p;
 	DB *profile_db = NULL;
 	DBC *cursor = NULL;
 	DBT pair[2];
-	int e, ret = -1;
+	int e;
+	iks *xml = NULL, *item, *x;
+	char *ret = NULL;
 
 	memset(&pair[0], 0, sizeof(DBT) * 2);
 	pair[1].flags = DB_DBT_MALLOC;
@@ -582,24 +585,31 @@ db_dump_profile(void)
 
 	profile_db->cursor(profile_db, NULL, &cursor, 0);
 
+	xml = iks_new("comarProfile");
+	iks_insert_cdata(xml, "\n", 1);
 	while ((e = cursor->c_get(cursor, &pair[0], &pair[1], DB_NEXT)) == 0) {
 		char *t;
 		size_t ts;
-		printf("profile [%.*s]\n", pair[0].size, (char *) pair[0].data);
+		item = iks_insert(xml, "item");
+		iks_insert_cdata(iks_insert(item, "key"), pair[0].data, pair[0].size);
 		p = pack_wrap(pair[1].data, pair[1].size);
 		while (pack_get(p, &t, &ts)) {
-			printf("    key [%.*s] ", ts, t);
+			iks_insert_cdata(item, "\n", 1);
+			x = iks_insert(item, "data");
+			iks_insert_attrib(x, "key", t);
 			pack_get(p, &t, &ts);
-			printf("value [%.*s]\n", ts, t);
+			iks_insert_cdata(iks_insert(x, "value"), t, ts);
 		}
 		pack_delete(p);
+		iks_insert_cdata(xml, "\n", 1);
 	}
 	if (e != DB_NOTFOUND) {
 		goto out;
 	}
 
-	ret = 0;
+	ret = iks_string(NULL, xml);
 out:
+	if (xml) iks_delete(xml);
 	if (cursor) cursor->c_close(cursor);
 	if (profile_db) close_db(profile_db);
 	return ret;

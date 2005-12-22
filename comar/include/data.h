@@ -23,7 +23,7 @@ int db_put_profile(int node_no, const char *app, struct pack *args);
 struct pack *db_get_profile(int node_no, const char *app, const char *inst_key, const char *inst_value);
 void db_del_profile(int node_no, const char *app, struct pack *args);
 int db_get_instances(int node_no, const char *app, const char *key, void (*func)(char *str, size_t size));
-int db_dump_profile(void);
+char *db_dump_profile(void);
 
 
 #endif /* DB_H */

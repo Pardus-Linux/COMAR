@@ -410,16 +410,20 @@ pipe_listen(void)
 			if (sock >= 0) {
 				c = calloc(1, sizeof(struct connection));
 				c->sock = sock;
-				c->notify_mask = notify_alloc();
-				c->buffer = malloc(256);
 				c->size = 256;
 				if (0 == get_peer(sock, &c->cred)) {
-					c->next = conns;
-					c->prev = NULL;
-					if (conns) conns->prev = c;
-					conns = c;
+					if (acl_can_connect(&c->cred)) {
+						c->notify_mask = notify_alloc();
+						c->buffer = malloc(256);
+						c->next = conns;
+						c->prev = NULL;
+						if (conns) conns->prev = c;
+						conns = c;
+					} else {
+						free(c);
+						close(sock);
+					}
 				} else {
-					free(c->buffer);
 					free(c);
 					close(sock);
 				}

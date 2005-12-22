@@ -28,7 +28,8 @@ enum {
 	CMD_GETLIST,
 	CMD_NOTIFY,
 	CMD_DUMP_PROFILE,
-	CMD_SHUTDOWN
+	CMD_SHUTDOWN,
+	CMD_EVENT
 };
 
 void ipc_start(int cmd, void *caller_data, int id, int node);

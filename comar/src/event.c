@@ -113,7 +113,6 @@ event_proc(void)
 
 	// FIXME: first of our events is startup, others are not used yet
 	trigger_startup_methods();
-	return;
 
 	memset(&snl, 0x00, sizeof(struct sockaddr_nl));
 	snl.nl_family = AF_NETLINK;

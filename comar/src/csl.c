@@ -289,14 +289,20 @@ csl_execute(char *code, size_t size, const char *func_name, char **resptr, int *
 		return CSL_NOFUNC;
 	}
 
-	pArgs = PyTuple_New(0);
+	pArgs = NULL;
 	pkArgs = PyDict_New();
 	while (1) {
 		PyObject *p;
 		char *t, *t2;
 		size_t sz;
 		if (ipc_get_arg(&t, &sz) == 0) break;
-		ipc_get_arg(&t2, &sz);
+		if (ipc_get_arg(&t2, &sz) == 0) {
+			pArgs = PyTuple_New(1);
+			PyTuple_SetItem(pArgs, 0, PyString_FromString(t));
+			Py_DECREF(pkArgs);
+			pkArgs = NULL;
+			break;
+		}
 		p = PyString_FromStringAndSize(t2, sz);
 		PyDict_SetItemString(pkArgs, t, p);
 	}
@@ -314,6 +320,9 @@ csl_execute(char *code, size_t size, const char *func_name, char **resptr, int *
 
 	Py_DECREF(pValue);
 	Py_DECREF(pModule);
+
+	// is return value asked?
+	if (resptr == NULL) return 0;
 
 	*reslen = PyString_Size(pStr);
 	*resptr = malloc((*reslen) + 1);

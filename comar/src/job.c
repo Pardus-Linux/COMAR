@@ -126,6 +126,29 @@ do_remove(const char *app)
 }
 
 static int
+do_event(const char *event, int node, const char *app)
+{
+	int e;
+	char *code;
+	size_t code_size;
+
+	log_debug(LOG_JOB, "Event(%s,%s,%s)\n", event, model_get_path(node), app);
+
+	bk_app = strdup(app);
+	bk_node = node;
+
+	csl_setup();
+
+	if (0 != db_get_code(node, app, &code, &code_size)) {
+		return -1;
+	}
+
+	e = csl_execute(code, code_size, event, NULL, NULL);
+
+	return e;
+}
+
+static int
 do_execute(int node, const char *app)
 {
 	struct timeval start, end;
@@ -153,9 +176,9 @@ do_execute(int node, const char *app)
 		return -1;
 	}
 
-	gettimeofday (&start, NULL);
+	gettimeofday(&start, NULL);
 	e = csl_execute(code, code_size, model_get_method(node), &res, &res_size);
-	gettimeofday (&end, NULL);
+	gettimeofday(&end, NULL);
 	if (e) {
 		if (e == CSL_NOFUNC)
 			send_result(CMD_NONE, "nomethod", 8);

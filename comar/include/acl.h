@@ -17,6 +17,7 @@ struct Creds {
 };
 
 int acl_is_capable(int cmd, int node, struct Creds *cred);
+int acl_can_connect(struct Creds *cred);
 
 
 #endif /* ACL_H */

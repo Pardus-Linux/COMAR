@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
+#include <unistd.h>
 
 #include "i18n.h"
 #include "log.h"
@@ -123,5 +124,12 @@ cfg_init(int argc, char *argv[])
 			default:
 				exit(1);
 		}
+	}
+
+	if (getuid() != 0) {
+		puts(
+			_("This program is a system service and should not started by users.")
+		);
+		exit(1);
 	}
 }

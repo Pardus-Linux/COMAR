@@ -304,12 +304,12 @@ csl_execute(char *code, size_t size, const char *func_name, char **resptr, int *
 			pArgs = PyTuple_New(1);
 			PyTuple_SetItem(pArgs, 0, PyString_FromString(t));
 			Py_DECREF(pkArgs);
-			pkArgs = NULL;
 			break;
 		}
 		p = PyString_FromStringAndSize(t2, sz);
 		PyDict_SetItemString(pkArgs, t, p);
 	}
+	if (!pArgs) pArgs = PyTuple_New(0);
 
 	Py_InitModule("comar", methods);
 

@@ -386,8 +386,9 @@ pipe_listen(void)
 	struct connection *c;
 	int sock, max;
 
+	// 1/5 sec, good for cpu and still catching ipc msgs
 	tv.tv_sec = 0;
-	tv.tv_usec = 250000;
+	tv.tv_usec = 200000;
 
 	FD_ZERO(&fds);
 	max = 0;

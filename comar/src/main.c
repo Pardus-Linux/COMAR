@@ -70,6 +70,7 @@ main(int argc, char *argv[])
 	int size;
 
 	// First phase: configuration
+	proc_calc_name_space(argc, argv);
 	cfg_init(argc, argv);
 	log_start();
 
@@ -83,7 +84,7 @@ main(int argc, char *argv[])
 	if (model_init() != 0) return 1;
 
 	// Third phase: helper processes
-	rpc = proc_fork(rpc_unix_start, "RpcUnix");
+	rpc = proc_fork(rpc_unix_start, "ComarRPC");
 	event_start();
 
 	// Ready to run

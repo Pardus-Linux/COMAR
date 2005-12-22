@@ -16,6 +16,7 @@
 #include "i18n.h"
 #include "log.h"
 #include "cfg.h"
+#include "process.h"
 
 /* global option variables with defaults */
 char *cfg_model_file = "/etc/comar/model.xml";

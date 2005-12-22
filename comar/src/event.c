@@ -108,6 +108,7 @@ event_proc(void)
 	struct sockaddr_nl snl;
 	const int bufsize = 1024*1024;
 	char buf[UEVENT_BUFFER_SIZE + 512];
+	struct timeval tv;
 	int sock;
 	int ret;
 
@@ -136,8 +137,13 @@ event_proc(void)
 		fd_set fds;
 		FD_ZERO(&fds);
 		FD_SET(sock, &fds);
+		// 1/5 sec, good for cpu and still catching shutdown signal
+		tv.tv_sec = 0;
+		tv.tv_usec = 200000;
 
-		if (select(sock + 1, &fds, NULL, NULL, NULL) > 0) {
+		proc_check_shutdown();
+
+		if (select(sock + 1, &fds, NULL, NULL, &tv) > 0) {
 			if (FD_ISSET(sock, &fds)) {
 				size_t size;
 				size = recv(sock, &buf, sizeof(buf), 0);
@@ -157,6 +163,6 @@ event_start(void)
 {
 	struct ProcChild *p;
 
-	p = proc_fork(event_proc, "EventHandler");
+	p = proc_fork(event_proc, "ComarEvent");
 	if (!p) exit(1);
 }

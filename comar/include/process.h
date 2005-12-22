@@ -34,8 +34,10 @@ extern struct Proc my_proc;
 #define TO_PARENT NULL
 
 void proc_init(void);
+void proc_calc_name_space(int argc, char *argv[]);
 struct ProcChild *proc_get_rpc(void);
 struct ProcChild *proc_fork(void (*child_func)(void), const char *desc);
+void proc_check_shutdown(void);
 void proc_finish(void);
 int proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout);
 int proc_send(struct ProcChild *p, int cmd, const void *data, size_t data_size);

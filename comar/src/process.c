@@ -7,6 +7,8 @@
 ** option) any later version. Please read the COPYING file.
 */
 
+#define _GNU_SOURCE 1
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,6 +23,8 @@
 
 struct Proc my_proc;
 static int shutdown_activated = 0;
+static char *name_addr;
+static size_t name_size;
 
 
 static void
@@ -39,6 +43,31 @@ handle_signals(void)
 	act.sa_flags = 0;
 
 	sigaction(SIGTERM, &act, NULL);
+	sigaction(SIGINT, &act, NULL);
+}
+
+void
+proc_calc_name_space(int argc, char *argv[])
+{
+	int i;
+
+	name_addr = argv[0];
+	name_size = 0;
+	for (i = 0; i < argc; i++) {
+		name_size += strlen(argv[i]) + 1;
+	}
+	for (i = 0; environ[i] != NULL; i++) {
+		name_size += strlen(environ[i]) + 1;
+	}
+}
+
+static void
+set_my_name(const char *name)
+{
+	if (strlen(name) + 1 < name_size) {
+		memset(name_addr, 0, name_size);
+		strcpy(name_addr, name);
+	}
 }
 
 void
@@ -47,10 +76,11 @@ proc_init(void)
 	memset(&my_proc, 0, sizeof(struct Proc));
 	my_proc.parent.to = -1;
 	my_proc.parent.from = -1;
-	my_proc.desc = "Main";
+	my_proc.desc = "Comar";
 	my_proc.max_children = 8;
 	my_proc.children = calloc(8, sizeof(struct ProcChild));
 	handle_signals();
+	set_my_name(my_proc.desc);
 }
 
 struct ProcChild *
@@ -155,6 +185,14 @@ stop_children(void)
 }
 
 void
+proc_check_shutdown(void)
+{
+	if (shutdown_activated) {
+		proc_finish();
+	}
+}
+
+void
 proc_finish(void)
 {
 	if (my_proc.nr_children) stop_children();
@@ -183,6 +221,7 @@ proc_fork(void (*child_func)(void), const char *desc)
 		my_proc.parent.pid = getppid();
 		my_proc.desc = desc;
 		handle_signals();
+		set_my_name(desc);
 		log_debug(LOG_PROC, "%s process %d started\n", desc, getpid());
 		child_func();
 		proc_finish();

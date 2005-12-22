@@ -75,6 +75,8 @@ c_instances(PyObject *self, PyObject *args)
 	const char *key = NULL;
 	char *app;
 
+	proc_check_shutdown();
+
 	c_instances_list = PyList_New(0);
 
 	if (!PyArg_ParseTuple(args, "s", &key))
@@ -101,6 +103,8 @@ c_get_profile(PyObject *self, PyObject *args)
 	char *t;
 	size_t ts;
 	PyObject *dict;
+
+	proc_check_shutdown();
 
 	dict = PyDict_New();
 
@@ -143,6 +147,8 @@ c_get_instance(PyObject *self, PyObject *args)
 	char *t;
 	size_t ts;
 	PyObject *dict;
+
+	proc_check_shutdown();
 
 	dict = PyDict_New();
 

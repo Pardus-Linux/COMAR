@@ -16,6 +16,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "i18n.h"
 #include "cfg.h"
 #include "process.h"
 #include "model.h"
@@ -72,6 +73,10 @@ main(int argc, char *argv[])
 	// First phase: configuration
 	proc_calc_name_space(argc, argv);
 	cfg_init(argc, argv);
+	if (getuid() != 0) {
+		puts(_("This program is a system service and should not started by users."));
+		exit(1);
+	}
 	log_start();
 
 	// Shutdown old COMAR

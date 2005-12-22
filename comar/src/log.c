@@ -12,6 +12,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <time.h>
+#include <sys/stat.h>
 
 #include "cfg.h"
 #include "log.h"
@@ -48,6 +49,16 @@ log_print(const char *fmt, va_list ap, int error)
 	}
 
 	// FIXME: syslog?
+}
+
+void
+log_start(void)
+{
+	log_info("COMAR v"VERSION"\n");
+	if (cfg_log_file) {
+		// make sure log is not readable by ordinary users
+		chmod(cfg_log_file_name, S_IRUSR | S_IWUSR);
+	}
 }
 
 void

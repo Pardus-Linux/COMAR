@@ -272,13 +272,11 @@ csl_execute(char *code, size_t size, const char *func_name, char **resptr, int *
 	Py_DECREF(pCode);
 
 	if (!pModule || !PyModule_Check(pModule)) {
-		puts("no module");
 		return CSL_BADCODE;
 	}
 
 	pDict = PyModule_GetDict(pModule);
 	if (!pDict) {
-		puts("no dict");
 		Py_DECREF(pModule);
 		return CSL_BADCODE;
 	}

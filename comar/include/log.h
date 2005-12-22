@@ -17,6 +17,7 @@
 #define LOG_PERF 16
 #define LOG_ALL 0xffffffff
 
+void log_start(void);
 void log_error(const char *fmt, ...);
 void log_info(const char *fmt, ...);
 void log_debug(int subsys, const char *fmt, ...);

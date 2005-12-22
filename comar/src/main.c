@@ -71,7 +71,7 @@ main(int argc, char *argv[])
 
 	// First phase: configuration
 	cfg_init(argc, argv);
-	log_info("COMAR v"VERSION"\n");
+	log_start();
 
 	// Shutdown old COMAR
 	stop_running_comar();

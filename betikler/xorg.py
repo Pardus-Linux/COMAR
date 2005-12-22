@@ -444,7 +444,18 @@ def queryMouse(keys):
     try:
         a = file("/proc/bus/input/devices")
         for line in a.readlines():
-            if "SynPS/2" in line or "AlpsPS/2" in line:
+            # We have trouble having a stable synaptics support in kernel
+            # It changes from version to version, and believe it or not
+            # a few of them actually works ! The problem is, which one ?
+            # I am bored of searching for "what is broken" so Alps "extra" support
+            # is gone, for a little while (at least till we switch to 2.6.15, which has
+            # "enhanced removal of functionality in sysfs" support, "appended new bugs to
+            # AlpsPS/2 code" design, etc. etc.
+            # Hmmm, what was that word ? ...
+            # Oh yeah ...      F.I.
+            #
+            # if "SynPS/2" in line or "AlpsPS/2" in line:
+            if "SynPS/2" in line:
                 keys["SYNAPTICS_MOD"] = 'Load "synaptics"'
                 keys["SYNAPTICS_LAY"] = 'InputDevice "Mouse1" "SendCoreEvents"'
                 keys["SYNAPTICS_SEC"] = template_synaptics

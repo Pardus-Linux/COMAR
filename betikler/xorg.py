@@ -440,7 +440,6 @@ def queryDDC():
             line = freqs[-1]
             mon.hsync_max = int(round(float(line[line.find("hfreq=") + 6:line.rfind(",")])))
             mon.vert_max = int(round(float(line[line.find("vfreq=") + 6:])))
-            print "ekin merhaba :)", mon.hsync_min, mon.vert_min, mon.hsync_max, mon.vert_max
     
     for m in mon.modes:
         t = m[m.find("ModeLine"):].split()[1]

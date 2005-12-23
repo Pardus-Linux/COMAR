@@ -108,6 +108,7 @@ main(int argc, char *argv[])
 				case CMD_CALL_PACKAGE:
 				case CMD_GETLIST:
 				case CMD_DUMP_PROFILE:
+				case CMD_EVENT:
 					proc_recv(p, &ipc, size);
 					job_start(cmd, ipc, size);
 					free(ipc);

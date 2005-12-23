@@ -128,6 +128,8 @@ do_remove(const char *app)
 static int
 do_event(const char *event, int node, const char *app)
 {
+	struct timeval start, end;
+	unsigned long msec;
 	int e;
 	char *code;
 	size_t code_size;
@@ -143,7 +145,16 @@ do_event(const char *event, int node, const char *app)
 		return -1;
 	}
 
+	gettimeofday(&start, NULL);
 	e = csl_execute(code, code_size, event, NULL, NULL);
+	gettimeofday(&end, NULL);
+
+	msec = time_diff(&start, &end);
+	if (msec > 60*1000) {
+		log_info("Script %s (%s) took %d seconds for %s event.\n", bk_app, model_get_path(node), msec / 1000, event);
+	} else {
+		log_debug(LOG_PERF, "Script %s (%s) took %d seconds for %s event.\n", bk_app, model_get_path(node), msec / 1000, event);
+	}
 
 	return e;
 }
@@ -371,6 +382,11 @@ job_proc(void)
 			break;
 		case CMD_DUMP_PROFILE:
 			do_dump_profile();
+			break;
+		case CMD_EVENT:
+			ipc_get_arg(&t, NULL);
+			ipc_get_arg(&s, NULL);
+			do_event(t, ipc_get_node(), s);
 			break;
 	}
 }

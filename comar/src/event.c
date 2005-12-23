@@ -71,6 +71,8 @@ trigger_startup_methods(void)
 	const char *key;
 	char *s, *t;
 
+	// FIXME: this iterator only handles instance methods
+
 	for (node = 0; node < model_nr_nodes; node++) {
 		flags = model_flags(node);
 		if ((flags & P_STARTUP) == 0)
@@ -98,7 +100,52 @@ trigger_startup_methods(void)
 				}
 			}
 
+			free(apps);
 		}
+	}
+}
+
+static void
+fire_event(const char *event, int node, const char *app, const char *data)
+{
+	ipc_start(CMD_EVENT, 0, 0, node);
+	ipc_pack_arg(event, strlen(event));
+	ipc_pack_arg(app, strlen(app));
+	ipc_pack_arg(data, strlen(data));
+	ipc_send(TO_PARENT);
+}
+
+static void
+handle_kernel_event(const char *buffer)
+{
+	char *apps, *t, *s;
+	int node;
+
+	// FIXME: Net.Link is hardcoded here
+	// a proper event layer must accept requests, and send
+	// events to subscribers, but this is enough for 1.0 release
+	// saves us to implement another db code
+
+	printf("EVENT! [%s]\n", buffer);
+
+	if (strncmp(buffer, "add@/class/net/", 15) == 0
+		|| strncmp(buffer, "remove@/class/net/", 18) == 0) {
+
+		node = model_lookup_class("Net.Link");
+
+		if (db_get_apps(node, &apps) != 0)
+			return;
+
+		for (t = apps; t; t = s) {
+			s = strchr(t, '/');
+			if (s) {
+				*s = '\0';
+				++s;
+			}
+			fire_event("kernelEvent", node, t, buffer);
+		}
+
+		free(apps);
 	}
 }
 
@@ -112,7 +159,7 @@ event_proc(void)
 	int sock;
 	int ret;
 
-	// FIXME: first of our events is startup, others are not used yet
+	// First event is startup, send here when comar daemon starts
 	trigger_startup_methods();
 
 	memset(&snl, 0x00, sizeof(struct sockaddr_nl));
@@ -149,10 +196,10 @@ event_proc(void)
 				size = recv(sock, &buf, sizeof(buf), 0);
 				if (size < 0) {
 					log_error("netlink recv failed.\n");
-					exit(1);
+					return;
 				}
 				buf[size] = '\0';
-				printf("EVENT! [%s]\n", buf);
+				handle_kernel_event(buf);
 			}
 		}
 	}

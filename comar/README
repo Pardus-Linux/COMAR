@@ -1,9 +1,119 @@
 
-COMARd
-======
+COMAR 1.0
+=========
+
+Nedir:
+------
+
+COMAR (COnfiguration MAnageR), sistemin düzgün çalışması için gerekli olan
+donanım, açılış, ağ, kullanıcı, zaman, görüntü gibi ayarların mümkün olduğu
+kadar otomatik bir biçimde yapılmasını sağlayan, kullanıcılara bir yetki
+kontrolü dahilinde bu ayarları basit ve anlaşılır bir biçimde değiştirme
+olanağı sağlayan bir yazılımdır.
+
+
+Lisans:
+-------
+
+Copyright (c) 2005, TUBITAK/UEKAE
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 2 of the License, or (at your
+option) any later version. Please read the COPYING file.
+
+Yayın hakkı (c) 2005, TUBITAK/UEKAE
+
+Bu program bir özgür yazılımdır; Free Software Foundation tarafından
+yayımlanan GNU Genel Kamu Lisansının ikinci veya daha yüksek bir
+sürümüne bağlı kalarak değiştirebilir ve/veya tekrar dağıtabilirsiniz.
+Lisans metni için ekteki COPYING dosyasına bakın.
+
+
+Çalıştırma:
+-----------
+
+Gerekenler:
+
+Linux kernel 2.6.x
+Python 2.4
+Berkeley DB
+scons
+Standart inşa araçları (gcc, binutils, vs)
+
+
+Derleme:
+
+İnşa sistemi olarak scons kullanılmıştır. Çomar yürütücüsü ve araçlarını inşa
+etmek için:
+
+  scons
+
+komutunu çalıştırmanız yeterlidir. İnşa işlemi "build" dizininde yapılacak ve
+oluşturulan dosyalar "install" adlı bir dizine konacaktır. Sisteme kurulum
+yapmak için
+
+  sudo scons install prefix=/
+
+komutunu kullanmalısınız.
+
+
+Çalıştırma:
+
+comar bir sistem servisidir ve normal olarak init betiklerinden root yetkileriyle
+çalıştırılır. Sistemde ikinci bir comar çalıştırıldığında ilkini kapatacaktır.
+Çalışan comar'ı kapatmak için "Comar" adlı sürece SIGTERM sinyali gönderebilir
+yada
+
+  sudo comar --shutdown
+
+komutunu verebilirsiniz. Diğer komut satırı parametrelerini
+
+  comar --help
+
+komutuyla görebilirsiniz. Normal bir çalışma sırasında
+
+  ps ax
+
+ile görebileceğiniz sistem süreçleri listesinde
+
+  Comar
+  ComarRPC
+  ComarEvent
+
+olmak üzere üç süreç bulunacaktır. Bir yapılandırma görevi yerine getirilirken
+
+  ComarJob
+  ComarSubJob
+
+adlarında başka süreçler de görülebilir.
+
+
+Hatalar:
+
+Bir hatayla karşılaşırsanız yada daha fazla bilgi almak isterseniz
+
+  http://bugs.uludag.org.tr
+  http://www.uludag.org.tr/projeler/comar
+
+adreslerini kullanabilirsiniz.
+
+
+Teknik Detaylar:
+----------------
+
+Süreçler:
+
+* Comar         Ana süreç
+* ComarRPC      Programlarla bağlantı kanalı
+* ComarEvent    Olay dinleyici
+
+* ComarJob      Her bir yapılandırma görevi için çalışan betikler
+* ComarSubJob             "           "           "
+
 
 Modüller:
----------
+
 * main.c		Ana süreç
 * model.c		Sistem modelini yükleme/indeksleme
 * data.c		Veritabanı (acl, script, apps, model, config)
@@ -18,15 +128,17 @@ Modüller:
 * rpc_unix.c	Unix soket üzerinden comar çağrısı modülü
 * iksemel.c		Model dosyasını okumak için dahili minimal XML parser
 
+
 Kod stili:
-----------
+
 * K&R
 * Fonksiyon isimleri (module)_(görev) şeklinde
 * Ana süreçte hazırlık işlemleri (module)_init
 * Yeni bir süreç başlatan fonksiyonlar (module)_start [ _(opsiyonel isim)]
 
+
 RPC:
-----
+
 "/var/run/comar.socket" adlı UNIX soketinden bağlanılır.
 
 Gelen ve giden cevaplar:
@@ -41,3 +153,6 @@ data ise komutun datasize boyutundaki parametreleridir.
 ile yapılan çağrıdan gelen tüm cevaplarda aynen geri döner.
 
 Komutlar:
+
+...yazılacak...
+

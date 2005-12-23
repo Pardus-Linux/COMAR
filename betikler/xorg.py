@@ -429,7 +429,18 @@ def queryDDC():
             mon.vert_max = atoi(line[line.find("-") + 1:])
         if line[:8] == "ModeLine":
             mon.modes.append("    " +line)
-
+    
+    if mon.hsync_max == 0 or mon.vert_max == 0:
+        # in case those not probed separately, get them from modelines
+        freqs = filter(lambda x: x.find("hfreq=") != -1, ddc[1])
+        if len(freqs) > 1:
+            line = freqs[0]
+            mon.hsync_min = int(round(float(line[line.find("hfreq=") + 6:line.rfind(",")])))
+            mon.vert_mix = int(round(float(line[line.find("vfreq=") + 6:])))
+            line = freqs[-1]
+            mon.hsync_max = int(round(float(line[line.find("hfreq=") + 6:line.rfind(",")])))
+            mon.vert_max = int(round(float(line[line.find("vfreq=") + 6:])))
+    
     for m in mon.modes:
         t = m[m.find("ModeLine"):].split()[1]
         if t not in mon.res:

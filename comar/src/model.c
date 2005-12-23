@@ -320,7 +320,9 @@ model_parent(int node_no)
 	struct node *n;
 
 	n = &nodes[node_no];
-	return n->parent_no;
+	if (n->type == N_METHOD)
+		return n->parent_no;
+	return node_no;
 }
 
 const char *

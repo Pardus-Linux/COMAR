@@ -522,6 +522,24 @@ class Dev:
 
 # Net.Link API
 
+def kernelEvent(data):
+    type, dir = data.split("@", 1)
+    devname = lremove(dir, "/class/net/")
+    devuid = _device_uid(devname)
+    notify("Net.Link.deviceChanged", "added wifi %s %s" % (devuid, _device_info(devuid)))
+    if type == "add":
+        conns = instances("name")
+        for conn in conns:
+            dev = Dev(conn)
+            if dev.uid and _device_check(devname, dev.uid):
+                if dev.state == "up":
+                    dev.up()
+                return
+        notify("Net.Link.deviceChanged", "new wifi %s %s" % (devuid, _device_info(devuid)))
+    
+    elif type == "remove":
+        notify("Net.Link.deviceChanged", "removed wifi %s %s" % (devuid, _device_info(devuid)))
+
 def modes():
     return "device,remote,net,auto"
 

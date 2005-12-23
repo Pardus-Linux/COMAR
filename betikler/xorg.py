@@ -435,11 +435,11 @@ def queryDDC():
         freqs = filter(lambda x: x.find("hfreq=") != -1, ddc[1])
         if len(freqs) > 1:
             line = freqs[0]
-            mon.hsync_min = int(round(float(line[line.find("hfreq=") + 6:line.rfind(",")])))
-            mon.vert_min = int(round(float(line[line.find("vfreq=") + 6:])))
+            mon.hsync_min = atoi(line[line.find("hfreq=") + 6:])
+            mon.vert_min = atoi(line[line.find("vfreq=") + 6:])
             line = freqs[-1]
-            mon.hsync_max = int(round(float(line[line.find("hfreq=") + 6:line.rfind(",")])))
-            mon.vert_max = int(round(float(line[line.find("vfreq=") + 6:])))
+            mon.hsync_max = atoi(line[line.find("hfreq=") + 6:])
+            mon.vert_max = atoi(line[line.find("vfreq=") + 6:])
     
     for m in mon.modes:
         t = m[m.find("ModeLine"):].split()[1]

@@ -12,6 +12,8 @@
 
 #include <sys/time.h>
 
+int utf8_is_valid(const char *str, size_t size);
+
 unsigned long time_diff (struct timeval *start, struct timeval *end);
 
 struct pack {

@@ -171,7 +171,8 @@ get_arg(struct arg_s *args, char **argp, size_t *sizep)
 	if (args->pos + size >= args->size) return -1;
 	*sizep = size;
 	*argp = args->buffer + args->pos;
-	// FIXME: validate utf8
+	// arguments must be valid utf8
+	if (!utf8_is_valid(*argp, *sizep)) return -1;
 	args->pos += size;
 	if (args->buffer[args->pos] != '\0') return -1;
 	++args->pos;

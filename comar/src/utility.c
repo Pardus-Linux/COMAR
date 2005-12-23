@@ -13,6 +13,63 @@
 
 #include "utility.h"
 
+int
+utf8_is_valid(const char *str, size_t size)
+{
+	int i;
+	int len = 0;
+	int max = 0;
+	unsigned char c;
+	unsigned char mask;
+
+	for (i = 0; i < size; i++) {
+		c = str[i];
+
+		// those are not allowed at any point
+		if (0 == c || 0xFE == c || 0xFF == c) return 0;
+
+		if (max) {
+			// we are in a multi byte char
+
+			// against the invalid long form char attack, i.e. 0xC0 0x80
+			if ((c & 0xC0) != 0x80) return 0;
+
+			len++;
+			if (len == max) max = 0;
+
+		} else {
+			if (c & 0x80) {
+				// multi byte char started
+				if ((c & 0x60)  == 0x40) {
+					max = 2;
+					mask = 0x1F;
+				} else if ((c & 0x70) == 0x60) {
+					max = 3;
+					mask = 0x0F;
+				} else if ((c & 0x78) == 0x70) {
+					max = 4;
+					mask = 0x07;
+				} else if ((c & 0x7C) == 0x78) {
+					max = 5;
+					mask = 0x03;
+				} else if ((c & 0x7E) == 0x7C) {
+					max = 6;
+					mask = 0x01;
+				} else {
+					return 0;
+				}
+				// first byte of a multi byte char must contain some data
+				if ((c & mask) == 0) return 0;
+				len = 1;
+			}
+		}
+	}
+	// string must not end with half of a multi byte char
+	if (max) return 0;
+
+	return 1;
+}
+
 /* returns in miliseconds (1/1000 second) */
 unsigned long
 time_diff (struct timeval *start, struct timeval *end)

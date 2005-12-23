@@ -287,6 +287,10 @@ EndSection
 
 Section "ServerFlags"
     Option     "AllowMouseOpenFail" "True"
+    Option     "BlankTime" "0"
+    Option     "StandbyTime" "0"
+    Option     "SuspendTime" "0"
+    Option     "OffTime" "0"
 EndSection
 
 Section "InputDevice"
@@ -347,7 +351,6 @@ Section "Monitor"
     ModelName   "Model"
     HorizSync    %(HSYNC)s
     VertRefresh  %(VREF)s
-    Option      "DPMS" "off"
     
 %(MODELINES)s
     

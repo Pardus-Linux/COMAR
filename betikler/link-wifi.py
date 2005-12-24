@@ -584,6 +584,9 @@ def setConnection(name=None, device=None):
         notify("Net.Link.connectionChanged", "configured device " + name)
 
 def deleteConnection(name=None):
+    dev = Dev(name)
+    if dev.dev and dev.state == "up":
+        dev.down()
     notify("Net.Link.connectionChanged", "deleted " + name)
 
 def setAddress(name=None, mode=None, address=None, mask=None, gateway=None):

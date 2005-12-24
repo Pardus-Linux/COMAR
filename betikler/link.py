@@ -455,6 +455,8 @@ def setConnection(name=None, device=None):
     dict = get_instance("name", name)
     if dict == None:
         notify("Net.Link.connectionChanged", "added " + name)
+    else:
+        notify("Net.Link.connectionChanged", "configured device " + name)
 
 def deleteConnection(name=None):
     notify("Net.Link.connectionChanged", "deleted " + name)
@@ -465,6 +467,7 @@ def setAddress(name=None, mode=None, address=None, mask=None, gateway=None):
         dev.address = address
         dev.gateway = gateway
         dev.up()
+    notify("Net.Link.connectionChanged", "configured address " + name)
 
 def setRemote(name=None, remote=None):
     fail("Not supported")
@@ -473,6 +476,8 @@ def setState(name=None, state=None):
     dev = Dev(name)
     if state != "up" and state != "down":
         fail("unknown state")
+    
+    notify("Net.Link.connectionChanged", "configured state " + name)
     
     if not dev.dev:
         fail("Device not found")

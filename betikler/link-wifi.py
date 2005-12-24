@@ -486,6 +486,7 @@ def _get(dict, key, default):
         val = dict[key]
     return val
 
+
 class Dev:
     def __init__(self, name):
         dict = get_instance("name", name)
@@ -578,10 +579,10 @@ def deviceList():
 
 def setConnection(name=None, device=None):
     dict = get_instance("name", name)
-    if dict == None:
-        notify("Net.Link.connectionChanged", "added " + name)
-    else:
+    if dict and dict.has_key("device"):
         notify("Net.Link.connectionChanged", "configured device " + name)
+    else:
+        notify("Net.Link.connectionChanged", "added " + name)
 
 def deleteConnection(name=None):
     dev = Dev(name)

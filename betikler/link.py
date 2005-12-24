@@ -402,6 +402,7 @@ def kernelEvent(data):
     devname = lremove(dir, "/class/net/")
     devuid = _device_uid(devname)
     notify("Net.Link.deviceChanged", "added net %s %s" % (devuid, _device_info(devuid)))
+    flag = 1
     if type == "add":
         conns = instances("name")
         for conn in conns:
@@ -409,8 +410,10 @@ def kernelEvent(data):
             if dev.uid and _device_check(devname, dev.uid):
                 if dev.state == "up":
                     dev.up()
-                return
-        notify("Net.Link.deviceChanged", "new net %s %s" % (devuid, _device_info(devuid)))
+                    return
+                flag = 0
+        if flag:
+            notify("Net.Link.deviceChanged", "new net %s %s" % (devuid, _device_info(devuid)))
     
     elif type == "remove":
         notify("Net.Link.deviceChanged", "removed net %s %s" % (devuid, _device_info(devuid)))

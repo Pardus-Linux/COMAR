@@ -53,7 +53,7 @@ komutunu çalıştırmanız yeterlidir. İnşa işlemi "build" dizininde yapıla
 oluşturulan dosyalar "install" adlı bir dizine konacaktır. Sisteme kurulum
 yapmak için
 
-  sudo scons install prefix=/
+  (sudo) scons install prefix=/
 
 komutunu kullanmalısınız.
 
@@ -65,9 +65,10 @@ comar bir sistem servisidir ve normal olarak init betiklerinden root yetkileriyl
 Çalışan comar'ı kapatmak için "Comar" adlı sürece SIGTERM sinyali gönderebilir
 yada
 
-  sudo comar --shutdown
+  (sudo) comar --stop
 
-komutunu verebilirsiniz. Diğer komut satırı parametrelerini
+komutunu verebilirsiniz. Tabi bunun için root yetkilerine sahip olmanız gerekir.
+Diğer komut satırı parametrelerini,
 
   comar --help
 

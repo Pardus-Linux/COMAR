@@ -407,12 +407,14 @@ def kernelEvent(data):
     flag = 1
     
     if type == "add":
+        if os.path.exists(os.path.join(sysfs_path, devname, "wireless")):
+            return
         devuid = _device_uid(devname)
         notify("Net.Link.deviceChanged", "added net %s %s" % (devuid, _device_info(devuid)))
         conns = instances("name")
         for conn in conns:
             dev = Dev(conn)
-            if dev.uid and _device_check(devname, dev.uid):
+            if dev.uid and devuid == dev.uid:
                 if dev.state == "up":
                     dev.up()
                     return

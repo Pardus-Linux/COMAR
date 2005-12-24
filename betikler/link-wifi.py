@@ -446,8 +446,12 @@ def lremove(str, pre):
 	return str
 
 def _device_uid(dev):
-    vendor = lremove(sysValue(sysfs_path, dev, "device/vendor"), '0x')
-    device = lremove(sysValue(sysfs_path, dev, "device/device"), '0x')
+    try:
+        vendor = lremove(sysValue(sysfs_path, dev, "device/vendor"), '0x')
+        device = lremove(sysValue(sysfs_path, dev, "device/device"), '0x')
+    except:
+        vendor="none"
+        device="none"
     return "pci:%s_%s_%s" % (vendor, device, dev)
 
 def _device_check(dev, uid):
@@ -525,10 +529,11 @@ class Dev:
 def kernelEvent(data):
     type, dir = data.split("@", 1)
     devname = lremove(dir, "/class/net/")
-    devuid = _device_uid(devname)
-    notify("Net.Link.deviceChanged", "added wifi %s %s" % (devuid, _device_info(devuid)))
     flag = 1
+    
     if type == "add":
+        devuid = _device_uid(devname)
+        notify("Net.Link.deviceChanged", "added wifi %s %s" % (devuid, _device_info(devuid)))
         conns = instances("name")
         for conn in conns:
             dev = Dev(conn)
@@ -541,7 +546,13 @@ def kernelEvent(data):
             notify("Net.Link.deviceChanged", "new wifi %s %s" % (devuid, _device_info(devuid)))
     
     elif type == "remove":
-        notify("Net.Link.deviceChanged", "removed wifi %s %s" % (devuid, _device_info(devuid)))
+        conns = instances("name")
+        for conn in conns:
+            dev = Dev(conn)
+            if dev.uid and dev.uid.rsplit("_", 1)[1] == devname:
+                if dev.state == "up":
+                    notify("Net.Link.stateChanged", dev.name + "\ndown")
+        notify("Net.Link.deviceChanged", "removed wifi %s" % devname)
 
 def modes():
     return "device,remote,net,auto"

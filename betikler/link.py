@@ -296,6 +296,27 @@ def sysValue(path, dir, file_):
     f.close()
     return data
 
+def queryUSB(vendor, device):
+    # dependency to pciutils!
+    f = file("/usr/share/misc/usb.ids")
+    flag = 0
+    company = ""
+    for line in f.readlines():
+        if flag == 0:
+            if line.startswith(vendor):
+                flag = 1
+                company = line[5:].strip()
+        else:
+            if line.startswith("\t"):
+                if line.startswith("\t" + device):
+                    return "%s - %s" % (line[6:].strip(), company)
+            elif not line.startswith("#"):
+                flag = 0
+    if company != "":
+        return "%s (%s)" % (company, device)
+    else:
+        return "Unknown (%s:%s)" % (vendor, device)
+
 def queryPCI(vendor, device):
     # dependency to pciutils!
     f = file("/usr/share/misc/pci.ids")
@@ -324,14 +345,34 @@ def lremove(str, pre):
 		return str[len(pre):]
 	return str
 
-def _device_uid(dev):
-    try:
+def _device_uid_internal(dev):
+    type, rest = sysValue(sysfs_path, dev, "device/modalias").split(":", 1)
+    if type == "pci":
         vendor = lremove(sysValue(sysfs_path, dev, "device/vendor"), "0x")
         device = lremove(sysValue(sysfs_path, dev, "device/device"), "0x")
+        id = "pci:%s_%s_%s" % (vendor, device, dev)
+    elif type == "usb":
+        for file_ in os.listdir(os.path.join(sysfs_path, dev, "device/driver")):
+            if ":" in file_:
+                path = dev + "/device/bus/devices/%s" % file_.split(":", 1)[0]
+                vendor = sysValue(sysfs_path, path, "idVendor")
+                device = sysValue(sysfs_path, path, "idProduct")
+                id = "usb:%s_%s_%s" % (vendor, device, dev)
+                break
+        else:
+            id = "usb:unknown_%s" % dev
+    else:
+        id = "%s:unknown_%s" % (type, dev)
+    
+    return id
+
+def _device_uid(dev):
+    try:
+        id = _device_uid_internal(dev)
     except:
-        vendor="none"
-        device="none"
-    return "pci:%s_%s_%s" % (vendor, device, dev)
+        id = "unk:unknown_%s" % dev
+    
+    return id
 
 def _device_check(dev, uid):
     dev_uid = _device_uid(dev)
@@ -357,7 +398,11 @@ def _device_info(uid):
     if len(t) < 2:
         return "Unknown (%s)" % uid
     vendor, device, dev = t[1].split('_')
-    return queryPCI(vendor, device)
+    if t[0] == "pci":
+        return queryPCI(vendor, device)
+    elif t[0] == "usb":
+        return queryUSB(vendor, device)
+    return "Unknown (%s)"
 
 def _get(dict, key, default):
     val = default

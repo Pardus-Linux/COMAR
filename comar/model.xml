@@ -67,6 +67,9 @@
 <method name="modes"/>
 <method name="linkInfo"/>
 <method name="deviceList"/>
+<method name="scanRemote">
+    <argument>device</argument>
+</method>
 <method name="setConnection" profile="package">
     <instance>name</instance>
     <argument>device</argument>

@@ -452,6 +452,9 @@ def deviceList():
                 iflist.append("%s %s" % (uid, info))
     return "\n".join(iflist)
 
+def scanRemote():
+    fail("Not supported")
+
 def setConnection(name=None, device=None):
     dict = get_instance("name", name)
     if dict and dict.has_key("device"):

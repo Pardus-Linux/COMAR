@@ -10,6 +10,7 @@
 #
 
 import os
+import re
 import array
 import fcntl
 import struct
@@ -17,6 +18,18 @@ import socket
 import csapi
 import popen2
 from glob import glob
+
+
+def capture(cmd):
+    out = []
+    a = popen2.Popen4(cmd)
+    while 1:
+        b = a.fromchild.readline()
+        if b == None or b == "":
+            break
+        out.append(b)
+    return (a.wait(), out)
+
 
 class ifconfig:
     """ ioctl stuff """
@@ -435,6 +448,22 @@ def queryPCI(vendor, device):
                 flag = 0
     return "Unknown (%s:%s)" % (vendor, device)
 
+
+class Scanner:
+    def __init__(self):
+        self.list = []
+    
+    def _collect(self, m):
+        # FIXME: what to do with <hidden> entries?
+        self.list.append(m.group(1))
+        return ""
+    
+    def scan(self, ifc):
+        a = capture("/usr/sbin/iwlist %s scanning" % ifc)
+        re.sub('ESSID:.*"(.*)"', self._collect, "\n".join(a[1]))
+        return "\n".join(self.list)
+
+
 # Internal functions
 
 ARPHRD_ETHER = 1
@@ -558,7 +587,7 @@ def kernelEvent(data):
         notify("Net.Link.deviceChanged", "removed wifi %s" % devname)
 
 def modes():
-    return "device,remote,net,auto"
+    return "device,remote,scan,net,auto"
 
 def linkInfo():
     return "\n".join([
@@ -576,6 +605,14 @@ def deviceList():
                 info = _device_info(uid)
                 iflist.append("%s %s" % (uid, info))
     return "\n".join(iflist)
+
+def scanRemote(device=None):
+    a = Scanner()
+    if device:
+        device = _device_dev(device)
+    else:
+        device = ""
+    return a.scan(device)
 
 def setConnection(name=None, device=None):
     dict = get_instance("name", name)

@@ -74,5 +74,6 @@ def setHostNames(hostnames=None):
     # update environment
     os.system(env_cmd)
     
-    # finally set the hostname
-    os.system(host_cmd % hostnames)
+    # we dont call the following command, it mess up system
+    # hostname changes take effect after restart
+    #os.system(host_cmd % hostnames)

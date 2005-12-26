@@ -54,14 +54,14 @@
 
 <group name="Net">
 <class name="Stack">
-<method name="isOnline"/>
-<method name="goOnline"/>
-<method name="goOffline"/>
 <method name="getNameServers"/>
-<method name="setNameServers"/>
-<method name="useNameServer"/>
-<method name="addHost"/>
-<method name="deleteHost"/>
+<method name="setNameServers">
+    <argument>nameservers</argument>
+</method>
+<method name="getHostNames"/>
+<method name="setHostNames" profile="global">
+    <argument>hostnames</argument>
+</method>
 </class>
 <class name="Link">
 <method name="modes"/>

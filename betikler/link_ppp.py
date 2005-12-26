@@ -192,7 +192,13 @@ def _device_dev(uid):
     return uid[uid.find(":") + 1:]
 
 def _device_info(uid):
-    return "COM %d" % atoi(uid[uid.find("S") + 1:]) + 1
+    return "COM %d" % (atoi(uid[uid.find("S") + 1:]) + 1)
+
+def _get(dict, key, default):
+    val = default
+    if dict and dict.has_key(key):
+        val = dict[key]
+    return val
 
 
 class Dev:
@@ -242,7 +248,7 @@ def deviceList():
     iflist = []
     for iface in os.listdir(sysfs_path):
         if iface.startswith("tty:"):
-            iflist.append("%s COM %d" % (iface, _device_info(iface)))
+            iflist.append("%s %s" % (iface, _device_info(iface)))
     return "\n".join(iflist)
 
 def scanRemote():

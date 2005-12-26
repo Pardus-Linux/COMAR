@@ -588,12 +588,22 @@ class Dev:
             if self.gateway:
                 route = Route()
                 route.setDefaultRoute(self.gateway)
+            notify("Net.Link.stateChanged", self.name + "\nup")
         else:
+            ifc = ifconfig()
             dd = Dhcp()
-            print dd.start(self.dev, timeout="5")
-        notify("Net.Link.stateChanged", self.name + "\nup")
+            notify("Net.Link.stateChanged", self.name + "\nconnecting")
+            dd.start(self.dev, timeout="20")
+            if ifc.getStatus(self.dev):
+                notify("Net.Link.stateChanged", self.name + "\nup")
+            else:
+                notify("Net.Link.stateChanged", self.name + "\ndown")
+                fail("DHCP failed")
     
     def down(self):
+        if self.mode != "manual":
+            dd = Dhcp()
+            dd.stop(self.dev)
         ifc = ifconfig()
         ifc.setStatus(self.dev, "DOWN")
         notify("Net.Link.stateChanged", self.name + "\ndown")

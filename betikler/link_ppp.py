@@ -313,7 +313,8 @@ def getRemote(name=None):
     return name + "\n" + dev.remote
 
 def getAuthentication(name=None):
-    pass
+    dev = Dev(name)
+    return "%s\nlogin\n%s\n%s" % (name, dev.user, dev.password)
 
 def getState(name=None):
     dev = Dev(name)

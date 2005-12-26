@@ -88,6 +88,13 @@
     <instance>name</instance>
     <argument>remote</argument>
 </method>
+<method name="setAuthentication" profile="package">
+    <instance>name</instance>
+    <argument>mode</argument>
+    <argument>user</argument>
+    <argument>password</argument>
+    <argument>key</argument>
+</method>
 <method name="setState" profile="package" profileOp="startup">
     <instance>name</instance>
     <argument>state</argument>
@@ -100,6 +107,9 @@
     <instance>name</instance>
 </method>
 <method name="getAddress">
+    <instance>name</instance>
+</method>
+<method name="getAuthentication">
     <instance>name</instance>
 </method>
 <method name="getState">

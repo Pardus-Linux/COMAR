@@ -575,6 +575,7 @@ class Dev:
         self.address = _get(dict, "address", None)
         self.gateway = _get(dict, "gateway", None)
         self.mask = _get(dict, "mask", None)
+        self.mask = _get(dict, "password", None)
     
     def up(self):
         if self.remote:
@@ -653,7 +654,7 @@ def kernelEvent(data):
         notify("Net.Link.deviceChanged", "removed wifi %s" % devname)
 
 def modes():
-    return "device,remote,scan,net,auto"
+    return "device,remote,scan,net,auto,passauth"
 
 def linkInfo():
     return "\n".join([
@@ -704,6 +705,9 @@ def setAddress(name=None, mode=None, address=None, mask=None, gateway=None):
 def setRemote(name=None, remote=None):
     notify("Net.Link.connectionChanged", "configured remote " + name)
 
+def setAuthentication(name=None, mode=None, user=None, password=None, key=None):
+    pass
+
 def setState(name=None, state=None):
     dev = Dev(name)
     if state != "up" and state != "down":
@@ -752,6 +756,9 @@ def getAddress(name=None):
         if dev.mask:
             s += "\n" + dev.mask
     return s
+
+def getAuthentication(name=None):
+    pass
 
 def getState(name=None):
     dev = Dev(name)

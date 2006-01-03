@@ -36,7 +36,7 @@ def setNameServers(nameservers=None):
 
 def getHostNames():
     dict = get_profile("Net.Stack.setHostNames")
-    if dict.has_key("hostnames"):
+    if dict and dict.has_key("hostnames"):
         return dict["hostnames"]
     return ""
 

@@ -575,12 +575,16 @@ class Dev:
         self.address = _get(dict, "address", None)
         self.gateway = _get(dict, "gateway", None)
         self.mask = _get(dict, "mask", None)
-        self.mask = _get(dict, "password", None)
+        self.password = _get(dict, "password", None)
     
     def up(self):
         if self.remote:
             wifi = Wireless()
             wifi.setEssid(self.dev, self.remote)
+        if self.password and self.password != "":
+            os.system("/usr/sbin/iwconfig %s enc restricted %s" % (self.dev, self.password))
+        else:
+            os.system("/usr/sbin/iwconfig %s enc off" % (self.dev))
         if self.mode == "manual":
             ifc = ifconfig()
             if self.address:
@@ -760,7 +764,10 @@ def getAddress(name=None):
     return s
 
 def getAuthentication(name=None):
-    pass
+    dev = Dev(name)
+    if dev.password and dev.password != "":
+        return "%s\npassauth\n%s" % (name, dev.password)
+    return "%s\nnone" % name
 
 def getState(name=None):
     dev = Dev(name)

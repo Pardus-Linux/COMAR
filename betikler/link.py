@@ -440,6 +440,8 @@ class Dev:
             notify("Net.Link.stateChanged", self.name + "\nconnecting")
             dd.start(self.dev, timeout="20")
             if ifc.getStatus(self.dev):
+                addr = ifc.getAddr(self.dev)
+                notify("Net.Link.connectionChanged", "gotaddress " + self.name + "\n" + unicode(addr))
                 notify("Net.Link.stateChanged", self.name + "\nup")
             else:
                 notify("Net.Link.stateChanged", self.name + "\ndown")

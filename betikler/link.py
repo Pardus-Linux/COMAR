@@ -152,7 +152,7 @@ class ifconfig:
         """ Set the inet addr for an interface """
         result = self._call(ifname, self.SIOCSIFADDR, ip)
 
-        if socket.inet_ntoa(result[20:24]) is ip:
+        if result and socket.inet_ntoa(result[20:24]) is ip:
             return True
         else:
             return None
@@ -161,7 +161,7 @@ class ifconfig:
         """ Set the netmask for an interface """
         result = self._call(ifname, self.SIOCSIFNETMASK, ip)
 
-        if socket.inet_ntoa(result[20:24]) is ip:
+        if result and socket.inet_ntoa(result[20:24]) is ip:
             return True
         else:
             return None
@@ -430,6 +430,8 @@ class Dev:
         if self.mode == "manual":
             if self.address:
                 ifc.setAddr(self.dev, self.address)
+            if self.mask:
+                ifc.setNetmask(self.dev, self.mask)
             ifc.setStatus(self.dev, "UP")
             if self.gateway:
                 route = Route()

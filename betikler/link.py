@@ -458,6 +458,17 @@ class Dev:
         notify("Net.Link.stateChanged", self.name + "\ndown")
 
 
+def isWireless(devname):
+    f = file("/proc/net/wireless")
+    data = f.readlines()
+    f.close()
+    for line in data[2:]:
+        name = line[:line.find(": ")].strip()
+        if name == devname:
+            return True
+    return False
+
+
 # Net.Link API
 
 def kernelEvent(data):
@@ -466,7 +477,7 @@ def kernelEvent(data):
     flag = 1
     
     if type == "add":
-        if os.path.exists(os.path.join(sysfs_path, devname, "wireless")):
+        if isWireless(devname):
             return
         devuid = _device_uid(devname)
         notify("Net.Link.deviceChanged", "added net %s %s" % (devuid, _device_info(devuid)))
@@ -504,7 +515,7 @@ def deviceList():
     iflist = []
     for iface in os.listdir(sysfs_path):
         if csapi.atoi(sysValue(sysfs_path, iface, "type")) == ARPHRD_ETHER:
-            if not os.path.exists(os.path.join(sysfs_path, iface, "wireless")):
+            if not isWireless(iface):
                 uid = _device_uid(iface)
                 info = _device_info(uid)
                 iflist.append("%s %s" % (uid, info))

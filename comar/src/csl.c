@@ -202,8 +202,9 @@ log_exception(void)
 	PyObject *pType;
 	PyObject *pValue;
 	PyObject *pTrace;
-	PyObject *eStr;
-	PyObject *vStr;
+	char *eStr;
+	char *vStr = "";
+	long lineno = 0;
 
 	PyErr_Fetch(&pType, &pValue, &pTrace);
 	if (!pType) {
@@ -211,12 +212,22 @@ log_exception(void)
 		return;
 	}
 
-	eStr = PyObject_Str(pType);
-	vStr = PyObject_Str(pValue);
-	// FIXME: log traceback too
+	eStr = PyString_AsString(PyObject_Str(pType));
 
-	log_error("Python Exception [%s]: %s\n",
-		PyString_AsString(eStr), PyString_AsString(vStr)
+	if (pValue) {
+		PyObject *tmp;
+		tmp = PyObject_Str(pValue);
+		if (tmp) vStr = PyString_AsString(tmp);
+	}
+
+	if (pTrace) {
+		PyObject *tmp;
+		tmp = PyObject_GetAttrString(pTrace, "tb_lineno");
+		if (tmp) lineno = PyInt_AsLong(tmp);
+	}
+
+	log_error("Python Exception [%s] in (%s,%s,%ld): %s\n",
+		eStr, model_get_path(bk_node), bk_app, lineno, vStr
 	);
 }
 

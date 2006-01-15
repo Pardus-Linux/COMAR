@@ -90,7 +90,7 @@
 </method>
 <method name="setAuthentication" profile="package">
     <instance>name</instance>
-    <argument>mode</argument>
+    <argument>authmode</argument>
     <argument>user</argument>
     <argument>password</argument>
     <argument>key</argument>

@@ -20,12 +20,51 @@
 #include "model.h"
 #include "data.h"
 #include "utility.h"
+#include "job.h"
 
 // FIXME: cleanup
 int job_send_result(int cmd, const char *data, size_t size);
 extern int bk_node;
 extern char *bk_app;
 
+
+static PyObject *
+c_call(PyObject *self, PyObject *args)
+{
+	char *node;
+	char *pak;
+	int nd;
+
+	if (!PyArg_ParseTuple(args, "ss", &node, &pak))
+		return NULL;
+
+	nd = model_lookup_method(node);
+	if (nd == -1) return NULL;
+
+	ipc_start(CMD_CALL_PACKAGE, NULL, 0, nd);
+	ipc_pack_arg(pak, strlen(pak));
+	job_start(-1, 0, 0);
+
+	while (1) {
+		struct ProcChild *p;
+		int cmd;
+		int size;
+
+		if (1 == proc_listen(&p, &cmd, &size, 1)) {
+			switch (cmd) {
+				case CMD_RESULT:
+				case CMD_FAIL:
+				case CMD_ERROR:
+				case CMD_NONE:
+					ipc_recv(p, size);
+					break;
+			}
+			break;
+		}
+	}
+	Py_INCREF(Py_None);
+	return Py_None;
+}
 
 static PyObject *
 c_fail(PyObject *self, PyObject *args)
@@ -182,6 +221,7 @@ c_get_instance(PyObject *self, PyObject *args)
 }
 
 static PyMethodDef methods[] = {
+	{ "call", c_call, METH_VARARGS, "Make a syncronous comar call" },
 	{ "fail", c_fail, METH_VARARGS, "Abort script and return a fail message" },
 	{ "notify", c_notify, METH_VARARGS, "Send a notification event" },
 	{ "instances", c_instances, METH_VARARGS, "Get list of class's instances from profile" },

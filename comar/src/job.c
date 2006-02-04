@@ -398,6 +398,12 @@ job_start(int cmd, char *ipc_msg, size_t ipc_size)
 
 	p = proc_fork(job_proc, "ComarJob");
 	if (!p) return -1;
+
+	if (cmd == -1) {
+		ipc_send(p);
+		return 0;
+	}
+
 	if (proc_send(p, cmd, ipc_msg, ipc_size)) return -1;
 	return 0;
 }

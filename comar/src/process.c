@@ -7,8 +7,6 @@
 ** option) any later version. Please read the COPYING file.
 */
 
-#define _GNU_SOURCE 1
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -55,9 +53,6 @@ proc_calc_name_space(int argc, char *argv[])
 	name_size = 0;
 	for (i = 0; i < argc; i++) {
 		name_size += strlen(argv[i]) + 1;
-	}
-	for (i = 0; environ[i] != NULL; i++) {
-		name_size += strlen(environ[i]) + 1;
 	}
 }
 

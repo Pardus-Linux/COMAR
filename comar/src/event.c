@@ -126,7 +126,7 @@ handle_kernel_event(const char *buffer)
 	// events to subscribers, but this is enough for 1.0 release
 	// saves us to implement another db code
 
-	printf("EVENT! [%s]\n", buffer);
+	//printf("EVENT! [%s]\n", buffer);
 
 	if (strncmp(buffer, "add@/class/net/", 15) == 0
 		|| strncmp(buffer, "remove@/class/net/", 18) == 0) {

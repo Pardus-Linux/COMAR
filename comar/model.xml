@@ -2,12 +2,22 @@
 
 
 <group name="System">
-<class name="Power">
-</class>
 <class name="Package">
 <method name="postInstall"/>
 <method name="preRemove"/>
 </class>
+
+<class name="Service">
+<method name="info"/>
+<method name="setState" profile="package">
+    <argument>state</argument>
+</method>
+<method name="ready"/>
+<method name="start"/>
+<method name="stop"/>
+<notify name="changed"/>
+</class>
+
 <class name="Manager">
 <method name="installPackage"/>
 <method name="removePackage"/>
@@ -118,8 +128,6 @@
 <notify name="stateChanged"/>
 <notify name="connectionChanged"/>
 <notify name="deviceChanged"/>
-</class>
-<class name="Server">
 </class>
 </group>
 

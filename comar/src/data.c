@@ -292,8 +292,8 @@ db_del_app(const char *app)
 		}
 
 		list2 = get_data(model_db, t, 0, &e);
-		if (!list2) goto out;
-		{
+
+		if (list2) {
 			char *k;
 			int sa = strlen(app);
 			k = strstr(list2, app);
@@ -311,7 +311,7 @@ db_del_app(const char *app)
 		}
 		free(list2);
 
-		e = del_data(code_db, make_key(atoi(t), app));
+		e = del_data(code_db, make_key(model_lookup_class(t), app));
 		if (e) goto out;
 	}
 

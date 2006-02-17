@@ -118,6 +118,8 @@ rem_child(int nr)
 		my_proc.children[nr].desc, my_proc.children[nr].pid);
 
 	waitpid(my_proc.children[nr].pid, &status, 0);
+	close(my_proc.children[nr].to);
+	close(my_proc.children[nr].from);
 	--my_proc.nr_children;
 	if (0 == my_proc.nr_children) return;
 	(my_proc.children)[nr] = (my_proc.children)[my_proc.nr_children];

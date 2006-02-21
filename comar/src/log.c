@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2005, TUBITAK/UEKAE
+** Copyright (c) 2005-2006, TUBITAK/UEKAE
 **
 ** This program is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU General Public License as published by the
@@ -11,11 +11,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <unistd.h>
 #include <time.h>
 #include <sys/stat.h>
 
 #include "cfg.h"
 #include "log.h"
+#include "process.h"
 
 static void
 timestamp(FILE *f)
@@ -31,10 +33,21 @@ timestamp(FILE *f)
 }
 
 static void
+pidstamp(FILE *f)
+{
+	if (strlen(my_proc.desc) <= 5)
+		fprintf(f, "(%s-%d) ", my_proc.desc, getpid());
+	else
+		fprintf(f, "(%s-%d) ", my_proc.desc + 5, getpid());
+}
+
+static void
 log_print(const char *fmt, va_list ap, int error)
 {
-	if (cfg_log_console)
+	if (cfg_log_console) {
+		pidstamp(stdout);
 		vprintf(fmt, ap);
+	}
 
 	if (cfg_log_file) {
 		FILE *f;
@@ -42,6 +55,7 @@ log_print(const char *fmt, va_list ap, int error)
 		f = fopen(cfg_log_file_name, "a");
 		if (f) {
 			timestamp(f);
+			pidstamp(f);
 			if (error) fprintf(f, "Error: ");
 			vfprintf(f, fmt, ap);
 			fclose(f);

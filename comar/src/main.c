@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2005, TUBITAK/UEKAE
+** Copyright (c) 2005-2006, TUBITAK/UEKAE
 **
 ** This program is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU General Public License as published by the
@@ -77,6 +77,7 @@ main(int argc, char *argv[])
 		puts(_("This program is a system service and should not started by users."));
 		exit(1);
 	}
+	proc_init();
 	log_start();
 
 	// Shutdown old COMAR
@@ -85,7 +86,6 @@ main(int argc, char *argv[])
 
 	// Second phase: subsytem init
 	if (db_init() != 0) return 1;
-	proc_init();
 	if (model_init() != 0) return 1;
 
 	// Third phase: helper processes

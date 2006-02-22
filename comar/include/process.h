@@ -33,8 +33,7 @@ extern struct Proc my_proc;
 // for readability of send_cmd/data functions
 #define TO_PARENT NULL
 
-void proc_init(void);
-void proc_calc_name_space(int argc, char *argv[]);
+void proc_init(int argc, char *argv[]);
 struct ProcChild *proc_get_rpc(void);
 struct ProcChild *proc_fork(void (*child_func)(void), const char *desc);
 void proc_check_shutdown(void);

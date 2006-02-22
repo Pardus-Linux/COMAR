@@ -44,18 +44,6 @@ handle_signals(void)
 	sigaction(SIGINT, &act, NULL);
 }
 
-void
-proc_calc_name_space(int argc, char *argv[])
-{
-	int i;
-
-	name_addr = argv[0];
-	name_size = 0;
-	for (i = 0; i < argc; i++) {
-		name_size += strlen(argv[i]) + 1;
-	}
-}
-
 static void
 set_my_name(const char *name)
 {
@@ -66,8 +54,16 @@ set_my_name(const char *name)
 }
 
 void
-proc_init(void)
+proc_init(int argc, char *argv[])
 {
+	int i;
+
+	name_addr = argv[0];
+	name_size = 0;
+	for (i = 0; i < argc; i++) {
+		name_size += strlen(argv[i]) + 1;
+	}
+
 	memset(&my_proc, 0, sizeof(struct Proc));
 	my_proc.parent.to = -1;
 	my_proc.parent.from = -1;

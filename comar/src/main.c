@@ -71,13 +71,12 @@ main(int argc, char *argv[])
 	int size;
 
 	// First phase: configuration
-	proc_calc_name_space(argc, argv);
 	cfg_init(argc, argv);
 	if (getuid() != 0) {
 		puts(_("This program is a system service and should not started by users."));
 		exit(1);
 	}
-	proc_init();
+	proc_init(argc, argv);
 	log_start();
 
 	// Shutdown old COMAR

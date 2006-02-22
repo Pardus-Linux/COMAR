@@ -264,6 +264,10 @@ Section "Module"
     %(SYNAPTICS_MOD)s
 EndSection
 
+Section "Extensions"
+#    Option "Composite" "enable"
+EndSection
+
 Section "dri"
     Mode 0666
 EndSection
@@ -316,6 +320,7 @@ Section "Device"
     Identifier "DisplayController0"
     Driver     "%(DRIVER)s"
     Option     "RenderAccel" "true"
+    # Option     "AccelMethod" "exa"
 EndSection
 
 Section "Screen"

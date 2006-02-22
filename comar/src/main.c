@@ -24,6 +24,7 @@
 #include "job.h"
 #include "log.h"
 #include "ipc.h"
+#include "utility.h"
 
 void rpc_unix_start(void);
 void event_start(void);
@@ -65,8 +66,9 @@ stop_running_comar(void)
 int
 main(int argc, char *argv[])
 {
-	struct ProcChild *p, *rpc;
-	unsigned char *ipc;
+	struct ProcChild *p;
+	struct ipc_struct ipc;
+	struct pack *pak;
 	int cmd;
 	int size;
 
@@ -77,6 +79,7 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 	proc_init(argc, argv);
+	pak = pack_new(1024);
 	log_start();
 
 	// Shutdown old COMAR
@@ -88,7 +91,7 @@ main(int argc, char *argv[])
 	if (model_init() != 0) return 1;
 
 	// Third phase: helper processes
-	rpc = proc_fork(rpc_unix_start, "ComarRPC");
+	rpc_unix_start();
 	event_start();
 
 	// Ready to run
@@ -108,9 +111,8 @@ main(int argc, char *argv[])
 				case CMD_GETLIST:
 				case CMD_DUMP_PROFILE:
 				case CMD_EVENT:
-					proc_recv(p, &ipc, size);
-					job_start(cmd, ipc, size);
-					free(ipc);
+					proc_get(p, &ipc, pak, size);
+					job_start(cmd, &ipc, pak);
 					break;
 				case CMD_NOTIFY:
 				case CMD_RESULT:
@@ -119,9 +121,8 @@ main(int argc, char *argv[])
 				case CMD_FAIL:
 				case CMD_ERROR:
 				case CMD_NONE:
-					proc_recv(p, &ipc, size);
-					proc_send(proc_get_rpc(), cmd, ipc, size);
-					free(ipc);
+					proc_get(p, &ipc, pak, size);
+					proc_put(proc_get_rpc(), cmd, &ipc, pak);
 					break;
 			}
 		}

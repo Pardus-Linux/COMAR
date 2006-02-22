@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2005, TUBITAK/UEKAE
+** Copyright (c) 2005-2006, TUBITAK/UEKAE
 **
 ** This program is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU General Public License as published by the
@@ -72,7 +72,7 @@ utf8_is_valid(const char *str, size_t size)
 
 /* returns in miliseconds (1/1000 second) */
 unsigned long
-time_diff (struct timeval *start, struct timeval *end)
+time_diff(struct timeval *start, struct timeval *end)
 {
 	unsigned long msec;
 
@@ -111,11 +111,37 @@ pack_wrap(char *buffer, size_t size)
 	return p;
 }
 
+struct pack *
+pack_dup(struct pack *oldpak)
+{
+	struct pack *p;
+
+	p = calloc(sizeof(struct pack), 1);
+	if (!p) return NULL;
+	p->buffer = malloc(oldpak->max);
+	if (!p->buffer) {
+		free(p);
+		return NULL;
+	}
+	p->max = oldpak->max;
+	p->used = oldpak->used - oldpak->pos;
+	memcpy(p->buffer, oldpak->buffer + oldpak->pos, oldpak->used - oldpak->pos);
+
+	return p;
+}
+
 void
 pack_delete(struct pack *p)
 {
 	free(p->buffer);
 	free(p);
+}
+
+void
+pack_reset(struct pack *p)
+{
+	p->used = 0;
+	p->pos = 0;
 }
 
 void
@@ -153,7 +179,7 @@ pack_get(struct pack *p, char **argp, size_t *sizep)
 	size_t size;
 
 	if (p->pos >= p->used) {
-		*sizep = 0;
+		if (sizep) *sizep = 0;
 		*argp = NULL;
 		return 0;
 	}

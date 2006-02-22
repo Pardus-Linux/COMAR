@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2005, TUBITAK/UEKAE
+** Copyright (c) 2005-2006, TUBITAK/UEKAE
 **
 ** This program is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU General Public License as published by the
@@ -58,18 +58,25 @@ char *bk_app;
 static int
 send_result(int cmd, const char *data, size_t size)
 {
-	ipc_start(cmd, chan, chan_id, 0);
+	struct ipc_struct ipc;
+	struct pack *p;
+
+	memset(&ipc, 0, sizeof(struct ipc_struct));
+	ipc.chan = chan;
+	ipc.id = chan_id;
+	p = pack_new(128);
+
 	if (CMD_RESULT == cmd) {
 		if (bk_app)
-			ipc_pack_arg(bk_app, strlen(bk_app));
+			pack_put(p, bk_app, strlen(bk_app));
 		else
-			ipc_pack_arg("comar", 5);
+			pack_put(p, "comar", 5);
 	}
 	if (data) {
 		if (size == 0) size = strlen(data);
-		ipc_pack_arg(data, size);
+		pack_put(p, data, size);
 	}
-	ipc_send(TO_PARENT);
+	proc_put(TO_PARENT, cmd, &ipc, p);
 	return 0;
 }
 
@@ -126,7 +133,7 @@ do_remove(const char *app)
 }
 
 static int
-do_event(const char *event, int node, const char *app)
+do_event(const char *event, int node, const char *app, struct pack *p)
 {
 	struct timeval start, end;
 	unsigned long msec;
@@ -146,7 +153,7 @@ do_event(const char *event, int node, const char *app)
 	}
 
 	gettimeofday(&start, NULL);
-	e = csl_execute(code, code_size, event, NULL, NULL);
+	e = csl_execute(code, code_size, event, p, NULL, NULL);
 	gettimeofday(&end, NULL);
 
 	msec = time_diff(&start, &end);
@@ -160,7 +167,7 @@ do_event(const char *event, int node, const char *app)
 }
 
 static int
-do_execute(int node, const char *app)
+do_execute(int node, const char *app, struct pack *pak)
 {
 	struct timeval start, end;
 	unsigned long msec;
@@ -177,7 +184,7 @@ do_execute(int node, const char *app)
 	bk_node = node;
 
 	if (model_flags(node) & P_PACKAGE) {
-		p = ipc_into_pack();
+		p = pack_dup(pak);
 	}
 
 	csl_setup();
@@ -188,7 +195,7 @@ do_execute(int node, const char *app)
 	}
 
 	gettimeofday(&start, NULL);
-	e = csl_execute(code, code_size, model_get_method(node), &res, &res_size);
+	e = csl_execute(code, code_size, model_get_method(node), pak, &res, &res_size);
 	gettimeofday(&end, NULL);
 	if (e) {
 		if (e == CSL_NOFUNC)
@@ -222,14 +229,16 @@ do_execute(int node, const char *app)
 	return e;
 }
 
+static struct pack *bk_pak;
+
 static void
 exec_proc(void)
 {
-	do_execute(bk_node, bk_app);
+	do_execute(bk_node, bk_app, bk_pak);
 }
 
 static int
-do_call(int node)
+do_call(int node, struct pack *pak)
 {
 	struct pack *p = NULL;
 	char *apps;
@@ -238,7 +247,7 @@ do_call(int node)
 	log_debug(LOG_JOB, "Call(%s)\n", model_get_path(node));
 
 	if (model_flags(node) & P_GLOBAL) {
-		p = ipc_into_pack();
+		p = pack_dup(pak);
 	}
 
 	if (db_get_apps(model_parent(node), &apps) != 0) {
@@ -249,7 +258,7 @@ do_call(int node)
 
 	if (strchr(apps, '/') == NULL) {
 		// there is only one script
-		if (0 == do_execute(node, apps))
+		if (0 == do_execute(node, apps, pak))
 			ok = 1;
 	} else {
 		// multiple scripts, run concurrently
@@ -269,6 +278,7 @@ do_call(int node)
 			}
 			bk_node = node;
 			bk_app = t;
+			bk_pak = pak;
 			p = proc_fork(exec_proc, "ComarSubJob");
 			if (p) {
 				++cnt;
@@ -277,15 +287,17 @@ do_call(int node)
 			}
 		}
 		while(1) {
-			struct ipc_data *ipc;
+			struct ipc_struct ipc;
+			struct pack *pak;
+			pak = pack_new(128);
 			proc_listen(&p, &cmd, &size, -1);
 			if (cmd == CMD_FINISH) {
 				--cnt;
 				if (!cnt) break;
 			} else {
 				if (cmd == CMD_RESULT) ok++;
-				proc_recv(p, &ipc, size);
-				proc_send(TO_PARENT, cmd, ipc, size);
+				proc_get(p, &ipc, pak, size);
+				proc_put(TO_PARENT, cmd, &ipc, pak);
 			}
 		}
 		send_result(CMD_RESULT_END, NULL, 0);
@@ -300,11 +312,11 @@ do_call(int node)
 }
 
 static int
-do_call_package(int node, const char *app)
+do_call_package(int node, const char *app, struct pack *p)
 {
 	log_debug(LOG_JOB, "CallPackage(%s,%s)\n", model_get_path(node), app);
 
-	do_execute(node, app);
+	do_execute(node, app, p);
 
 	return 0;
 }
@@ -347,63 +359,61 @@ do_dump_profile(void)
 static void
 job_proc(void)
 {
+	struct ipc_struct ipc;
+	struct pack *p;
 	struct ProcChild *sender;
 	char *t, *s;
 	int cmd;
 	size_t size;
 
+	p = pack_new(256);
 	while (1) {
 		if (1 == proc_listen(&sender, &cmd, &size, 1)) break;
 	}
-	ipc_recv(sender, size);
+	proc_get(sender, &ipc, p, size);
 
-	chan = ipc_get_data();
-	chan_id = ipc_get_id();
+	chan = ipc.chan;
+	chan_id = ipc.id;
 
 	switch (cmd) {
 		case CMD_REGISTER:
-			ipc_get_arg(&t, NULL);
-			ipc_get_arg(&s, NULL);
-			do_register(ipc_get_node(), t, s);
+			pack_get(p, &t, NULL);
+			pack_get(p, &s, NULL);
+			do_register(ipc.node, t, s);
 			break;
 		case CMD_REMOVE:
-			ipc_get_arg(&t, NULL);
+			pack_get(p, &t, NULL);
 			do_remove(t);
 			break;
 		case CMD_CALL:
-			do_call(ipc_get_node());
+			do_call(ipc.node, p);
 			break;
 		case CMD_CALL_PACKAGE:
-			ipc_get_arg(&t, NULL);
-			do_call_package(ipc_get_node(), t);
+			pack_get(p, &t, NULL);
+			do_call_package(ipc.node, t, p);
 			break;
 		case CMD_GETLIST:
-			do_getlist(ipc_get_node());
+			do_getlist(ipc.node);
 			break;
 		case CMD_DUMP_PROFILE:
 			do_dump_profile();
 			break;
 		case CMD_EVENT:
-			ipc_get_arg(&t, NULL);
-			ipc_get_arg(&s, NULL);
-			do_event(t, ipc_get_node(), s);
+			pack_get(p, &t, NULL);
+			pack_get(p, &s, NULL);
+			do_event(t, ipc.node, s, p);
 			break;
 	}
 }
 
 int
-job_start(int cmd, char *ipc_msg, size_t ipc_size)
+job_start(int cmd, struct ipc_struct *ipc, struct pack *pak)
 {
 	struct ProcChild *p;
 
 	p = proc_fork(job_proc, "ComarJob");
 	if (!p) return -1;
 
-	if (cmd == -1) {
-		ipc_send(p);
-		return 0;
-	}
-
-	if (proc_send(p, cmd, ipc_msg, ipc_size)) return -1;
+	if (proc_put(p, cmd, ipc, pak)) return -1;
 	return 0;
 }

@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2005, TUBITAK/UEKAE
+** Copyright (c) 2005-2006, TUBITAK/UEKAE
 **
 ** This program is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU General Public License as published by the
@@ -62,6 +62,8 @@ struct connection {
 
 static int pipe_fd;
 static struct connection *conns;
+
+static struct pack *rpc_pak;
 
 // unpack utilities
 // rpc uses network byte order (big endian)
@@ -193,7 +195,7 @@ write_rpc(struct connection *c, unsigned int cmd, int id, const char *buffer, si
 		char *s;
 		size_t sz;
 
-		ipc_get_arg(&s, &sz);
+		pack_get(rpc_pak, &s, &sz);
 //printf("writeRPC(%d,%d,%d,%s,%d,%s)\n", cmd, id, sz, s, size, buffer);
 
 		head[0] = cmd & 0xFF;
@@ -221,13 +223,16 @@ write_rpc(struct connection *c, unsigned int cmd, int id, const char *buffer, si
 static int
 parse_rpc(struct connection *c)
 {
+	struct ipc_struct ipc;
 	struct arg_s args;
-	int cmd, id, no;
+	int cmd, no;
 	char *t;
 	size_t sz;
 
+	memset(&ipc, 0, sizeof(struct ipc_struct));
+	ipc.chan = (void *) c;
+	ipc.id = get_id(c->buffer + 4);
 	cmd = get_cmd(c->buffer);
-	id = get_id(c->buffer + 4);
 
 //printf("RPC cmd %d, id %d, size %d\n", cmd, id, c->data_size);
 
@@ -239,9 +244,8 @@ parse_rpc(struct connection *c)
 		case RPC_SHUTDOWN:
 			// no parameter
 			if (!acl_is_capable(CMD_SHUTDOWN, 0, &c->cred)) return -1;
-			write_rpc(c, RPC_RESULT, id, NULL, 0);
-			ipc_start(CMD_SHUTDOWN, 0, 0, 0);
-			ipc_send(TO_PARENT);
+			proc_put(TO_PARENT, CMD_SHUTDOWN, NULL, NULL);
+			write_rpc(c, RPC_RESULT, ipc.id, NULL, 0);
 			return 0;
 
 		case RPC_REGISTER:
@@ -250,23 +254,24 @@ parse_rpc(struct connection *c)
 			no = model_lookup_class(t);
 			if (no == -1) return -1;
 			if (!acl_is_capable(CMD_REGISTER, no, &c->cred)) return -1;
-			ipc_start(CMD_REGISTER, (void *)c, id, no);
+			ipc.node = no;
+			pack_reset(rpc_pak);
 			if (get_arg(&args, &t, &sz) != 1) return -1;
-			ipc_pack_arg(t, sz);
+			pack_put(rpc_pak, t, sz);
 			if (get_arg(&args, &t, &sz) != 1) return -1;
-			ipc_pack_arg(t, sz);
+			pack_put(rpc_pak, t, sz);
 			if (get_arg(&args, &t, &sz) != 0) return -1;
-			ipc_send(TO_PARENT);
+			proc_put(TO_PARENT, CMD_REGISTER, &ipc, rpc_pak);
 			return 0;
 
 		case RPC_REMOVE:
 			// package name
 			if (!acl_is_capable(CMD_REMOVE, 0, &c->cred)) return -1;
 			if (get_arg(&args, &t, &sz) != 1) return -1;
-			ipc_start(CMD_REMOVE, (void *)c, id, 0);
-			ipc_pack_arg(t, sz);
+			pack_reset(rpc_pak);
+			pack_put(rpc_pak, t, sz);
 			if (get_arg(&args, &t, &sz) != 0) return -1;
-			ipc_send(TO_PARENT);
+			proc_put(TO_PARENT, CMD_REMOVE, &ipc, rpc_pak);
 			return 0;
 
 		case RPC_CHECKACL:
@@ -274,10 +279,11 @@ parse_rpc(struct connection *c)
 			if (get_arg(&args, &t, &sz) != 1) return -1;
 			no = model_lookup_method(t);
 			if (no == -1) return -1;
+			ipc.node = no;
 			if (!acl_is_capable(CMD_CALL, no, &c->cred)) {
-				write_rpc(c, RPC_DENIED, id, NULL, 0);
+				write_rpc(c, RPC_DENIED, ipc.id, NULL, 0);
 			} else {
-				write_rpc(c, RPC_RESULT, id, NULL, 0);
+				write_rpc(c, RPC_RESULT, ipc.id, NULL, 0);
 			}
 			return 0;
 
@@ -287,20 +293,21 @@ parse_rpc(struct connection *c)
 			no = model_lookup_method(t);
 			if (no == -1) return -1;
 			if (!acl_is_capable(CMD_CALL, no, &c->cred)) {
-				write_rpc(c, RPC_DENIED, id, NULL, 0);
+				write_rpc(c, RPC_DENIED, ipc.id, NULL, 0);
 				return 0;
 			}
-			ipc_start(CMD_CALL, (void *)c, id, no);
+			ipc.node = no;
+			pack_reset(rpc_pak);
 			while (1) {
 				int ret = get_arg(&args, &t, &sz);
 				if (ret == 0) break;
 				if (ret == -1) return -1;
 				if (!model_has_argument(no,  t)) return -1;
-				ipc_pack_arg(t, sz);
+				pack_put(rpc_pak, t, sz);
 				if (get_arg(&args, &t, &sz) != 1) return -1;
-				ipc_pack_arg(t, sz);
+				pack_put(rpc_pak, t, sz);
 			}
-			ipc_send(TO_PARENT);
+			proc_put(TO_PARENT, CMD_CALL, &ipc, rpc_pak);
 			return 0;
 
 		case RPC_CALL_PACKAGE:
@@ -309,22 +316,23 @@ parse_rpc(struct connection *c)
 			no = model_lookup_method(t);
 			if (no == -1) return -1;
 			if (!acl_is_capable(CMD_CALL, no, &c->cred)) {
-				write_rpc(c, RPC_DENIED, id, NULL, 0);
+				write_rpc(c, RPC_DENIED, ipc.id, NULL, 0);
 				return 0;
 			}
-			ipc_start(CMD_CALL_PACKAGE, (void *)c, id, no);
+			ipc.node = no;
 			if (get_arg(&args, &t, &sz) != 1) return -1;
-			ipc_pack_arg(t, sz);
+			pack_reset(rpc_pak);
+			pack_put(rpc_pak, t, sz);
 			while (1) {
 				int ret = get_arg(&args, &t, &sz);
 				if (ret == 0) break;
 				if (ret == -1) return -1;
 				if (!model_has_argument(no,  t)) return -1;
-				ipc_pack_arg(t, sz);
+				pack_put(rpc_pak, t, sz);
 				if (get_arg(&args, &t, &sz) != 1) return -1;
-				ipc_pack_arg(t, sz);
+				pack_put(rpc_pak, t, sz);
 			}
-			ipc_send(TO_PARENT);
+			proc_put(TO_PARENT, CMD_CALL_PACKAGE, &ipc, rpc_pak);
 			return 0;
 
 		case RPC_GETLIST:
@@ -333,11 +341,11 @@ parse_rpc(struct connection *c)
 			no = model_lookup_class(t);
 			if (no == -1) return -1;
 			if (!acl_is_capable(CMD_CALL, no, &c->cred)) {
-				write_rpc(c, RPC_DENIED, id, NULL, 0);
+				write_rpc(c, RPC_DENIED, ipc.id, NULL, 0);
 				return 0;
 			}
-			ipc_start(CMD_GETLIST, (void *)c, id, no);
-			ipc_send(TO_PARENT);
+			ipc.node = no;
+			proc_put(TO_PARENT, CMD_GETLIST, &ipc, NULL);
 			return 0;
 
 		case RPC_ASKNOTIFY:
@@ -349,8 +357,7 @@ parse_rpc(struct connection *c)
 		case RPC_DUMP_PROFILE:
 			// no parameter
 			if (!acl_is_capable(CMD_DUMP_PROFILE, 0, &c->cred)) return -1;
-			ipc_start(CMD_DUMP_PROFILE, (void *)c, id, 0);
-			ipc_send(TO_PARENT);
+			proc_put(TO_PARENT, CMD_DUMP_PROFILE, &ipc, NULL);
 			return 0;
 
 		default:
@@ -452,29 +459,33 @@ pipe_listen(void)
 void
 forward_reply(struct ProcChild *p, size_t size, int cmd)
 {
+	struct ipc_struct ipc;
 	struct connection *c;
 	char *s;
 	size_t sz;
 
-	ipc_recv(p, size);
+	proc_get(p, &ipc, rpc_pak, size);
 	for (c = conns; c; c = c->next) {
-		if (c == (struct connection *) ipc_get_data()) {
-			ipc_get_arg(&s, &sz);
-			write_rpc(c, cmd, ipc_get_id(), s, sz);
+		if (c == (struct connection *) ipc.chan) {
+			pack_get(rpc_pak, &s, &sz);
+			write_rpc(c, cmd, ipc.id, s, sz);
 			return;
 		}
 	}
 }
 
-void
-rpc_unix_start(void)
+static void
+rpc_proc(void)
 {
+	struct ipc_struct ipc;
 	struct ProcChild *p;
 	struct connection *c;
 	int cmd;
 	size_t size;
 	char *s;
 	size_t sz;
+
+	rpc_pak = pack_new(1024);
 
 	if (create_pipe(cfg_socket_name) != 0) {
 		log_error("RPC_UNIX: Cannot create listening pipe '%s'\n", cfg_socket_name);
@@ -486,11 +497,10 @@ rpc_unix_start(void)
 		while (1 == proc_listen(&p, &cmd, &size, 0)) {
 			switch (cmd) {
 				case CMD_NOTIFY:
-					ipc_recv(p, size);
-					ipc_get_arg(&s, &sz);
+					proc_get(p, &ipc, rpc_pak, size);
+					pack_get(rpc_pak, &s, &sz);
 					for (c = conns; c; c = c->next) {
-						int no = ipc_get_node();
-						if (notify_is_marked(c->notify_mask, no)) {
+						if (notify_is_marked(c->notify_mask, ipc.node)) {
 							write_rpc(c, RPC_NOTIFY, 0, s, sz);
 						}
 					}
@@ -516,9 +526,18 @@ rpc_unix_start(void)
 				default:
 					// this shouldn't happen, warn and skip
 					log_error("RPC: Unexpected internal command %d\n", cmd);
-					ipc_recv(p, size);
+					proc_get(p, &ipc, rpc_pak, size);
 			}
 		}
 		pipe_listen();
 	}
+}
+
+void
+rpc_unix_start(void)
+{
+	struct ProcChild *p;
+
+	p = proc_fork(rpc_proc, "ComarRPC");
+	if (!p) exit(1);
 }

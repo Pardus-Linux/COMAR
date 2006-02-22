@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2005, TUBITAK/UEKAE
+** Copyright (c) 2005-2006, TUBITAK/UEKAE
 **
 ** This program is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU General Public License as published by the
@@ -9,6 +9,8 @@
 
 #ifndef PROCESS_H
 #define PROCESS_H 1
+
+#include "utility.h"
 
 struct ProcChild {
 	int from;
@@ -27,6 +29,12 @@ struct Proc {
 	struct ProcChild *children;
 };
 
+struct ipc_struct {
+	void *chan;
+	int id;
+	int node;
+};
+
 // per process global variable
 extern struct Proc my_proc;
 
@@ -35,14 +43,14 @@ extern struct Proc my_proc;
 
 void proc_init(int argc, char *argv[]);
 struct ProcChild *proc_get_rpc(void);
+
 struct ProcChild *proc_fork(void (*child_func)(void), const char *desc);
 void proc_check_shutdown(void);
 void proc_finish(void);
+
 int proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout);
-int proc_send(struct ProcChild *p, int cmd, const void *data, size_t data_size);
-int proc_recv(struct ProcChild *p, void *datap, size_t size);
-int proc_recv_to(struct ProcChild *p, void *data, size_t size);
-char *proc_pid_name(struct ProcChild *p);
+int proc_put(struct ProcChild *p, int cmd, struct ipc_struct *ipc, struct pack *pak);
+int proc_get(struct ProcChild *p, struct ipc_struct *ipc, struct pack *pak, size_t size);
 
 
 #endif /* PROCESS_H */

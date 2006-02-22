@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2005, TUBITAK/UEKAE
+** Copyright (c) 2005-2006, TUBITAK/UEKAE
 **
 ** This program is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU General Public License as published by the
@@ -15,6 +15,7 @@
 #include "notify.h"
 #include "process.h"
 #include "ipc.h"
+#include "utility.h"
 
 void *
 notify_alloc(void)
@@ -58,21 +59,26 @@ extern char *bk_app;
 int
 notify_fire(const char *name, const char *msg)
 {
+	struct ipc_struct ipc;
+	struct pack *pak;
 	int no;
 	char *tmp;
 
 	no = model_lookup_notify(name);
 	if (no == -1) return -1;
 
-	ipc_start(CMD_NOTIFY, NULL, 0, no);
+	memset(&ipc, 0, sizeof(struct ipc_struct));
+	ipc.node = no;
+	pak = pack_new(256);
+
 	if (msg) {
 		tmp = malloc(strlen(msg) + strlen(bk_app) + strlen(name) + 3);
 		sprintf(tmp, "%s\n%s\n%s", name, bk_app, msg);
-		ipc_pack_arg(tmp, strlen(tmp));
+		pack_put(pak, tmp, strlen(tmp));
 		free(tmp);
 	} else {
-		ipc_pack_arg(name, strlen(name));
+		pack_put(pak, name, strlen(name));
 	}
-	ipc_send(TO_PARENT);
+	proc_put(TO_PARENT, CMD_NOTIFY, &ipc, pak);
 	return 0;
 }

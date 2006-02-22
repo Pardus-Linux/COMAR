@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2005, TUBITAK/UEKAE
+** Copyright (c) 2005-2006, TUBITAK/UEKAE
 **
 ** This program is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU General Public License as published by the
@@ -10,7 +10,10 @@
 #ifndef JOB_H
 #define JOB_H 1
 
-int job_start(int cmd, char *ipc_msg, size_t ipc_size);
+#include "process.h"
+#include "utility.h"
+
+int job_start(int cmd, struct ipc_struct *ipc, struct pack *pak);
 
 
 #endif /* JOB_H */

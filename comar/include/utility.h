@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2005, TUBITAK/UEKAE
+** Copyright (c) 2005-2006, TUBITAK/UEKAE
 **
 ** This program is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU General Public License as published by the
@@ -14,7 +14,7 @@
 
 int utf8_is_valid(const char *str, size_t size);
 
-unsigned long time_diff (struct timeval *start, struct timeval *end);
+unsigned long time_diff(struct timeval *start, struct timeval *end);
 
 struct pack {
 	unsigned char *buffer;
@@ -25,7 +25,9 @@ struct pack {
 
 struct pack *pack_new(size_t min_size);
 struct pack *pack_wrap(char *buffer, size_t size);
+struct pack *pack_dup(struct pack *oldpak);
 void pack_delete(struct pack *p);
+void pack_reset(struct pack *p);
 void pack_ensure_size(struct pack *p, size_t need);
 void pack_put(struct pack *p, const char *arg, size_t size);
 int pack_get(struct pack *p, char **argp, size_t *sizep);

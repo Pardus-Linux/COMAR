@@ -32,17 +32,5 @@ enum {
 	CMD_EVENT
 };
 
-void ipc_start(int cmd, void *caller_data, int id, int node);
-void ipc_pack_arg(const char *arg, size_t size);
-void ipc_send(struct ProcChild *p);
-
-int ipc_recv(struct ProcChild *p, size_t size);
-int ipc_get_node(void);
-void *ipc_get_data(void);
-int ipc_get_id(void);
-int ipc_get_arg(char **argp, size_t *sizep);
-
-struct pack *ipc_into_pack(void);
-
 
 #endif /* IPC_H */

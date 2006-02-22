@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2005, TUBITAK/UEKAE
+** Copyright (c) 2005-2006, TUBITAK/UEKAE
 **
 ** This program is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU General Public License as published by the
@@ -299,60 +299,47 @@ proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout)
 }
 
 int
-proc_send(struct ProcChild *p, int cmd, const void *data, size_t size)
+proc_put(struct ProcChild *p, int cmd, struct ipc_struct *ipc, struct pack *pak)
 {
-	unsigned int ipc;
+	unsigned int header;
+	size_t size;
 
 	if (p == TO_PARENT) p = &my_proc.parent;
-	ipc = size | (cmd << 24);
-	if (sizeof(cmd) != write(p->to, &ipc, sizeof(ipc))) {
-		return -1;
+	size = 0;
+	if (ipc) size += sizeof(struct ipc_struct);
+	if (pak) size += pak->used;
+
+	log_debug(LOG_IPC, "proc_put(to=%d, cmd=%d, size=%d)\n", p->pid, cmd, size);
+
+	header = size | (cmd << 24);
+	write(p->to, &header, sizeof(header));
+
+	if (ipc) {
+		write(p->to, ipc, sizeof(struct ipc_struct));
 	}
-	if (size) {
-		if (size != write(p->to, data, size)) {
-			return -2;
-		}
+
+	if (pak && pak->used) {
+		write(p->to, pak->buffer, pak->used);
 	}
-	log_debug(LOG_IPC, "proc_send(me=%d, to=%d, cmd=%d, size=%d)\n", getpid(), p->pid, cmd, size);
+
 	return 0;
 }
 
 int
-proc_recv(struct ProcChild *p, void *datap, size_t size)
+proc_get(struct ProcChild *p, struct ipc_struct *ipc, struct pack *pak, size_t size)
 {
-	char **datap2;
+	log_debug(LOG_IPC, "proc_get(from=%d, size=%d)\n", p->pid, size);
 
-	datap2 = (char **) datap;
-	*datap2 = malloc(size);
-	if (NULL == *datap2) return -1;
-	if (proc_recv_to(p, *datap2, size)) return -2;
-
-	log_debug(LOG_IPC, "proc_recv(me=%d, from=%d, size=%d)\n", getpid(), p->pid, size);
-	return 0;
-}
-
-int
-proc_recv_to(struct ProcChild *p, void *data, size_t size)
-{
-	// FIXME: handle signals, pipe buf, etc
-	if (size != read(p->from, data, size)) {
-		return -1;
+	read(p->from, ipc, sizeof(struct ipc_struct));
+	pak->used = 0;
+	pak->pos = 0;
+	if (size > sizeof(struct ipc_struct)) {
+		size -= sizeof(struct ipc_struct);
+		pack_ensure_size(pak, size);
+		read(p->from, pak->buffer, size);
+		pak->used = size;
+		pak->pos = 0;
 	}
-	log_debug(LOG_IPC, "proc_recv_to(me=%d, from=%d, size=%d)\n", getpid(), p->pid, size);
+
 	return 0;
-}
-
-char *
-proc_pid_name(struct ProcChild *p)
-{
-	static char buf[128];
-
-	if (p == TO_PARENT) p = &my_proc.parent;
-
-	if (p->pid == my_proc.parent.pid)
-		sprintf(buf, "parent(%d)", p->pid);
-	else
-		sprintf(buf, "%d", p->pid);
-
-	return buf;
 }

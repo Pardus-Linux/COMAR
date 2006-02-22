@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2005, TUBITAK/UEKAE
+** Copyright (c) 2005-2006, TUBITAK/UEKAE
 **
 ** This program is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU General Public License as published by the
@@ -24,14 +24,16 @@
 #include <linux/netlink.h>
 #include <unistd.h>
 
+#define UEVENT_BUFFER_SIZE		1024
+#define NETLINK_KOBJECT_UEVENT 15
+
 #include "process.h"
 #include "data.h"
 #include "model.h"
 #include "log.h"
 #include "ipc.h"
 
-#define UEVENT_BUFFER_SIZE		1024
-#define NETLINK_KOBJECT_UEVENT 15
+static struct pack *event_pak;
 
 static int trig_node;
 static char *trig_app;
@@ -40,25 +42,29 @@ static const char *trig_key;
 static void
 trig_instance(char *str, size_t size)
 {
+	struct ipc_struct ipc;
 	struct pack *p;
 	char *tmp, *t;
 	size_t ts;
 
+	memset(&ipc, 0, sizeof(struct ipc_struct));
+
 	tmp = strndup(str, size);
 	p = db_get_profile(trig_node, trig_app, trig_key, tmp);
 
-	ipc_start(CMD_CALL_PACKAGE, NULL, 0, trig_node);
-	ipc_pack_arg(trig_app, strlen(trig_app));
+	ipc.node = trig_node;
+	pack_reset(event_pak);
+	pack_put(event_pak, trig_app, strlen(trig_app));
 	while (pack_get(p, &t, &ts)) {
 		if (model_has_argument(trig_node, t)) {
-			ipc_pack_arg(t, ts);
+			pack_put(event_pak, t, ts);
 			pack_get(p, &t, &ts);
-			ipc_pack_arg(t, ts);
+			pack_put(event_pak, t, ts);
 		} else {
 			pack_get(p, &t, &ts);
 		}
 	}
-	ipc_send(TO_PARENT);
+	proc_put(TO_PARENT, CMD_EVENT, &ipc, event_pak);
 	pack_delete(p);
 }
 
@@ -108,11 +114,15 @@ trigger_startup_methods(void)
 static void
 fire_event(const char *event, int node, const char *app, const char *data)
 {
-	ipc_start(CMD_EVENT, 0, 0, node);
-	ipc_pack_arg(event, strlen(event));
-	ipc_pack_arg(app, strlen(app));
-	ipc_pack_arg(data, strlen(data));
-	ipc_send(TO_PARENT);
+	struct ipc_struct ipc;
+
+	memset(&ipc, 0, sizeof(struct ipc_struct));
+	ipc.node = node;
+	pack_reset(event_pak);
+	pack_put(event_pak, event, strlen(event));
+	pack_put(event_pak, app, strlen(app));
+	pack_put(event_pak, data, strlen(data));
+	proc_put(TO_PARENT, CMD_EVENT, &ipc, event_pak);
 }
 
 static void
@@ -158,6 +168,8 @@ event_proc(void)
 	struct timeval tv;
 	int sock;
 	int ret;
+
+	event_pak = pack_new(512);
 
 	// First event is startup, send here when comar daemon starts
 	trigger_startup_methods();

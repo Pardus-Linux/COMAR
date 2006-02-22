@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2005, TUBITAK/UEKAE
+** Copyright (c) 2005-2006, TUBITAK/UEKAE
 **
 ** This program is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU General Public License as published by the
@@ -31,6 +31,8 @@ extern char *bk_app;
 static PyObject *
 c_call(PyObject *self, PyObject *args)
 {
+	struct ipc_struct ipc;
+	struct pack *p;
 	char *node;
 	char *pak;
 	int nd;
@@ -41,22 +43,25 @@ c_call(PyObject *self, PyObject *args)
 	nd = model_lookup_method(node);
 	if (nd == -1) return NULL;
 
-	ipc_start(CMD_CALL_PACKAGE, NULL, 0, nd);
-	ipc_pack_arg(pak, strlen(pak));
-	job_start(-1, 0, 0);
+	memset(&ipc, 0, sizeof(struct ipc_struct));
+	ipc.node = nd;
+	p = pack_new(128);
+	pack_put(p, pak, strlen(pak));
+
+	job_start(CMD_CALL_PACKAGE, &ipc, p);
 
 	while (1) {
-		struct ProcChild *p;
+		struct ProcChild *sender;
 		int cmd;
 		int size;
 
-		if (1 == proc_listen(&p, &cmd, &size, 1)) {
+		if (1 == proc_listen(&sender, &cmd, &size, 1)) {
 			switch (cmd) {
 				case CMD_RESULT:
 				case CMD_FAIL:
 				case CMD_ERROR:
 				case CMD_NONE:
-					ipc_recv(p, size);
+					proc_get(sender, &ipc, p, size);
 					break;
 			}
 			break;
@@ -315,7 +320,7 @@ csl_compile(char *str, char *name, char **codeptr, size_t *sizeptr)
 }
 
 int
-csl_execute(char *code, size_t size, const char *func_name, char **resptr, int *reslen)
+csl_execute(char *code, size_t size, const char *func_name, struct pack *pak, char **resptr, int *reslen)
 {
 	PyObject *pCode, *pModule, *pDict, *pFunc, *pValue, *pStr;
 	PyObject *pArgs, *pkArgs;
@@ -346,12 +351,12 @@ csl_execute(char *code, size_t size, const char *func_name, char **resptr, int *
 
 	pArgs = NULL;
 	pkArgs = PyDict_New();
-	while (1) {
+	while (pak) {
 		PyObject *p;
 		char *t, *t2;
 		size_t sz;
-		if (ipc_get_arg(&t, &sz) == 0) break;
-		if (ipc_get_arg(&t2, &sz) == 0) {
+		if (pack_get(pak, &t, &sz) == 0) break;
+		if (pack_get(pak, &t2, &sz) == 0) {
 			pArgs = PyTuple_New(1);
 			PyTuple_SetItem(pArgs, 0, PyString_FromString(t));
 			Py_DECREF(pkArgs);

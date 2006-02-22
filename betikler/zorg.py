@@ -340,6 +340,10 @@ Section "Screen"
         Depth    24
         Modes    %(MODES)s
     EndSubsection
+    Subsection "Display"
+        Depth    32
+        Modes    %(MODES)s
+    EndSubsection
 EndSection
 
 Section "ServerLayout"

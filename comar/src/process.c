@@ -14,6 +14,7 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <sys/time.h>
+#include <fcntl.h>
 
 #include "process.h"
 #include "ipc.h"
@@ -216,6 +217,9 @@ proc_fork(void (*child_func)(void), const char *desc)
 		}
 		close(fdw[1]);
 		close(fdr[0]);
+		// stop parent's pipes from propagating through an exec()
+		fcntl(fdw[0], F_SETFD, FD_CLOEXEC);
+		fcntl(fdr[1], F_SETFD, FD_CLOEXEC);
 		// now setup our own data
 		memset(&my_proc, 0, sizeof(struct Proc));
 		my_proc.parent.from = fdw[0];

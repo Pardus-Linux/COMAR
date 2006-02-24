@@ -64,7 +64,7 @@ c_call(PyObject *self, PyObject *args)
 					proc_get(sender, &ipc, p, size);
 					break;
 			}
-			break;
+			if (cmd == CMD_FINISH) break;
 		}
 	}
 	Py_INCREF(Py_None);

@@ -198,6 +198,7 @@ proc_fork(void (*child_func)(void), const char *desc)
 {
 	pid_t pid;
 	int fdr[2], fdw[2];
+	int i;
 
 	pipe(fdr);
 	pipe(fdw);
@@ -206,8 +207,16 @@ proc_fork(void (*child_func)(void), const char *desc)
 
 	if (pid == 0) {
 		// new child process starts
+		// we have to close unneeded pipes inherited from the parent
+		if (my_proc.parent.to != -1) close(my_proc.parent.to);
+		if (my_proc.parent.from != -1) close(my_proc.parent.from);
+		for (i = 0; i < my_proc.nr_children; i++) {
+			close(my_proc.children[i].to);
+			close(my_proc.children[i].from);
+		}
 		close(fdw[1]);
 		close(fdr[0]);
+		// now setup our own data
 		memset(&my_proc, 0, sizeof(struct Proc));
 		my_proc.parent.from = fdw[0];
 		my_proc.parent.to = fdr[1];
@@ -216,6 +225,7 @@ proc_fork(void (*child_func)(void), const char *desc)
 		handle_signals();
 		set_my_name(desc);
 		log_debug(LOG_PROC, "%s process %d started\n", desc, getpid());
+		// finally jump to the real function
 		child_func();
 		proc_finish();
 		while (1) {} // to keep gcc happy

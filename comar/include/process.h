@@ -63,7 +63,8 @@ enum {
 	CMD_NOTIFY,
 	CMD_DUMP_PROFILE,
 	CMD_SHUTDOWN,
-	CMD_EVENT
+	CMD_EVENT,
+	CMD_CUSTOM
 };
 
 // functions
@@ -74,6 +75,8 @@ struct ProcChild *proc_fork(void (*child_func)(void), const char *desc);
 void proc_check_shutdown(void);
 void proc_finish(void);
 
+int proc_setup_fds(fd_set *fds);
+int proc_select_fds(fd_set *fds, int max, struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout);
 int proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout);
 int proc_put(struct ProcChild *p, int cmd, struct ipc_struct *ipc, struct pack *pak);
 int proc_get(struct ProcChild *p, struct ipc_struct *ipc, struct pack *pak, size_t size);

@@ -241,42 +241,49 @@ proc_fork(void (*child_func)(void), const char *desc)
 }
 
 int
-proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout)
+proc_setup_fds(fd_set *fds)
 {
-	unsigned int ipc;
-	fd_set fds;
-	struct timeval tv, *tvptr;
-	int i, sock, max;
-	int len;
+	int sock;
+	int i;
+	int max = 0;
 
 	if (shutdown_activated) {
 		proc_finish();
 	}
 
-	tv.tv_sec = 0;
-	tv.tv_usec = 0;
-
-	FD_ZERO(&fds);
-	max = 0;
+	FD_ZERO(fds);
 	sock = my_proc.parent.from;
 	if (sock != -1) {
 		// we have a parent to listen for
-		FD_SET(sock, &fds);
+		FD_SET(sock, fds);
 		if (sock > max) max = sock;
 	}
 	// and some children maybe?
 	for (i = 0; i < my_proc.nr_children; i++) {
 		sock = my_proc.children[i].from;
-		FD_SET(sock, &fds);
+		FD_SET(sock, fds);
 		if (sock > max) max = sock;
 	}
-	++max;
+
+	return ++max;
+}
+
+int
+proc_select_fds(fd_set *fds, int max, struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout)
+{
+	unsigned int ipc;
+	struct timeval tv, *tvptr;
+	int sock;
+	int len;
+	int i;
+
 	tv.tv_sec = timeout;
+	tv.tv_usec = 0;
 	if (timeout != -1) tvptr = &tv; else tvptr = NULL;
 
-	if (select(max, &fds, NULL, NULL, tvptr) > 0) {
+	if (select(max, fds, NULL, NULL, tvptr) > 0) {
 		sock = my_proc.parent.from;
-		if (sock != -1 && FD_ISSET(sock, &fds)) {
+		if (sock != -1 && FD_ISSET(sock, fds)) {
 			len = read(sock, &ipc, sizeof(ipc));
 			if (0 == len) {
 				// parent process left us
@@ -291,7 +298,7 @@ proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout)
 		}
 		for (i = 0; i < my_proc.nr_children; i++) {
 			sock = my_proc.children[i].from;
-			if (FD_ISSET(sock, &fds)) {
+			if (FD_ISSET(sock, fds)) {
 				len = read(sock, &ipc, sizeof(ipc));
 				if (len == sizeof(ipc)) {
 					*senderp = &my_proc.children[i];
@@ -307,8 +314,23 @@ proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout)
 				}
 			}
 		}
+		*senderp = NULL;
+		*cmdp = CMD_CUSTOM;
+		*sizep = 0;
+		return 1;
 	}
 	return 0;
+}
+
+int
+proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout)
+{
+	fd_set fds;
+	int max;
+
+	max = proc_setup_fds(&fds);
+
+	return proc_select_fds(&fds, max, senderp, cmdp, sizep, timeout);
 }
 
 int

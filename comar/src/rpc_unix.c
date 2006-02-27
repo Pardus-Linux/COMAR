@@ -50,6 +50,7 @@ enum {
 
 struct connection {
 	struct connection *next, *prev;
+	unsigned int cookie;
 	int sock;
 	struct Creds cred;
 	void *notify_mask;
@@ -230,6 +231,7 @@ parse_rpc(struct connection *c)
 
 	memset(&ipc, 0, sizeof(struct ipc_struct));
 	ipc.source.chan = (void *) c;
+	ipc.source.cookie = c->cookie;
 	ipc.source.id = get_id(c->buffer + 4);
 	cmd = get_cmd(c->buffer);
 
@@ -388,6 +390,7 @@ read_rpc(struct connection *c)
 static int
 pipe_listen(void)
 {
+	static int unsigned cookie = 0;
 	fd_set fds;
 	struct timeval tv;
 	struct connection *c;
@@ -421,6 +424,7 @@ pipe_listen(void)
 				c->size = 256;
 				if (0 == get_peer(sock, &c->cred)) {
 					if (acl_can_connect(&c->cred)) {
+						c->cookie = cookie++;
 						c->notify_mask = notify_alloc();
 						c->buffer = malloc(256);
 						c->next = conns;
@@ -465,7 +469,7 @@ forward_reply(struct ProcChild *p, size_t size, int cmd)
 
 	proc_get(p, &ipc, rpc_pak, size);
 	for (c = conns; c; c = c->next) {
-		if (c == (struct connection *) ipc.source.chan) {
+		if (c == (struct connection *) ipc.source.chan && c->cookie == ipc.source.cookie) {
 			pack_get(rpc_pak, &s, &sz);
 			write_rpc(c, cmd, ipc.source.id, s, sz);
 			return;

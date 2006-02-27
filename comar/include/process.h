@@ -31,6 +31,7 @@ struct Proc {
 
 struct ipc_source {
 	void *chan;
+	unsigned int cookie;
 	int id;
 };
 

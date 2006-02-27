@@ -14,7 +14,6 @@
 #include "model.h"
 #include "notify.h"
 #include "process.h"
-#include "ipc.h"
 #include "utility.h"
 
 void *

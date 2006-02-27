@@ -23,7 +23,6 @@
 #include "data.h"
 #include "job.h"
 #include "log.h"
-#include "ipc.h"
 #include "utility.h"
 
 void rpc_unix_start(void);

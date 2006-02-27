@@ -31,7 +31,6 @@
 #include "data.h"
 #include "model.h"
 #include "log.h"
-#include "ipc.h"
 
 static struct pack *event_pak;
 

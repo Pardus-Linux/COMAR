@@ -41,6 +41,27 @@ extern struct Proc my_proc;
 // for readability of send_cmd/data functions
 #define TO_PARENT NULL
 
+// ipc commands
+enum {
+	CMD_FINISH = 0,
+	CMD_RESULT,
+	CMD_RESULT_START,
+	CMD_RESULT_END,
+	CMD_FAIL,
+	CMD_NONE,
+	CMD_ERROR,
+	CMD_REGISTER,
+	CMD_REMOVE,
+	CMD_CALL,
+	CMD_CALL_PACKAGE,
+	CMD_GETLIST,
+	CMD_NOTIFY,
+	CMD_DUMP_PROFILE,
+	CMD_SHUTDOWN,
+	CMD_EVENT
+};
+
+// functions
 void proc_init(int argc, char *argv[]);
 struct ProcChild *proc_get_rpc(void);
 

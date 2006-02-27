@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2005, TUBITAK/UEKAE
+** Copyright (c) 2005-2006, TUBITAK/UEKAE
 **
 ** This program is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU General Public License as published by the
@@ -14,7 +14,6 @@
 
 #include "acl.h"
 #include "process.h"
-#include "ipc.h"
 #include "log.h"
 
 int

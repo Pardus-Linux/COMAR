@@ -17,7 +17,6 @@
 #include <fcntl.h>
 
 #include "process.h"
-#include "ipc.h"
 #include "log.h"
 
 struct Proc my_proc;

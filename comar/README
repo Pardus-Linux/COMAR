@@ -122,12 +122,11 @@ Modüller:
 * csl.c			CSL - Python VM yardımcıları
 * job.c			İş yapan süreçler (Register, Execute, Remove script)
 * process.c		Süreç yönetimi ve süreçler arası iletişim
-* ipc.c			Süreçler arası iletişim yardımcıları
 * cfg.c			Komut satırı parametreleri
 * log.c			Hata ve bilgi kayıtları
 * event.c		Olay bildirim sistemi
 * rpc_unix.c	Unix soket üzerinden comar çağrısı modülü
-* iksemel.c		Model dosyasını okumak için dahili minimal XML parser
+* iksemel.c		Dahili minimal XML parser
 
 
 Kod stili:

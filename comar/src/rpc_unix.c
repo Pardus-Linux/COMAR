@@ -21,7 +21,6 @@
 #include "acl.h"
 #include "log.h"
 #include "cfg.h"
-#include "ipc.h"
 #include "notify.h"
 
 /* rpc commands, keep in sync with bindings */

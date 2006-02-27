@@ -29,9 +29,13 @@ struct Proc {
 	struct ProcChild *children;
 };
 
-struct ipc_struct {
+struct ipc_source {
 	void *chan;
 	int id;
+};
+
+struct ipc_struct {
+	struct ipc_source source;
 	int node;
 };
 

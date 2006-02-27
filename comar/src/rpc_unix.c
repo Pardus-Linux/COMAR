@@ -229,8 +229,8 @@ parse_rpc(struct connection *c)
 	size_t sz;
 
 	memset(&ipc, 0, sizeof(struct ipc_struct));
-	ipc.chan = (void *) c;
-	ipc.id = get_id(c->buffer + 4);
+	ipc.source.chan = (void *) c;
+	ipc.source.id = get_id(c->buffer + 4);
 	cmd = get_cmd(c->buffer);
 
 //printf("RPC cmd %d, id %d, size %d\n", cmd, id, c->data_size);
@@ -244,7 +244,7 @@ parse_rpc(struct connection *c)
 			// no parameter
 			if (!acl_is_capable(CMD_SHUTDOWN, 0, &c->cred)) return -1;
 			proc_put(TO_PARENT, CMD_SHUTDOWN, NULL, NULL);
-			write_rpc(c, RPC_RESULT, ipc.id, NULL, 0);
+			write_rpc(c, RPC_RESULT, ipc.source.id, NULL, 0);
 			return 0;
 
 		case RPC_REGISTER:
@@ -280,9 +280,9 @@ parse_rpc(struct connection *c)
 			if (no == -1) return -1;
 			ipc.node = no;
 			if (!acl_is_capable(CMD_CALL, no, &c->cred)) {
-				write_rpc(c, RPC_DENIED, ipc.id, NULL, 0);
+				write_rpc(c, RPC_DENIED, ipc.source.id, NULL, 0);
 			} else {
-				write_rpc(c, RPC_RESULT, ipc.id, NULL, 0);
+				write_rpc(c, RPC_RESULT, ipc.source.id, NULL, 0);
 			}
 			return 0;
 
@@ -292,7 +292,7 @@ parse_rpc(struct connection *c)
 			no = model_lookup_method(t);
 			if (no == -1) return -1;
 			if (!acl_is_capable(CMD_CALL, no, &c->cred)) {
-				write_rpc(c, RPC_DENIED, ipc.id, NULL, 0);
+				write_rpc(c, RPC_DENIED, ipc.source.id, NULL, 0);
 				return 0;
 			}
 			ipc.node = no;
@@ -315,7 +315,7 @@ parse_rpc(struct connection *c)
 			no = model_lookup_method(t);
 			if (no == -1) return -1;
 			if (!acl_is_capable(CMD_CALL, no, &c->cred)) {
-				write_rpc(c, RPC_DENIED, ipc.id, NULL, 0);
+				write_rpc(c, RPC_DENIED, ipc.source.id, NULL, 0);
 				return 0;
 			}
 			ipc.node = no;
@@ -340,7 +340,7 @@ parse_rpc(struct connection *c)
 			no = model_lookup_class(t);
 			if (no == -1) return -1;
 			if (!acl_is_capable(CMD_CALL, no, &c->cred)) {
-				write_rpc(c, RPC_DENIED, ipc.id, NULL, 0);
+				write_rpc(c, RPC_DENIED, ipc.source.id, NULL, 0);
 				return 0;
 			}
 			ipc.node = no;
@@ -465,9 +465,9 @@ forward_reply(struct ProcChild *p, size_t size, int cmd)
 
 	proc_get(p, &ipc, rpc_pak, size);
 	for (c = conns; c; c = c->next) {
-		if (c == (struct connection *) ipc.chan) {
+		if (c == (struct connection *) ipc.source.chan) {
 			pack_get(rpc_pak, &s, &sz);
-			write_rpc(c, cmd, ipc.id, s, sz);
+			write_rpc(c, cmd, ipc.source.id, s, sz);
 			return;
 		}
 	}

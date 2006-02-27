@@ -49,8 +49,7 @@ load_file(const char *fname, int *sizeptr)
 	return data;
 }
 
-static void *chan;
-static int chan_id;
+static struct ipc_source channel;
 int bk_node;
 char *bk_app;
 
@@ -61,8 +60,7 @@ send_result(int cmd, const char *data, size_t size)
 	struct pack *p;
 
 	memset(&ipc, 0, sizeof(struct ipc_struct));
-	ipc.chan = chan;
-	ipc.id = chan_id;
+	ipc.source = channel;
 	p = pack_new(128);
 
 	if (CMD_RESULT == cmd) {
@@ -371,8 +369,7 @@ job_proc(void)
 	}
 	proc_get(sender, &ipc, p, size);
 
-	chan = ipc.chan;
-	chan_id = ipc.id;
+	channel = ipc.source;
 
 	switch (cmd) {
 		case CMD_REGISTER:

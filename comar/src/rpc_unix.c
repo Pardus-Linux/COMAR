@@ -388,75 +388,71 @@ read_rpc(struct connection *c)
 }
 
 static int
-pipe_listen(void)
+add_rpc_fds(fd_set *fds, int max)
 {
-	static int unsigned cookie = 0;
-	fd_set fds;
-	struct timeval tv;
 	struct connection *c;
-	int sock, max;
 
-	// 1/5 sec, good for cpu and still catching ipc msgs
-	tv.tv_sec = 0;
-	tv.tv_usec = 200000;
-
-	FD_ZERO(&fds);
-	max = 0;
 	// listening pipe
-	FD_SET(pipe_fd, &fds);
-	if (pipe_fd > max) max = pipe_fd;
+	FD_SET(pipe_fd, fds);
+	if (pipe_fd >= max) max = pipe_fd + 1;
 	// current connections
 	for (c = conns; c; c = c->next) {
-		FD_SET(c->sock, &fds);
-		if (c->sock > max) max = c->sock;
+		FD_SET(c->sock, fds);
+		if (c->sock >= max) max = c->sock + 1;
 	}
-	++max;
+	return max;
+}
 
-	if (select(max, &fds, NULL, NULL, &tv) > 0) {
-		if (FD_ISSET(pipe_fd, &fds)) {
-			// new connection
-			struct sockaddr_un cname;
-			size_t size = sizeof(cname);
-			sock = accept(pipe_fd, (struct sockaddr *)&cname, &size);
-			if (sock >= 0) {
-				c = calloc(1, sizeof(struct connection));
-				c->sock = sock;
-				c->size = 256;
-				if (0 == get_peer(sock, &c->cred)) {
-					if (acl_can_connect(&c->cred)) {
-						c->cookie = cookie++;
-						c->notify_mask = notify_alloc();
-						c->buffer = malloc(256);
-						c->next = conns;
-						c->prev = NULL;
-						if (conns) conns->prev = c;
-						conns = c;
-					} else {
-						free(c);
-						close(sock);
-					}
+void
+handle_rpc_fds(fd_set *fds)
+{
+	static int unsigned cookie = 0;
+	struct connection *c;
+	int sock;
+
+	if (FD_ISSET(pipe_fd, fds)) {
+		// new connection
+		struct sockaddr_un cname;
+		size_t size = sizeof(cname);
+		sock = accept(pipe_fd, (struct sockaddr *)&cname, &size);
+		if (sock >= 0) {
+			c = calloc(1, sizeof(struct connection));
+			c->sock = sock;
+			c->size = 256;
+			if (0 == get_peer(sock, &c->cred)) {
+				if (acl_can_connect(&c->cred)) {
+					c->cookie = cookie++;
+					c->notify_mask = notify_alloc();
+					c->buffer = malloc(256);
+					c->next = conns;
+					c->prev = NULL;
+					if (conns) conns->prev = c;
+					conns = c;
 				} else {
 					free(c);
 					close(sock);
 				}
+			} else {
+				free(c);
+				close(sock);
 			}
-		}
-		c = conns;
-		while (c) {
-			if (FD_ISSET(c->sock, &fds)) {
-				// incoming rpc data
-				if (read_rpc(c)) {
-					struct connection *tmp;
-					tmp = c->next;
-					rem_conn(c);
-					c = tmp;
-					continue;
-				}
-			}
-			c = c->next;
 		}
 	}
-	return 0;
+
+	c = conns;
+	while (c) {
+		if (FD_ISSET(c->sock, fds)) {
+			// incoming rpc data
+			if (read_rpc(c)) {
+				struct connection *tmp;
+				tmp = c->next;
+				rem_conn(c);
+				c = tmp;
+				continue;
+			}
+		}
+		c = c->next;
+	}
 }
 
 void
@@ -483,6 +479,8 @@ rpc_proc(void)
 	struct ipc_struct ipc;
 	struct ProcChild *p;
 	struct connection *c;
+	fd_set fds;
+	int max;
 	int cmd;
 	size_t size;
 	char *s;
@@ -497,7 +495,9 @@ rpc_proc(void)
 	log_info("RPC_UNIX: listening on %s\n", cfg_socket_name);
 
 	while (1) {
-		while (1 == proc_listen(&p, &cmd, &size, 0)) {
+		max = proc_setup_fds(&fds);
+		max = add_rpc_fds(&fds, max);
+		if (1 == proc_select_fds(&fds, max, &p, &cmd, &size, -1)) {
 			switch (cmd) {
 				case CMD_NOTIFY:
 					proc_get(p, &ipc, rpc_pak, size);
@@ -526,13 +526,15 @@ rpc_proc(void)
 				case CMD_NONE:
 					forward_reply(p, size, RPC_NONE);
 					break;
+				case CMD_CUSTOM:
+					handle_rpc_fds(&fds);
+					break;
 				default:
 					// this shouldn't happen, warn and skip
 					log_error("RPC: Unexpected internal command %d\n", cmd);
 					proc_get(p, &ipc, rpc_pak, size);
 			}
 		}
-		pipe_listen();
 	}
 }
 

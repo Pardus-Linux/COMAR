@@ -95,13 +95,13 @@ cfg_init(int argc, char *argv[])
 	while ((c = getopt_long(argc, argv, shortopts, longopts, &i)) != -1) {
 		switch (c) {
 			case 'm':
-				cfg_model_file = optarg;
+				cfg_model_file = strdup(optarg);
 				break;
 			case 'd':
-				cfg_data_dir = optarg;
+				cfg_data_dir = strdup(optarg);
 				break;
 			case 's':
-				cfg_socket_name = optarg;
+				cfg_socket_name = strdup(optarg);
 				break;
 			case 'g':
 				for (j = 0; logflags[j].flag; ++j) {

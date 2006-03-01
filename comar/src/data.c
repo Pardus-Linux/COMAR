@@ -25,29 +25,38 @@
 static DB_ENV *my_env;
 static int nr_open_dbs;
 
-static void
-fix_old_db(void)
+static int
+check_db_format(void)
 {
-	// FIXME: delete old db format, remove this code before release
-	// beware: quickly and badly written temporary code :)
 	FILE *f;
-	struct stat fs;
-	char *t;
-	t = malloc(strlen(cfg_data_dir) + 7 + 1);
-	sprintf(t, "%s%s", cfg_data_dir, "/format");
-	if (stat(t, &fs) != 0) {
-		free(t);
-		t = malloc(strlen(cfg_data_dir) + 9 + 1);
-		sprintf(t, "rm -rf %s/*", cfg_data_dir);
-		system(t);
-		free(t);
-		t = malloc(strlen(cfg_data_dir) + 7 + 1);
-		sprintf(t, "%s%s", cfg_data_dir, "/format");
-		f = fopen(t, "w");
+	size_t len;
+	char *fmt_name;
+	char *fmt;
+
+	len = strlen(cfg_data_dir) + 7 + 1;
+	fmt_name = malloc(len);
+	if (!fmt_name) return 1;
+	snprintf(fmt_name, len, "%s%s", cfg_data_dir, "/format");
+
+	fmt = load_file(fmt_name, NULL);
+	if (fmt) {
+		if (atoi(fmt) != 1) {
+			log_error("Unsupported database format '%s'\n", fmt);
+			return 1;
+		}
+		free(fmt);
+	} else {
+		f = fopen(fmt_name, "w");
+		if (!f) {
+			log_error("Cannot write to '%s'\n", fmt_name);
+			return 1;
+		}
 		fwrite("1", 1, 1, f);
 		fclose(f);
 	}
-	free(t);
+
+	free(fmt_name);
+	return 0;
 }
 
 int
@@ -63,7 +72,9 @@ db_init(void)
 	} else {
 		// FIXME: check perms and owner
 	}
-	fix_old_db();
+
+	if (check_db_format()) return 1;
+
 	// FIXME: check and recover db files
 	return 0;
 }

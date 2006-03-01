@@ -12,6 +12,8 @@
 
 #include <sys/time.h>
 
+unsigned char *load_file(const char *fname, int *sizeptr);
+
 int utf8_is_valid(const char *str, size_t size);
 
 unsigned long time_diff(struct timeval *start, struct timeval *end);

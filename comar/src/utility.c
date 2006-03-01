@@ -10,8 +10,40 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+#include <sys/stat.h>
 
 #include "utility.h"
+
+unsigned char *
+load_file(const char *fname, int *sizeptr)
+{
+	FILE *f;
+	struct stat fs;
+	size_t size;
+	unsigned char *data;
+
+	if (stat(fname, &fs) != 0) return NULL;
+	size = fs.st_size;
+	if (sizeptr) *sizeptr = size;
+
+	data = malloc(size + 1);
+	if (!data) return NULL;
+	memset(data, 0, size + 1);
+
+	f = fopen(fname, "rb");
+	if (!f) {
+		free(data);
+		return NULL;
+	}
+	if (fread(data, size, 1, f) < 1) {
+		free(data);
+		return NULL;
+	}
+	fclose(f);
+
+	return data;
+}
 
 int
 utf8_is_valid(const char *str, size_t size)

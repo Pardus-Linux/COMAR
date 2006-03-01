@@ -10,7 +10,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
 
 #include "csl.h"
 #include "process.h"
@@ -18,36 +17,6 @@
 #include "model.h"
 #include "log.h"
 #include "utility.h"
-
-static unsigned char *
-load_file(const char *fname, int *sizeptr)
-{
-	FILE *f;
-	struct stat fs;
-	size_t size;
-	unsigned char *data;
-
-	if (stat(fname, &fs) != 0) return NULL;
-	size = fs.st_size;
-	if (sizeptr) *sizeptr = size;
-
-	data = malloc(size + 1);
-	if (!data) return NULL;
-	memset(data, 0, size + 1);
-
-	f = fopen(fname, "rb");
-	if (!f) {
-		free(data);
-		return NULL;
-	}
-	if (fread(data, size, 1, f) < 1) {
-		free(data);
-		return NULL;
-	}
-	fclose(f);
-
-	return data;
-}
 
 static struct ipc_source channel;
 int bk_node;

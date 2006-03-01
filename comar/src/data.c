@@ -22,9 +22,6 @@
 #include "utility.h"
 #include "iksemel.h"
 
-static DB_ENV *my_env;
-static int nr_open_dbs;
-
 static int
 check_db_format(void)
 {
@@ -79,63 +76,86 @@ db_init(void)
 	return 0;
 }
 
-static DB *
-open_db(const char *name)
+struct databases {
+	DB_ENV *env;
+	DB *model;
+	DB *app;
+	DB *code;
+	DB *profile;
+};
+
+#define MODEL_DB 1
+#define APP_DB 2
+#define CODE_DB 4
+#define PROFILE_DB 8
+
+static int
+open_database(DB_ENV *env, DB **dbp, const char *name)
 {
-	DB *db;
 	int e;
+	DB *db;
 
-	// join the environment if necessary
-	if (!my_env) {
-		e  = db_env_create(&my_env, 0);
-		if (e) {
-			log_error("Cannot create env, %s\n", db_strerror(e));
-			return NULL;
-		}
-		e = my_env->open(my_env, cfg_data_dir, DB_INIT_LOCK | DB_INIT_MPOOL
-				| DB_INIT_LOG | DB_INIT_TXN | DB_CREATE, 0);
-		if (e) {
-			log_error("Cannot open env, %s\n", db_strerror(e));
-			my_env->close(my_env, 0);
-			my_env = NULL;
-			return NULL;
-		}
-	}
-
-	// open db
-	e = db_create(&db, my_env, 0);
+	e = db_create(dbp, env, 0);
 	if (e) {
-		log_error("Cannot create db, %s\n", db_strerror(e));
-		if (0 == nr_open_dbs) {
-			my_env->close(my_env, 0);
-			my_env = NULL;
-		}
-		return NULL;
+		log_error("Cannot create database, %s\n", db_strerror(e));
+		*dbp = NULL;
+		return -1;
 	}
+	db = *dbp;
 	e = db->open(db, NULL, name, NULL, DB_BTREE, DB_CREATE, 0);
 	if (e) {
-		log_error("Cannot open db, %s\n", db_strerror(e));
-		db->close(db, 0);
-		if (0 == nr_open_dbs) {
-			my_env->close(my_env, 0);
-			my_env = NULL;
-		}
-		return NULL;
+		log_error("Cannot open database, %s\n", db_strerror(e));
+		return -2;
+	}
+	return 0;
+}
+
+static int
+open_env(struct databases *db, int which)
+{
+	int e;
+
+	memset(db, 0, sizeof(struct databases));
+	e = db_env_create(&db->env, 0);
+	if (e) {
+		log_error("Cannot create database environment, %s\n", db_strerror(e));
+		db->env = NULL;
+		return -1;
+	}
+	e = db->env->open(db->env,
+		cfg_data_dir,
+		DB_INIT_LOCK |DB_INIT_MPOOL | DB_INIT_LOG | DB_INIT_TXN | DB_CREATE,
+		0
+	);
+	if (e) {
+		log_error("Cannot open database environment, %s\n", db_strerror(e));
+		return -2;
 	}
 
-	nr_open_dbs++;
-	return db;
+	if (which & MODEL_DB) {
+		if (open_database(db->env, &db->model, "model.db")) return -3;
+	}
+	if (which & APP_DB) {
+		if (open_database(db->env, &db->app, "app.db")) return -4;
+	}
+	if (which & CODE_DB) {
+		if (open_database(db->env, &db->code, "code.db")) return -5;
+	}
+	if (which & PROFILE_DB) {
+		if (open_database(db->env, &db->profile, "profile.db")) return -6;
+	}
+
+	return 0;
 }
 
 static void
-close_db(DB *db)
+close_env(struct databases *db)
 {
-	db->close(db, 0);
-	--nr_open_dbs;
-	if (0 == nr_open_dbs) {
-		my_env->close(my_env, 0);
-		my_env = NULL;
-	}
+	if (db->profile) db->profile->close(db->profile, 0);
+	if (db->code) db->code->close(db->code, 0);
+	if (db->app) db->app->close(db->app, 0);
+	if (db->model) db->model->close(db->model, 0);
+	db->env->close(db->env, 0);
 }
 
 static char *
@@ -221,19 +241,14 @@ make_list(char *old, const char *item)
 int
 db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 {
-	DB *code_db = NULL, *model_db = NULL, *app_db = NULL;
+	struct databases db;
 	char *old;
 	char *t;
 	int e, ret = -1;
 
-	app_db = open_db("app.db");
-	if (!app_db) goto out;
-	model_db = open_db("model.db");
-	if (!model_db) goto out;
-	code_db = open_db("code.db");
-	if (!code_db) goto out;
+	if (open_env(&db, APP_DB | MODEL_DB | CODE_DB)) goto out;
 
-	old = get_data(app_db, app, 0, &e);
+	old = get_data(db.app, app, 0, &e);
 	if (!old) {
 		if (e == DB_NOTFOUND)
 			old = "";
@@ -244,16 +259,16 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 	t = make_key(node_no, NULL);
 	if (strstr(old, t) == NULL) {
 		t = make_list(old, t);
-		e = put_data(app_db, app, t, strlen(t) + 1);
+		e = put_data(db.app, app, t, strlen(t) + 1);
 		free(t);
 		if (e) goto out;
 	}
 	if (strcmp(old, "") != 0) free(old);
 
-	e = put_data(code_db, make_key(node_no, app), buffer, size);
+	e = put_data(db.code, make_key(node_no, app), buffer, size);
 	if (e) goto out;
 
-	old = get_data(model_db, make_key(node_no, NULL), 0, &e);
+	old = get_data(db.model, make_key(node_no, NULL), 0, &e);
 	if (!old) {
 		if (e == DB_NOTFOUND)
 			old = "";
@@ -263,7 +278,7 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 
 	if (strstr(old, app) == NULL) {
 		t = make_list(old, app);
-		e = put_data(model_db, make_key(node_no, NULL), t, strlen(t) + 1);
+		e = put_data(db.model, make_key(node_no, NULL), t, strlen(t) + 1);
 		free(t);
 		if (e) goto out;
 	}
@@ -271,27 +286,20 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 
 	ret = 0;
 out:
-	if (code_db) close_db(code_db);
-	if (model_db) close_db(model_db);
-	if (app_db) close_db(app_db);
+	close_env(&db);
 	return ret;
 }
 
 int
 db_del_app(const char *app)
 {
-	DB *code_db = NULL, *model_db = NULL, *app_db = NULL;
+	struct databases db;
 	char *list, *list2, *t, *s;
 	int e, ret = -1;
 
-	app_db = open_db("app.db");
-	if (!app_db) goto out;
-	model_db = open_db("model.db");
-	if (!model_db) goto out;
-	code_db = open_db("code.db");
-	if (!code_db) goto out;
+	if (open_env(&db, APP_DB | MODEL_DB | CODE_DB)) goto out;
 
-	list = get_data(app_db, app, 0, &e);
+	list = get_data(db.app, app, 0, &e);
 	if (!list) goto out;
 
 	for (t = list; t; t = s) {
@@ -301,7 +309,7 @@ db_del_app(const char *app)
 			++s;
 		}
 
-		list2 = get_data(model_db, t, 0, &e);
+		list2 = get_data(db.model, t, 0, &e);
 
 		if (list2) {
 			char *k;
@@ -315,56 +323,52 @@ db_del_app(const char *app)
 					if (list2[sa-1] == '/')
 						list2[sa-1] = '\0';
 				}
-				e = put_data(model_db, t, list2, strlen(list2) + 1);
+				e = put_data(db.model, t, list2, strlen(list2) + 1);
 				if (e) goto out;
 			}
 		}
 		free(list2);
 
-		e = del_data(code_db, make_key(model_lookup_class(t), app));
+		e = del_data(db.code, make_key(model_lookup_class(t), app));
 		if (e) goto out;
 	}
 
 	free(list);
 
-	e = del_data(app_db, app);
+	e = del_data(db.app, app);
 	if (e) goto out;
 
 	ret = 0;
 out:
-	if (code_db) close_db(code_db);
-	if (model_db) close_db(model_db);
-	if (app_db) close_db(app_db);
+	close_env(&db);
 	return ret;
 }
 
 int
 db_get_apps(int node_no, char **bufferp)
 {
-	DB *model_db = NULL;
+	struct databases db;
 	int e, ret = -1;
 
-	model_db = open_db("model.db");
-	if (!model_db) goto out;
+	if (open_env(&db, MODEL_DB)) goto out;
 
-	*bufferp = get_data(model_db, make_key(node_no, NULL), 0, &e);
+	*bufferp = get_data(db.model, make_key(node_no, NULL), 0, &e);
 	if (e) goto out;
 
 	ret = 0;
 out:
-	if (model_db) close_db(model_db);
+	close_env(&db);
 	return ret;
 }
 
 int
 db_get_code(int node_no, const char *app, char **bufferp, size_t *sizep)
 {
-	DB *code_db;
+	struct databases db;
 	DBT key, data;
 	int e, ret = -1;
 
-	code_db = open_db("code.db");
-	if (!code_db) goto out;
+	if (open_env(&db, CODE_DB)) goto out;
 
 	memset(&key, 0, sizeof(DBT));
 	memset(&data, 0, sizeof(DBT));
@@ -372,7 +376,7 @@ db_get_code(int node_no, const char *app, char **bufferp, size_t *sizep)
 	key.size = strlen(key.data);
 	data.flags = DB_DBT_MALLOC;
 
-	e = code_db->get(code_db, NULL, &key, &data, 0);
+	e = db.code->get(db.code, NULL, &key, &data, 0);
 	if (e) goto out;
 
 	*bufferp = data.data;
@@ -380,7 +384,7 @@ db_get_code(int node_no, const char *app, char **bufferp, size_t *sizep)
 
 	ret = 0;
 out:
-	close_db(code_db);
+	close_env(&db);
 	return ret;
 }
 
@@ -412,6 +416,9 @@ make_profile_key(int method, const char *app, const char *inst_key, const char *
 		if (!inst_value) inst_value = "";
 		len += strlen(inst_key) + 1 + strlen(inst_value);
 		inst_sep = "=";
+	} else {
+		inst_key = "";
+		inst_value = "";
 	}
 
 	key = malloc(len);
@@ -423,8 +430,8 @@ make_profile_key(int method, const char *app, const char *inst_key, const char *
 int
 db_put_profile(int node_no, const char *app, struct pack *args)
 {
+	struct databases db;
 	struct pack *old_args = NULL;
-	DB *profile_db = NULL;
 	DBT pair[2];
 	int e, ret = -1;
 	char *key = NULL;
@@ -433,8 +440,7 @@ db_put_profile(int node_no, const char *app, struct pack *args)
 	char *t, *t2;
 	size_t ts;
 
-	profile_db = open_db("profile.db");
-	if (!profile_db) goto out;
+	if (open_env(&db, PROFILE_DB)) goto out;
 
 	while (pack_get(args, &t, &ts)) {
 		if (model_is_instance(node_no, t)) {
@@ -453,7 +459,7 @@ db_put_profile(int node_no, const char *app, struct pack *args)
 	pair[0].size = strlen(key);
 	pair[1].flags = DB_DBT_MALLOC;
 
-	e = profile_db->get(profile_db, NULL, &pair[0], &pair[1], 0);
+	e = db.profile->get(db.profile, NULL, &pair[0], &pair[1], 0);
 	// FIXME: handle notfound separately, see also csl.c/c_get_profile()
 	if (e && e != DB_NOTFOUND) goto out;
 
@@ -464,32 +470,31 @@ db_put_profile(int node_no, const char *app, struct pack *args)
 			pack_get(args,&t2, &ts);
 			pack_replace(old_args, t, t2, ts);
 		}
-		e = put_data(profile_db, key, old_args->buffer, old_args->used);
+		e = put_data(db.profile, key, old_args->buffer, old_args->used);
 	} else {
-		e = put_data(profile_db, key, args->buffer, args->used);
+		e = put_data(db.profile, key, args->buffer, args->used);
 	}
 
 	if (e) goto out;
 
 	ret = 0;
 out:
+	close_env(&db);
 	if (old_args) pack_delete(old_args);
 	if (key) free(key);
-	if (profile_db) close_db(profile_db);
 	return ret;
 }
 
 struct pack *
 db_get_profile(int node_no, const char *app, const char *inst_key, const char *inst_value)
 {
+	struct databases db;
 	struct pack *p = NULL;
-	DB *profile_db = NULL;
 	DBT pair[2];
 	int e;
 	char *key;
 
-	profile_db = open_db("profile.db");
-	if (!profile_db) goto out;
+	if (open_env(&db, PROFILE_DB)) goto out;
 
 	// FIXME: multiple instance keys?
 	key = make_profile_key(node_no, app, inst_key, inst_value);
@@ -499,7 +504,7 @@ db_get_profile(int node_no, const char *app, const char *inst_key, const char *i
 	pair[0].size = strlen(key);
 	pair[1].flags = DB_DBT_MALLOC;
 
-	e = profile_db->get(profile_db, NULL, &pair[0], &pair[1], 0);
+	e = db.profile->get(db.profile, NULL, &pair[0], &pair[1], 0);
 	free(key);
 	// FIXME: handle notfound separately, see also csl.c/c_get_profile()
 	if (e) goto out;
@@ -507,22 +512,21 @@ db_get_profile(int node_no, const char *app, const char *inst_key, const char *i
 	p = pack_wrap(pair[1].data, pair[1].size);
 
 out:
-	if (profile_db) close_db(profile_db);
+	close_env(&db);
 	return p;
 }
 
 void
 db_del_profile(int node_no, const char *app, struct pack *args)
 {
-	DB *profile_db = NULL;
+	struct databases db;
 	char *key = NULL;
 	char *inst_key = NULL;
 	char *inst_value = NULL;
 	char *t;
 	size_t ts;
 
-	profile_db = open_db("profile.db");
-	if (!profile_db) goto out;
+	if (open_env(&db, PROFILE_DB)) goto out;
 
 	while (pack_get(args, &t, &ts)) {
 		if (model_is_instance(node_no, t)) {
@@ -536,17 +540,17 @@ db_del_profile(int node_no, const char *app, struct pack *args)
 
 	key = make_profile_key(node_no, app, inst_key, inst_value);
 
-	del_data(profile_db, key);
+	del_data(db.profile, key);
 
 out:
 	if (key) free(key);
-	if (profile_db) close_db(profile_db);
+	close_env(&db);
 }
 
 int
 db_get_instances(int node_no, const char *app, const char *key, void (*func)(char *str, size_t size))
 {
-	DB *profile_db = NULL;
+	struct databases db;
 	DBC *cursor = NULL;
 	DBT pair[2];
 	int e, ret = -1;
@@ -554,10 +558,9 @@ db_get_instances(int node_no, const char *app, const char *key, void (*func)(cha
 
 	memset(&pair[0], 0, sizeof(DBT) * 2);
 
-	profile_db = open_db("profile.db");
-	if (!profile_db) goto out;
+	if (open_env(&db, PROFILE_DB)) goto out;
 
-	profile_db->cursor(profile_db, NULL, &cursor, 0);
+	db.profile->cursor(db.profile, NULL, &cursor, 0);
 
 	// FIXME: multiple instance keys?
 	match = make_profile_key(node_no, app, key, NULL);
@@ -572,15 +575,15 @@ db_get_instances(int node_no, const char *app, const char *key, void (*func)(cha
 	ret = 0;
 out:
 	if (cursor) cursor->c_close(cursor);
-	if (profile_db) close_db(profile_db);
+	close_env(&db);
 	return ret;
 }
 
 char *
 db_dump_profile(void)
 {
+	struct databases db;
 	struct pack *p;
-	DB *profile_db = NULL;
 	DBC *cursor = NULL;
 	DBT pair[2];
 	int e;
@@ -590,10 +593,9 @@ db_dump_profile(void)
 	memset(&pair[0], 0, sizeof(DBT) * 2);
 	pair[1].flags = DB_DBT_MALLOC;
 
-	profile_db = open_db("profile.db");
-	if (!profile_db) goto out;
+	if (open_env(&db, PROFILE_DB)) goto out;
 
-	profile_db->cursor(profile_db, NULL, &cursor, 0);
+	db.profile->cursor(db.profile, NULL, &cursor, 0);
 
 	xml = iks_new("comarProfile");
 	iks_insert_cdata(xml, "\n", 1);
@@ -619,8 +621,8 @@ db_dump_profile(void)
 
 	ret = iks_string(NULL, xml);
 out:
-	if (xml) iks_delete(xml);
 	if (cursor) cursor->c_close(cursor);
-	if (profile_db) close_db(profile_db);
+	close_env(&db);
+	if (xml) iks_delete(xml);
 	return ret;
 }

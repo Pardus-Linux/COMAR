@@ -159,7 +159,7 @@ close_env(struct databases *db)
 }
 
 static char *
-get_data(DB *db, const char *name, int rw_lock, int *errorp)
+get_data(DB *db, const char *name, size_t *sizep, int *errorp)
 {
 	DBT pair[2];
 
@@ -169,7 +169,10 @@ get_data(DB *db, const char *name, int rw_lock, int *errorp)
 	pair[1].flags = DB_DBT_MALLOC;
 
 	*errorp = db->get(db, NULL, &pair[0], &pair[1], 0);
-	if (*errorp == 0) return pair[1].data;
+	if (*errorp == 0) {
+		if (sizep) *sizep = pair[1].size;
+		return pair[1].data;
+	}
 	return NULL;
 }
 
@@ -248,7 +251,7 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 
 	if (open_env(&db, APP_DB | MODEL_DB | CODE_DB)) goto out;
 
-	old = get_data(db.app, app, 0, &e);
+	old = get_data(db.app, app, NULL, &e);
 	if (!old) {
 		if (e == DB_NOTFOUND)
 			old = "";
@@ -268,7 +271,7 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 	e = put_data(db.code, make_key(node_no, app), buffer, size);
 	if (e) goto out;
 
-	old = get_data(db.model, make_key(node_no, NULL), 0, &e);
+	old = get_data(db.model, make_key(node_no, NULL), NULL, &e);
 	if (!old) {
 		if (e == DB_NOTFOUND)
 			old = "";
@@ -299,7 +302,7 @@ db_del_app(const char *app)
 
 	if (open_env(&db, APP_DB | MODEL_DB | CODE_DB)) goto out;
 
-	list = get_data(db.app, app, 0, &e);
+	list = get_data(db.app, app, NULL, &e);
 	if (!list) goto out;
 
 	for (t = list; t; t = s) {
@@ -309,7 +312,7 @@ db_del_app(const char *app)
 			++s;
 		}
 
-		list2 = get_data(db.model, t, 0, &e);
+		list2 = get_data(db.model, t, NULL, &e);
 
 		if (list2) {
 			char *k;
@@ -352,7 +355,7 @@ db_get_apps(int node_no, char **bufferp)
 
 	if (open_env(&db, MODEL_DB)) goto out;
 
-	*bufferp = get_data(db.model, make_key(node_no, NULL), 0, &e);
+	*bufferp = get_data(db.model, make_key(node_no, NULL), NULL, &e);
 	if (e) goto out;
 
 	ret = 0;
@@ -365,22 +368,12 @@ int
 db_get_code(int node_no, const char *app, char **bufferp, size_t *sizep)
 {
 	struct databases db;
-	DBT key, data;
 	int e, ret = -1;
 
 	if (open_env(&db, CODE_DB)) goto out;
 
-	memset(&key, 0, sizeof(DBT));
-	memset(&data, 0, sizeof(DBT));
-	key.data = (char *) make_key(node_no, app);
-	key.size = strlen(key.data);
-	data.flags = DB_DBT_MALLOC;
-
-	e = db.code->get(db.code, NULL, &key, &data, 0);
+	*bufferp = get_data(db.code, make_key(node_no, app), sizep, &e);
 	if (e) goto out;
-
-	*bufferp = data.data;
-	*sizep = data.size;
 
 	ret = 0;
 out:
@@ -432,13 +425,12 @@ db_put_profile(int node_no, const char *app, struct pack *args)
 {
 	struct databases db;
 	struct pack *old_args = NULL;
-	DBT pair[2];
 	int e, ret = -1;
 	char *key = NULL;
 	char *inst_key = NULL;
 	char *inst_value = NULL;
-	char *t, *t2;
-	size_t ts;
+	char *t, *t2, *data;
+	size_t ts, size;
 
 	if (open_env(&db, PROFILE_DB)) goto out;
 
@@ -454,17 +446,12 @@ db_put_profile(int node_no, const char *app, struct pack *args)
 
 	key = make_profile_key(node_no, app, inst_key, inst_value);
 
-	memset(&pair[0], 0, sizeof(DBT) * 2);
-	pair[0].data = key;
-	pair[0].size = strlen(key);
-	pair[1].flags = DB_DBT_MALLOC;
-
-	e = db.profile->get(db.profile, NULL, &pair[0], &pair[1], 0);
+	data = get_data(db.profile, key, &size, &e);
 	// FIXME: handle notfound separately, see also csl.c/c_get_profile()
 	if (e && e != DB_NOTFOUND) goto out;
 
 	if (!e) {
-		old_args = pack_wrap(pair[1].data, pair[1].size);
+		old_args = pack_wrap(data, size);
 		args->pos = 0;
 		while (pack_get(args, &t, &ts)) {
 			pack_get(args,&t2, &ts);
@@ -490,26 +477,21 @@ db_get_profile(int node_no, const char *app, const char *inst_key, const char *i
 {
 	struct databases db;
 	struct pack *p = NULL;
-	DBT pair[2];
 	int e;
-	char *key;
+	char *key, *data;
+	size_t size;
 
 	if (open_env(&db, PROFILE_DB)) goto out;
 
 	// FIXME: multiple instance keys?
 	key = make_profile_key(node_no, app, inst_key, inst_value);
 
-	memset(&pair[0], 0, sizeof(DBT) * 2);
-	pair[0].data = key;
-	pair[0].size = strlen(key);
-	pair[1].flags = DB_DBT_MALLOC;
-
-	e = db.profile->get(db.profile, NULL, &pair[0], &pair[1], 0);
+	data = get_data(db.profile, key, &size, &e);
 	free(key);
 	// FIXME: handle notfound separately, see also csl.c/c_get_profile()
 	if (e) goto out;
 
-	p = pack_wrap(pair[1].data, pair[1].size);
+	p = pack_wrap(data, size);
 
 out:
 	close_env(&db);

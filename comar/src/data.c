@@ -203,24 +203,16 @@ del_data(DB *db, const char *name)
 static char *
 make_key(int node_no, const char *app)
 {
-	static char *key = NULL;
-	static size_t max = 0;
 	const char *path;
+	char *key;
 	size_t size;
 
 	path = model_get_path(node_no);
-	size = strlen(path) + 1;
-	if (app) size += strlen(app) + 1;
+	size = strlen(path) + 1 + strlen(app) + 1;
 
-	if (size > max) {
-		key = realloc(key, size);
-		max = size;
-	}
-
-	if (app)
-		sprintf(key, "%s/%s", path, app);
-	else
-		sprintf(key, "%s", path);
+	key = malloc(size);
+	if (!key) return NULL;
+	snprintf(key, size, "%s/%s", path, app);
 
 	return key;
 }
@@ -259,7 +251,7 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 			goto out;
 	}
 
-	t = make_key(node_no, NULL);
+	t = model_get_path(node_no);
 	if (strstr(old, t) == NULL) {
 		t = make_list(old, t);
 		e = put_data(db.app, app, t, strlen(t) + 1);
@@ -271,7 +263,7 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 	e = put_data(db.code, make_key(node_no, app), buffer, size);
 	if (e) goto out;
 
-	old = get_data(db.model, make_key(node_no, NULL), NULL, &e);
+	old = get_data(db.model, model_get_path(node_no), NULL, &e);
 	if (!old) {
 		if (e == DB_NOTFOUND)
 			old = "";
@@ -281,7 +273,7 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 
 	if (strstr(old, app) == NULL) {
 		t = make_list(old, app);
-		e = put_data(db.model, make_key(node_no, NULL), t, strlen(t) + 1);
+		e = put_data(db.model, model_get_path(node_no), t, strlen(t) + 1);
 		free(t);
 		if (e) goto out;
 	}
@@ -355,7 +347,7 @@ db_get_apps(int node_no, char **bufferp)
 
 	if (open_env(&db, MODEL_DB)) goto out;
 
-	*bufferp = get_data(db.model, make_key(node_no, NULL), NULL, &e);
+	*bufferp = get_data(db.model, model_get_path(node_no), NULL, &e);
 	if (e) goto out;
 
 	ret = 0;

@@ -418,11 +418,11 @@ handle_rpc_fds(fd_set *fds)
 		if (sock >= 0) {
 			c = calloc(1, sizeof(struct connection));
 			c->sock = sock;
-			c->size = 256;
 			if (0 == get_peer(sock, &c->cred)) {
 				if (acl_can_connect(&c->cred)) {
 					c->cookie = cookie++;
 					c->notify_mask = notify_alloc();
+					c->size = 256;
 					c->buffer = malloc(256);
 					c->next = conns;
 					c->prev = NULL;
@@ -507,7 +507,7 @@ rpc_proc(void)
 							write_rpc(c, RPC_NOTIFY, 0, s, sz);
 						}
 					}
-					continue;
+					break;
 				case CMD_RESULT_START:
 					forward_reply(p, size, RPC_RESULT_START);
 					break;

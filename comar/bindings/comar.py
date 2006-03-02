@@ -98,7 +98,7 @@ class Link:
         size = head[0] & 0x00ffffff
         if size:
             try:
-                data = self.sock.recv(size)
+                data = self.sock.recv(size, socket.MSG_WAITALL)
             except:
                 raise Error('Connection closed')
         else:

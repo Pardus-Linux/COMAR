@@ -35,13 +35,19 @@ static void
 handle_signals(void)
 {
 	struct sigaction act;
+	struct sigaction ign;
 
 	act.sa_handler = handle_sigterm;
 	sigemptyset(&act.sa_mask);
 	act.sa_flags = 0;
 
+	ign.sa_handler = SIG_IGN;
+	sigemptyset(&ign.sa_mask);
+	ign.sa_flags = 0;
+
 	sigaction(SIGTERM, &act, NULL);
 	sigaction(SIGINT, &act, NULL);
+	sigaction(SIGPIPE, &ign, NULL);
 }
 
 static void

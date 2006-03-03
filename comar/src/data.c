@@ -237,6 +237,7 @@ int
 db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 {
 	struct databases db;
+	const char *node_name;
 	char *old;
 	char *t;
 	int e, ret = -1;
@@ -244,16 +245,12 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 	if (open_env(&db, APP_DB | MODEL_DB | CODE_DB)) goto out;
 
 	old = get_data(db.app, app, NULL, &e);
-	if (!old) {
-		if (e == DB_NOTFOUND)
-			old = "";
-		else
-			goto out;
-	}
+	if (e && e != DB_NOTFOUND) goto out;
+	if (!old) old = "";
 
-	t = model_get_path(node_no);
-	if (strstr(old, t) == NULL) {
-		t = make_list(old, t);
+	node_name = model_get_path(node_no);
+	if (strstr(old, node_name) == NULL) {
+		t = make_list(old, node_name);
 		e = put_data(db.app, app, t, strlen(t) + 1);
 		free(t);
 		if (e) goto out;

@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2005, TUBITAK/UEKAE
+** Copyright (c) 2005-2006, TUBITAK/UEKAE
 **
 ** This program is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU General Public License as published by the
@@ -78,7 +78,7 @@ print_version(void)
 {
 	printf(
 		_("COMAR %s\n"
-		"Copyright (c) 2005, TUBITAK/UEKAE\n"
+		"Copyright (c) 2005-2006, TUBITAK/UEKAE\n"
 		"This program is free software; you can redistribute it and/or modify it\n"
 		"under the terms of the GNU General Public License as published by the\n"
 		"Free Software Foundation; either version 2 of the License, or (at your\n"

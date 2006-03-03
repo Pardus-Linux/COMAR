@@ -403,6 +403,8 @@ make_profile_key(int method, const char *app, const char *inst_key, const char *
 	}
 
 	key = malloc(len);
+	if (!key) return NULL;
+
 	snprintf(key, len, "%s/%s/%s%s%s", node, app, inst_key, inst_sep, inst_value);
 
 	return key;
@@ -433,6 +435,7 @@ db_put_profile(int node_no, const char *app, struct pack *args)
 	}
 
 	key = make_profile_key(node_no, app, inst_key, inst_value);
+	if (!key) goto out;
 
 	data = get_data(db.profile, key, &size, &e);
 	// FIXME: handle notfound separately, see also csl.c/c_get_profile()
@@ -473,7 +476,7 @@ db_get_profile(int node_no, const char *app, const char *inst_key, const char *i
 
 	// FIXME: multiple instance keys?
 	key = make_profile_key(node_no, app, inst_key, inst_value);
-
+	if (!key) goto out;
 	data = get_data(db.profile, key, &size, &e);
 	free(key);
 	// FIXME: handle notfound separately, see also csl.c/c_get_profile()
@@ -509,6 +512,7 @@ db_del_profile(int node_no, const char *app, struct pack *args)
 	}
 
 	key = make_profile_key(node_no, app, inst_key, inst_value);
+	if (!key) goto out;
 
 	del_data(db.profile, key);
 
@@ -534,6 +538,7 @@ db_get_instances(int node_no, const char *app, const char *key, void (*func)(cha
 
 	// FIXME: multiple instance keys?
 	match = make_profile_key(node_no, app, key, NULL);
+	if (!match) goto out;
 	while ((e = cursor->c_get(cursor, &pair[0], &pair[1], DB_NEXT)) == 0) {
 		if (strncmp(match, pair[0].data, strlen(match)) == 0)
 			func(((char *) pair[0].data) + strlen(match), pair[0].size - strlen(match));

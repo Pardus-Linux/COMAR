@@ -261,12 +261,8 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 	if (e) goto out;
 
 	old = get_data(db.model, model_get_path(node_no), NULL, &e);
-	if (!old) {
-		if (e == DB_NOTFOUND)
-			old = "";
-		else
-			goto out;
-	}
+	if (e && e != DB_NOTFOUND) goto out;
+	if (!old) old = "";
 
 	if (strstr(old, app) == NULL) {
 		t = make_list(old, app);
@@ -357,11 +353,14 @@ int
 db_get_code(int node_no, const char *app, char **bufferp, size_t *sizep)
 {
 	struct databases db;
+	char *key;
 	int e, ret = -1;
 
 	if (open_env(&db, CODE_DB)) goto out;
 
-	*bufferp = get_data(db.code, make_key(node_no, app), sizep, &e);
+	key = make_key(node_no, app);
+	if (!key) goto out;
+	*bufferp = get_data(db.code, key, sizep, &e);
 	if (e) goto out;
 
 	ret = 0;

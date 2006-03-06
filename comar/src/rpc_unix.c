@@ -140,13 +140,55 @@ get_peer(int sock, struct Creds *cred)
 }
 
 static void
+add_conn(int sock)
+{
+	static int unsigned cookie = 0;
+	struct connection *c;
+
+	c = calloc(1, sizeof(struct connection));
+	if (!c) {
+		close(sock);
+		return;
+	}
+
+	if (0 != get_peer(sock, &c->cred) || !acl_can_connect(&c->cred)) {
+		close(sock);
+		free(c);
+		return;
+	}
+
+	c->sock = sock;
+	c->notify_mask = notify_alloc();
+	if (!c->notify_mask) {
+		close(sock);
+		free(c);
+		return;
+	}
+	c->size = 256;
+	c->buffer = malloc(256);
+	if (!c->buffer) {
+		close(sock);
+		free(c->notify_mask);
+		free(c);
+		return;
+	}
+	c->cookie = cookie++;
+
+	c->next = conns;
+	c->prev = NULL;
+	if (conns) conns->prev = c;
+	conns = c;
+}
+
+static void
 rem_conn(struct connection *c)
 {
 	close(c->sock);
 	if (c->prev) c->prev->next = c->next;
 	if (c->next) c->next->prev = c->prev;
 	if (conns == c) conns = c->next;
-	free(c->buffer);
+	if (c->notify_mask) free(c->notify_mask);
+	if (c->buffer) free(c->buffer);
 	free(c);
 }
 
@@ -378,6 +420,13 @@ read_rpc(struct connection *c)
 	c->pos += len;
 	if (c->pos >= 8) {
 		c->data_size = get_data_size(c->buffer);
+		if (c->data_size >= c->size) {
+			while (c->data_size >= c->size) {
+				c->size *= 2;
+			}
+			c->buffer = realloc(c->buffer, c->size);
+			if (!c->buffer) return -1;
+		}
 	}
 	if (c->pos == c->data_size + 8) {
 		if (parse_rpc(c)) return -1;
@@ -406,7 +455,6 @@ add_rpc_fds(fd_set *fds, int max)
 void
 handle_rpc_fds(fd_set *fds)
 {
-	static int unsigned cookie = 0;
 	struct connection *c;
 	int sock;
 
@@ -415,28 +463,7 @@ handle_rpc_fds(fd_set *fds)
 		struct sockaddr_un cname;
 		size_t size = sizeof(cname);
 		sock = accept(pipe_fd, (struct sockaddr *)&cname, &size);
-		if (sock >= 0) {
-			c = calloc(1, sizeof(struct connection));
-			c->sock = sock;
-			if (0 == get_peer(sock, &c->cred)) {
-				if (acl_can_connect(&c->cred)) {
-					c->cookie = cookie++;
-					c->notify_mask = notify_alloc();
-					c->size = 256;
-					c->buffer = malloc(256);
-					c->next = conns;
-					c->prev = NULL;
-					if (conns) conns->prev = c;
-					conns = c;
-				} else {
-					free(c);
-					close(sock);
-				}
-			} else {
-				free(c);
-				close(sock);
-			}
-		}
+		if (sock != -1) add_conn(sock);
 	}
 
 	c = conns;

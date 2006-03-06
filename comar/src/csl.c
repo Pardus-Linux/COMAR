@@ -109,6 +109,7 @@ c_instances_adder(char *str, size_t size)
 	PyObject *p;
 
 	p = PyString_FromStringAndSize(str, size);
+	if (!p) return;
 	PyList_Append(c_instances_list, p);
 }
 
@@ -121,6 +122,7 @@ c_instances(PyObject *self, PyObject *args)
 	proc_check_shutdown();
 
 	c_instances_list = PyList_New(0);
+	if (!c_instances_list) return NULL;
 
 	if (!PyArg_ParseTuple(args, "s", &key))
 		return NULL;

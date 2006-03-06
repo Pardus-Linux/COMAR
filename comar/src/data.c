@@ -217,60 +217,71 @@ make_key(int node_no, const char *app)
 	return key;
 }
 
-static char *
-make_list(char *old, const char *item)
+static int
+append_item(DB *db, const char *key, const char *item)
 {
-	// FIXME: lame
-	char *ret;
+	char *t, *s;
+	char *old;
+	char *data;
+	size_t len;
+	int e;
 
-	if (strcmp(old, "") != 0) {
-		ret = malloc(strlen(old) + 1 + strlen(item) + 1);
-		sprintf(ret, "%s/%s", old, item);
-	} else {
-		ret = malloc(strlen(item) + 1);
-		sprintf(ret, "%s", item);
+	old = get_data(db, key, NULL, &e);
+	if (e && e != DB_NOTFOUND) return -1;
+
+	if (!old || old[0] == '\0') {
+		// no old record
+		e = put_data(db, key, item, strlen(item) + 1);
+		if (e) return -1;
+		return 0;
 	}
-	return ret;
+
+	t = strdup(old);
+	if (!t) return -1;
+	for (; t; t = s) {
+		s = strchr(t, '/');
+		if (s) {
+			*s = '\0';
+			++s;
+		}
+		if (strcmp(t, item) == 0) {
+			// already registered
+			return 0;
+		}
+	}
+
+	// append to old records
+	len = strlen(old) + 1 + strlen(item) + 1;
+	data = malloc(len);
+	if (!data) return -1;
+	snprintf(data, len, "%s/%s", old, item);
+
+	e = put_data(db, key, data, strlen(data) + 1);
+	if (e) return -1;
+
+	return 0;
 }
 
 int
 db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 {
 	struct databases db;
-	const char *node_name;
-	char *old;
-	char *t;
+	char *key;
 	int e, ret = -1;
 
 	if (open_env(&db, APP_DB | MODEL_DB | CODE_DB)) goto out;
 
-	old = get_data(db.app, app, NULL, &e);
-	if (e && e != DB_NOTFOUND) goto out;
-	if (!old) old = "";
+	key = make_key(node_no, app);
+	if (!key) goto out;
 
-	node_name = model_get_path(node_no);
-	if (strstr(old, node_name) == NULL) {
-		t = make_list(old, node_name);
-		e = put_data(db.app, app, t, strlen(t) + 1);
-		free(t);
-		if (e) goto out;
-	}
-	if (strcmp(old, "") != 0) free(old);
-
-	e = put_data(db.code, make_key(node_no, app), buffer, size);
+	e = append_item(db.app, app, model_get_path(node_no));
 	if (e) goto out;
 
-	old = get_data(db.model, model_get_path(node_no), NULL, &e);
-	if (e && e != DB_NOTFOUND) goto out;
-	if (!old) old = "";
+	e = put_data(db.code, key, buffer, size);
+	if (e) goto out;
 
-	if (strstr(old, app) == NULL) {
-		t = make_list(old, app);
-		e = put_data(db.model, model_get_path(node_no), t, strlen(t) + 1);
-		free(t);
-		if (e) goto out;
-	}
-	if (strcmp(old, "") != 0) free(old);
+	e = append_item(db.model, model_get_path(node_no), app);
+	if (e) goto out;
 
 	ret = 0;
 out:

@@ -63,7 +63,7 @@ trig_instance(char *str, size_t size)
 			pack_get(p, &t, &ts);
 		}
 	}
-	proc_put(TO_PARENT, CMD_EVENT, &ipc, event_pak);
+	proc_put(TO_PARENT, CMD_CALL_PACKAGE, &ipc, event_pak);
 	pack_delete(p);
 }
 

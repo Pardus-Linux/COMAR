@@ -69,7 +69,7 @@ print_usage(void)
 		"     --stop          Stop running comar and exit.\n"
 		" -h, --help          Print this text and exit.\n"
 		" -v, --version       Print version and exit.\n"
-		"Report bugs to http://bugs.uludag.org.tr")
+		"Report bugs to http://bugs.pardus.org.tr")
 	);
 }
 

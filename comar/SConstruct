@@ -25,7 +25,6 @@ distfiles = """
     src/SConscript
     include/*.h
     bindings/SConscript
-    bindings/comar.py
     bindings/*.c
     bindings/*.h
     csapi/SConscript
@@ -97,7 +96,6 @@ targets.append(env.Install(bindir, comar))
 targets.append(env.Install(etcdir, 'model.xml'))
 targets.append(env.Install(incdir, 'bindings/comar.h'))
 targets.append(env.Install(libdir, libcomar))
-targets.append(env.Install(pydir, 'bindings/comar.py'))
 targets.append(env.Install(pydir, csapi))
 targets.append(env.Install(bindir, hav))
 

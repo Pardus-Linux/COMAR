@@ -15,6 +15,7 @@
 <method name="ready"/>
 <method name="start"/>
 <method name="stop"/>
+<method name="reload"/>
 <notify name="changed"/>
 </class>
 

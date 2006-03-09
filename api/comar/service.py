@@ -41,8 +41,7 @@ def info():
     return "\n".join([serviceType, is_on(), serviceDesc])
 
 def ready():
-    s = get_state()
-    if s == "on":
+    if is_on():
         from csl import start
         start()
 

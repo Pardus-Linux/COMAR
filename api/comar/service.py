@@ -43,12 +43,15 @@ def info():
 def ready():
     s = get_state()
     if s == "on":
+        from csl import start
         start()
 
 def setState(state=None):
     if state == "on":
+        from csl import start
         start()
     elif state == "off":
+        from csl import stop
         stop()
     else:
         fail("Unknown state '%s'" % state)

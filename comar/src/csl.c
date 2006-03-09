@@ -331,7 +331,7 @@ csl_execute(char *code, size_t size, const char *func_name, struct pack *pak, ch
 		log_exception();
 		return CSL_BADCODE;
 	}
-	pModule = PyImport_ExecCodeModule("comar", pCode);
+	pModule = PyImport_ExecCodeModule("csl", pCode);
 	Py_DECREF(pCode);
 
 	if (!pModule || !PyModule_Check(pModule)) {
@@ -368,7 +368,7 @@ csl_execute(char *code, size_t size, const char *func_name, struct pack *pak, ch
 	}
 	if (!pArgs) pArgs = PyTuple_New(0);
 
-	Py_InitModule("comar", methods);
+	Py_InitModule("csl", methods);
 
 	pValue = PyObject_Call(pFunc, pArgs, pkArgs);
 	if (!pValue) {

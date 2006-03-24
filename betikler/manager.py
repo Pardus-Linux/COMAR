@@ -16,6 +16,7 @@ import pisi.installdb
 import pisi.packagedb
 import pisi.lockeddbshelve
 import pisi.ui
+import pisi.context
 
 class UI(pisi.ui.UI):
     def confirm(self, msg):

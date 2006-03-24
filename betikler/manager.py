@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2005, TUBITAK/UEKAE
+# Copyright (C) 2005,2006 TUBITAK/UEKAE
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
@@ -42,16 +42,52 @@ def installPackage(package=None):
             return e
 
 def removePackage(package=None):
-    return "NotImplemented"
-
-def updateIndex():
     _init_pisi()
-    repos = pisi.api.ctx.repodb.list()
-    if not repos:
-        return "No package repository available"
-    for repo in repos:
-        pisi.api.update_repo(repo)
-    return "Index updated"
+    if package:
+	try:
+	    pisi.api.remove([package])
+	except pisi.packagedb.Error, e:
+	    return e
+
+def updateRepository(repo=None):
+    _init_pisi()
+    if repo:
+	try:
+	    pisi.api.update_repo(repo)
+	except Exception, e:
+	    return e
+
+def updateAllRepositories():
+    _init_pisi()
+    for repo in pisi.context.repodb.list():
+	try:
+	    pisi.api.update_repo(repo)
+	except Exception, e:
+	    return e
+
+def addRepository(name=None,uri=None):
+    _init_pisi()
+    if name and uri:
+	try:
+	    pisi.api.add_repo(name,uri)
+	except Exception, e:
+	    return e
+
+def removeRepository(repo=None):
+    _init_pisi()
+    if repo:
+	try:
+	    pisi.api.remove_repo(repo)
+	except Exception, e:
+	    return e
+
+def swapRepositories(repo1=None,repo2=None):
+    _init_pisi()
+    if repo1 and repo2:
+	try:
+	    pisi.api.ctx.repodb.swap(repo1,repo2)
+	except Exception, e:
+	    return e
 
 def installCritical():
     return "NotImplemented"

@@ -20,9 +20,14 @@
 </class>
 
 <class name="Manager">
+<method name="initDatabase"/>
 <method name="installPackage"/>
 <method name="removePackage"/>
-<method name="updateIndex"/>
+<method name="updateRepository"/>
+<method name="updateAllRepositories"/>
+<method name="addRepository"/>
+<method name="removeRepository"/>
+<method name="swapRepositories"/>
 <method name="installCritical"/>
 <method name="getInstalled"/>
 <method name="getUpgradable"/>

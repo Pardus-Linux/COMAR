@@ -372,6 +372,7 @@ Section "InputDevice"
     Option     "Device" "/dev/input/mouse0"
     Option     "ZAxisMapping" "4 5"
     Option     "Buttons" "5"
+    Option     "SHMConfig" "true"
     # "Option    "AccelFactor" "0.04"
 EndSection
 """

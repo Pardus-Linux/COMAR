@@ -19,8 +19,8 @@ def wait_for_bus(unix_name, retry=10, wait=0.2):
     return False
 
 def start():
-    call("System.Service.start", "dbus")
     call("System.Service.start", "acpid")
+    call("System.Service.start", "dbus")
     wait_for_bus("/var/lib/dbus/system_bus_socket")
     run("/sbin/start-stop-daemon --start -q --exec /usr/sbin/hald -- --retain-privileges")
 

@@ -20,7 +20,6 @@
 </class>
 
 <class name="Manager">
-<method name="initDatabase"/>
 <method name="installPackage"/>
 <method name="removePackage"/>
 <method name="updateRepository"/>

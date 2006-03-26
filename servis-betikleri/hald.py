@@ -22,7 +22,7 @@ def start():
     call("System.Service.start", "acpid")
     call("System.Service.start", "dbus")
     wait_for_bus("/var/lib/dbus/system_bus_socket")
-    run("/sbin/start-stop-daemon --start -q --exec /usr/sbin/hald -- --retain-privileges")
+    run("/sbin/start-stop-daemon --start -q --exec /usr/sbin/hald")
 
 def stop():
     run("/sbin/start-stop-daemon --stop -q --pidfile /var/run/hald.pid")

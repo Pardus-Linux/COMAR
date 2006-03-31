@@ -1,3 +1,10 @@
+#
+# Monitor data, to match for EISA ID or choose from GUI 
+# Should be put in /usr/lib/X11/
+#
+# Each line has format:
+#  <Vendor>; <Model>; <EISA ID>; <Horiz Sync in Khz>; <Vert Sync in Hz>; DPMS
+#
 ADI; ADI ADIV30; adi3230; 30.0-48.5; 50.0-100.0; 1
 ADI; ADI DMC-2304; adidmc; 30.6-36.0; 50.0-90.0; 1
 ADI; ADI Duo; adi1430; 30.0-69.0; 50.0-120.0; 1

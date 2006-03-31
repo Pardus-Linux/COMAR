@@ -350,6 +350,11 @@ Section "ServerLayout"
     InputDevice "Mouse0" "CorePointer"
     %(SYNAPTICS_LAY)s
     InputDevice "Keyboard0" "CoreKeyboard"
+    # Multihead stuff
+    # Screen      0  "Screen0" LeftOf "Screen1"
+    # Screen      1  "Screen1" 0 0
+    Option      "Xinerama" "off"
+    Option      "Clone" "off"
 EndSection
 
 Section "Monitor"

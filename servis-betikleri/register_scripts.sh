@@ -12,6 +12,5 @@ hav register System.Service mdnsd `pwd`/mdnsd.py
 hav register System.Service sysklogd `pwd`/sysklogd.py
 hav register System.Service openssh `pwd`/ssh.py
 hav register System.Service powersave `pwd`/powersave.py
-hav register System.Service postfix `pwd`/postfix.py
 hav register System.Service xorg `pwd`/xdm.py
 hav register System.Service zemberek-server `pwd`/zemberek.py

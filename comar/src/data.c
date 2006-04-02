@@ -474,6 +474,8 @@ out:
 	return ret;
 }
 
+struct databases *blaa = NULL;
+
 struct pack *
 db_get_profile(int node_no, const char *app, const char *inst_key, const char *inst_value)
 {
@@ -483,11 +485,16 @@ db_get_profile(int node_no, const char *app, const char *inst_key, const char *i
 	char *key, *data;
 	size_t size;
 
+	if (!blaa) {
 	if (open_env(&db, PROFILE_DB)) goto out;
+	}
 
 	// FIXME: multiple instance keys?
 	key = make_profile_key(node_no, app, inst_key, inst_value);
 	if (!key) goto out;
+	if (blaa)
+	data = get_data(blaa->profile, key, &size, &e);
+	else
 	data = get_data(db.profile, key, &size, &e);
 	free(key);
 	// FIXME: handle notfound separately, see also csl.c/c_get_profile()
@@ -496,7 +503,7 @@ db_get_profile(int node_no, const char *app, const char *inst_key, const char *i
 	p = pack_wrap(data, size);
 
 out:
-	close_env(&db);
+	if (!blaa) close_env(&db);
 	return p;
 }
 
@@ -544,6 +551,7 @@ db_get_instances(int node_no, const char *app, const char *key, void (*func)(cha
 	memset(&pair[0], 0, sizeof(DBT) * 2);
 
 	if (open_env(&db, PROFILE_DB)) goto out;
+	blaa = &db;
 
 	db.profile->cursor(db.profile, NULL, &cursor, 0);
 
@@ -560,6 +568,7 @@ db_get_instances(int node_no, const char *app, const char *key, void (*func)(cha
 
 	ret = 0;
 out:
+	blaa = NULL;
 	if (cursor) cursor->c_close(cursor);
 	close_env(&db);
 	return ret;

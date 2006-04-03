@@ -9,6 +9,7 @@
 # option) any later version. Please read the COPYING file.
 #
 
+import os
 import subprocess
 
 # utility functions
@@ -32,6 +33,13 @@ def is_on():
         state = "off"
     
     return state
+
+def loadEnvironment():
+    if os.path.exists("/etc/profile.env"):
+        for line in file("/etc/profile.env"):
+            if line.startswith("export "):
+                key, value = line[7:].strip().split("=", 1)
+                os.environ[key] = value[1:-1]
 
 # default methods
 

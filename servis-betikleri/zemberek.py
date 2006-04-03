@@ -5,11 +5,18 @@ serviceType = "local"
 serviceDesc = "Zemberek Spell Checker"
 
 def start():
+    loadEnvironment()
+    
+    if not os.environ.has_key("JAVA_HOME"):
+        fail("Where is Java?")
+    javapath = os.environ["JAVA_HOME"]
+    
+    os.environ["LC_ALL"] = "tr_TR.UTF-8"
     os.chdir("/opt/zemberek-server")
-    os.system("source /etc/profile.env; export LC_ALL=tr_TR.UTF-8; " +
-        "/sbin/start-stop-daemon -b --start --quiet --pidfile " +
-        "/var/run/zemberek.pid --make-pidfile --exec ${JAVA_HOME}/bin/java " +
-        "-- -jar zemberek_server-0.3.jar >/dev/null"
+    
+    run("/sbin/start-stop-daemon -b --start --quiet --pidfile " +
+        "/var/run/zemberek.pid --make-pidfile --exec %s/bin/java " % javapath +
+        "-- -jar zemberek_server-0.3.jar"
     )
 
 def stop():

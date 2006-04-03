@@ -26,6 +26,7 @@ def start():
     configure()
     call("System.Service.start", "acpid")
     call("System.Service.start", "dbus")
+    loadEnvironment()
     run("/sbin/start-stop-daemon", "--start", "--quiet", "--exe", "/usr/kde/3.5/bin/kdm")
 
 def stop():

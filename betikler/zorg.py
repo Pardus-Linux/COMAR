@@ -315,7 +315,7 @@ EndSection
 %(SYNAPTICS_SEC)s
 
 Section "Device"
-    Identifier "DisplayController0"
+    Identifier "VideoCard0"
     Driver     "%(DRIVER)s"
     Option     "RenderAccel" "true"
     # Option     "AccelMethod" "exa"
@@ -323,7 +323,7 @@ EndSection
 
 Section "Screen"
     Identifier "Screen0"
-    Device     "DisplayController0"
+    Device     "VideoCard0"
     Monitor    "Monitor0"
     DefaultDepth 16
     Subsection "Display"

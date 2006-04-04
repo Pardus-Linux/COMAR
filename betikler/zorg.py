@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2005, TUBITAK/UEKAE
+# Copyright (C) 2005,2006 TUBITAK/UEKAE
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
@@ -13,6 +13,185 @@
 
 import os
 import popen2
+import string
+
+# FIXME:  change when script is ready
+# xdriverlist = "/usr/lib/X11/xdriverlist"
+xdriverlist = "xdriverlist"
+# MonitorsDB = "/usr/lib/X11/MonitorsDB"
+MonitorsDB = "MonitorsDB"
+
+### templates ###
+template_videocard = """
+Identifier  "VideoCard0"
+Driver      "%(DRIVER)s"
+VendorName  "%(VENDORNAME)s"
+BoardName   "%(BOARDNAME)s"
+BusID       "%(BUSID)s"
+"""
+
+template_monitor = """
+Identifier  "Monitor0"
+VendorName  "%(VENDOR)s"
+ModelName   "%(MODEL)s"
+HorizSync    %(HSYNC)s
+VertRefresh  %(VREF)s
+"""
+
+template_display = """
+Section "ServerLayout"
+    Identifier "COMAR Configured Layout"
+    Screen   0 "Screen0" 0 0
+EndSection
+
+Section "Monitor"
+    Identifier "Monitor0"
+EndSection
+
+Section "Screen"
+    Identifier "Screen0"
+    Device     "Card0"
+EndSection
+
+Section "Device"
+    Identifier "Card0"
+    Driver     "%(DRIVER)s"
+EndSection
+
+"""
+
+template_main = """
+Section "Module"
+    Load "dbe"      # Double buffer extension
+    SubSection "extmod"
+        Option "omit xfree86-dga"   # don't initialise the DGA extension
+    EndSubSection
+    Load "type1"
+    Load "freetype"
+    Load "glx"
+    Load "dri"
+    Load "v4l"
+    %(SYNAPTICS_MOD)s
+EndSection
+
+Section "Extensions"
+#    Option "Composite" "enable"
+EndSection
+
+Section "dri"
+    Mode 0666
+EndSection
+
+Section "Files"
+    RgbPath  "/usr/lib/X11/rgb"
+    FontPath "/usr/share/fonts/ttf-bitstream-vera/"
+    FontPath "/usr/share/fonts/misc/"
+    FontPath "/usr/share/fonts/Speedo/"
+    FontPath "/usr/share/fonts/Type1/"
+    FontPath "/usr/share/fonts/TrueType/"
+    FontPath "/usr/share/fonts/TTF/"
+    FontPath "/usr/share/fonts/encodings/"
+    FontPath "/usr/share/fonts/100dpi/"
+    FontPath "/usr/share/fonts/75dpi/"
+    FontPath "/usr/share/fonts/freefont/"
+    FontPath "/usr/share/fonts/corefonts"
+EndSection
+
+Section "ServerFlags"
+    Option     "AllowMouseOpenFail" "True"
+    Option     "BlankTime" "0"
+    Option     "StandbyTime" "0"
+    Option     "SuspendTime" "0"
+    Option     "OffTime" "0"
+EndSection
+
+Section "InputDevice"
+    Identifier "Keyboard0"
+    Driver     "kbd"
+    Option     "AutoRepeat" "500 30"
+    Option     "XkbModel" "pc105"
+    Option     "XkbLayout" "%(KEYMAP)s"
+EndSection
+
+Section "InputDevice"
+    Identifier "Mouse0"
+    Driver     "mouse"
+    Option     "Protocol" "ExplorerPS/2"
+    Option     "Device" "/dev/input/mice"
+    Option     "ZAxisMapping" "4 5"    
+    Option     "Buttons" "5"
+EndSection
+
+%(SYNAPTICS_SEC)s
+
+Section "Device"
+    Identifier "VideoCard0"
+    Driver     "%(DRIVER)s"
+    Option     "RenderAccel" "true"
+    # Option     "AccelMethod" "exa"
+EndSection
+
+Section "Screen"
+    Identifier "Screen0"
+    Device     "VideoCard0"
+    Monitor    "Monitor0"
+    DefaultDepth 16
+    Subsection "Display"
+        Depth    8
+        Modes    %(MODES)s
+    EndSubsection
+    Subsection "Display"
+        Depth    16
+        Modes    %(MODES)s
+    EndSubsection
+    Subsection "Display"
+        Depth    24
+        Modes    %(MODES)s
+    EndSubsection
+    Subsection "Display"
+        Depth    32
+        Modes    %(MODES)s
+    EndSubsection
+EndSection
+
+Section "ServerLayout"
+    Identifier  "Simple Layout"
+    Screen      "Screen0"
+    InputDevice "Mouse0" "CorePointer"
+    %(SYNAPTICS_LAY)s
+    InputDevice "Keyboard0" "CoreKeyboard"
+    # Multihead stuff
+    # Screen      0  "Screen0" LeftOf "Screen1"
+    # Screen      1  "Screen1" 0 0
+    Option      "Xinerama" "off"
+    Option      "Clone" "off"
+EndSection
+
+Section "Monitor"
+    Identifier  "Monitor0"
+    VendorName  "Vendor"
+    ModelName   "Model"
+    HorizSync    %(HSYNC)s
+    VertRefresh  %(VREF)s
+    
+%(MODELINES)s
+    
+EndSection
+"""
+
+template_synaptics = """
+Section "InputDevice"
+    Identifier "Mouse1"
+    Driver     "synaptics"
+    Option     "Protocol" "auto-dev"
+    Option     "Device" "/dev/input/mouse0"
+    Option     "ZAxisMapping" "4 5"
+    Option     "Buttons" "5"
+    Option     "SHMConfig" "true"
+    # "Option    "AccelFactor" "0.04"
+EndSection
+"""
+
 
 ### api ###
 def unlink(path):
@@ -61,6 +240,17 @@ def write_tmpl(tmpl, keys, fname):
     f = file(fname, "w")
     f.write(tmpl % keys)
     f.close()
+
+def sysValue(path, dir, file_):
+    f = file(os.path.join(path, dir, file_))
+    data = f.read().rstrip('\n')
+    f.close()
+    return data
+
+def lremove(str, pre):
+    if str.startswith(pre):
+        return str[len(pre):]
+    return str
 
 ### modeline calc ###
 
@@ -228,159 +418,12 @@ def calcModeLine(w, h, vfreq):
 
 ### Asıl betik aşağıda ###
 
-template_display = """
-Section "ServerLayout"
-    Identifier "COMAR Configured Layout"
-    Screen   0 "Screen0" 0 0
-EndSection
-
-Section "Monitor"
-    Identifier "Monitor0"
-EndSection
-
-Section "Screen"
-    Identifier "Screen0"
-    Device     "Card0"
-EndSection
-
-Section "Device"
-    Identifier "Card0"
-    Driver     "%(DRIVER)s"
-EndSection
-
-"""
-
-template_main = """
-Section "Module"
-    Load "dbe"      # Double buffer extension
-    SubSection "extmod"
-        Option "omit xfree86-dga"   # don't initialise the DGA extension
-    EndSubSection
-    Load "type1"
-    Load "freetype"
-    Load "glx"
-    Load "dri"
-    Load "v4l"
-    %(SYNAPTICS_MOD)s
-EndSection
-
-Section "Extensions"
-#    Option "Composite" "enable"
-EndSection
-
-Section "dri"
-    Mode 0666
-EndSection
-
-Section "Files"
-    RgbPath  "/usr/lib/X11/rgb"
-    FontPath "/usr/share/fonts/ttf-bitstream-vera/"
-    FontPath "/usr/share/fonts/misc/"
-    FontPath "/usr/share/fonts/Speedo/"
-    FontPath "/usr/share/fonts/Type1/"
-    FontPath "/usr/share/fonts/TrueType/"
-    FontPath "/usr/share/fonts/TTF/"
-    FontPath "/usr/share/fonts/encodings/"
-    FontPath "/usr/share/fonts/100dpi/"
-    FontPath "/usr/share/fonts/75dpi/"
-    FontPath "/usr/share/fonts/freefont/"
-    FontPath "/usr/share/fonts/corefonts"
-EndSection
-
-Section "ServerFlags"
-    Option     "AllowMouseOpenFail" "True"
-    Option     "BlankTime" "0"
-    Option     "StandbyTime" "0"
-    Option     "SuspendTime" "0"
-    Option     "OffTime" "0"
-EndSection
-
-Section "InputDevice"
-    Identifier "Keyboard0"
-    Driver     "kbd"
-    Option     "AutoRepeat" "500 30"
-    Option     "XkbModel" "pc105"
-    Option     "XkbLayout" "%(KEYMAP)s"
-EndSection
-
-Section "InputDevice"
-    Identifier "Mouse0"
-    Driver     "mouse"
-    Option     "Protocol" "ExplorerPS/2"
-    Option     "Device" "/dev/input/mice"
-    Option     "ZAxisMapping" "4 5"    
-    Option     "Buttons" "5"
-EndSection
-
-%(SYNAPTICS_SEC)s
-
-Section "Device"
-    Identifier "VideoCard0"
-    Driver     "%(DRIVER)s"
-    Option     "RenderAccel" "true"
-    # Option     "AccelMethod" "exa"
-EndSection
-
-Section "Screen"
-    Identifier "Screen0"
-    Device     "VideoCard0"
-    Monitor    "Monitor0"
-    DefaultDepth 16
-    Subsection "Display"
-        Depth    8
-        Modes    %(MODES)s
-    EndSubsection
-    Subsection "Display"
-        Depth    16
-        Modes    %(MODES)s
-    EndSubsection
-    Subsection "Display"
-        Depth    24
-        Modes    %(MODES)s
-    EndSubsection
-    Subsection "Display"
-        Depth    32
-        Modes    %(MODES)s
-    EndSubsection
-EndSection
-
-Section "ServerLayout"
-    Identifier  "Simple Layout"
-    Screen      "Screen0"
-    InputDevice "Mouse0" "CorePointer"
-    %(SYNAPTICS_LAY)s
-    InputDevice "Keyboard0" "CoreKeyboard"
-    # Multihead stuff
-    # Screen      0  "Screen0" LeftOf "Screen1"
-    # Screen      1  "Screen1" 0 0
-    Option      "Xinerama" "off"
-    Option      "Clone" "off"
-EndSection
-
-Section "Monitor"
-    Identifier  "Monitor0"
-    VendorName  "Vendor"
-    ModelName   "Model"
-    HorizSync    %(HSYNC)s
-    VertRefresh  %(VREF)s
-    
-%(MODELINES)s
-    
-EndSection
-"""
-
-template_synaptics = """
-Section "InputDevice"
-    Identifier "Mouse1"
-    Driver     "synaptics"
-    Option     "Protocol" "auto-dev"
-    Option     "Device" "/dev/input/mouse0"
-    Option     "ZAxisMapping" "4 5"
-    Option     "Buttons" "5"
-    Option     "SHMConfig" "true"
-    # "Option    "AccelFactor" "0.04"
-EndSection
-"""
+class Device:
+    def __init__(self):
+        self.Driver = "vesa"
+        self.VendorName = "unknown"
+        self.BoardName = "unknown"
+        self.BusId = "unknown"
 
 class Monitor:
     def __init__(self):
@@ -393,6 +436,55 @@ class Monitor:
         self.vert_max = 0
         self.modes = []
         self.res = ""
+        self.vendorname = "Unknown"
+        self.modelname = "Unknown"
+        self.eisaid = ""
+
+
+def queryDriver(vendor, device):
+    try:
+        f = file(xdriverlist)
+        for line in f:
+            if line.startswith(vendor + device):
+                return line.rstrip("\n").split(" ")[1]
+    except:
+        print "%s not found" % xdriverlist
+        pass
+
+    return None
+
+def queryPCI(vendor, device):
+    f = file("/usr/share/misc/pci.ids")
+    flag = 0
+    company = ""
+    for line in f.readlines():
+        if flag == 0:
+            if line.startswith(vendor):
+                flag = 1
+                company = line[5:].strip()
+        else:
+            if line.startswith("\t"):
+                if line.startswith("\t" + device):
+                    return line[6:].strip(), company
+            elif not line.startswith("#"):
+                flag = 0
+    # return "Unknown (%s:%s)" % (vendor, device)
+    return None, None
+
+def findPciCards():
+    for bus in ["pci", "pci_express"]:
+        sysDir = os.path.join("/sys/bus", bus, "devices")
+        if os.path.isdir(sysDir):
+            for _dev in os.listdir(sysDir):
+                if sysValue(sysDir, _dev, "class").startswith("0x03"):
+                    # Ugly workaround for "one card using 2 PCI bus" case, with fingers crossed
+                    if sysValue(sysDir, _dev, "irq") !=  "0": 
+                        vendorId = lremove(sysValue(sysDir, _dev, "vendor"), "0x")
+                        deviceId = lremove(sysValue(sysDir, _dev, "device"), "0x")
+                        #FIXME: BusID magic to support multiple heads, but breaking pci-e support ?
+                        busId = "PCI:%s" % _dev.replace(".",":").split(":", 1)[1]
+                        return vendorId, deviceId, busId
+
 
 def queryPanel(mon):
     patterns = [
@@ -423,6 +515,7 @@ def queryPanel(mon):
 
 def queryDDC():
     mon = Monitor()
+    eisaid = ""
     ddc = capture("/usr/sbin/ddcxinfos")
     if ddc[0] != 0:
         print "ddcxinfos failed!"
@@ -432,6 +525,9 @@ def queryDDC():
         t = line.find("truly")
         if t != -1:
             mon.wide = atoi(line[t+6:])
+        t = line.find("EISA ID=")
+        if t != -1:
+            eisaid = line[line.find("EISA ID=")+8:line.find("\r")].upper().strip()
         t = line.find("kHz HorizSync")
         if t != -1:
             mon.hsync_min = atoi(line)
@@ -442,7 +538,19 @@ def queryDDC():
             mon.vert_max = atoi(line[line.find("-") + 1:])
         if line[:8] == "ModeLine":
             mon.modes.append("    " +line)
-    
+
+    if eisaid:
+        print "EISA ID = %s." % eisaid
+        f = file(MonitorsDB)
+        for line in f:
+            if not line.startswith("#"):
+                l = line.split(";")
+                if eisaid == string.upper(l[2]).strip():
+                    print "match"
+                    mon.vendorname = l[0].lstrip()
+                    mon.modelname = l[1].lstrip()
+
+
     if mon.hsync_max == 0 or mon.vert_max == 0:
         # in case those not probed separately, get them from modelines
         freqs = filter(lambda x: x.find("hfreq=") != -1, ddc[1])
@@ -471,16 +579,7 @@ def queryMouse(keys):
     try:
         a = file("/proc/bus/input/devices")
         for line in a.readlines():
-            # We have trouble having a stable synaptics support in kernel
-            # It changes from version to version, and believe it or not
-            # a few of them actually works ! The problem is, which one ?
-            # I am bored of searching for "what is broken" so Alps "extra" support
-            # is gone, for a little while (at least till we switch to 2.6.15, which has
-            # "enhanced removal of functionality in sysfs" support, "appended new bugs to
-            # AlpsPS/2 code" design, etc. etc.
-            # Hmmm, what was that word ? ...
-            # Oh yeah ...      F.I.
-            #
+            # FIXME: check if kernel does not break anything
             # if "SynPS/2" in line or "AlpsPS/2" in line:
             if "SynPS/2" in line:
                 keys["SYNAPTICS_MOD"] = 'Load "synaptics"'

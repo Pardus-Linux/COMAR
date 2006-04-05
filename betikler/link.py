@@ -17,6 +17,7 @@ import socket
 import csapi
 import popen2
 from glob import glob
+from comar.device import idsQuery
 
 class ifconfig:
     """ ioctl stuff """
@@ -298,42 +299,11 @@ def sysValue(path, dir, file_):
 
 def queryUSB(vendor, device):
     # dependency to pciutils!
-    f = file("/usr/share/misc/usb.ids")
-    flag = 0
-    company = ""
-    for line in f.readlines():
-        if flag == 0:
-            if line.startswith(vendor):
-                flag = 1
-                company = line[5:].strip()
-        else:
-            if line.startswith("\t"):
-                if line.startswith("\t" + device):
-                    return "%s - %s" % (line[6:].strip(), company)
-            elif not line.startswith("#"):
-                flag = 0
-    if company != "":
-        return "%s (%s)" % (company, device)
-    else:
-        return "Unknown (%s:%s)" % (vendor, device)
+    return idsQuery("/usr/share/misc/usb.ids", vendor, device)
 
 def queryPCI(vendor, device):
     # dependency to pciutils!
-    f = file("/usr/share/misc/pci.ids")
-    flag = 0
-    company = ""
-    for line in f.readlines():
-        if flag == 0:
-            if line.startswith(vendor):
-                flag = 1
-                company = line[5:].strip()
-        else:
-            if line.startswith("\t"):
-                if line.startswith("\t" + device):
-                    return "%s - %s" % (line[6:].strip(), company)
-            elif not line.startswith("#"):
-                flag = 0
-    return "Unknown (%s:%s)" % (vendor, device)
+    return idsQuery("/usr/share/misc/pci.ids", vendor, device)
 
 # Internal functions
 

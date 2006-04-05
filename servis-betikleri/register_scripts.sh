@@ -14,5 +14,4 @@ hav register System.Service openssh `pwd`/ssh.py
 hav register System.Service portmap `pwd`/portmap.py
 hav register System.Service powersave `pwd`/powersave.py
 hav register System.Service xorg `pwd`/xdm.py
-hav register System.Service ssh `pwd`/ssh.py
 hav register System.Service zemberek-server `pwd`/zemberek.py

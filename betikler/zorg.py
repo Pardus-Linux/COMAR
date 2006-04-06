@@ -422,10 +422,10 @@ def calcModeLine(w, h, vfreq):
 
 class Device:
     def __init__(self):
-        self.Driver = "vesa"
+        self.Driver = None
         self.VendorName = "unknown"
         self.BoardName = "unknown"
-        self.BusId = "unknown"
+        self.BusId = None
 
 class Monitor:
     def __init__(self):
@@ -451,14 +451,18 @@ def listAvailableDrivers(driver_path = '/usr/lib/modules/drivers'):
     return a
 
 def queryDriver(vendor, device):
+    avilable_drivers = listAvailableDrivers()
     try:
         f = file(xdriverlist)
         for line in f:
             if line.startswith(vendor + device):
-                return line.rstrip("\n").split(" ")[1]
+                drv = line.rstrip("\n").split(" ")[1]
     except:
         print "%s not found" % xdriverlist
         pass
+
+    if drv in available_drivers:
+        return drv
 
     return None
 
@@ -480,6 +484,7 @@ def queryPCI(vendor, device):
     return None, None
 
 def findPciCards():
+    cards = []
     for bus in ["pci", "pci_express"]:
         sysDir = os.path.join("/sys/bus", bus, "devices")
         if os.path.isdir(sysDir):
@@ -487,12 +492,15 @@ def findPciCards():
                 if sysValue(sysDir, _dev, "class").startswith("0x03"):
                     # Ugly workaround for "one card using 2 PCI bus" case, with fingers crossed
                     if sysValue(sysDir, _dev, "irq") !=  "0": 
+                        a = Device()
                         vendorId = lremove(sysValue(sysDir, _dev, "vendor"), "0x")
                         deviceId = lremove(sysValue(sysDir, _dev, "device"), "0x")
                         #FIXME: BusID magic to support multiple heads, but breaking pci-e support ?
-                        busId = "PCI:%s" % _dev.replace(".",":").split(":", 1)[1]
-                        return vendorId, deviceId, busId
-
+                        a.busId = "PCI:%s" % _dev.replace(".",":").split(":", 1)[1]
+                        a.BoardName, a.VendorName =  queryPCI(vendorId, deviceId)
+                        a.Driver = queryDriver(vendorId, deviceId)
+                        cards.append(a)
+    return cards
 
 def queryPanel(mon):
     patterns = [
@@ -614,9 +622,8 @@ def queryKeymap():
 # om call
 
 def autoConfigureDisplay():
-    #if os.path.exists(xorg_conf):
-    #    return
-    
+
+    # We are probing only the first monitor for now
     # probe monitor freqs
     mon = queryDDC()
     # defaults for the case where ddc fails
@@ -626,11 +633,10 @@ def autoConfigureDisplay():
         mon.vert_min = 50
         mon.vert_max = 70
 
-    # detect graphic card
-    # if discover db has no data, try X -configure
-    avilable_drivers = listAvailableDrivers()
-    a = capture("/usr/bin/discover --data-path=xfree86/server/device/driver --data-version=4.3.0 display")
-    if a[1][0] == '\n' or a[0] > 0:
+    # detect graphic card and find monitor of first card, yet
+    # if could not find driver from driverlist try X -configure
+    cards = findPCICards()
+    if not cards[0].Driver:
         a = capture("/usr/bin/X -configure -logfile /var/log/xlog")
         if a[0] != 0:
             print "X -configure failed!"
@@ -642,11 +648,11 @@ def autoConfigureDisplay():
         unlink(home + "/xorg.conf.new")
         drv = grepini(conf, 'Section "Device"', "\tDriver")
     else:
-        drv = a[1][0].rstrip('\n')
+        drv = cards[0].Driver
 
     # check lcd panel
-    drivers = [ "nv", "nvidia", "ati", "via", "i810", "sis" ]
-    if drv in drivers:
+    lcd_drivers = [ "nv", "nvidia", "ati", "via", "i810", "sis" ]
+    if drv in lcd_drivers:
         write_tmpl(template_probe_display, { "DRIVER": drv }, xorg_conf)
         queryPanel(mon)
 

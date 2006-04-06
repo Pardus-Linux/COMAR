@@ -40,7 +40,7 @@ HorizSync    %(HSYNC)s
 VertRefresh  %(VREF)s
 """
 
-template_display = """
+template_probe_display = """
 Section "ServerLayout"
     Identifier "COMAR Configured Layout"
     Screen   0 "Screen0" 0 0
@@ -647,7 +647,7 @@ def autoConfigureDisplay():
     # check lcd panel
     drivers = [ "nv", "nvidia", "ati", "via", "i810", "sis" ]
     if drv in drivers:
-        write_tmpl(template_display, { "DRIVER": drv }, xorg_conf)
+        write_tmpl(template_probe_display, { "DRIVER": drv }, xorg_conf)
         queryPanel(mon)
 
     keys = {}

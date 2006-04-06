@@ -657,7 +657,7 @@ def autoConfigureDisplay():
         queryPanel(mon)
 
     keys = {}
-    keys["DRIVER"] = drv
+    keys["DRIVER"] = cards[0].Driver
     keys["HSYNC"] = str(mon.hsync_min) + "-" + str(mon.hsync_max)
     keys["VREF"] = str(mon.vert_min) + "-" + str(mon.vert_max)
     if mon.panel_h and mon.panel_w:

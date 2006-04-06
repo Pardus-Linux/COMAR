@@ -548,7 +548,18 @@ def queryDDC():
         if line[:8] == "ModeLine":
             mon.modes.append("    " +line)
 
-    if eisaid:
+    if mon.hsync_max == 0 or mon.vert_max == 0:
+        # in case those not probed separately, get them from modelines
+        freqs = filter(lambda x: x.find("hfreq=") != -1, ddc[1])
+        if len(freqs) > 1:
+            line = freqs[0]
+            mon.hsync_min = atoi(line[line.find("hfreq=") + 6:])
+            mon.vert_min = atoi(line[line.find("vfreq=") + 6:])
+            line = freqs[-1]
+            mon.hsync_max = atoi(line[line.find("hfreq=") + 6:])
+            mon.vert_max = atoi(line[line.find("vfreq=") + 6:])
+
+     if eisaid:
         print "EISA ID = %s." % eisaid
         f = file(MonitorsDB)
         for line in f:
@@ -561,17 +572,6 @@ def queryDDC():
                     mon.hsync_min, mon.hsync_max = l[3].strip().split("-")
                     mon.vert_min, mon.vert_max = l[4].strip().split("-")
 
-    if mon.hsync_max == 0 or mon.vert_max == 0:
-        # in case those not probed separately, get them from modelines
-        freqs = filter(lambda x: x.find("hfreq=") != -1, ddc[1])
-        if len(freqs) > 1:
-            line = freqs[0]
-            mon.hsync_min = atoi(line[line.find("hfreq=") + 6:])
-            mon.vert_min = atoi(line[line.find("vfreq=") + 6:])
-            line = freqs[-1]
-            mon.hsync_max = atoi(line[line.find("hfreq=") + 6:])
-            mon.vert_max = atoi(line[line.find("vfreq=") + 6:])
-    
     for m in mon.modes:
         t = m[m.find("ModeLine"):].split()[1]
         if t not in mon.res:

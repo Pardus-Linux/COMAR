@@ -17,9 +17,11 @@ import string
 
 # FIXME:  change when script is ready
 # xdriverlist = "/usr/lib/X11/xdriverlist"
-xdriverlist = "xdriverlist"
 # MonitorsDB = "/usr/lib/X11/MonitorsDB"
+xdriverlist = "xdriverlist"
 MonitorsDB = "MonitorsDB"
+
+xorg_conf = "/etc/X11/xorg.conf"
 
 ### templates ###
 template_videocard = """
@@ -440,6 +442,13 @@ class Monitor:
         self.modelname = "Unknown"
         self.eisaid = ""
 
+def listAvailableDrivers(driver_path = '/usr/lib/modules/drivers'):
+    a = []
+    for drv in os.listdir(driver_path):
+        if drv.endswith("_drv.so"):
+            if drv[:-7] not in a:
+                a.append(drv[:-7])
+    return a
 
 def queryDriver(vendor, device):
     try:
@@ -604,8 +613,6 @@ def get_keymap():
 
 # om call
 
-xorg_conf = "/etc/X11/xorg.conf"
-
 def autoConfigureDisplay():
     #if os.path.exists(xorg_conf):
     #    return
@@ -621,6 +628,7 @@ def autoConfigureDisplay():
 
     # detect graphic card
     # if discover db has no data, try X -configure
+    avilable_drivers = listAvailableDrivers()
     a = capture("/usr/bin/discover --data-path=xfree86/server/device/driver --data-version=4.3.0 display")
     if a[1][0] == '\n' or a[0] > 0:
         a = capture("/usr/bin/X -configure -logfile /var/log/xlog")

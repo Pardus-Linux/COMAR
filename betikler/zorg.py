@@ -558,7 +558,8 @@ def queryDDC():
                     print "match"
                     mon.vendorname = l[0].lstrip()
                     mon.modelname = l[1].lstrip()
-
+                    mon.hsync_min, mon.hsync_max = l[3].strip().split("-")
+                    mon.vert_min, mon.vert_max = l[4].strip().split("-")
 
     if mon.hsync_max == 0 or mon.vert_max == 0:
         # in case those not probed separately, get them from modelines

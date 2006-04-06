@@ -598,7 +598,7 @@ def queryMouse(keys):
     except:
         pass
 
-def get_keymap():
+def queryKeymap():
     try:
         f = file("/etc/conf.d/keymaps")
         for line in f.readlines():
@@ -662,7 +662,7 @@ def autoConfigureDisplay():
         keys["MODES"] = mon.res
 
     queryMouse(keys)
-    keys["KEYMAP"] = get_keymap()
+    keys["KEYMAP"] = queryKeymap()
 
     write_tmpl(template_main, keys, xorg_conf)
 

@@ -451,7 +451,7 @@ def listAvailableDrivers(driver_path = '/usr/lib/modules/drivers'):
     return a
 
 def queryDriver(vendor, device):
-    avilable_drivers = listAvailableDrivers()
+    available_drivers = listAvailableDrivers()
     try:
         f = file(xdriverlist)
         for line in f:
@@ -489,17 +489,20 @@ def findPciCards():
         sysDir = os.path.join("/sys/bus", bus, "devices")
         if os.path.isdir(sysDir):
             for _dev in os.listdir(sysDir):
-                if sysValue(sysDir, _dev, "class").startswith("0x03"):
-                    # Ugly workaround for "one card using 2 PCI bus" case, with fingers crossed
-                    if sysValue(sysDir, _dev, "irq") !=  "0": 
-                        a = Device()
-                        vendorId = lremove(sysValue(sysDir, _dev, "vendor"), "0x")
-                        deviceId = lremove(sysValue(sysDir, _dev, "device"), "0x")
-                        #FIXME: BusID magic to support multiple heads, but breaking pci-e support ?
-                        a.busId = "PCI:%s" % _dev.replace(".",":").split(":", 1)[1]
-                        a.BoardName, a.VendorName =  queryPCI(vendorId, deviceId)
-                        a.Driver = queryDriver(vendorId, deviceId)
-                        cards.append(a)
+                try:
+                    if sysValue(sysDir, _dev, "class").startswith("0x03"):
+                        # Ugly workaround for "one card using 2 PCI bus" case, with fingers crossed
+                        if sysValue(sysDir, _dev, "irq") !=  "0": 
+                            a = Device()
+                            vendorId = lremove(sysValue(sysDir, _dev, "vendor"), "0x")
+                            deviceId = lremove(sysValue(sysDir, _dev, "device"), "0x")
+                            #FIXME: BusID magic to support multiple heads, but breaking pci-e support ?
+                            a.busId = "PCI:%s" % _dev.replace(".",":").split(":", 1)[1]
+                            a.BoardName, a.VendorName =  queryPCI(vendorId, deviceId)
+                            a.Driver = queryDriver(vendorId, deviceId)
+                            cards.append(a)
+                except:
+                    pass
     return cards
 
 def queryPanel(mon):
@@ -566,7 +569,7 @@ def queryDDC():
             mon.hsync_max = atoi(line[line.find("hfreq=") + 6:])
             mon.vert_max = atoi(line[line.find("vfreq=") + 6:])
 
-     if eisaid:
+    if eisaid:
         print "EISA ID = %s." % eisaid
         f = file(MonitorsDB)
         for line in f:
@@ -635,7 +638,7 @@ def autoConfigureDisplay():
 
     # detect graphic card and find monitor of first card, yet
     # if could not find driver from driverlist try X -configure
-    cards = findPCICards()
+    cards = findPciCards()
     if not cards[0].Driver:
         a = capture("/usr/bin/X -configure -logfile /var/log/xlog")
         if a[0] != 0:

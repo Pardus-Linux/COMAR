@@ -5,7 +5,7 @@ serviceType = "local"
 serviceDesc = "Portmap"
 
 def start():
-    run("/sbin/portmap")
+    run("start-stop-daemon --start --exec /sbin/portmap")
 
 def stop():
     run("start-stop-daemon --stop --exec /sbin/portmap")

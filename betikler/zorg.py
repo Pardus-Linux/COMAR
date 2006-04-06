@@ -640,6 +640,7 @@ def autoConfigureDisplay():
     # if could not find driver from driverlist try X -configure
     cards = findPciCards()
     if not cards[0].Driver:
+        print "Trying to probe with X"
         a = capture("/usr/bin/X -configure -logfile /var/log/xlog")
         if a[0] != 0:
             print "X -configure failed!"

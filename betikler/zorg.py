@@ -477,7 +477,6 @@ def queryPCI(vendor, device):
                     return line[6:].strip(), company
             elif not line.startswith("#"):
                 flag = 0
-    # return "Unknown (%s:%s)" % (vendor, device)
     return None, None
 
 def findPciCards():

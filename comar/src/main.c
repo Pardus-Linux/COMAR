@@ -71,10 +71,15 @@ main(int argc, char *argv[])
 	int cmd;
 	int size;
 
+	setlocale(LC_MESSAGES, "");
+	bindtextdomain("comar", "/usr/share/locale");
+	bind_textdomain_codeset("comar", "UTF-8");
+	textdomain("comar");
+
 	// First phase: configuration
 	cfg_init(argc, argv);
 	if (getuid() != 0) {
-		puts(_("This program is a system service and should not started by users."));
+		puts(_("This program is a system service and should not be started by users."));
 		exit(1);
 	}
 	proc_init(argc, argv);

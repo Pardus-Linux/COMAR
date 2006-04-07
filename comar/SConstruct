@@ -29,6 +29,8 @@ distfiles = """
     bindings/*.h
     csapi/SConscript
     csapi/*.c
+    po/comar.pot
+    po/*.po
 """
 
 if 'dist' in sys.argv:
@@ -49,6 +51,20 @@ if 'dist' in sys.argv:
         shutil.copy(file_, os.path.join(distdir, file_))
     os.popen("tar -czf %s %s" % ("comar-" + version + ".tar.gz", distdir))
     shutil.rmtree(distdir)
+    Exit(0)
+
+# i18n
+
+i18n_source_list = [ "src/main.c", "src/cfg.c" ]
+
+if "update_messages" in sys.argv:
+    os.system("xgettext --default-domain=comar --keyword=_ --keyword=N_ -o po/comar.pot %s"
+        % " ".join(i18n_source_list))
+    for item in os.listdir("po"):
+        if item.endswith(".po"):
+            os.system("msgmerge -q -o temp.po po/%s po/comar.pot" % item)
+            os.system("cp temp.po po/%s" % item)
+    os.system("rm -f temp.po")
     Exit(0)
 
 # Configuration
@@ -90,6 +106,17 @@ libdir = os.path.join(prefix, 'usr/lib')
 incdir = os.path.join(prefix, 'usr/include')
 etcdir = os.path.join(prefix, 'etc/comar')
 pydir = os.path.join(prefix, pyprefix)
+
+if "install" in sys.argv:
+    for item in os.listdir("po"):
+        if item.endswith(".po"):
+            lang = item[:-3]
+            dest = "usr/share/locale/%s/LC_MESSAGES/comar.mo" % lang
+            try:
+                os.makedirs(os.path.dirname(os.path.join(prefix, dest)))
+            except:
+                pass
+            os.system("msgfmt po/%s -o %s" % (item, os.path.join(prefix, dest)))
 
 targets = []
 targets.append(env.Install(bindir, comar))

@@ -27,6 +27,7 @@ def start():
     call("System.Service.start", "acpid")
     call("System.Service.start", "dbus")
     loadEnvironment()
+    os.environ["XAUTHLOCALHOSTNAME"]=os.uname()[1]
     run("/sbin/start-stop-daemon", "--start", "--quiet", "--exe", "/usr/kde/3.5/bin/kdm")
 
 def stop():

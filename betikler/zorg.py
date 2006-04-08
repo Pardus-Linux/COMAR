@@ -45,7 +45,6 @@ Section "Monitor"
     VertRefresh  %(VREF)s
     
 %(MODELINES)s
-    
 EndSection
 """
 
@@ -105,7 +104,6 @@ Section "Device"
     Identifier "Card0"
     Driver     "%(PROBE_DRIVER)s"
 EndSection
-
 """
 
 template_main = """
@@ -171,11 +169,8 @@ Section "InputDevice"
 EndSection
 
 %(SEC_SYNAPTICS)s
-
 %(SEC_VIDEOCARD)s
-
 %(SEC_MONITOR)s
-
 %(SEC_SCREEN)s
 
 Section "ServerLayout"
@@ -190,7 +185,6 @@ Section "ServerLayout"
     Option      "Xinerama" "off"
     Option      "Clone" "off"
 EndSection
-
 """
 
 

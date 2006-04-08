@@ -26,7 +26,7 @@ xorg_conf = "/etc/X11/xorg.conf"
 ### templates ###
 template_videocard = """
 Section "Device"
-    Identifier "VideoCard%i"
+    Identifier "VideoCard%(N)s"
     Driver     "%(DRIVER)s"
     VendorName "%(VENDORNAME)s"
     BoardName  "%(BOARDNAME)s"
@@ -38,7 +38,7 @@ EndSection
 
 template_monitor = """
 Section "Monitor"
-    Identifier  "Monitor%i"
+    Identifier  "Monitor%(N)s"
     VendorName  "%(VENDOR)s"
     ModelName   "%(MODEL)s"
     HorizSync    %(HSYNC)s
@@ -66,7 +66,7 @@ Section "Screen"
     Identifier "Screen0"
     Device     "VideoCard0"
     Monitor    "Monitor0"
-    DefaultDepth 16
+    DefaultDepth %(DEPTH)s
     Subsection "Display"
         Depth    8
         Modes    %(MODES)s
@@ -663,16 +663,23 @@ def autoConfigureDisplay():
     # start over and begin to fill the templates
     keys_main = {}
 
+    keys_main["SEC_VIDEOCARD"] = ""
     # with gfx first
-    for i in range(len(cards):
+    for i in range(len(cards)):
         keys_vc = {}
+        keys_vc["N"] = str(i)
         keys_vc["DRIVER"] = cards[i].Driver
         keys_vc["VENDORNAME"] = cards[i].VendorName
         keys_vc["BOARDNAME"] = cards[i].BoardName
-        keys_vc["BUSID"] = cards[i].BusID 
-        keys_main["SEC_VIDEOCARD"] += template_videocard % (i, keys_vc)
+        keys_vc["BUSID"] = cards[i].BusId 
+        keys_main["SEC_VIDEOCARD"] += template_videocard % keys_vc
 
+    keys_main["SEC_MONITOR"] = ""
+    keys_main["SEC_SCREEN"] = ""
     # and then the monitor
+    keys_mon = {}
+    keys_screen = {}
+    keys_mon["N"] = "0"
     keys_mon["VENDOR"] = mon.vendorname
     keys_mon["MODEL"] = mon.modelname
     keys_mon["HSYNC"] = str(mon.hsync_min) + "-" + str(mon.hsync_max)
@@ -685,11 +692,12 @@ def autoConfigureDisplay():
         keys_mon["MODELINES"] = "".join(mon.modes)
         keys_screen["MODES"] = mon.res
 
-    keys_main["SEC_MONITOR"] = template_monitor % (0, keys_mon)
+    keys_screen["DEPTH"] = "16"
+    keys_main["SEC_MONITOR"] = template_monitor % keys_mon
     keys_main["SEC_SCREEN"] = template_screen % keys_screen
 
     # input devices
-    queryMouse(keys_main)
+    querySynaptics(keys_main)
     keys_main["KEYMAP"] = queryKeymap()
 
     write_tmpl(template_main, keys_main, xorg_conf)

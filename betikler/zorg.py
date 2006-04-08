@@ -563,13 +563,11 @@ def queryDDC():
             mon.vref_max = atoi(line[line.find("vfreq=") + 6:])
 
     if eisaid:
-        print "EISA ID = %s." % eisaid
         f = file(MonitorsDB)
         for line in f:
             if not line.startswith("#"):
                 l = line.split(";")
                 if eisaid == string.upper(l[2]).strip():
-                    print "match"
                     mon.vendorname = l[0].lstrip()
                     mon.modelname = l[1].lstrip()
                     mon.hsync_min, mon.hsync_max = l[3].strip().split("-")

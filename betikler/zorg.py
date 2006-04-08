@@ -591,10 +591,10 @@ def queryDDC():
 
     return mon
 
-def queryMouse(keys):
-    keys["SYNAPTICS_MOD"] = ""
-    keys["SEC_SYNAPTICS"] = ""
-    keys["SYNAPTICS_LAY"] = ""
+def querySynaptics(keys_main):
+    keys_main["SYNAPTICS_MOD"] = ""
+    keys_main["SEC_SYNAPTICS"] = ""
+    keys_main["SYNAPTICS_LAY"] = ""
     try:
         a = file("/proc/bus/input/devices")
         for line in a.readlines():
@@ -689,7 +689,7 @@ def autoConfigureDisplay():
     keys_main["SEC_SCREEN"] = template_screen % keys_screen
 
     # input devices
-    queryMouse(keys)
+    queryMouse(keys_main)
     keys_main["KEYMAP"] = queryKeymap()
 
     write_tmpl(template_main, keys_main, xorg_conf)

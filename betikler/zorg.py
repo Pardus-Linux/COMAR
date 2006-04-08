@@ -113,7 +113,6 @@ Section "InputDevice"
     Option     "AutoRepeat" "500 30"
     Option     "XkbModel" "pc105"
     Option     "XkbLayout" "%(KEYMAP)s"
-    Option     "XkbOptions" "caps:shift"
 EndSection
 
 Section "InputDevice"

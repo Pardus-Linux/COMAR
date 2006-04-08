@@ -26,7 +26,7 @@ xorg_conf = "/etc/X11/xorg.conf"
 ### templates ###
 template_videocard = """
 Section "Device"
-    Identifier "VideoCard0"
+    Identifier "VideoCard%i"
     Driver     "%(DRIVER)s"
     VendorName "%(VENDORNAME)s"
     BoardName  "%(BOARDNAME)s"
@@ -38,7 +38,7 @@ EndSection
 
 template_monitor = """
 Section "Monitor"
-    Identifier  "Monitor0"
+    Identifier  "Monitor%i"
     VendorName  "%(VENDOR)s"
     ModelName   "%(MODEL)s"
     HorizSync    %(HSYNC)s
@@ -103,7 +103,7 @@ EndSection
 
 Section "Device"
     Identifier "Card0"
-    Driver     "%(DRIVER)s"
+    Driver     "%(PROBE_DRIVER)s"
 EndSection
 
 """
@@ -433,8 +433,8 @@ class Monitor:
         self.panel_h = 0
         self.hsync_min = 0
         self.hsync_max = 0
-        self.vert_min = 0
-        self.vert_max = 0
+        self.vref_min = 0
+        self.vref_max = 0
         self.modes = []
         self.res = ""
         self.vendorname = "Unknown"
@@ -552,21 +552,21 @@ def queryDDC():
             mon.hsync_max = atoi(line[line.find("-") + 1:])
         t = line.find("Hz VertRefresh")
         if t != -1:
-            mon.vert_min = atoi(line)
-            mon.vert_max = atoi(line[line.find("-") + 1:])
+            mon.vref_min = atoi(line)
+            mon.vref_max = atoi(line[line.find("-") + 1:])
         if line[:8] == "ModeLine":
             mon.modes.append("    " +line)
 
-    if mon.hsync_max == 0 or mon.vert_max == 0:
+    if mon.hsync_max == 0 or mon.vref_max == 0:
         # in case those not probed separately, get them from modelines
         freqs = filter(lambda x: x.find("hfreq=") != -1, ddc[1])
         if len(freqs) > 1:
             line = freqs[0]
             mon.hsync_min = atoi(line[line.find("hfreq=") + 6:])
-            mon.vert_min = atoi(line[line.find("vfreq=") + 6:])
+            mon.vref_min = atoi(line[line.find("vfreq=") + 6:])
             line = freqs[-1]
             mon.hsync_max = atoi(line[line.find("hfreq=") + 6:])
-            mon.vert_max = atoi(line[line.find("vfreq=") + 6:])
+            mon.vref_max = atoi(line[line.find("vfreq=") + 6:])
 
     if eisaid:
         print "EISA ID = %s." % eisaid
@@ -579,7 +579,7 @@ def queryDDC():
                     mon.vendorname = l[0].lstrip()
                     mon.modelname = l[1].lstrip()
                     mon.hsync_min, mon.hsync_max = l[3].strip().split("-")
-                    mon.vert_min, mon.vert_max = l[4].strip().split("-")
+                    mon.vref_min, mon.vref_max = l[4].strip().split("-")
 
     for m in mon.modes:
         t = m[m.find("ModeLine"):].split()[1]
@@ -625,19 +625,20 @@ def queryKeymap():
 
 def autoConfigureDisplay():
 
-    # We are probing only the first monitor for now
-    # probe monitor freqs
+    # probe monitor freqs, for the first monitor for now
     mon = queryDDC()
+
     # defaults for the case where ddc fails
-    if mon.hsync_min == 0 or mon.vert_min == 0:
+    if mon.hsync_min == 0 or mon.vref_min == 0:
         mon.hsync_min = 31.5
         mon.hsync_max = 50
-        mon.vert_min = 50
-        mon.vert_max = 70
+        mon.vref_min = 50
+        mon.vref_max = 70
 
     # detect graphic card and find monitor of first card, yet
-    # if could not find driver from driverlist try X -configure
     cards = findPciCards()
+
+    # if could not find driver from driverlist try X -configure
     if not cards[0].Driver:
         print "Trying to probe with X"
         a = capture("/usr/bin/X -configure -logfile /var/log/xlog")
@@ -656,24 +657,42 @@ def autoConfigureDisplay():
     # check lcd panel
     lcd_drivers = [ "nv", "nvidia", "ati", "via", "i810", "sis" ]
     if drv in lcd_drivers:
-        write_tmpl(template_probe_display, { "DRIVER": drv }, xorg_conf)
+        write_tmpl(template_probe_display, { "PROBE_DRIVER": drv }, xorg_conf)
         queryPanel(mon)
 
-    keys = {}
-    keys["DRIVER"] = cards[0].Driver
-    keys["HSYNC"] = str(mon.hsync_min) + "-" + str(mon.hsync_max)
-    keys["VREF"] = str(mon.vert_min) + "-" + str(mon.vert_max)
+    # start over and begin to fill the templates
+    keys_main = {}
+
+    # with gfx first
+    for i in range(len(cards):
+        keys_vc = {}
+        keys_vc["DRIVER"] = cards[i].Driver
+        keys_vc["VENDORNAME"] = cards[i].VendorName
+        keys_vc["BOARDNAME"] = cards[i].BoardName
+        keys_vc["BUSID"] = cards[i].BusID 
+        keys_main["SEC_VIDEOCARD"] += template_videocard % (i, keys_vc)
+
+    # and then the monitor
+    keys_mon["VENDOR"] = mon.vendorname
+    keys_mon["MODEL"] = mon.modelname
+    keys_mon["HSYNC"] = str(mon.hsync_min) + "-" + str(mon.hsync_max)
+    keys_mon["VREF"] = str(mon.vref_min) + "-" + str(mon.vref_max)
+
     if mon.panel_h and mon.panel_w:
-        keys["MODELINES"] = calcModeLine(mon.panel_w, mon.panel_h, 60)
-        keys["MODES"] = '"%dx%d" "800x600" "640x480" "1024x768"' % (mon.panel_w,mon.panel_h)
+        keys_mon["MODELINES"] = calcModeLine(mon.panel_w, mon.panel_h, 60)
+        keys_screen["MODES"] = '"%dx%d" "800x600" "640x480" "1024x768"' % (mon.panel_w,mon.panel_h)
     else:
-        keys["MODELINES"] = "".join(mon.modes)
-        keys["MODES"] = mon.res
+        keys_mon["MODELINES"] = "".join(mon.modes)
+        keys_screen["MODES"] = mon.res
 
+    keys_main["SEC_MONITOR"] = template_monitor % (0, keys_mon)
+    keys_main["SEC_SCREEN"] = template_screen % keys_screen
+
+    # input devices
     queryMouse(keys)
-    keys["KEYMAP"] = queryKeymap()
+    keys_main["KEYMAP"] = queryKeymap()
 
-    write_tmpl(template_main, keys, xorg_conf)
+    write_tmpl(template_main, keys_main, xorg_conf)
 
 # test
 autoConfigureDisplay()

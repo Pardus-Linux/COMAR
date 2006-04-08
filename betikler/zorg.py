@@ -25,19 +25,65 @@ xorg_conf = "/etc/X11/xorg.conf"
 
 ### templates ###
 template_videocard = """
-Identifier  "VideoCard0"
-Driver      "%(DRIVER)s"
-VendorName  "%(VENDORNAME)s"
-BoardName   "%(BOARDNAME)s"
-BusID       "%(BUSID)s"
+Section "Device"
+    Identifier "VideoCard0"
+    Driver     "%(DRIVER)s"
+    VendorName "%(VENDORNAME)s"
+    BoardName  "%(BOARDNAME)s"
+    BusID      "%(BUSID)s"
+    Option     "RenderAccel" "true"
+    # Option     "AccelMethod" "exa"
+EndSection
 """
 
 template_monitor = """
-Identifier  "Monitor0"
-VendorName  "%(VENDOR)s"
-ModelName   "%(MODEL)s"
-HorizSync    %(HSYNC)s
-VertRefresh  %(VREF)s
+Section "Monitor"
+    Identifier  "Monitor0"
+    VendorName  "%(VENDOR)s"
+    ModelName   "%(MODEL)s"
+    HorizSync    %(HSYNC)s
+    VertRefresh  %(VREF)s
+    
+%(MODELINES)s
+    
+EndSection
+"""
+
+template_synaptics = """
+Section "InputDevice"
+    Identifier "Mouse1"
+    Driver     "synaptics"
+    Option     "Protocol" "auto-dev"
+    Option     "Device" "/dev/input/mouse0"
+    Option     "ZAxisMapping" "4 5"
+    Option     "Buttons" "5"
+    Option     "SHMConfig" "true"
+    # "Option    "AccelFactor" "0.04"
+EndSection
+"""
+template_screen = """
+Section "Screen"
+    Identifier "Screen0"
+    Device     "VideoCard0"
+    Monitor    "Monitor0"
+    DefaultDepth 16
+    Subsection "Display"
+        Depth    8
+        Modes    %(MODES)s
+    EndSubsection
+    Subsection "Display"
+        Depth    16
+        Modes    %(MODES)s
+    EndSubsection
+    Subsection "Display"
+        Depth    24
+        Modes    %(MODES)s
+    EndSubsection
+    Subsection "Display"
+        Depth    32
+        Modes    %(MODES)s
+    EndSubsection
+EndSection
 """
 
 template_probe_display = """
@@ -124,37 +170,13 @@ Section "InputDevice"
     Option     "Buttons" "5"
 EndSection
 
-%(SYNAPTICS_SEC)s
+%(SEC_SYNAPTICS)s
 
-Section "Device"
-    Identifier "VideoCard0"
-    Driver     "%(DRIVER)s"
-    Option     "RenderAccel" "true"
-    # Option     "AccelMethod" "exa"
-EndSection
+%(SEC_VIDEOCARD)s
 
-Section "Screen"
-    Identifier "Screen0"
-    Device     "VideoCard0"
-    Monitor    "Monitor0"
-    DefaultDepth 16
-    Subsection "Display"
-        Depth    8
-        Modes    %(MODES)s
-    EndSubsection
-    Subsection "Display"
-        Depth    16
-        Modes    %(MODES)s
-    EndSubsection
-    Subsection "Display"
-        Depth    24
-        Modes    %(MODES)s
-    EndSubsection
-    Subsection "Display"
-        Depth    32
-        Modes    %(MODES)s
-    EndSubsection
-EndSection
+%(SEC_MONITOR)s
+
+%(SEC_SCREEN)s
 
 Section "ServerLayout"
     Identifier  "Simple Layout"
@@ -169,29 +191,6 @@ Section "ServerLayout"
     Option      "Clone" "off"
 EndSection
 
-Section "Monitor"
-    Identifier  "Monitor0"
-    VendorName  "Vendor"
-    ModelName   "Model"
-    HorizSync    %(HSYNC)s
-    VertRefresh  %(VREF)s
-    
-%(MODELINES)s
-    
-EndSection
-"""
-
-template_synaptics = """
-Section "InputDevice"
-    Identifier "Mouse1"
-    Driver     "synaptics"
-    Option     "Protocol" "auto-dev"
-    Option     "Device" "/dev/input/mouse0"
-    Option     "ZAxisMapping" "4 5"
-    Option     "Buttons" "5"
-    Option     "SHMConfig" "true"
-    # "Option    "AccelFactor" "0.04"
-EndSection
 """
 
 
@@ -594,7 +593,7 @@ def queryDDC():
 
 def queryMouse(keys):
     keys["SYNAPTICS_MOD"] = ""
-    keys["SYNAPTICS_SEC"] = ""
+    keys["SEC_SYNAPTICS"] = ""
     keys["SYNAPTICS_LAY"] = ""
     try:
         a = file("/proc/bus/input/devices")
@@ -604,7 +603,7 @@ def queryMouse(keys):
             if "SynPS/2" in line:
                 keys["SYNAPTICS_MOD"] = 'Load "synaptics"'
                 keys["SYNAPTICS_LAY"] = 'InputDevice "Mouse1" "SendCoreEvents"'
-                keys["SYNAPTICS_SEC"] = template_synaptics
+                keys["SEC_SYNAPTICS"] = template_synaptics
         a.close()
     except:
         pass

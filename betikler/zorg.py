@@ -26,6 +26,7 @@ xorg_conf = "/etc/X11/xorg.conf"
 ### templates ###
 template_videocard = """
 Section "Device"
+    Screen %(N)s
     Identifier "VideoCard%(N)s"
     Driver     "%(DRIVER)s"
     VendorName "%(VENDORNAME)s"

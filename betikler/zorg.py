@@ -63,9 +63,9 @@ EndSection
 """
 template_screen = """
 Section "Screen"
-    Identifier "Screen0"
-    Device     "VideoCard0"
-    Monitor    "Monitor0"
+    Identifier "Screen%(N)s"
+    Device     "VideoCard%(N)s"
+    Monitor    "Monitor%(N)s"
     DefaultDepth %(DEPTH)s
     Subsection "Display"
         Depth    8
@@ -436,6 +436,11 @@ class Monitor:
         self.modelname = "Unknown"
         self.eisaid = ""
 
+class Screen:
+    def __init__(self):
+        self.depth = "16"
+        self.modes = ""
+
 def listAvailableDrivers(driver_path = '/usr/lib/modules/drivers'):
     a = []
     for drv in os.listdir(driver_path):
@@ -614,10 +619,9 @@ def queryKeymap():
 
     return kmap
 
-# om call
-
-def autoConfigureDisplay():
-
+def findMonitors(cards):
+    monitors = []
+    # FIXME: modify ddcxinfos to probe for more monitors
     # probe monitor freqs, for the first monitor for now
     mon = queryDDC()
 
@@ -628,6 +632,18 @@ def autoConfigureDisplay():
         mon.vref_min = 50
         mon.vref_max = 70
 
+    # check lcd panel
+    lcd_drivers = [ "nv", "nvidia", "ati", "via", "i810", "sis" ]
+    if cards[0].Driver in lcd_drivers:
+        write_tmpl(template_probe_display, { "PROBE_DRIVER": cards[0].Driver }, xorg_conf)
+        queryPanel(mon)
+
+    monitors.append(mon)
+    return monitors
+   
+# om call
+
+def autoConfigureDisplay():
     # detect graphic card and find monitor of first card, yet
     cards = findPciCards()
 
@@ -647,17 +663,14 @@ def autoConfigureDisplay():
     else:
         drv = cards[0].Driver
 
-    # check lcd panel
-    lcd_drivers = [ "nv", "nvidia", "ati", "via", "i810", "sis" ]
-    if drv in lcd_drivers:
-        write_tmpl(template_probe_display, { "PROBE_DRIVER": drv }, xorg_conf)
-        queryPanel(mon)
-
+    # We need card data to check for lcd displays
+    monitors = findMonitors(cards)
+    
     # start over and begin to fill the templates
     keys_main = {}
 
+    # with gfx first, we write all cards
     keys_main["SEC_VIDEOCARD"] = ""
-    # with gfx first
     for i in range(len(cards)):
         keys_vc = {}
         keys_vc["N"] = str(i)
@@ -667,27 +680,33 @@ def autoConfigureDisplay():
         keys_vc["BUSID"] = cards[i].BusId 
         keys_main["SEC_VIDEOCARD"] += template_videocard % keys_vc
 
+    # and then the monitor
     keys_main["SEC_MONITOR"] = ""
     keys_main["SEC_SCREEN"] = ""
-    # and then the monitor
-    keys_mon = {}
-    keys_screen = {}
-    keys_mon["N"] = "0"
-    keys_mon["VENDOR"] = mon.vendorname
-    keys_mon["MODEL"] = mon.modelname
-    keys_mon["HSYNC"] = str(mon.hsync_min) + "-" + str(mon.hsync_max)
-    keys_mon["VREF"] = str(mon.vref_min) + "-" + str(mon.vref_max)
+    for i in range(len(monitors)):
+        keys_mon = {}
+        keys_screen = {}
+        screen = Screen() # screens are defined per monitor
+        keys_mon["N"] = str(i)
+        keys_screen["N"] = str(i)
+        
+        keys_mon["VENDOR"] = monitors[i].vendorname
+        keys_mon["MODEL"] = monitors[i].modelname
+        keys_mon["HSYNC"] = str(monitors[i].hsync_min) + "-" + str(monitors[i].hsync_max)
+        keys_mon["VREF"] = str(monitors[i].vref_min) + "-" + str(monitors[i].vref_max)
 
-    if mon.panel_h and mon.panel_w:
-        keys_mon["MODELINES"] = calcModeLine(mon.panel_w, mon.panel_h, 60)
-        keys_screen["MODES"] = '"%dx%d" "800x600" "640x480" "1024x768"' % (mon.panel_w,mon.panel_h)
-    else:
-        keys_mon["MODELINES"] = "".join(mon.modes)
-        keys_screen["MODES"] = mon.res
+        if monitors[i].panel_h and monitors[i].panel_w:
+            keys_mon["MODELINES"] = calcModeLine(monitors[i].panel_w, monitors[i].panel_h, 60)
+            screen[i].modes = '"%dx%d" "800x600" "640x480" "1024x768"' % (monitors[i].panel_w, monitors[i].panel_h)
+        else:
+            keys_mon["MODELINES"] = "".join(monitors[i].modes)
+            screen[i].modes = monitors[i].res
 
-    keys_screen["DEPTH"] = "16"
-    keys_main["SEC_MONITOR"] = template_monitor % keys_mon
-    keys_main["SEC_SCREEN"] = template_screen % keys_screen
+        keys_screen["DEPTH"] = "16"
+        keys_screen["MODES"] = screen[i].modes
+
+        keys_main["SEC_MONITOR"] = template_monitor % keys_mon
+        keys_main["SEC_SCREEN"] = template_screen % keys_screen
 
     # input devices
     querySynaptics(keys_main)

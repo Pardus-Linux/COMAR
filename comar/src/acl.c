@@ -16,6 +16,19 @@
 #include "process.h"
 #include "log.h"
 
+#define TABLE_SIZE 47
+
+struct acl_node {
+	struct acl_node *next;
+	int id;
+	int node[1];
+};
+
+struct acl_table {
+	struct acl_node *users[TABLE_SIZE];
+	struct acl_node *groups[TABLE_SIZE];
+};
+
 int
 acl_is_capable(int cmd, int node, struct Creds *cred)
 {

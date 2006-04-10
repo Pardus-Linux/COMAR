@@ -165,7 +165,12 @@ class Link:
         """
         a = [ methodname ]
         if args:
-            a.extend(args)
+            if isinstance(args, dict):
+                for key in args:
+                    a.append(key)
+                    a.append(args[key])
+            else:
+                a.extend(args)
         pak = self.__pack(self.__CALL, id, a)
         self.sock.send(pak)
     
@@ -174,7 +179,12 @@ class Link:
         """
         a = [ methodname, packagename ]
         if args:
-            a.extend(args)
+            if isinstance(args, dict):
+                for key in args:
+                    a.append(key)
+                    a.append(args[key])
+            else:
+                a.extend(args)
         pak = self.__pack(self.__CALL_PACKAGE, id, a)
         self.sock.send(pak)
     

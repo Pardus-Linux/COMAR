@@ -14,20 +14,140 @@
 
 #include "acl.h"
 #include "process.h"
+#include "model.h"
 #include "log.h"
 
 #define TABLE_SIZE 47
 
 struct acl_node {
 	struct acl_node *next;
-	int id;
-	int node[1];
+	unsigned int id;
+	unsigned int nr_nodes;
+	unsigned int node[1];
 };
 
-struct acl_table {
+struct acl_list {
+	struct acl_node *admins[TABLE_SIZE];
 	struct acl_node *users[TABLE_SIZE];
-	struct acl_node *groups[TABLE_SIZE];
+	struct acl_node *guests[TABLE_SIZE];
 };
+
+static struct acl_list acl_uids;
+static struct acl_list acl_gids;
+
+static struct acl_node *
+get_node(struct acl_node **table, unsigned int id)
+{
+	struct acl_node *n;
+	unsigned int val;
+
+	val = id % TABLE_SIZE;
+	for (n = table[val]; n; n = n->next) {
+		if (n->id == id) {
+			return n;
+		}
+	}
+	return NULL;
+}
+
+static void
+delete_node(struct acl_node **table, unsigned int id)
+{
+	struct acl_node *n;
+	struct acl_node *old = NULL;
+	unsigned int val;
+
+	val = id % TABLE_SIZE;
+	for (n = table[val]; n; n = n->next) {
+		if (n->id == id) {
+			if (old) {
+				old->next = n->next;
+			} else {
+				table[val] = n->next;
+			}
+			free(n);
+			return;
+		}
+		old = n;
+	}
+}
+
+static void
+set_node(struct acl_node **table, unsigned int id, char *nodes)
+{
+	struct acl_node *n;
+	char *t, *s;
+	unsigned int val;
+	int nr_nodes = 0;
+	int i = 0;
+
+	t = nodes;
+	while (t) {
+		++nr_nodes;
+		t = strchr(t, ' ');
+		if (t) ++t;
+	}
+
+	n = calloc(1, sizeof(struct acl_node) + nr_nodes * sizeof(int));
+	if (!n) return;
+	n->id = id;
+	n->nr_nodes = nr_nodes;
+	for (t = nodes; t; t = s) {
+		s = strchr(t, ' ');
+		if (s) {
+			*s = '\0';
+			++s;
+		}
+		n->node[i++] = model_lookup_class(t);
+	}
+
+	val = id % TABLE_SIZE;
+	n->next = table[val];
+	table[val] = n;
+}
+
+static void
+set_nodes(struct acl_list *tables, unsigned int id, char *nodes)
+{
+	char *t;
+
+	t = strchr(nodes, '\n');
+	*t = '\0';
+	++t;
+
+	delete_node(tables->admins, id);
+	if (nodes[0] != '\0')
+		set_node(tables->admins, id, nodes);
+
+	nodes = t;
+	t = strchr(nodes, '\n');
+	*t = '\0';
+	++t;
+
+	delete_node(tables->users, id);
+	if (nodes[0] != '\0')
+		set_node(tables->users, id, nodes);
+
+	nodes = t;
+
+	delete_node(tables->guests, id);
+	if (nodes[0] != '\0')
+		set_node(tables->guests, id, nodes);
+}
+
+static int
+check_acl(int node, unsigned int uid)
+{
+	struct acl_node *n;
+	int i;
+
+	n = get_node(acl_uids.admins, uid);
+	if (!n) return 0;
+	for (i = 0; i < n->nr_nodes; i++) {
+		if (n->node[i] == node)
+			return 1;
+	}
+}
 
 int
 acl_is_capable(int cmd, int node, struct Creds *cred)
@@ -42,8 +162,10 @@ acl_is_capable(int cmd, int node, struct Creds *cred)
 	if (cred->uid == 0)
 		return 1;
 
-	if (cmd == CMD_CALL)
-		return 1;
+	if (cmd == CMD_CALL) {
+		if (check_acl(node, cred->uid) == 1)
+			return 1;
+	}
 
 	return 0;
 }

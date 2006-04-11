@@ -16,6 +16,7 @@ struct Creds {
 	// there'll be other fields
 };
 
+void acl_init(void);
 int acl_is_capable(int cmd, int node, struct Creds *cred);
 int acl_can_connect(struct Creds *cred);
 

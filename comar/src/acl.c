@@ -136,34 +136,52 @@ set_nodes(struct acl_list *tables, unsigned int id, char *nodes)
 }
 
 static int
-check_acl(int node, unsigned int uid)
+check_acl(int node, struct Creds *cred)
 {
+	gid_t gids[64];
+	int nr_gids = 64;
+	struct passwd *pw;
 	struct acl_node *n;
 	int i;
 
-	n = get_node(acl_uids.admins, uid);
-	if (!n) return 0;
-	for (i = 0; i < n->nr_nodes; i++) {
-		if (n->node[i] == node)
-			return 1;
+	node = model_parent(node);
+
+	n = get_node(acl_uids.admins, cred->uid);
+	if (n) {
+		for (i = 0; i < n->nr_nodes; i++) {
+			if (n->node[i] == node)
+				return 1;
+		}
 	}
+
+	pw = getpwuid(cred->uid);
+	if (!pw) return 0;
+	if (getgrouplist(pw->pw_name, cred->gid, &gids[0], &nr_gids) < 0) {
+		nr_gids = 63;
+	}
+
+	for (i = 0; i < nr_gids; i++) {
+		n = get_node(acl_gids.admins, gids[i]);
+		if (n) {
+			for (i = 0; i < n->nr_nodes; i++) {
+				if (n->node[i] == node)
+					return 1;
+			}
+		}
+	}
+
+	return 0;
 }
 
 int
 acl_is_capable(int cmd, int node, struct Creds *cred)
 {
-	/* POLICY:
-	** Pardus 1.0 release
-	** Only root can use admin commands
-	** Users can make configuration calls
-	*/
-
 	// root always capable
 	if (cred->uid == 0)
 		return 1;
 
 	if (cmd == CMD_CALL) {
-		if (check_acl(node, cred->uid) == 1)
+		if (check_acl(node, cred) == 1)
 			return 1;
 	}
 
@@ -203,4 +221,11 @@ acl_can_connect(struct Creds *cred)
 	}
 
 	return 0;
+}
+
+void
+acl_init(void)
+{
+	// FIXME: read from db
+	set_nodes(&acl_gids, 10, strdup("System.Package System.Service Time.Clock Net.Stack Net.Link\n\n"));
 }

@@ -24,19 +24,87 @@
 #include <linux/netlink.h>
 #include <unistd.h>
 
-#define UEVENT_BUFFER_SIZE		1024
+#define UEVENT_BUFFER_SIZE 1024
 #define NETLINK_KOBJECT_UEVENT 15
 
 #include "process.h"
 #include "data.h"
 #include "model.h"
 #include "log.h"
+#include "event.h"
+
+struct event_hook {
+	struct event_hook *next;
+	char *filter;
+	int class;
+	char *function;
+	char *app;
+};
+
+static struct event_hook *event_table[EVENT_MAX];
 
 static struct pack *event_pak;
 
 static int trig_node;
 static char *trig_app;
 static const char *trig_key;
+
+static void
+add_hook(int type, char *filter, int class, char *function, char *app)
+{
+	struct event_hook *hook;
+
+	hook = calloc(1, sizeof(struct event_hook));
+	if (!hook) return;
+	hook->filter = strdup(filter);
+	if (!hook->filter) {
+		free(hook);
+		return;
+	}
+	hook->class = class;
+	hook->function = strdup(function);
+	if (!hook->function) {
+		free(hook->filter);
+		free(hook);
+		return;
+	}
+	hook->app = strdup(app);
+	if (!hook->app) {
+		free(hook->function);
+		free(hook->filter);
+		free(hook);
+		return;
+	}
+
+	hook->next = event_table[type];
+	event_table[type] = hook;
+}
+
+static void
+fire_event(const char *function, int class, const char *app, const char *data)
+{
+	struct ipc_struct ipc;
+
+	memset(&ipc, 0, sizeof(struct ipc_struct));
+	ipc.node = class;
+	pack_reset(event_pak);
+	pack_put(event_pak, function, strlen(function));
+	pack_put(event_pak, app, strlen(app));
+	pack_put(event_pak, data, strlen(data));
+	proc_put(TO_PARENT, CMD_EVENT, &ipc, event_pak);
+}
+
+static void
+fire_kernel_events(const char *buffer)
+{
+	struct event_hook *hook;
+
+	for (hook = event_table[EVENT_KERNEL]; hook; hook = hook->next) {
+		if (strncmp(buffer, hook->filter, strlen(hook->filter)) == 0) {
+			fire_event(hook->function, hook->class, hook->app, buffer);
+		}
+	}
+}
 
 static void
 trig_instance(char *str, size_t size)
@@ -111,54 +179,6 @@ trigger_startup_methods(void)
 }
 
 static void
-fire_event(const char *event, int node, const char *app, const char *data)
-{
-	struct ipc_struct ipc;
-
-	memset(&ipc, 0, sizeof(struct ipc_struct));
-	ipc.node = node;
-	pack_reset(event_pak);
-	pack_put(event_pak, event, strlen(event));
-	pack_put(event_pak, app, strlen(app));
-	pack_put(event_pak, data, strlen(data));
-	proc_put(TO_PARENT, CMD_EVENT, &ipc, event_pak);
-}
-
-static void
-handle_kernel_event(const char *buffer)
-{
-	char *apps, *t, *s;
-	int node;
-
-	// FIXME: Net.Link is hardcoded here
-	// a proper event layer must accept requests, and send
-	// events to subscribers, but this is enough for 1.0 release
-	// saves us to implement another db code
-
-	//printf("EVENT! [%s]\n", buffer);
-
-	if (strncmp(buffer, "add@/class/net/", 15) == 0
-		|| strncmp(buffer, "remove@/class/net/", 18) == 0) {
-
-		node = model_lookup_class("Net.Link");
-
-		if (db_get_apps(node, &apps) != 0)
-			return;
-
-		for (t = apps; t; t = s) {
-			s = strchr(t, '/');
-			if (s) {
-				*s = '\0';
-				++s;
-			}
-			fire_event("kernelEvent", node, t, buffer);
-		}
-
-		free(apps);
-	}
-}
-
-static void
 event_proc(void)
 {
 	struct sockaddr_nl snl;
@@ -169,6 +189,12 @@ event_proc(void)
 	int ret;
 
 	event_pak = pack_new(512);
+
+	// FIXME: load from db
+	add_hook(EVENT_KERNEL, "add@/class/net", model_lookup_class("Net.Link"), "kernelEvent", "net-tools");
+	add_hook(EVENT_KERNEL, "remove@/class/net", model_lookup_class("Net.Link"), "kernelEvent", "net-tools");
+	add_hook(EVENT_KERNEL, "add@/class/net", model_lookup_class("Net.Link"), "kernelEvent", "wireless-tools");
+	add_hook(EVENT_KERNEL, "remove@/class/net", model_lookup_class("Net.Link"), "kernelEvent", "wireless-tools");
 
 	// First event is startup, send here when comar daemon starts
 	trigger_startup_methods();
@@ -210,7 +236,7 @@ event_proc(void)
 					return;
 				}
 				buf[size] = '\0';
-				handle_kernel_event(buf);
+				fire_kernel_events(buf);
 			}
 		}
 	}

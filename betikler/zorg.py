@@ -657,8 +657,8 @@ def keysMonitors(monitors):
         # FIXME: check for the driver and set depth due to it
         keys_mon["DEPTH"] = "16"
 
-        sec_monitor = template_monitor % keys_mon
-        sec_screen = template_screen % keys_mon
+        sec_monitor += template_monitor % keys_mon
+        sec_screen += template_screen % keys_mon
 
     return sec_monitor, sec_screen
 
@@ -693,7 +693,7 @@ def autoConfigureDisplay():
     keys_main["SEC_VIDEOCARD"] = keysVideoCards(cards)
 
     # and then the monitor
-    keys_main["SEC_MONITOR"], keys_main["SEC_SCREEN"] = keysMonitors()
+    keys_main["SEC_MONITOR"], keys_main["SEC_SCREEN"] = keysMonitors(monitors)
     
     # input devices
     querySynaptics(keys_main)

@@ -66,21 +66,8 @@ Section "Screen"
     Identifier "Screen%(N)s"
     Device     "VideoCard%(N)s"
     Monitor    "Monitor%(N)s"
-    DefaultDepth %(DEPTH)s
     Subsection "Display"
-        Depth    8
-        Modes    %(MODES)s
-    EndSubsection
-    Subsection "Display"
-        Depth    16
-        Modes    %(MODES)s
-    EndSubsection
-    Subsection "Display"
-        Depth    24
-        Modes    %(MODES)s
-    EndSubsection
-    Subsection "Display"
-        Depth    32
+        Depth    %(DEPTH)s
         Modes    %(MODES)s
     EndSubsection
 EndSection

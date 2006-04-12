@@ -422,11 +422,7 @@ class Monitor:
         self.vendorname = "Unknown"
         self.modelname = "Unknown"
         self.eisaid = ""
-
-class Screen:
-    def __init__(self):
         self.depth = "16"
-        self.modes = ""
 
 def listAvailableDrivers(driver_path = '/usr/lib/modules/drivers'):
     a = []
@@ -672,10 +668,7 @@ def autoConfigureDisplay():
     keys_main["SEC_SCREEN"] = ""
     for i in range(len(monitors)):
         keys_mon = {}
-        keys_screen = {}
-        screen = Screen() # screens are defined per monitor
         keys_mon["N"] = str(i)
-        keys_screen["N"] = str(i)
         
         keys_mon["VENDOR"] = monitors[i].vendorname
         keys_mon["MODEL"] = monitors[i].modelname
@@ -684,16 +677,15 @@ def autoConfigureDisplay():
 
         if monitors[i].panel_h and monitors[i].panel_w:
             keys_mon["MODELINES"] = calcModeLine(monitors[i].panel_w, monitors[i].panel_h, 60)
-            screen[i].modes = '"%dx%d" "800x600" "640x480" "1024x768"' % (monitors[i].panel_w, monitors[i].panel_h)
+            keys_mon["MODES"] = '"%dx%d" "800x600" "640x480" "1024x768"' % (monitors[i].panel_w, monitors[i].panel_h)
         else:
             keys_mon["MODELINES"] = "".join(monitors[i].modes)
-            screen[i].modes = monitors[i].res
+            keys_mon["MODES"] = monitors[i].res
 
-        keys_screen["DEPTH"] = "16"
-        keys_screen["MODES"] = screen[i].modes
+        keys_mon["DEPTH"] = "16"
 
         keys_main["SEC_MONITOR"] = template_monitor % keys_mon
-        keys_main["SEC_SCREEN"] = template_screen % keys_screen
+        keys_main["SEC_SCREEN"] = template_screen % keys_mon
 
     # input devices
     querySynaptics(keys_main)

@@ -623,7 +623,19 @@ def findMonitors(cards):
 
     monitors.append(mon)
     return monitors
-   
+
+def keysVideoCards(cards):
+    sec = ""
+    for i in range(len(cards)):
+        keys_vc = {}
+        keys_vc["N"] = str(i)
+        keys_vc["DRIVER"] = cards[i].Driver
+        keys_vc["VENDORNAME"] = cards[i].VendorName
+        keys_vc["BOARDNAME"] = cards[i].BoardName
+        keys_vc["BUSID"] = cards[i].BusId 
+        sec += template_videocard % keys_vc
+    return sec
+
 # om call
 
 def autoConfigureDisplay():
@@ -642,9 +654,7 @@ def autoConfigureDisplay():
         conf = f.readlines()
         f.close()
         unlink(home + "/xorg.conf.new")
-        drv = grepini(conf, 'Section "Device"', "\tDriver")
-    else:
-        drv = cards[0].Driver
+        cards[0].Driver = grepini(conf, 'Section "Device"', "\tDriver")
 
     # We need card data to check for lcd displays
     monitors = findMonitors(cards)
@@ -653,15 +663,7 @@ def autoConfigureDisplay():
     keys_main = {}
 
     # with gfx first, we write all cards
-    keys_main["SEC_VIDEOCARD"] = ""
-    for i in range(len(cards)):
-        keys_vc = {}
-        keys_vc["N"] = str(i)
-        keys_vc["DRIVER"] = cards[i].Driver
-        keys_vc["VENDORNAME"] = cards[i].VendorName
-        keys_vc["BOARDNAME"] = cards[i].BoardName
-        keys_vc["BUSID"] = cards[i].BusId 
-        keys_main["SEC_VIDEOCARD"] += template_videocard % keys_vc
+    keys_main["SEC_VIDEOCARD"] = keysVideoCards(cards)
 
     # and then the monitor
     keys_main["SEC_MONITOR"] = ""
@@ -677,12 +679,14 @@ def autoConfigureDisplay():
 
         if monitors[i].panel_h and monitors[i].panel_w:
             keys_mon["MODELINES"] = calcModeLine(monitors[i].panel_w, monitors[i].panel_h, 60)
-            keys_mon["MODES"] = '"%dx%d" "800x600" "640x480" "1024x768"' % (monitors[i].panel_w, monitors[i].panel_h)
+            monitors[i].modes = '"%dx%d" "800x600" "640x480" "1024x768"' % (monitors[i].panel_w, monitors[i].panel_h)
         else:
             keys_mon["MODELINES"] = "".join(monitors[i].modelines)
-            keys_mon["MODES"] = monitors[i].res
+            monitors[i].modes = monitors[i].res
 
         keys_mon["DEPTH"] = "16"
+        keys_mon["MODELINES"] = monitors[i].modelines
+        keys_mon["MODES"] = monitors[i].modes
 
         keys_main["SEC_MONITOR"] = template_monitor % keys_mon
         keys_main["SEC_SCREEN"] = template_screen % keys_mon

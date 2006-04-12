@@ -417,7 +417,7 @@ class Monitor:
         self.hsync_max = 0
         self.vref_min = 0
         self.vref_max = 0
-        self.modes = []
+        self.modelines = []
         self.res = ""
         self.vendorname = "Unknown"
         self.modelname = "Unknown"
@@ -538,7 +538,7 @@ def queryDDC():
             mon.vref_min = atoi(line)
             mon.vref_max = atoi(line[line.find("-") + 1:])
         if line[:8] == "ModeLine":
-            mon.modes.append("    " +line)
+            mon.modelines.append("    " +line)
 
     if mon.hsync_max == 0 or mon.vref_max == 0:
         # in case those not probed separately, get them from modelines
@@ -562,7 +562,7 @@ def queryDDC():
                     mon.hsync_min, mon.hsync_max = l[3].strip().split("-")
                     mon.vref_min, mon.vref_max = l[4].strip().split("-")
 
-    for m in mon.modes:
+    for m in mon.modelines:
         t = m[m.find("ModeLine"):].split()[1]
         if t not in mon.res:
             mon.res = t + " " + mon.res
@@ -679,7 +679,7 @@ def autoConfigureDisplay():
             keys_mon["MODELINES"] = calcModeLine(monitors[i].panel_w, monitors[i].panel_h, 60)
             keys_mon["MODES"] = '"%dx%d" "800x600" "640x480" "1024x768"' % (monitors[i].panel_w, monitors[i].panel_h)
         else:
-            keys_mon["MODELINES"] = "".join(monitors[i].modes)
+            keys_mon["MODELINES"] = "".join(monitors[i].modelines)
             keys_mon["MODES"] = monitors[i].res
 
         keys_mon["DEPTH"] = "16"

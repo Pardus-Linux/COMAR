@@ -636,6 +636,33 @@ def keysVideoCards(cards):
         sec += template_videocard % keys_vc
     return sec
 
+def keysMonitors(monitors):
+    sec_monitor = ""
+    sec_screen = ""
+    for i in range(len(monitors)):
+        keys_mon = {}
+        keys_mon["N"] = str(i)
+        keys_mon["VENDOR"] = monitors[i].vendorname
+        keys_mon["MODEL"] = monitors[i].modelname
+        keys_mon["HSYNC"] = str(monitors[i].hsync_min) + "-" + str(monitors[i].hsync_max)
+        keys_mon["VREF"] = str(monitors[i].vref_min) + "-" + str(monitors[i].vref_max)
+
+        if monitors[i].panel_h and monitors[i].panel_w:
+            keys_mon["MODELINES"] = calcModeLine(monitors[i].panel_w, monitors[i].panel_h, 60)
+            keys_mon["MODES"] = '"%dx%d" "800x600" "640x480" "1024x768"' % (monitors[i].panel_w, monitors[i].panel_h)
+        else:
+            keys_mon["MODELINES"] = "".join(monitors[i].modelines)
+            keys_mon["MODES"] = monitors[i].res
+        
+        # FIXME: check for the driver and set depth due to it
+        keys_mon["DEPTH"] = "16"
+
+        sec_monitor = template_monitor % keys_mon
+        sec_screen = template_screen % keys_mon
+
+    return sec_monitor, sec_screen
+
+
 # om call
 
 def autoConfigureDisplay():
@@ -666,31 +693,8 @@ def autoConfigureDisplay():
     keys_main["SEC_VIDEOCARD"] = keysVideoCards(cards)
 
     # and then the monitor
-    keys_main["SEC_MONITOR"] = ""
-    keys_main["SEC_SCREEN"] = ""
-    for i in range(len(monitors)):
-        keys_mon = {}
-        keys_mon["N"] = str(i)
-        
-        keys_mon["VENDOR"] = monitors[i].vendorname
-        keys_mon["MODEL"] = monitors[i].modelname
-        keys_mon["HSYNC"] = str(monitors[i].hsync_min) + "-" + str(monitors[i].hsync_max)
-        keys_mon["VREF"] = str(monitors[i].vref_min) + "-" + str(monitors[i].vref_max)
-
-        if monitors[i].panel_h and monitors[i].panel_w:
-            keys_mon["MODELINES"] = calcModeLine(monitors[i].panel_w, monitors[i].panel_h, 60)
-            monitors[i].modes = '"%dx%d" "800x600" "640x480" "1024x768"' % (monitors[i].panel_w, monitors[i].panel_h)
-        else:
-            keys_mon["MODELINES"] = "".join(monitors[i].modelines)
-            monitors[i].modes = monitors[i].res
-
-        keys_mon["DEPTH"] = "16"
-        keys_mon["MODELINES"] = monitors[i].modelines
-        keys_mon["MODES"] = monitors[i].modes
-
-        keys_main["SEC_MONITOR"] = template_monitor % keys_mon
-        keys_main["SEC_SCREEN"] = template_screen % keys_mon
-
+    keys_main["SEC_MONITOR"], keys_main["SEC_SCREEN"] = keysMonitors()
+    
     # input devices
     querySynaptics(keys_main)
     keys_main["KEYMAP"] = queryKeymap()

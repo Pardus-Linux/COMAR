@@ -58,6 +58,7 @@ struct connection {
 	size_t size;
 	size_t data_size;
 	int pos;
+	unsigned char lang[4];
 };
 
 static int pipe_fd;
@@ -275,6 +276,8 @@ parse_rpc(struct connection *c)
 	ipc.source.chan = (void *) c;
 	ipc.source.cookie = c->cookie;
 	ipc.source.id = get_id(c->buffer + 4);
+	ipc.source.lang[0] = c->lang[0];
+	ipc.source.lang[1] = c->lang[1];
 	cmd = get_cmd(c->buffer);
 
 //printf("RPC cmd %d, id %d, size %d\n", cmd, id, c->data_size);
@@ -401,6 +404,13 @@ parse_rpc(struct connection *c)
 			// no parameter
 			if (!acl_is_capable(CMD_DUMP_PROFILE, 0, &c->cred)) return -1;
 			proc_put(TO_PARENT, CMD_DUMP_PROFILE, &ipc, NULL);
+			return 0;
+
+		case RPC_LOCALIZE:
+			if (get_arg(&args, &t, &sz) != 1) return -1;
+			if (sz != 2) return -1;
+			c->lang[0] = t[0];
+			c->lang[1] = t[1];
 			return 0;
 
 		default:

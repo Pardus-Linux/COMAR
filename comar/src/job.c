@@ -18,7 +18,7 @@
 #include "log.h"
 #include "utility.h"
 
-static struct ipc_source channel;
+struct ipc_source bk_channel;
 int bk_node;
 char *bk_app;
 
@@ -29,7 +29,7 @@ send_result(int cmd, const char *data, size_t size)
 	struct pack *p;
 
 	memset(&ipc, 0, sizeof(struct ipc_struct));
-	ipc.source = channel;
+	ipc.source = bk_channel;
 	p = pack_new(128);
 
 	if (CMD_RESULT == cmd) {
@@ -338,7 +338,7 @@ job_proc(void)
 	}
 	proc_get(sender, &ipc, p, size);
 
-	channel = ipc.source;
+	bk_channel = ipc.source;
 
 	switch (cmd) {
 		case CMD_REGISTER:

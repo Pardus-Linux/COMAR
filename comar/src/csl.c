@@ -25,7 +25,25 @@
 int job_send_result(int cmd, const char *data, size_t size);
 extern int bk_node;
 extern char *bk_app;
+extern struct ipc_source bk_channel;
 
+static PyObject *
+c_i18n(PyObject *self, PyObject *args)
+{
+	char lang[4];
+	PyObject *dict;
+
+	lang[0] = bk_channel.lang[0];
+	if (lang[0] == '\0') lang[0] = 'e';
+	lang[1] = bk_channel.lang[1];
+	if (lang[1] == '\0') lang[1] = 'n';
+	lang[2] = '\0';
+
+	if (!PyArg_ParseTuple(args, "O!", &PyDict_Type, &dict))
+		return NULL;
+
+	return PyDict_GetItemString(dict, lang);
+}
 
 static PyObject *
 c_call(PyObject *self, PyObject *args)
@@ -227,6 +245,7 @@ c_get_instance(PyObject *self, PyObject *args)
 }
 
 static PyMethodDef methods[] = {
+	{ "_", c_i18n, METH_VARARGS, "Return localized text from a dictionary" },
 	{ "call", c_call, METH_VARARGS, "Make a syncronous comar call" },
 	{ "fail", c_fail, METH_VARARGS, "Abort script and return a fail message" },
 	{ "notify", c_notify, METH_VARARGS, "Send a notification event" },

@@ -33,6 +33,7 @@ struct ipc_source {
 	void *chan;
 	unsigned int cookie;
 	int id;
+	unsigned char lang[4];
 };
 
 struct ipc_struct {

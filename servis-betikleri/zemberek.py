@@ -21,3 +21,6 @@ def start():
 
 def stop():
     run("/sbin/start-stop-daemon", "--stop", "--quiet", "--pidfile", "/var/run/zemberek.pid")
+
+def status():
+    return checkDaemon("/var/run/zemberek.pid")

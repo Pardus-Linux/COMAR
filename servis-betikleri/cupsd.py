@@ -9,3 +9,6 @@ def start():
 
 def stop():
     run("/sbin/start-stop-daemon --stop -q --exec /usr/sbin/cupsd")
+
+def status():
+    return checkDaemon("/var/run/sshd.pid")

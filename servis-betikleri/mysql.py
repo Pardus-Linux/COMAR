@@ -17,3 +17,6 @@ def start():
 
 def stop():
     run("/sbin/start-stop-daemon --stop --retry 5 --quiet --pidfile=/var/run/mysqld/mysqld.pid")
+
+def status():
+    return checkDaemon("/var/run/mysqld/mysqld.pid")

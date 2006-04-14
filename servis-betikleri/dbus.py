@@ -16,3 +16,6 @@ def start():
 def stop():
     run("/sbin/start-stop-daemon --stop --pidfile /var/run/dbus.pid")
     unlink("/var/run/dbus.pid")
+
+def status():
+    return checkDaemon("/var/run/dbus.pid")

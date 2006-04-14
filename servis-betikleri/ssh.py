@@ -29,3 +29,6 @@ def start():
 
 def stop():
     run("/sbin/start-stop-daemon --stop --quiet --pidfile /var/run/sshd.pid")
+
+def status():
+    return checkDaemon("/var/run/sshd.pid")

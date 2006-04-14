@@ -15,3 +15,6 @@ def start():
 def stop():
     run("start-stop-daemon --stop --oknodo --retry 15 --quiet --pidfile /var/run/klogd.pid")
     run("start-stop-daemon --stop --oknodo --retry 15 --quiet --pidfile /var/run/syslogd.pid")
+
+def status():
+    return checkDaemon("/var/run/syslogd.pid")

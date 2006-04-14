@@ -10,3 +10,6 @@ def start():
 
 def stop():
     run("/sbin/start-stop-daemon --stop -q --pidfile /var/run/mdnsd.pid")
+
+def status():
+    return checkDaemon("/var/run/mdnsd.pid")

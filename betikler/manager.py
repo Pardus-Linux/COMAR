@@ -95,18 +95,13 @@ def installCritical():
 
 def getInstalled():
     _init_pisi()
-    A = pisi.packagedb.inst_packagedb.list_packages()
+    A = pisi.context.installdb.list_installed()
     A.sort()
-    B = map(lambda x: "%s %s %s" % (
-        x, pisi.packagedb.get_package(x).version, pisi.packagedb.get_package(x).release), A)
-    return "\n".join(B)
+    return A
 
 def getUpgradable(type="all"):
     _init_pisi()
-    A = pisi.api.list_upgradable()
-    B = map(lambda x: "%s %s %s" % (
-        x, pisi.packagedb.get_package(x).version, pisi.packagedb.get_package(x).release), A)
-    return "\n".join(B)
+    return pisi.api.list_upgradable()
 
 def getPackageInfo(package=None):
     return "NotImplemented"

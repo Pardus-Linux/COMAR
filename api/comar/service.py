@@ -34,11 +34,16 @@ def checkDaemon(pidfile):
 
 def is_on():
     from csl import get_profile
+    state = "off"
     s = get_profile("System.Service.setState")
     if s:
         state = s["state"]
     else:
-        state = "off"
+        try:
+            from csl import serviceDefault
+            state = serviceDefault
+        except:
+            pass
     
     return state
 

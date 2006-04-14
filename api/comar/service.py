@@ -24,6 +24,14 @@ def run(*cmd):
     else:
         return subprocess.call(cmd)
 
+def checkDaemon(pidfile):
+    if not os.path.exists(pidfile):
+        return False
+    pid = file(pidfile).read().rstrip("\n")
+    if not os.path.exists("/proc/%s" % pid):
+        return False
+    return True
+
 def is_on():
     from csl import get_profile
     s = get_profile("System.Service.setState")
@@ -46,7 +54,18 @@ def loadEnvironment():
 def info():
     from csl import serviceType
     from csl import serviceDesc
-    return "\n".join([serviceType, is_on(), serviceDesc])
+    state = is_on()
+    try:
+        from csl import status
+        if status():
+            if state == "off":
+                state = "started"
+        else:
+            if state == "on":
+                state = "stopped"
+    except:
+        pass
+    return "\n".join([serviceType, state, serviceDesc])
 
 def ready():
     if is_on() == "on":

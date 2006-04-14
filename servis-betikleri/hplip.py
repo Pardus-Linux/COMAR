@@ -11,3 +11,5 @@ def stop():
     run("start-stop-daemon --stop --quiet -n hpiod")
     run("start-stop-daemon --stop --pidfile /var/run/hpssd.pid")
 
+def status():
+    return checkDeamon("/var/run/hpssd.pid")

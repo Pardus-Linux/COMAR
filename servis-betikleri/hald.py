@@ -26,3 +26,6 @@ def start():
 
 def stop():
     run("/sbin/start-stop-daemon --stop -q --pidfile /var/run/hald.pid")
+
+def status():
+    return checkDeamon("/var/run/hald.pid")

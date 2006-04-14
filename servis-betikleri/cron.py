@@ -8,3 +8,6 @@ def start():
 
 def stop():
     run("start-stop-daemon --stop --quiet --pidfile /var/run/cron.pid")
+
+def status():
+    return checkDeamon("/var/run/cron.pid")

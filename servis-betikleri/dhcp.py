@@ -9,3 +9,6 @@ def start():
 
 def stop():
     run("start-stop-daemon --stop --exec /usr/sbin/dhcpd --p /var/run/dhcp/dhcpd.pid")
+
+def status():
+    return checkDeamon("/var/run/dhcp/dhcpd.pid")

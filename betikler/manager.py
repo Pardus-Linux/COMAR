@@ -11,6 +11,8 @@
 # Please read the COPYING file.
 #
 
+import string 
+
 import pisi.api
 import pisi.installdb
 import pisi.packagedb
@@ -96,7 +98,7 @@ def installCritical():
 def getInstalled():
     _init_pisi()
     A = pisi.context.installdb.list_installed()
-    A.sort()
+    A.sort(key=string.lower)
     return A
 
 def getUpgradable(type="all"):

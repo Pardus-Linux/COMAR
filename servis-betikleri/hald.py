@@ -22,10 +22,14 @@ def start():
     call("System.Service.start", "acpid")
     call("System.Service.start", "dbus")
     wait_for_bus("/var/lib/dbus/system_bus_socket")
-    run("/sbin/start-stop-daemon --start -q --exec /usr/sbin/hald")
+    ret = run("/sbin/start-stop-daemon --start -q --exec /usr/sbin/hald")
+    if ret == 0:
+        notify("System.Service.changed", "started")
 
 def stop():
-    run("/sbin/start-stop-daemon --stop -q --pidfile /var/run/hald.pid")
+    ret = run("/sbin/start-stop-daemon --stop -q --pidfile /var/run/hald.pid")
+    if ret == 0:
+        notify("System.Service.changed", "stopped")
 
 def status():
     return checkDeamon("/var/run/hald.pid")

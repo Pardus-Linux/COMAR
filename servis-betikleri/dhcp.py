@@ -5,10 +5,14 @@ serviceType = "server"
 serviceDesc = "DHCP Daemon"
 
 def start():
-    run("start-stop-daemon --start --exec /usr/sbin/dhcpd --p /var/run/dhcp/dhcpd.pid -u dhcp -g dhcp eth0")
+    ret = run("start-stop-daemon --start --exec /usr/sbin/dhcpd --p /var/run/dhcp/dhcpd.pid -u dhcp -g dhcp eth0")
+    if ret == 0:
+        notify("System.Service.changed", "started")
 
 def stop():
-    run("start-stop-daemon --stop --exec /usr/sbin/dhcpd --p /var/run/dhcp/dhcpd.pid")
+    ret = run("start-stop-daemon --stop --exec /usr/sbin/dhcpd --p /var/run/dhcp/dhcpd.pid")
+    if ret == 0:
+        notify("System.Service.changed", "stopped")
 
 def status():
     return checkDeamon("/var/run/dhcp/dhcpd.pid")

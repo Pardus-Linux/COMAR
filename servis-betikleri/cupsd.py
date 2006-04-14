@@ -5,10 +5,14 @@ serviceDesc = "CUPSD"
 
 def start():
     call("System.Service.start", "hplip")
-    run("/sbin/start-stop-daemon --start -q --exec /usr/sbin/cupsd")
+    ret = run("/sbin/start-stop-daemon --start -q --exec /usr/sbin/cupsd")
+    if ret == 0:
+        notify("System.Service.changed", "started")
 
 def stop():
-    run("/sbin/start-stop-daemon --stop -q --exec /usr/sbin/cupsd")
+    ret = run("/sbin/start-stop-daemon --stop -q --exec /usr/sbin/cupsd")
+    if ret == 0:
+        notify("System.Service.changed", "stopped")
 
 def status():
-    return checkDaemon("/var/run/sshd.pid")
+    return checkExecutable("/usr/sbin/cupsd")

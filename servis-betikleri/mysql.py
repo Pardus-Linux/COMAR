@@ -10,13 +10,14 @@ def check_mysql():
 
 def start():
     check_mysql()
-    run("/sbin/start-stop-daemon --start --quiet --background --exec /usr/sbin/mysqld -- \
-         --basedir=/usr --datadir=/var/lib/mysql --pid-file=/var/run/mysqld/mysqld.pid \
-         --skip-locking --port=3306 --socket=/var/run/mysqld/mysqld.sock --max_allowed_packet=8M \
-         --net_buffer_length=16K")
+    ret = run("/sbin/start-stop-daemon --start --quiet --background --exec /usr/sbin/mysqld")
+    if ret == 0:
+        notify("System.Service.changed", "started")
 
 def stop():
-    run("/sbin/start-stop-daemon --stop --retry 5 --quiet --pidfile=/var/run/mysqld/mysqld.pid")
-
+    ret = run("/sbin/start-stop-daemon --stop --retry 5 --quiet --pidfile=/var/run/mysqld/mysqld.pid")
+    if ret == 0:
+        notify("System.Service.changed", "stopped")
+    
 def status():
     return checkDaemon("/var/run/mysqld/mysqld.pid")

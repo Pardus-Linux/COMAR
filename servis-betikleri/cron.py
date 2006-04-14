@@ -4,10 +4,14 @@ serviceType = "local"
 serviceDesc = "Cron"
 
 def start():
-    run("start-stop-daemon --start --quiet --exec /usr/sbin/cron")
+    ret = run("start-stop-daemon --start --quiet --exec /usr/sbin/cron")
+    if ret == 0:
+        notify("System.Service.changed", "started")
 
 def stop():
-    run("start-stop-daemon --stop --quiet --pidfile /var/run/cron.pid")
+    ret = run("start-stop-daemon --stop --quiet --pidfile /var/run/cron.pid")
+    if ret == 0:
+        notify("System.Service.changed", "stopped")
 
 def status():
     return checkDeamon("/var/run/cron.pid")

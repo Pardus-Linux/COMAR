@@ -21,24 +21,28 @@ def capture(*cmd):
 
 def load_oss_support():
     for drv in oss_modules:
-        run("/sbin/modprobe", drv)
+        return run("/sbin/modprobe", drv)
 
 def restore_mixer():
     if os.path.exists(cfg_file):
-        run("/usr/sbin/alsactl -f %s restore 0" % cfg_file)
+        return run("/usr/sbin/alsactl -f %s restore 0" % cfg_file)
     else:
         for a in capture("/usr/bin/amixer", "scontrols")[0].split("\n"):
-            # strange, but "a" may not exist
+            # strange, but "a" may not exist
             if a:
-                run("/usr/bin/amixer -q set %s 75% unmute" % a.split("'")[1])
+                return run("/usr/bin/amixer -q set %s 75% unmute" % a.split("'")[1])
 
 def save_mixer():
     if os.path.exists("/usr/sbin/alsactl"):
-        run("/usr/sbin/alsactl", "-f", cfg_file, "store")
+        return run("/usr/sbin/alsactl", "-f", cfg_file, "store")
 
 def start():
-    load_oss_support()
-    restore_mixer()
+    ret1 = load_oss_support()
+    ret2 = restore_mixer()
+    if ret1 == 0 and ret2 == 0:
+        notify("System.Service.changed", "started")
 
 def stop():
-    save_mixer()
+    ret = save_mixer()
+    if ret == 0:
+        notify("System.Service.changed", "stopped")

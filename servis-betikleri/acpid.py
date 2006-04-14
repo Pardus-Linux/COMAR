@@ -10,10 +10,14 @@ def check_config():
 
 def start():
     check_config()
-    run("/sbin/start-stop-daemon --start --quiet --exec /usr/sbin/acpid -- -c /etc/acpi/events")
+    ret = run("/sbin/start-stop-daemon --start --quiet --exec /usr/sbin/acpid -- -c /etc/acpi/events")
+    if ret == 0:
+        notify("System.Service.changed", "started")
 
 def stop():
-    run("/sbin/start-stop-daemon --stop --quiet --exec /usr/sbin/acpid")
+    ret = run("/sbin/start-stop-daemon --stop --quiet --exec /usr/sbin/acpid")
+    if ret == 0:
+        notify("System.Service.changed", "stopped")
 
 def reload():
     run("/sbin/start-stop-daemon --stop --quiet --exec /usr/sbin/acpid --signal HUP")

@@ -138,7 +138,8 @@ class Link:
         
         You can get the localename parameter from locale.getlocale call.
         """
-        pass
+        pak = self.__pack(self.__LOCALIZE, 0, [localename])
+        self.sock.send(pak)
     
     def register(self, classname, packagename, cslfile, id=0):
         """Register a package script on the system model.

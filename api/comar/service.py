@@ -33,7 +33,6 @@ def checkDaemon(pidfile):
     return True
 
 def is_on():
-    from csl import get_profile
     state = "off"
     s = get_profile("System.Service.setState")
     if s:
@@ -44,8 +43,26 @@ def is_on():
             state = serviceDefault
         except:
             pass
-    
     return state
+
+def loadConfig():
+    try:
+        from csl import serviceConf
+    except:
+        serviceConf = script()[0]
+    dict = {}
+    try:
+        for line in file("/etc/conf.d/%s" % serviceConf):
+            if line != "" and not line.startswith("#") and "=" in line:
+                key, value = line.split("=", 1)
+                key = key.strip()
+                value = value.strip()
+                if value.startswith('"') or value.startswith("'"):
+                    value = value[1:-1]
+                dict[key] = value
+    except:
+        pass
+    return dict
 
 def loadEnvironment():
     if os.path.exists("/etc/profile.env"):
@@ -55,6 +72,8 @@ def loadEnvironment():
                 os.environ[key] = value[1:-1]
 
 # default methods
+
+config = loadConfig()
 
 def info():
     from csl import serviceType

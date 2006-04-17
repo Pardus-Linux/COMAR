@@ -28,6 +28,15 @@ extern char *bk_app;
 extern struct ipc_source bk_channel;
 
 static PyObject *
+c_script(PyObject *self, PyObject *args)
+{
+	PyObject *tuple;
+
+	tuple = PyTuple_Pack(1, PyString_FromString(bk_app));
+	return tuple;
+}
+
+static PyObject *
 c_i18n(PyObject *self, PyObject *args)
 {
 	char lang[4];
@@ -245,6 +254,7 @@ c_get_instance(PyObject *self, PyObject *args)
 }
 
 static PyMethodDef methods[] = {
+	{ "script", c_script, METH_NOARGS, "Return package name" },
 	{ "_", c_i18n, METH_VARARGS, "Return localized text from a dictionary" },
 	{ "call", c_call, METH_VARARGS, "Make a syncronous comar call" },
 	{ "fail", c_fail, METH_VARARGS, "Abort script and return a fail message" },
@@ -344,6 +354,14 @@ csl_execute(char *code, size_t size, const char *func_name, struct pack *pak, ch
 {
 	PyObject *pCode, *pModule, *pDict, *pFunc, *pValue, *pStr;
 	PyObject *pArgs, *pkArgs;
+	PyMethodDef *meth;
+
+	pModule = PyImport_AddModule("__builtin__");
+	pDict = PyModule_GetDict(pModule);
+	for (meth = methods; meth->ml_name; meth++) {
+		pCode = PyCFunction_New(meth, NULL);
+		PyDict_SetItemString(pDict, meth->ml_name, pCode);
+	}
 
 	pCode = PyMarshal_ReadObjectFromString(code, size);
 	if (!pCode) {
@@ -386,8 +404,6 @@ csl_execute(char *code, size_t size, const char *func_name, struct pack *pak, ch
 		PyDict_SetItemString(pkArgs, t, p);
 	}
 	if (!pArgs) pArgs = PyTuple_New(0);
-
-	Py_InitModule("csl", methods);
 
 	pValue = PyObject_Call(pFunc, pArgs, pkArgs);
 	if (!pValue) {

@@ -1,0 +1,555 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass article
+\language turkish
+\inputencoding auto
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize Default
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+Pardus Açýlýþ Sistemi
+\layout Author
+
+Gürer Özen
+\layout Standard
+\pagebreak_bottom 
+
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset 
+
+
+\layout Section
+
+Giriþ
+\layout Standard
+
+Ýþletim sistemi çekirdeðinin çalýþmaya baþladýðý andan, kullanýcýnýn giriþ
+ yapabileceði ana kadar yapýlan iþlemler açýlýþ (init) süreci olarak adlandýrýlm
+aktadýr.
+ Dosya sistemlerinin baðlanmasý, donaným modüllerinin yüklenmesi, temel
+ að ayarlarýnýn yapýlmasý, sistem servislerinin baþlatýlmasý ve grafik arabirimi
+nin çalýþtýrýlýp, kullanýcýnýn karþýsýna giriþ ekraný çýkartýlmasý bu sürecin
+ kapsamýndadýr.
+\layout Standard
+
+Bilgisayar kapatýlacaðý zaman, servislerin durdurulmasý, baðlanmýþ dosya
+ sistemlerinin ayrýlmasý da ayný sistem tarafýndan yürütülür.
+\layout Subsection
+
+Açýlýþ Süreci
+\layout Standard
+
+Çekirdek kendi hazýrlýk iþlemleri bittikten sonra /sbin/init (çekirdeðe
+ init= parametresi verilerek deðiþtirilebilir) komutunu çalýþtýrýr.
+ Bu komut, açýlýþ ve kapanýþ aþamalarýnda /etc/inittab dosyasýnda belirtilen
+ diðer komutlarý çalýþtýrarak süreçleri yürütür.
+\layout Standard
+
+Linux daðýtýmlarýnda bu komutlar bir dizi bash betiði þeklindedir.
+ Pardus 1.0 için kullandýðýmýz Gentoo açýlýþ sistemi, /sbin/rc ana betiði,
+ /sbin/functions.sh yardýmcý fonksiyonlarý, bir dizi yardýmcý komut ve /etc/init.d
+ altýndaki servis betiklerinden oluþmaktadýr.
+ Temel betik ve komutlar initscripts adýnda bir paketle gelirken, servis
+ betikleri ait olduklarý paketlerin içinden çýkar.
+\layout Standard
+
+Açýlýþ, çalýþma ve kapanýþ aþamalarý çalýþma seviyesi (runlevel) olarak
+ isimlendirilir.
+ Ana süreç (/sbin/init) belli bir çalýþma seviyesine geçtiðinde (telinit
+ komutuyla ya da kapatma tuþuna basýlmasý gibi bir olayla), rc betiði o
+ çalýþma seviyesine ait (/etc/runlevels/ içinde çalýþma seviyesine ait dizinde
+ sembolik baðlantýyla belirtilmiþ) olan servis betiklerini çalýþtýrýr.
+ Öntanýmlý gelen bazý çalýþma seviyeleri:
+\layout Description
+
+sysinit Temel açýlýþ, dosya sistemlerinin baðlanmasý.
+\layout Description
+
+boot Geri kalan açýlýþ iþlemleri.
+\layout Description
+
+default Normal çalýþma ortamý.
+\layout Description
+
+single Yalnýzca yetkili kullanýcýnýn giriþ yapabileceði kurtarma modu.
+\layout Description
+
+reboot Yeniden baþlama süreci.
+\layout Description
+
+halt Kapanýþ süreci.
+\layout Standard
+
+Bunlarýn dýþýnda, kullanýcý kendisi de, istediði servislerin açýk olduðu
+ çalýþma seviyeleri ekleyebilmektedir.
+\layout Subsection
+
+Donaným Tanýma
+\layout Standard
+
+Bir aygýtýn yazýlýmlar tarafýndan kullanýlabilmesi için, gerekli çekirdek
+ modülünün yüklenmesi, gerekiyorsa aygýta firmware yüklenmesi, eðer varsa
+ servis yazýlýmýnýn çalýþtýrýlmasý, ve /dev dizininde aygýta eriþmek için
+ gereken dosyalarýn oluþturulmasý gerekmektedir.
+\layout Standard
+
+Bu iþlemlerin, açýlýþ sýrasýnda, aktif olan aygýtlar için (coldplug) ve
+ çalýþma esnasýnda takýlan aygýtlar için (hotplug) yapýlmasý gereklidir.
+\layout Standard
+
+Linux 2.6.x serisi çekirdeklerde, her bir aygýt, sysfs dosya sistemi üzerinde
+ bir dizin olarak gözükmekte ve bu dizindeki dosyalardan çekirdeðin aygýta
+ dair tüm bilgisine ulaþýlabilmektedir.
+ Modern baðlantý yollarý (PCI, USB, FireWire) protokollerinde, aygýtlarýn
+ üretici ve modeline ait sayýlar bulunduðu için, sysfs'ten alýnan bu sayýlarý
+ ve aygýt sýnýfý gibi deðerleri, eldeki modül ve servislerin desteklenen
+ donaným listeleriyle karþýlaþtýrarak, hangilerinin yüklenmesi gerektiði
+ bulunabilmektedir.
+\layout Subsection
+
+Sorunlar
+\layout Standard
+
+Bu sistem ile iki temel problemimiz var.
+ Ýlki kullanýþlýlýða yönelik.
+ Açýlýþ sisteminin yavaþlýðý yüzünden kullanýcý giriþ ekranýnýn çýkmasý
+ nerdeyse bir dakikayý bulmakta.
+ Ýkincisi ise teknik bir problem.
+ Sistemin bash, sed, awk gibi zayýf ve karmaþýk sözdizimli dillerle yazýlmýþ
+ olmasý yüzünden bakým ve geliþtirme yapmak çok zor.
+\layout Standard
+
+Yavaþlýðýn temel sebeplerinden biri bash.
+ Kabuðun programlama yapýlarýnýn zayýf olmasý yüzünden basit iþler için
+ bir sürü ek araç ve komut kullanýlýyor.
+ Bash'in genel yavaþlýðý yüzünden, her betiðin ilk iþ olarak functions.sh'ý
+ ve ortam deðiþkenlerini taþýyan /etc/profile'ý çaðýrmasý çok zaman alýyor.
+\layout Standard
+
+Çözüm olarak betiklerin otomatik olarak tek bir dosyaya birleþtirilmesi,
+ bash yerine busybox kabuðu kullanýlmasý gibi giriþimler mevcut, ama bunlar
+ karmaþýklýða bir çözüm getirmiyor.
+\layout Standard
+
+Ýkinci büyük sebep, iþlemlerin sýralý yapýlmasý.
+ Birarada yürütülebilecek iþlemler birbirlerini bekliyor ve zaman kaybýna
+ yol açýyor.
+\layout Standard
+
+Buna çözüm olarak da betiklerin birbirlerine baðýmlýlýklarý dikkate alýnarak
+ paralel çalýþtýrýlmasý için initng gibi giriþimler mevcut.
+ Kendi servis betik biçimi olan initng'nin, kullanýmda, yeterince olgun
+ bir yazýlým olmamasýndan kaynaklanan, bazý sorunlar çýkardýðýný gördük.
+\layout Standard
+
+Önemli bir faktör de disk okuma hýzýdýr.
+ Modern harddiskler 20-30 MB/s gibi okuma hýzlarýna sahip olmakla birlikte,
+ okunacak bilginin sürekli olmadýðý durumlarda kafa hareketinin yavaþ olmasý
+ nedeniyle bu hýz çok düþmektedir.
+ Özellikle çok sayýda ufak dosya olmasý durumunda okuma hýzý kötü etkilenmektedi
+r.
+\layout Standard
+
+Önyükleme (preload) gibi tekniklerle okuma yapýlmayan anlarýn deðerlendirilmesi,
+ özellikle paralel iþlevler olduðu durumlarda, disk için bekleyen farklý
+ iþlevlerin, ayný anda abanýp, önceliði yüksek bir iþlevin önünü týkamamasýna
+ dikkat edilmesi, disk okuma verimini yüksek tutacaktýr.
+\layout Standard
+
+Paketlerle birlikte gelen küçük dosyalarýn birleþtirilip iþlendiði durumlarda
+ (örneðin /etc/env.d dosyalarýndan /etc/profile.env elde edilmesi), ya da
+ bir ayar dosyasý deðiþtiðinde yapýlacak iþlemlerde (/etc/ld.so.conf deðiþtiðinde
+ ldconfig komutunun çalýþtýrýlmasý), bu iþlemi her açýlýþta tekrarlamamak
+ için gerçek bir deðiþiklik olmadýðýnda ayar dosyalarýna yazmamaya dikkat
+ etmek gereklidir.
+ Pardus 1.0 üzerinde, her açýlýþta çekirdeðe verilen dil parametresi ile
+ /etc/env.d güncellendiði için, ayný dil ile üst üste yapýlan açýlýþlarda,
+ /etc/profile.env oluþturulmasý ve ld yollarý dosyasý da bundan dolayý güncellend
+iði için ldconfig çalýþtýrýlmasý, gereksiz yere tekrarlanmaktaydý.
+\layout Section
+
+Gerekler
+\layout Standard
+
+Pardus için kullanacaðýmýz açýlýþ sisteminin bazý gerekleri saðlamasýný
+ bekliyoruz.
+\layout Subsection
+
+Hýz
+\layout Standard
+
+Giriþ ekranýnýn kullanýcýnýn karþýsýna mümkün olduðu kadar hýzlý getirilmesi
+ gereklidir.
+\layout Subsection
+
+Esneklik
+\layout Standard
+
+Açýlýþ sistemine yeni bir özellik eklemek ya da özel bir sürüm için deðiþiklikle
+r yapmak kolay olmalýdýr.
+\layout Subsection
+
+Saðlamlýk
+\layout Standard
+
+Çýkabilecek sorunlar mutlaka göz önüne alýnmalý.
+ Kullanýcý hatasý yada açýlýþ sisteminin bir iç hatasý yüzünden sistemin
+ açýlamaz hale gelmesine olabildiðince engel olunmalý.
+\layout Subsection
+
+Servis Yönetimi
+\layout Standard
+
+Açýlýþ sisteminin temel bileþenleri tek bir paket olsa bile, diðer paketlerin
+ de bu sistemle entegre edilebilmesi için kendi betiklerini sisteme dahil
+ edebilmeleri gerekmektedir.
+\layout Standard
+
+Kullanýcý, bu betiklerin yönettiði servisleri, hem komut satýrý hem de grafik
+ arayüz aracýlýðýyla, baþlatýp durdurabilmeli, açýlýþta çalýþýp çalýþmayacaðýný
+ ayarlayabilmelidir.
+\layout Standard
+
+Kullanýcýnýn servisleri daha kolay yönetebilmesi için, betiklerin yerel
+ mi yoksa dýþarýya hizmet verecek bir servis mi çalýþtýrdýðý, ne iþ yaptýðý,
+ o anda çalýþýp çalýþmadýðý ile ilgili detaylý bilgi saðlanmalýdýr.
+\layout Standard
+
+Servislerin birbirine baðýmlýlýklarý belirtilebilmeli, çalýþtýrma iþlemi
+ baðýmlýlýk sýrasýna göre gitmelidir.
+\layout Subsection
+
+Özel Açýlýþ Seçenekleri
+\layout Standard
+
+Çalýþan CD için (deðiþik baðlama tablosu, bazý dizinler yalnýzca okunabilir),
+ metin terminaller için (masaüstü yok), kurtarma durumlarý için (donaným
+ seçenekleri en güvenlide) açýlýþ desteði olmalý.
+\layout Subsection
+
+Yerelleþtirme
+\layout Standard
+
+Tüm metinler gettext aracýlýðýyla yerelleþtirilebilmeli.
+ Açýlýþ dil ve klavye seçenekleri, çekirdek parametreleri ile ayarlanabilmelidir.
+\layout Subsection
+
+Görsellik
+\layout Standard
+
+gereksiz metinler olmasýn
+\layout Standard
+
+logo + anim
+\layout Section
+
+Tasarým
+\layout Standard
+
+Açýlýþ betiklerini tamamen Python ile yazmaya karar verdik.
+ Python, çok kullanýlan metin iþlemleri, dosya sistemine eriþim, program
+ çalýþtýrma iþlevleri için hazýr fonksiyonlar içerdiði ve güçlü bir programlama
+ dilinin tüm imkanlarýný sunduðu için betiklerin çok sade ve esnek olmasýný
+ saðladý.
+\layout Standard
+
+Açýlýþ sistemi devreye girdiðinde, Python yorumlayýcýsý ve kullanýlan modüllerin
+ yüklenmesi yaklaþýk 1.5-2 saniye sürmekte.
+ Buna karþýlýk toplam açýlýþ süresi nerdeyse bir buçuk dakikadan, 15-20
+ saniyeye inmiþ durumda.
+ Açýlýþ betiklerinin uzunluðu ise nerdeyse onda birine düþtü.
+\layout Standard
+
+Servis betikleri, Çomar betikleri olarak yeniden yazýldý.
+ Böylece betiklerin yönetilmesi, paralel çalýþtýrýlmasý gibi iþler Çomar
+ tarafýndan kolayca gerçekleþtirilebiliyor.
+ Betiklerin kolayca yazýlabilmesi için sýk kullanýlan servis fonksiyonlarý
+ için bir Çomar API modülü yazýldý.
+\layout Standard
+
+Sistemin bileþenlerini incelersek:
+\layout Subsection
+
+mudur.py
+\layout Standard
+
+Müdür /sbin/init tarafýndan çalýþtýrýlan ve temel açýlýþ iþlemlerinin tümünü
+ yapan betiktir.
+\layout Standard
+
+Ayarlarý /etc/conf.d/mudur.conf dosyasýndan okumaktadýr.
+ Ayrýca çekirdek parametreleriyle verilen dil ayarlarýný kullanmaktadýr.
+\layout Standard
+
+Ýlk olarak sysinit aþamasýnda dosya sistemlerini denetleyip baðlar, udev'i
+ etkinleþtirir, bilgisayar adýný ve sistem saatini ayarlar, bir yandan paralel
+ olarak muavin betiðini çalýþtýrarak aktif olan aygýtlar için gerekli sürücüleri
+n yüklenmesi iþlemini baþlatýr.
+\layout Standard
+
+Ýkinci aþama boot ile birlikte, lokal að baðlantýsýný açmak, /var ve /tmp
+ dizinlerindeki geçici dosyalarý temizlemek, /etc/env.d dizinindeki dosyalardan
+ /etc/profile.env yi güncellemek gibi iþleri yaptýktan sonra Çomar servisini
+ baþlatýr.
+\layout Standard
+
+Nihayet default aþamasý için çalýþtýðýnda Çomar'a servisleri baþlatma komutunu
+ gönderir.
+\layout Standard
+
+Kapanýþ sýrasýnda ise önce Çomar'a servisleri durdurma komutu gönderilir,
+ sonra da dosya sistemleri ayrýlýp, kapatma yada yeniden baþlatma iþlemi
+ yapýlýr.
+\layout Subsection
+
+muavin.py
+\layout Standard
+
+Bu betik donaným tanýmayla ilgili iki iþlevi yerine getirmektedir.
+\layout Standard
+
+Açýlýþ sýrasýnda mudur.py tarafýndan baþlatýldýðýnda sysfs içinde tarama
+ yaparak bulunan aygýtlara ait çekirdek modüllerini yükler.
+\layout Standard
+
+Çalýþma sýrasýnda bir aygýt takýldýðýnda ise, udev tarafýndan baþlatýlarak
+ firmware yükleme ve modül bulup yükleme iþlerini yapar.
+\layout Subsection
+
+service Komutu
+\layout Standard
+
+Komut satýrýndan servislerin çalýþma durumlarýný gösteren, servisleri açýp
+ kapatma iþlerini yapan basit bir betiktir.
+\layout Subsection
+
+Servis KGA
+\layout Standard
+
+Pardus yapýlandýrma merkezi Tasma içinde servisleri yönetebilen bir arayüzdür.
+\layout Subsection
+
+Çomar System.Service Sýnýfý
+\layout Standard
+
+Müdür için yazýlmýþ servis betikleri Çomar'da bu sýnýfa kayýt olurlar ve
+ aþaðýdaki metotlarý saðlarlar:
+\layout Subsubsection*
+
+System.Service.info
+\layout Standard
+
+Servis hakkýnda bilgi döndürür.
+ Ýlk satýr servisin tipi, ikinci satýr durumu, son satýr da yerelleþtirilmiþ
+ olarak servisin adýný verir.
+\layout Standard
+
+Üç tip servis vardýr:
+\layout Description
+
+server Apache, OpenSSH, Postfix gibi dýþ bilgisayarlara hizmet veren web,
+ kabuk, eposta sunucu gibi servislerin baþlatma betikleri.
+\layout Description
+
+local Pardus masaüstünün çalýþabilmesi için yerel programlara hizmet veren
+ DBus, HAL, Zemberek gibi servislerin baþlatma betikleri.
+\layout Description
+
+script Bir servis baþlatmayan, yalnýzca açýlýþta belli iþlemleri yerine
+ getiren betikler.
+\layout Standard
+
+Bir servis dört durumda olabilir:
+\layout Description
+
+on Servis sürekli olarak açýktýr ve þu anda çalýþmaktadýr.
+\layout Description
+
+started Servis kapalýdýr ama kullanýcý tarafýndan çalýþtýrýlmýþtýr.
+\layout Description
+
+stopped Servis açýktýr ama bir sebepten dolayý durdurulmuþ yada çalýþamamýþtýr.
+\layout Description
+
+off Servis kapalýdýr.
+\layout Standard
+
+Servis tipi ve adý, kullanýcý arayüzlerinde göstermek amaçlý düþünülmüþtür.
+\layout Subsubsection*
+
+System.Service.start
+\layout Standard
+
+Servisi baþlatýr.
+\layout Subsubsection*
+
+System.Service.stop
+\layout Standard
+
+Servisi durdurur.
+\layout Subsubsection*
+
+System.Service.reload
+\layout Standard
+
+Eðer servis destekliyorsa kapanmadan ayarlarýný tekrar yükleyip güncellemesini
+ saðlar.
+\layout Subsubsection*
+
+System.Service.setState (state)
+\layout Standard
+
+Servisin durumunu deðiþtirir.
+ Eðer state parametresi 
+\begin_inset Quotes eld
+\end_inset 
+
+on
+\begin_inset Quotes erd
+\end_inset 
+
+ verilirse, servis çalýþtýrýlýr ve sürekli olarak açýk konuma getirilir.
+ Böylece bilgisayarý yeniden baþlattýðýnýzda servis otomatik olarak açýlacaktýr.
+ State 
+\begin_inset Quotes eld
+\end_inset 
+
+off
+\begin_inset Quotes erd
+\end_inset 
+
+ verilerek servis kapatýlýp çalýþmayacak þekilde ayarlanýr.
+\layout Subsubsection*
+
+System.Service.ready
+\layout Standard
+
+Servis eðer 
+\begin_inset Quotes eld
+\end_inset 
+
+on
+\begin_inset Quotes erd
+\end_inset 
+
+ olarak ayarlanmýþsa, start metodunu çaðýrarak baþlatýr.
+ Müdür açýlýþ sýrasýnda tüm servislere bu çaðrýyý yaparak servisleri baþlatmakta
+dýr.
+\layout Subsubsection*
+
+System.Service.changed
+\layout Standard
+
+Bu uyarý bir servisin durumu deðiþtiðinde gönderilir.
+ Parametre olarak 
+\begin_inset Quotes eld
+\end_inset 
+
+started
+\begin_inset Quotes erd
+\end_inset 
+
+ ve 
+\begin_inset Quotes eld
+\end_inset 
+
+stopped
+\begin_inset Quotes erd
+\end_inset 
+
+ deðerleri verir.
+\layout Subsection
+
+Çomar comar.service Modülü
+\layout Standard
+
+Servis betiklerinde sýk kullanýlan fonksiyonlar bu Python modülünde saðlanmýþtýr.
+\layout Standard
+
+Betiklerde:
+\layout LyX-Code
+
+from comar.service import *
+\layout Standard
+
+þeklinde kullandýðýnýzda info, setState, ready metotlarý sizin için tanýmlanmýþ
+ olacaktýr.
+ Böylece yalnýzca start ve stop metotlarý ile bir servis betiði yazabilirsiniz.
+\layout Standard
+
+Bu modüldeki fonksiyonlar, betik tipi ve adýný betiðinizin içindeki serviceType
+ ve serviceDesc deðiþkenlerinden okuyacaktýr.
+\layout Standard
+
+Bu modülü import ettiðiniz halde, bu fonksiyonlarý kendiniz de tanýmlayabilirsin
+iz, bu durumda betik içindekiler çalýþacaktýr.
+\layout Standard
+
+Modülde ayrýca þu yardýmcý fonksiyonlar bulunmaktadýr:
+\layout Subsubsection*
+
+run
+\layout Standard
+
+Parametre olarak verilen komutu yeni bir kabuk açmadan çalýþtýrýr.
+ Komutun dönüþ deðerini döndürür.
+\layout Standard
+
+Örnek:
+\layout LyX-Code
+
+run("/sbin/start-stop-daemon --start --quiet --exec /usr/sbin/cpufreqd")
+\layout Subsubsection*
+
+checkDaemon
+\layout Standard
+
+Verilen pid dosyasýnýn gösterdiði servisin çalýþýp çalýþmadýðýna bakar.
+\layout Standard
+
+Örnek:
+\layout LyX-Code
+
+def status():
+\layout LyX-Code
+
+    return checkDaemon("/var/run/kdm.pid")
+\layout Subsubsection*
+
+loadEnvironment
+\layout Standard
+
+Çevre deðiþkenlerini /etc/profile.env dosyasýndan okuyup çalýþan süreç için
+ geçerli kýlar.
+ Böylece burda tanýmlý olan deðiþkenleri kullanan servisleri ayrý bir kabuk
+ baþlatmadan çalýþtýrabilirsiniz.
+\layout Subsubsection*
+
+config
+\layout Standard
+
+Bu bir Python sözlük deðiþkeni olup, /etc/conf.d/betikpaketadý dosyasýndaki
+ isim=deðer biçimindeki ayarlarý içermiþtir.
+ Eðer kullandýðýnýz ayar dosyasý adý betik adýndan farklýysa serviceConf
+ deðiþkenine dosya adýný verebilirsiniz (gene /etc/conf.d içinde).
+\the_end

@@ -227,5 +227,5 @@ void
 acl_init(void)
 {
 	// FIXME: read from db
-	set_nodes(&acl_gids, 10, strdup("System.Package System.Service Time.Clock Net.Stack Net.Link\n\n"));
+	set_nodes(&acl_gids, 10, strdup("System.Package System.Service Time.Clock Net.Stack Net.Link Net.Filter\n\n"));
 }

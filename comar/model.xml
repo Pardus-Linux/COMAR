@@ -68,6 +68,29 @@
 
 
 <group name="Net">
+<class name="Filter">
+<method name="setRule" profile="package">
+    <instance>no</instance>
+    <argument>chain</argument>
+    <argument>protocol</argument>
+    <argument>src</argument>
+    <argument>dst</argument>
+    <argument>sport</argument>
+    <argument>dport</argument>
+    <argument>jump</argument>
+    <argument>log</argument>
+    <argument>description</argument>
+    <argument>extra</argument>
+</method>
+<method name="unsetRule" profile="package" profileOp="delete">
+    <instance>no</instance>
+</method>
+<method name="getRules"/>
+<method name="setState" profile="package">
+    <argument>state</argument>
+</method>
+<method name="getState"/>
+</class>
 <class name="Stack">
 <method name="getNameServers"/>
 <method name="setNameServers">

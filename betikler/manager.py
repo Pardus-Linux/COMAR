@@ -24,7 +24,7 @@ class UI(pisi.ui.UI):
     def confirm(self, msg):
         return True
     
-    def display_progress(self, pd):
+    def display_progress(self, **pd):
         #out = '\r%-30.30s %3d%% %12.2f %s' % \
         #    (pd['filename'], pd['percent'], pd['rate'], pd['symbol'])
         notify("System.Manager.progress", "%d" % pd['percent'])
@@ -36,6 +36,9 @@ def _init_pisi():
     except pisi.lockeddbshelve.Error, e:
         fail(str(e))
 
+def _close_pisi():
+    pisi.api.finalize()
+
 def installPackage(package=None):
     _init_pisi()
     if package:
@@ -43,9 +46,9 @@ def installPackage(package=None):
             pisi.api.install([package])
         except pisi.packagedb.Error, e:
             return e
+    _close_pisi()
 
 def removePackage(package=None):
-    _init_pisi()
     if package:
 	try:
 	    pisi.api.remove([package])
@@ -53,7 +56,6 @@ def removePackage(package=None):
 	    return e
 
 def updateRepository(repo=None):
-    _init_pisi()
     if repo:
 	try:
 	    pisi.api.update_repo(repo)
@@ -61,7 +63,6 @@ def updateRepository(repo=None):
 	    return e
 
 def updateAllRepositories():
-    _init_pisi()
     for repo in pisi.context.repodb.list():
 	try:
 	    pisi.api.update_repo(repo)
@@ -69,7 +70,6 @@ def updateAllRepositories():
 	    return e
 
 def addRepository(name=None,uri=None):
-    _init_pisi()
     if name and uri:
 	try:
 	    pisi.api.add_repo(name,uri)
@@ -77,7 +77,6 @@ def addRepository(name=None,uri=None):
 	    return e
 
 def removeRepository(repo=None):
-    _init_pisi()
     if repo:
 	try:
 	    pisi.api.remove_repo(repo)
@@ -85,7 +84,6 @@ def removeRepository(repo=None):
 	    return e
 
 def swapRepositories(repo1=None,repo2=None):
-    _init_pisi()
     if repo1 and repo2:
 	try:
 	    pisi.api.ctx.repodb.swap(repo1,repo2)
@@ -99,10 +97,11 @@ def getInstalled():
     _init_pisi()
     A = pisi.context.installdb.list_installed()
     A.sort(key=string.lower)
-    return A
+    A = map(lambda x: "%s" % (x),A)
+    _close_pisi()
+    return " ".join(A)
 
 def getUpgradable(type="all"):
-    _init_pisi()
     return pisi.api.list_upgradable()
 
 def getPackageInfo(package=None):
@@ -112,7 +111,36 @@ def getRepositories():
     _init_pisi()
     A = pisi.api.ctx.repodb.list()
     B = map(lambda x: "%s %s" % (x, pisi.api.ctx.repodb.get_repo(str(x)).indexuri.get_uri()), A)
+    _close_pisi()
     return "\n".join(B)
+
+def getComponentTuple(packages=None,topLevelCategories=None):
+    if packages and topLevelCategories:
+        packageSet = set(packages)
+        componentNames = pisi.context.componentdb.list_components()
+        componentNames.sort()
+        components = [pisi.context.componentdb.get_component(x) for x in componentNames]
+        componentDict = {}
+
+        for component in components:
+            componentPacks = []
+            if not component.name.count('.') or component.name in topLevelCategories:
+                for iterator in componentNames:
+                    if iterator.startswith(component.name) and iterator.count(".") < 2 :
+                        componentSet = set(pisi.context.componentdb.get_component(iterator).packages)
+                        componentPacks += list(packageSet.intersection(componentSet))
+            else:
+                pass
+
+            componentDict[component.name] = componentPacks
+
+        return componentDict
+
+        
+def getLocalNameForComponent(component=None):
+    localName = pisi.context.componentdb.get_component(component).localName
+    return localName
 
 def setRepositories(repos=None):
     return "NotImplemented"
+

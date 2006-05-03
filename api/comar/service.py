@@ -65,14 +65,14 @@ def loadConfig():
     return dict
 
 def loadEnvironment():
+    basePath = "/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:"
     if os.path.exists("/etc/profile.env"):
         for line in file("/etc/profile.env"):
             if line.startswith("export "):
                 key, value = line[7:].strip().split("=", 1)
                 os.environ[key] = value[1:-1]
     # PATH in profile.env doesn't have some default paths
-    os.environ["PATH"] = "/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:" +
-        os.environ.get("PATH", "")
+    os.environ["PATH"] = basePath + os.environ.get("PATH", "")
 
 def waitBus(unix_name, timeout=5, wait=0.1, stream=True):
     import socket

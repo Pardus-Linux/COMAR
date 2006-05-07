@@ -71,16 +71,16 @@
 <class name="Filter">
 <method name="setRule" profile="package">
     <instance>no</instance>
-    <argument>chain</argument>
+    <argument>description</argument>
+    <argument>direction</argument>
     <argument>protocol</argument>
+    <argument>type</argument>
     <argument>src</argument>
     <argument>dst</argument>
     <argument>sport</argument>
     <argument>dport</argument>
-    <argument>jump</argument>
+    <argument>action</argument>
     <argument>log</argument>
-    <argument>description</argument>
-    <argument>extra</argument>
 </method>
 <method name="unsetRule" profile="package" profileOp="delete">
     <instance>no</instance>
@@ -90,6 +90,7 @@
     <argument>state</argument>
 </method>
 <method name="getState"/>
+<method name="getID"/>
 </class>
 <class name="Stack">
 <method name="getNameServers"/>

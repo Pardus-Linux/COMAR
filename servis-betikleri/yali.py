@@ -22,4 +22,5 @@ def start():
         notify("System.Service.changed", "started")
 
 def stop():
-    notify("System.Service.changed", "stopped")
+    if 0 == run("/usr/bin/killall yali-bin"):
+        notify("System.Service.changed", "stopped")

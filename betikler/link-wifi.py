@@ -449,6 +449,12 @@ class Scanner:
         return ""
     
     def scan(self, ifc):
+        icfg = ifconfig()
+        if not icfg.getStatus(ifc):
+            # Some wireless drivers cant do the scan while
+            # interface is down, doh :(
+            icfg.setAddr(ifc, "0.0.0.0")
+            icfg.setStatus(ifc, "UP")
         a = capture("/usr/sbin/iwlist %s scanning" % ifc)
         re.sub('ESSID:.*"(.*)"', self._collect, "\n".join(a[1]))
         return "\n".join(self.list)

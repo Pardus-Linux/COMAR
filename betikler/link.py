@@ -262,7 +262,7 @@ class Dhcp:
         # -H to set hostname due to info from server
         # -t for timeout
 
-        args = "-R -Y -N -H -t " + timeout + " " + ifname
+        args = "-R -Y -N -t " + timeout + " " + ifname
         return self._run(args)
 
     def stop(self, ifname):

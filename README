@@ -1,0 +1,6 @@
+ÇOMAR (pronounced chow-mar), is the COnfiguration MAnageR that helps
+the installed software operate consistently and flawlessly. ÇOMAR
+knows the tasks that can be provided by each application, together
+with the functionality they depend on and other information. Different
+applications may adapt themselves according to the presence and capability
+of their peers.

@@ -20,13 +20,29 @@
 </class>
 
 <class name="Manager">
-<method name="installPackage"/>
-<method name="removePackage"/>
-<method name="updateRepository"/>
+<method name="installPackage">
+    <argument>package</argument>
+</method>
+<method name="removePackage">
+    <argument>package</argument>
+</method>
+<method name="upgradePackage">
+    <argument>package</argument>
+</method>
+<method name="updateRepository">
+    <argument>repository</argument>
+</method>
 <method name="updateAllRepositories"/>
-<method name="addRepository"/>
-<method name="removeRepository"/>
-<method name="swapRepositories"/>
+<method name="addRepository">
+    <argument>repository</argument>
+</method>
+<method name="removeRepository">
+    <argument>repository</argument>
+</method>
+<method name="swapRepositories">
+    <argument>repository1</argument>
+    <argument>repository2</argument>
+</method>
 <method name="installCritical"/>
 <method name="getInstalled"/>
 <method name="getUpgradable"/>

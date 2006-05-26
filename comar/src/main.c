@@ -74,6 +74,7 @@ main(int argc, char *argv[])
 	setlocale(LC_MESSAGES, "");
 	bindtextdomain("comar", "/usr/share/locale");
 	bind_textdomain_codeset("comar", "UTF-8");
+	bind_textdomain_codeset("libc", "UTF-8");
 	textdomain("comar");
 
 	// First phase: configuration

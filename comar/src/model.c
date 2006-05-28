@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2005, TUBITAK/UEKAE
+** Copyright (c) 2005-2006, TUBITAK/UEKAE
 **
 ** This program is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU General Public License as published by the
@@ -35,6 +35,7 @@ struct node {
 	int parent_no;
 	int type;
 	int no;
+	void *acldata;
 };
 
 #define TABLE_SIZE 367
@@ -398,4 +399,42 @@ const char *
 model_instance_key(int node_no)
 {
 	return nodes[node_no].args;
+}
+
+void
+model_acl_set(int node_no, void *acldata)
+{
+	struct node *n;
+
+	n = &nodes[node_no];
+	n->acldata = acldata;
+}
+
+void
+model_acl_get(int node_no, void **acldatap, unsigned int *levelp)
+{
+	struct node *n;
+
+	n = &nodes[node_no];
+	*acldatap = n->acldata;
+	*levelp = ACL_ADMIN;
+}
+
+int
+model_next_class(int *class_nop)
+{
+	int no;
+	struct node *n;
+
+	no = *class_nop;
+	do {
+		++no;
+		n = &nodes[no];
+		if (N_CLASS == n->type) {
+			*class_nop = no;
+			return 1;
+		}
+	} while (no < model_nr_nodes);
+	*class_nop = -1;
+	return 0;
 }

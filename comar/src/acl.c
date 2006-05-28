@@ -16,123 +16,127 @@
 #include "process.h"
 #include "model.h"
 #include "log.h"
+#include "iksemel.h"
 
-#define TABLE_SIZE 47
-
-struct acl_node {
-	struct acl_node *next;
-	unsigned int id;
-	unsigned int nr_nodes;
-	unsigned int node[1];
+struct acl_group {
+	gid_t gid;
+	unsigned int level;
 };
 
-struct acl_list {
-	struct acl_node *admins[TABLE_SIZE];
-	struct acl_node *users[TABLE_SIZE];
-	struct acl_node *guests[TABLE_SIZE];
+struct acl_class {
+	unsigned int nr_groups;
+	unsigned int cur;
+	struct acl_group group[1];
 };
 
-static struct acl_list acl_uids;
-static struct acl_list acl_gids;
-
-static struct acl_node *
-get_node(struct acl_node **table, unsigned int id)
+static int
+count_groups(iks *tag, int class_no)
 {
-	struct acl_node *n;
-	unsigned int val;
-
-	val = id % TABLE_SIZE;
-	for (n = table[val]; n; n = n->next) {
-		if (n->id == id) {
-			return n;
-		}
+	iks *x;
+	unsigned int nr = 0;
+	// global permissions
+	for (x = iks_find(tag, "group"); x; x = iks_next_tag(x)) {
+		if (iks_strcmp(iks_name(x), "group") == 0)
+			++nr;
 	}
-	return NULL;
+	// class permissions
+	x = iks_find_with_attrib(tag, "class", "name", model_get_path(class_no));
+	for (x = iks_find(x, "group"); x; x = iks_next_tag(x)) {
+		if (iks_strcmp(iks_name(x), "group") == 0)
+			++nr;
+	}
+	return nr;
 }
 
 static void
-delete_node(struct acl_node **table, unsigned int id)
+add_group(iks *tag, int level, struct acl_class *ac)
 {
-	struct acl_node *n;
-	struct acl_node *old = NULL;
-	unsigned int val;
+	struct acl_group *ag;
+	char *name;
+	struct group *grp;
 
-	val = id % TABLE_SIZE;
-	for (n = table[val]; n; n = n->next) {
-		if (n->id == id) {
-			if (old) {
-				old->next = n->next;
-			} else {
-				table[val] = n->next;
-			}
-			free(n);
-			return;
-		}
-		old = n;
+	ag = &ac->group[ac->cur];
+	name = iks_find_attrib(tag, "name");
+	if (!name) return;
+	grp = getgrnam(name);
+	if (!name) {
+		log_error("Security policy group '%s' not available\n", name);
+		return;
+	}
+	ag->gid = grp->gr_gid;
+	ag->level = level;
+	++ac->cur;
+}
+
+static void
+add_groups(iks *tag, int class_no, int level, struct acl_class *ac)
+{
+	iks *x;
+	// global permissions
+	for (x = iks_find(tag, "group"); x; x = iks_next_tag(x)) {
+		if (iks_strcmp(iks_name(x), "group") == 0)
+			add_group(x, level, ac);
+	}
+	// class permissions
+	x = iks_find_with_attrib(tag, "class", "name", model_get_path(class_no));
+	for (x = iks_find(x, "group"); x; x = iks_next_tag(x)) {
+		if (iks_strcmp(iks_name(x), "group") == 0)
+			add_group(x, level, ac);
 	}
 }
 
 static void
-set_node(struct acl_node **table, unsigned int id, char *nodes)
+set_class(iks *model, int class_no)
 {
-	struct acl_node *n;
-	char *t, *s;
-	unsigned int val;
-	int nr_nodes = 0;
-	int i = 0;
+	struct acl_class *ac;
+	int nr_groups = 0;
 
-	t = nodes;
-	while (t) {
-		++nr_nodes;
-		t = strchr(t, ' ');
-		if (t) ++t;
-	}
+	nr_groups += count_groups(iks_find(model, "admin"), class_no);
+	nr_groups += count_groups(iks_find(model, "user"), class_no);
+	nr_groups += count_groups(iks_find(model, "guest"), class_no);
 
-	n = calloc(1, sizeof(struct acl_node) + nr_nodes * sizeof(int));
-	if (!n) return;
-	n->id = id;
-	n->nr_nodes = nr_nodes;
-	for (t = nodes; t; t = s) {
-		s = strchr(t, ' ');
-		if (s) {
-			*s = '\0';
-			++s;
-		}
-		n->node[i++] = model_lookup_class(t);
-	}
+	ac = calloc(1, sizeof(struct acl_class) + (nr_groups * sizeof(struct acl_group)));
+	if (!ac) return;
+	ac->nr_groups = nr_groups;
 
-	val = id % TABLE_SIZE;
-	n->next = table[val];
-	table[val] = n;
+	add_groups(iks_find(model, "admin"), class_no, ACL_ADMIN, ac);
+	add_groups(iks_find(model, "user"), class_no, ACL_USER, ac);
+	add_groups(iks_find(model, "guest"), class_no, ACL_GUEST, ac);
+
+	model_acl_set(class_no, ac);
 }
 
-static void
-set_nodes(struct acl_list *tables, unsigned int id, char *nodes)
+void
+acl_init(void)
 {
-	char *t;
+	iks *policy;
+	iks *model;
+	int class_no;
+	int e;
 
-	t = strchr(nodes, '\n');
-	*t = '\0';
-	++t;
+	// parse security policy file
+	e = iks_load("/etc/comar/security-policy.xml", &policy);
+	if (e) {
+		log_error("Cannot process security policy file '%s', error %d\n",
+			"/etc/comar/security-policy.xml", e);
+		return;
+	}
+	if (iks_strcmp(iks_name(policy), "comarSecurityPolicy") != 0) {
+		log_error("Not a security policy file '%s'\n",
+			"/etc/comar/security-policy.xml");
+		return;
+	}
 
-	delete_node(tables->admins, id);
-	if (nodes[0] != '\0')
-		set_node(tables->admins, id, nodes);
+	// FIXME: connection permissions
 
-	nodes = t;
-	t = strchr(nodes, '\n');
-	*t = '\0';
-	++t;
-
-	delete_node(tables->users, id);
-	if (nodes[0] != '\0')
-		set_node(tables->users, id, nodes);
-
-	nodes = t;
-
-	delete_node(tables->guests, id);
-	if (nodes[0] != '\0')
-		set_node(tables->guests, id, nodes);
+	// call permissions on the model
+	model = iks_find(policy, "model");
+	if (model) {
+		class_no = -1;
+		while (model_next_class(&class_no)) {
+			set_class(model, class_no);
+		}
+	}
 }
 
 static int
@@ -141,18 +145,14 @@ check_acl(int node, struct Creds *cred)
 	gid_t gids[64];
 	int nr_gids = 64;
 	struct passwd *pw;
-	struct acl_node *n;
-	int i;
+	struct acl_class *ac;
+	struct acl_group *ag;
+	void *acptr = &ac;
+	int level;
+	int i, j;
 
-	node = model_parent(node);
-
-	n = get_node(acl_uids.admins, cred->uid);
-	if (n) {
-		for (i = 0; i < n->nr_nodes; i++) {
-			if (n->node[i] == node)
-				return 1;
-		}
-	}
+	model_acl_get(model_parent(node), acptr, &level);
+	if (!ac) return 0;
 
 	pw = getpwuid(cred->uid);
 	if (!pw) return 0;
@@ -161,11 +161,13 @@ check_acl(int node, struct Creds *cred)
 	}
 
 	for (i = 0; i < nr_gids; i++) {
-		n = get_node(acl_gids.admins, gids[i]);
-		if (n) {
-			for (i = 0; i < n->nr_nodes; i++) {
-				if (n->node[i] == node)
+		for (j = 0; j < ac->nr_groups; j++) {
+			ag = &ac->group[j];
+			if (gids[i] == ag->gid) {
+				if (ag->level >= level)
 					return 1;
+				else
+					break;
 			}
 		}
 	}
@@ -221,11 +223,4 @@ acl_can_connect(struct Creds *cred)
 	}
 
 	return 0;
-}
-
-void
-acl_init(void)
-{
-	// FIXME: read from db
-	set_nodes(&acl_gids, 10, strdup("System.Package System.Service Time.Clock Net.Stack Net.Link Net.Filter\n\n"));
 }

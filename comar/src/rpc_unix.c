@@ -531,8 +531,6 @@ rpc_proc(void)
 	}
 	log_info("RPC_UNIX: listening on %s\n", cfg_socket_name);
 
-	acl_init();
-
 	while (1) {
 		max = proc_setup_fds(&fds);
 		max = add_rpc_fds(&fds, max);

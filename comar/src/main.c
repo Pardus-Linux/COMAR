@@ -20,6 +20,7 @@
 #include "cfg.h"
 #include "process.h"
 #include "model.h"
+#include "acl.h"
 #include "data.h"
 #include "job.h"
 #include "log.h"
@@ -94,6 +95,7 @@ main(int argc, char *argv[])
 	// Second phase: subsytem init
 	if (db_init() != 0) return 1;
 	if (model_init() != 0) return 1;
+	acl_init();
 
 	// Third phase: helper processes
 	rpc_unix_start();

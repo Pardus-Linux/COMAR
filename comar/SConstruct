@@ -20,7 +20,7 @@ pyprefix = ARGUMENTS.get('pythondir', 'auto')
 distfiles = """
     SConstruct
     README
-    etc/model.xml
+    etc/*.xml
     src/*.c
     src/SConscript
     include/*.h
@@ -121,6 +121,7 @@ if "install" in sys.argv:
 targets = []
 targets.append(env.Install(bindir, comar))
 targets.append(env.Install(etcdir, 'etc/model.xml'))
+targets.append(env.Install(etcdir, 'etc/security-policy.xml'))
 targets.append(env.Install(incdir, 'bindings/comar.h'))
 targets.append(env.Install(libdir, libcomar))
 targets.append(env.Install(pydir, csapi))

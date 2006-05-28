@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2005, TUBITAK/UEKAE
+** Copyright (c) 2005-2006, TUBITAK/UEKAE
 **
 ** This program is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU General Public License as published by the
@@ -14,6 +14,11 @@
 #define P_PACKAGE 2
 #define P_DELETE 4
 #define P_STARTUP 8
+
+#define ACL_DENY 0
+#define ACL_GUEST 1
+#define ACL_USER 2
+#define ACL_ADMIN 4
 
 extern int model_max_notifications;
 extern int model_nr_nodes;
@@ -31,6 +36,10 @@ int model_flags(int node_no);
 int model_has_instances(int node_no);
 int model_is_instance(int node_no, const char *argname);
 const char *model_instance_key(int node_no);
+
+int model_next_class(int *class_nop);
+void model_acl_set(int node_no, void *acldata);
+void model_acl_get(int node_no, void **acldatap, unsigned int *levelp);
 
 
 #endif /* MODEL_H */

@@ -36,6 +36,7 @@ struct node {
 	int type;
 	int no;
 	void *acldata;
+	int level;
 };
 
 #define TABLE_SIZE 367
@@ -230,6 +231,13 @@ model_init(void)
 							int no;
 							char *prof;
 							no = add_node(obj_no, build_path(grp, obj, met), N_METHOD);
+							prof = iks_find_attrib(met, "access");
+							if (prof) {
+								if (strcmp(prof, "user") == 0)
+									nodes[no].level = ACL_USER;
+								if (strcmp(prof, "guest") == 0)
+									nodes[no].level = ACL_GUEST;
+							}
 							prof = iks_find_attrib(met, "profile");
 							if (prof) {
 								if (strcmp(prof, "global") == 0)

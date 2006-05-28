@@ -186,7 +186,7 @@ check_acl(int node, struct Creds *cred)
 		for (j = 0; j < ac->nr_groups; j++) {
 			ag = &ac->group[j];
 			if (gids[i] == ag->gid) {
-				if (ag->level >= level)
+				if (ag->level <= level)
 					return 1;
 				else
 					break;

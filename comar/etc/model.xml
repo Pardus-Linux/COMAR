@@ -8,7 +8,7 @@
 </class>
 
 <class name="Service">
-<method name="info"/>
+<method name="info" access="guest"/>
 <method name="setState" profile="package">
     <argument>state</argument>
 </method>
@@ -16,7 +16,7 @@
 <method name="start"/>
 <method name="stop"/>
 <method name="reload"/>
-<notify name="changed"/>
+<notify name="changed" access="guest"/>
 </class>
 
 <class name="Manager">

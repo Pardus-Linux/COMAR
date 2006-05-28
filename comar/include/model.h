@@ -15,10 +15,9 @@
 #define P_DELETE 4
 #define P_STARTUP 8
 
-#define ACL_DENY 0
-#define ACL_GUEST 1
-#define ACL_USER 2
-#define ACL_ADMIN 4
+#define ACL_ADMIN 0
+#define ACL_USER 1
+#define ACL_GUEST 2
 
 extern int model_max_notifications;
 extern int model_nr_nodes;

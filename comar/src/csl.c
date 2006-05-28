@@ -89,6 +89,10 @@ c_call(PyObject *self, PyObject *args)
 				case CMD_NONE:
 					proc_get(sender, &ipc, p, size);
 					break;
+				case CMD_NOTIFY:
+					proc_get(sender, &ipc, p, size);
+					proc_put(TO_PARENT, cmd, &ipc, p);
+					break;
 			}
 			if (cmd == CMD_FINISH) break;
 		}

@@ -1,10 +1,4 @@
 <comarSecurityPolicy>
-    <!-- who can connect to the comar rpc socket -->
-    <allow>
-        <group name="wheel"/>
-        <group name="users"/>
-    </allow>
-
     <!-- comar call permissions on the model -->
     <model>
         <admin>

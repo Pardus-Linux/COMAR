@@ -29,6 +29,9 @@ struct acl_class {
 	struct acl_group group[1];
 };
 
+static gid_t *acl_allowed_gids;
+static unsigned int acl_nr_allowed_gids;
+
 static int
 count_groups(iks *tag, int class_no)
 {
@@ -49,6 +52,26 @@ count_groups(iks *tag, int class_no)
 }
 
 static void
+add_allowed(gid_t gid)
+{
+	static unsigned int max_allowed = 0;
+
+	if (acl_allowed_gids) {
+		if (acl_nr_allowed_gids >= max_allowed) {
+			max_allowed *= 2;
+			gid_t *tmp = realloc(acl_allowed_gids, max_allowed);
+			if (!tmp) return;
+			acl_allowed_gids = tmp;
+		}
+	} else {
+		max_allowed = 16;
+		acl_allowed_gids = calloc(max_allowed, sizeof(gid_t));
+		if (!acl_allowed_gids) return;
+	}
+	acl_allowed_gids[acl_nr_allowed_gids++] = gid;
+}
+
+static void
 add_group(iks *tag, int level, struct acl_class *ac)
 {
 	struct acl_group *ag;
@@ -63,6 +86,7 @@ add_group(iks *tag, int level, struct acl_class *ac)
 		log_error("Security policy group '%s' not available\n", name);
 		return;
 	}
+	add_allowed(grp->gr_gid);
 	ag->gid = grp->gr_gid;
 	ag->level = level;
 	++ac->cur;
@@ -126,8 +150,6 @@ acl_init(void)
 			"/etc/comar/security-policy.xml");
 		return;
 	}
-
-	// FIXME: connection permissions
 
 	// call permissions on the model
 	model = iks_find(policy, "model");
@@ -193,33 +215,26 @@ acl_is_capable(int cmd, int node, struct Creds *cred)
 int
 acl_can_connect(struct Creds *cred)
 {
-	/* POLICY:
-	** Pardus 1.0 release
-	** Only wheel group users can connect and use comar
-	*/
-	struct group *grp;
-	struct passwd *pwd;
-	int i;
+	gid_t gids[64];
+	int nr_gids = 64;
+	struct passwd *pw;
+	int i, j;
 
 	// root always allowed
 	if (cred->uid == 0)
 		return 1;
 
-	grp = getgrnam("wheel");
-	if (!grp) {
-		log_error("No 'wheel' group in password database!\n");
-		return 0;
+	pw = getpwuid(cred->uid);
+	if (!pw) return 0;
+	if (getgrouplist(pw->pw_name, cred->gid, &gids[0], &nr_gids) < 0) {
+		nr_gids = 63;
 	}
 
-	pwd = getpwuid(cred->uid);
-	if (!pwd) {
-		log_error("User id %d has no entry in password database!\n", cred->uid);
-		return 0;
-	}
-
-	for (i = 0; grp->gr_mem[i]; i++) {
-		if (strcmp(pwd->pw_name, grp->gr_mem[i]) == 0)
-			return 1;
+	for (i = 0; i < nr_gids; i++) {
+		for (j = 0; j < acl_nr_allowed_gids; j++) {
+			if (gids[i] == acl_allowed_gids[j])
+				return 1;
+		}
 	}
 
 	return 0;

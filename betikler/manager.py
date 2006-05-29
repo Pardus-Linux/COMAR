@@ -11,8 +11,6 @@
 # Please read the COPYING file.
 #
 
-import string 
-
 import pisi.api
 import pisi.installdb
 import pisi.packagedb
@@ -28,6 +26,7 @@ class UI(pisi.ui.UI):
         notify("System.Manager.warning","%s" % msg)
 
     def notify(self, event, **keywords):
+        return
         if event == pisi.ui.packagestogo:
             data = keywords["order"]
         else:
@@ -58,7 +57,7 @@ def installPackage(package=None):
         try:
             package = package.split(",")
             pisi.api.install(package)
-        except pisi.packagedb.Error, e:
+        except Exception, e:
             return e
 
 def removePackage(package=None):
@@ -66,8 +65,8 @@ def removePackage(package=None):
     if package:
 	try:
             package = package.split(",")
-	    pisi.api.remove([package])
-	except pisi.packagedb.Error, e:
+            pisi.api.remove(package)
+	except Exception, e:
 	    return e
 
 def updateRepository(repo=None):

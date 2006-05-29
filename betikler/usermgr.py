@@ -91,7 +91,9 @@ class Database:
         # FIXME: lock files
         
         lines = []
-        for uid in self.users.keys():
+        keys = self.users.keys()
+        keys.sort()
+        for uid in keys:
             user = self.users[uid]
             lines.append("%s:x:%d:%d:%s:%s:%s\n" % (
                 user.name, uid, user.gid,
@@ -102,7 +104,9 @@ class Database:
         f.close()
         
         lines = []
-        for uid in self.users.keys():
+        keys = self.users.keys()
+        keys.sort()
+        for uid in keys:
             user = self.users[uid]
             if user.password:
                 lines.append("%s:%s:%s\n" % (
@@ -115,7 +119,9 @@ class Database:
         f.close()
         
         lines = []
-        for gid in self.groups.keys():
+        keys = self.groups.keys()
+        keys.sort()
+        for gid in keys:
             group = self.groups[gid]
             lines.append("%s:x:%s:%s\n" % (group.name, gid, ",".join(group.members)))
         f = file(self.group_path, "w")

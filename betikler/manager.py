@@ -54,13 +54,14 @@ def _init_pisi():
     try:
         pisi.api.init(ui=ui)
     except pisi.lockeddbshelve.Error, e:
-        fail(str(e))
+        notify("System.Manager.error","%s" % str(e))
 
 def installPackage(package=None):
     _init_pisi()
     if package:
         try:
-            pisi.api.install([package])
+            package = package.split(",")
+            pisi.api.install(package)
         except pisi.packagedb.Error, e:
             return e
 
@@ -68,6 +69,7 @@ def removePackage(package=None):
     _init_pisi()
     if package:
 	try:
+            package = package.split(",")
 	    pisi.api.remove([package])
 	except pisi.packagedb.Error, e:
 	    return e

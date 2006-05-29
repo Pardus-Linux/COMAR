@@ -18,18 +18,27 @@ uid_maximum = 65000
 
 def isNameValid(name):
     valid = ascii_letters + "_"
-    return len(filter(lambda x: not x in ascii_letters, name)) == 0
+    return len(filter(lambda x: not x in valid, name)) == 0
 
 def isRealNameValid(realname):
     return len(filter(lambda x: x == "\n" or x == ":", realname)) == 0
 
 
 class User:
-    pass
+    def __str__(self):
+        return "%s (%d, %d)\n  %s\n  %s\n  %s\n  %s" % (
+            self.name, self.uid, self.gid,
+            self.realname, self.homedir, self.shell,
+            self.password
+        )
 
 
 class Group:
-    pass
+    def __str__(self):
+        str = "%s (%d)" % (self.name, self.gid)
+        for name in self.members:
+            str += "\n %s" % name
+        return str
 
 
 class Database:
@@ -69,8 +78,9 @@ class Database:
                 parts = line.rstrip("\n").split(":")
                 group = Group()
                 group.name = parts[0]
-                group.gid = parts[2]
+                group.gid = int(parts[2])
                 group.members = parts[3].split(",")
+                self.groups[group.gid] = group
         
         # FIXME: unlock files
     
@@ -79,15 +89,19 @@ class Database:
         
         lines = []
         for uid in self.users.keys():
-            pu = self.users[uid]
-            lines.append("%s:x:%d:%d:%s:%s:%s\n" % (pu.name, uid, pu.gid, pu.realname, pu.homedir, pu.shell))
+            user = self.users[uid]
+            lines.append("%s:x:%d:%d:%s:%s:%s\n" % (
+                user.name, uid, user.gid,
+                user.realname, user.homedir, user.shell)
+            )
         f = file(self.passwd_path, "w")
         f.writelines(lines)
         f.close()
         
         lines = []
-        for su in self.users.keys():
-            lines.append("%s:%s:%s\n" % (su.name, su.password, ":".join(su.pwrest)))
+        for uid in self.users.keys():
+            user = self.users[uid]
+            lines.append("%s:%s:%s\n" % (user.name, user.password, ":".join(user.pwrest)))
         f = file(self.shadow_path, "w")
         f.writelines(lines)
         f.close()

@@ -27,9 +27,6 @@ class UI(pisi.ui.UI):
     def warning(self, msg):
         notify("System.Manager.warning","%s" % msg)
 
-    def info(self, msg):
-        notify("System.Manager.info","%s" % msg)
-
     def notify(self, event, **keywords):
         if event == pisi.ui.packagestogo:
             data = keywords["order"]

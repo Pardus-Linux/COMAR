@@ -259,7 +259,15 @@ model_init(void)
 							}
 							for (arg = iks_first_tag(met); arg; arg = iks_next_tag(arg)) {
 								if (iks_strcmp(iks_name(arg), "argument") == 0) {
-									build_arg(no, 0, iks_cdata(iks_child(arg)));
+									char *argname;
+									argname = iks_cdata(iks_child(arg));
+									if (argname) {
+										build_arg(no, 0, argname);
+									} else {
+										log_error("Argument name needed in <argument> tag of model.xml\n");
+									}
+
+
 								}
 							}
 						} else if (iks_strcmp(iks_name(met), "notify") == 0) {

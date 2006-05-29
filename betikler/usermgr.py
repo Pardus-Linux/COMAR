@@ -139,10 +139,21 @@ class Database:
 # methods
 
 def userList():
-    pass
+    db = Database()
+    ret = "\n".join(map(lambda x: "%s" % (db.users[x].uid), db.users))
+    return ret
 
 def setUser(uid, gid, name, realname, homedir, shell):
-    pass
+    u = User()
+    u.uid = uid
+    u.gid = gid
+    u.name = name
+    u.realname = realname
+    u.homedir = homedir
+    u.shell = shell
+    db = Database()
+    db.users[uid] = u
+    db.sync()
 
 def setUserPassword(uid, password):
     pass
@@ -151,10 +162,15 @@ def setUserGroups(uid, groups):
     pass
 
 def deleteUser(uid):
-    pass
+    db = Database()
+    if db.has_key(int(uid)):
+        db.users[uid] = None
+    db.sync()
 
 def groupList():
-    pass
+    db = Database()
+    ret = "\n".join(map(lambda x: "%s" % (db.groups[x].gid), db.groups))
+    return ret
 
 def setGroup(gid, name):
     pass

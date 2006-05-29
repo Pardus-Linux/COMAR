@@ -58,6 +58,49 @@
 </group>
 
 
+<group name="User">
+
+<class name="Manager">
+<method name="userList"/>
+
+<method name="setUser">
+    <argument name="uid"/>
+    <argument name="gid"/>
+    <argument name="name"/>
+    <argument name="realname"/>
+    <argument name="homedir"/>
+    <argument name="shell"/>
+</method>
+
+<method name="setUserPassword">
+    <argument name="uid"/>
+    <argument name="password"/>
+</method>
+
+<method name="setUserGroups">
+    <argument name="uid"/>
+    <argument name="groups"/>
+</method>
+
+<method name="deleteUser">
+    <argument name="uid"/>
+</method>
+
+<method name="groupList"/>
+
+<method name="setGroup">
+    <argument name="gid"/>
+    <argument name="name"/>
+</method>
+
+<method name="deleteGroup">
+    <argument name="gid"/>
+</method>
+</class>
+
+</group>
+
+
 <group name="Hardware">
 </group>
 

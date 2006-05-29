@@ -42,7 +42,7 @@ class UI(pisi.ui.UI):
         return True
     
     def display_progress(self, **pd):
-        out = "%s,%d,%s,%d,%d" % (pd["filename"],pd['percent'],pd["rate"],pd["symbol"],pd["downloaded_size"],pd["total_size"]))
+        out = "%s,%d,%s,%d,%d" % (pd["filename"],pd['percent'],pd["rate"],pd["symbol"],pd["downloaded_size"],pd["total_size"])
         notify("System.Manager.progress", out)
 
 def _init_pisi():

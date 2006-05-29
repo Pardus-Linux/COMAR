@@ -16,45 +16,63 @@ uid_maximum = 65000
 
 # utility functions
 
+def isNameValid(name):
+    valid = ascii_letters + "_"
+    return len(filter(lambda x: not x in ascii_letters, name)) == 0
 
-class PasswdUser:
-    def __init__(self, name, uid, gid, realname, homedir, shell):
-        self.name = name
-        self.uid = uid
-        self.gid = gid
-        self.realname = realname
-        self.homedir = homedir
-        self.shell = shell
+def isRealNameValid(realname):
+    return len(filter(lambda x: x == "\n" or x == ":", realname)) == 0
 
 
-class Passwd:
+class User:
+    pass
+
+
+class Group:
+    pass
+
+
+class Database:
     def __init__(self):
         self.users = {}
+        self.users_by_name = {}
+        self.groups = {}
+        
+        # FIXME: lock files
+        
         for line in file("/etc/passwd"):
             if line != "" and line != "\n":
                 parts = line.rstrip("\n").split(":")
-                pu = PasswdUser(parts[0], int(parts[2]), int(parts[3]), parts[4], parts[5], parts[6])
-                self.users[pu.uid] = pu
+                user = User()
+                user.name = parts[0]
+                user.uid = int(parts[2])
+                user.gid = int(parts[3])
+                user.realname = parts[4]
+                user.homedir = parts[5]
+                user.shell = parts[6]
+                self.users[user.uid] = user
+                self.users_by_name[user.name] = user
+        
+        for line in file("/etc/shadow"):
+            if line != "" and line != "\n":
+                parts = line.rstrip("\n").split(":")
+                user = self.users_by_name[parts[0]]
+                user.password = parts[1]
+                user.pwrest = parts[2:]
+        
+        for line in file("/etc/group"):
+            if line != "" and line != "\n":
+                parts = line.rstrip("\n").split(":")
+                group = Group()
+                group.name = parts[0]
+                group.gid = parts[2]
+                group.members = parts[3].split(",")
+        
+        # FIXME: unlock files
     
-    def isNameValid(self, name):
-        valid = ascii_letters + "_"
-        return len(filter(lambda x: not x in ascii_letters, name)) == 0
-    
-    def isRealNameValid(self, realname):
-        return len(filter(lambda x: x == "\n" or x == ":", realname)) == 0
-    
-    def set(self, name, uid, gid, realname, homedir, shell):
-        if uid == "auto":
-            uid = self.next_id()
-        pu = PasswdUser(name, uid, gid, realname, homedir, shell)
-        self.users[uid] = pu
-    
-    def next_id(self):
-        for i in range(uid_minimum, uid_maximum):
-            if not self.users.has_key(i):
-                return i
-    
-    def save(self):
+    def sync(self):
+        # FIXME: lock files
+        
         lines = []
         for uid in self.users.keys():
             pu = self.users[uid]
@@ -62,24 +80,28 @@ class Passwd:
         f = file("/etc/passwd", "w")
         f.writelines(lines)
         f.close()
-
-
-class Shadow:
-    def __init__(self):
-        self.users = {}
-        for line in file("/etc/shadow"):
-            if line != "" and line != "\n":
-                parts = line.rstrip("\n").split(":")
-                # FIXME: huhu
-
-
-class Group:
-    def __init__(self):
-        self.groups = {}
-        for line in file("/etc/group"):
-            if line != "" and line != "\n":
-                parts = line.rstrip("\n").split(":")
-                # FIXME: huhu
+        
+        lines = []
+        for su in self.users.keys():
+            lines.append("%s:%s:%s\n" % (su.name, su.password, ":".join(su.pwrest)))
+        f = file("/etc/shadow")
+        f.writelines(lines)
+        f.close()
+        
+        lines = []
+        for gid in self.groups.keys():
+            group = self.groups[gid]
+            lines.append("%s:x:%s:%s\n" % (group.name, gid, ",".join(group.members)))
+        f = file("/etc/group")
+        f.writelines(lines)
+        f.close()
+        
+        # FIXME: unlock files
+    
+    def next_uid(self):
+        for i in range(uid_minimum, uid_maximum):
+            if not self.users.has_key(i):
+                return i
 
 
 # methods

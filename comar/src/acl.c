@@ -55,18 +55,23 @@ static void
 add_allowed(gid_t gid)
 {
 	static unsigned int max_allowed = 0;
+	unsigned int i;
 
 	if (acl_allowed_gids) {
 		if (acl_nr_allowed_gids >= max_allowed) {
-			max_allowed *= 2;
-			gid_t *tmp = realloc(acl_allowed_gids, max_allowed);
+			gid_t *tmp = realloc(acl_allowed_gids, max_allowed * 2 * sizeof(gid_t));
 			if (!tmp) return;
+			max_allowed *= 2;
 			acl_allowed_gids = tmp;
 		}
 	} else {
-		max_allowed = 16;
+		max_allowed = 8;
 		acl_allowed_gids = calloc(max_allowed, sizeof(gid_t));
 		if (!acl_allowed_gids) return;
+	}
+	for (i = 0; i < acl_nr_allowed_gids; i++) {
+		if (acl_allowed_gids[i] == gid)
+			return;
 	}
 	acl_allowed_gids[acl_nr_allowed_gids++] = gid;
 }

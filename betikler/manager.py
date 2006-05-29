@@ -31,28 +31,12 @@ class UI(pisi.ui.UI):
         notify("System.Manager.info","%s" % msg)
 
     def notify(self, event, **keywords):
-        if event == pisi.ui.downloading:
-            data = "downloading"
-        elif event == pisi.ui.installing:
-            data = "installing"
-        elif event == pisi.ui.configuring:
-            data = "configuring"
-        elif event == pisi.ui.extracting:
-            data = "extracting"
-        elif event == pisi.ui.removing:
-            data = "removing"
-        elif event == pisi.ui.installed:
-            data = "installed"
-        elif event == pisi.ui.removed:
-            data = "removed"
-        elif event == pisi.ui.upgraded:
-            data = "upgraded"
-        elif event == pisi.ui.packagestogo:
+        if event == pisi.ui.packagestogo:
             data = keywords["order"]
         else:
-            return
+            data = event
 
-        notify("System.Manager.notify","%s" % data)
+        notify("System.Manager.notify","%d" % data)
         
     def ack(self, msg):
         return True

@@ -64,37 +64,37 @@
 <method name="userList"/>
 
 <method name="setUser">
-    <argument name="uid"/>
-    <argument name="gid"/>
-    <argument name="name"/>
-    <argument name="realname"/>
-    <argument name="homedir"/>
-    <argument name="shell"/>
+    <argument>uid</argument>
+    <argument>gid</argument>
+    <argument>name</argument>
+    <argument>realname</argument>
+    <argument>homedir</argument>
+    <argument>shell</argument>
 </method>
 
 <method name="setUserPassword">
-    <argument name="uid"/>
-    <argument name="password"/>
+    <argument>uid</argument>
+    <argument>password</argument>
 </method>
 
 <method name="setUserGroups">
-    <argument name="uid"/>
-    <argument name="groups"/>
+    <argument>uid</argument>
+    <argument>groups</argument>
 </method>
 
 <method name="deleteUser">
-    <argument name="uid"/>
+    <argument>uid</argument>
 </method>
 
 <method name="groupList"/>
 
 <method name="setGroup">
-    <argument name="gid"/>
-    <argument name="name"/>
+    <argument>gid</argument>
+    <argument>name</argument>
 </method>
 
 <method name="deleteGroup">
-    <argument name="gid"/>
+    <argument>gid</argument>
 </method>
 </class>
 

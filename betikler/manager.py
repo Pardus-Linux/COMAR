@@ -21,6 +21,42 @@ import pisi.ui
 import pisi.context
 
 class UI(pisi.ui.UI):
+    def error(self, msg):
+        notify("System.Manager.error","%s" % msg)
+
+    def warning(self, msg):
+        notify("System.Manager.warning","%s" % msg)
+
+    def info(self, msg):
+        notify("System.Manager.info","%s" % msg)
+
+    def notify(self, event, **keywords):
+        if event == pisi.ui.downloading:
+            data = "downloading"
+        elif event == pisi.ui.installing:
+            data = "installing"
+        elif event == pisi.ui.configuring:
+            data = "configuring"
+        elif event == pisi.ui.extracting:
+            data = "extracting"
+        elif event == pisi.ui.removing:
+            data = "removing"
+        elif event == pisi.ui.installed:
+            data = "installed"
+        elif event == pisi.ui.removed:
+            data = "removed"
+        elif event == pisi.ui.upgraded:
+            data = "upgraded"
+        elif event == pisi.ui.packagestogo:
+            data = keywords["order"]
+        else:
+            return
+
+        notify("System.Manager.notify","%s" % data)
+        
+    def ack(self, msg):
+        return True
+    
     def confirm(self, msg):
         return True
     

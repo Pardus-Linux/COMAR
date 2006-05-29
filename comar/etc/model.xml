@@ -50,6 +50,10 @@
 <method name="getRepositories"/>
 <method name="setRepositories"/>
 <notify name="progress"/>
+<notify name="error"/>
+<notify name="warning"/>
+<notify name="info"/>
+<notify name="notify"/>
 </class>
 </group>
 

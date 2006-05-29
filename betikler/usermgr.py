@@ -25,6 +25,9 @@ def isRealNameValid(realname):
 
 
 class User:
+    def __init__(self):
+        self.password = None
+    
     def __str__(self):
         return "%s (%d, %d)\n  %s\n  %s\n  %s\n  %s" % (
             self.name, self.uid, self.gid,
@@ -92,8 +95,8 @@ class Database:
             user = self.users[uid]
             lines.append("%s:x:%d:%d:%s:%s:%s\n" % (
                 user.name, uid, user.gid,
-                user.realname, user.homedir, user.shell)
-            )
+                user.realname, user.homedir, user.shell
+            ))
         f = file(self.passwd_path, "w")
         f.writelines(lines)
         f.close()
@@ -101,7 +104,12 @@ class Database:
         lines = []
         for uid in self.users.keys():
             user = self.users[uid]
-            lines.append("%s:%s:%s\n" % (user.name, user.password, ":".join(user.pwrest)))
+            if user.password:
+                lines.append("%s:%s:%s\n" % (
+                    user.name,
+                    user.password,
+                    ":".join(user.pwrest)
+                ))
         f = file(self.shadow_path, "w")
         f.writelines(lines)
         f.close()

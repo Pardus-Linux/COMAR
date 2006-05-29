@@ -11,6 +11,8 @@
 # Please read the COPYING file.
 #
 
+import string
+
 import pisi.api
 import pisi.installdb
 import pisi.packagedb

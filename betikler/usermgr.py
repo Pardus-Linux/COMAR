@@ -33,6 +33,10 @@ class Group:
 
 
 class Database:
+    passwd_path = "/etc/passwd"
+    shadow_path = "/etc/shadow"
+    group_path = "/etc/group"
+    
     def __init__(self):
         self.users = {}
         self.users_by_name = {}
@@ -40,7 +44,7 @@ class Database:
         
         # FIXME: lock files
         
-        for line in file("/etc/passwd"):
+        for line in file(self.passwd_path):
             if line != "" and line != "\n":
                 parts = line.rstrip("\n").split(":")
                 user = User()
@@ -53,14 +57,14 @@ class Database:
                 self.users[user.uid] = user
                 self.users_by_name[user.name] = user
         
-        for line in file("/etc/shadow"):
+        for line in file(self.shadow_path):
             if line != "" and line != "\n":
                 parts = line.rstrip("\n").split(":")
                 user = self.users_by_name[parts[0]]
                 user.password = parts[1]
                 user.pwrest = parts[2:]
         
-        for line in file("/etc/group"):
+        for line in file(self.group_path):
             if line != "" and line != "\n":
                 parts = line.rstrip("\n").split(":")
                 group = Group()
@@ -77,14 +81,14 @@ class Database:
         for uid in self.users.keys():
             pu = self.users[uid]
             lines.append("%s:x:%d:%d:%s:%s:%s\n" % (pu.name, uid, pu.gid, pu.realname, pu.homedir, pu.shell))
-        f = file("/etc/passwd", "w")
+        f = file(self.passwd_path, "w")
         f.writelines(lines)
         f.close()
         
         lines = []
         for su in self.users.keys():
             lines.append("%s:%s:%s\n" % (su.name, su.password, ":".join(su.pwrest)))
-        f = file("/etc/shadow")
+        f = file(self.shadow_path, "w")
         f.writelines(lines)
         f.close()
         
@@ -92,7 +96,7 @@ class Database:
         for gid in self.groups.keys():
             group = self.groups[gid]
             lines.append("%s:x:%s:%s\n" % (group.name, gid, ",".join(group.members)))
-        f = file("/etc/group")
+        f = file(self.group_path, "w")
         f.writelines(lines)
         f.close()
         
@@ -119,8 +123,7 @@ def setUserGroups(uid, groups):
     pass
 
 def deleteUser(uid):
-    lines = file("/etc/passwd")
-
+    pass
 
 def groupList():
     pass

@@ -28,13 +28,28 @@ class UI(pisi.ui.UI):
         notify("System.Manager.warning","%s" % msg)
 
     def notify(self, event, **keywords):
-        return
-        if event == pisi.ui.packagestogo:
-            data = keywords["order"]
+        if event == pisi.ui.downloading:
+            data = "downloading"
+        elif event == pisi.ui.installing:
+            data = "installing"
+        elif event == pisi.ui.configuring:
+            data = "configuring"
+        elif event == pisi.ui.extracting:
+            data = "extracting"
+        elif event == pisi.ui.removing:
+            data = "removing"
+        elif event == pisi.ui.installed:
+            data = "installed"
+        elif event == pisi.ui.removed:
+            data = "removed"
+        elif event == pisi.ui.upgraded:
+            data = "upgraded"
+        elif event == pisi.ui.packagestogo:
+            data = string.join(keywords["order"],",")
         else:
-            data = event
+            return
 
-        notify("System.Manager.notify","%d" % data)
+        self.comar_notify("System.Manager.notify","%s" % data)
         
     def ack(self, msg):
         return True
@@ -48,6 +63,7 @@ class UI(pisi.ui.UI):
 
 def _init_pisi():
     ui = UI()
+    ui.comar_notify = notify
     try:
         pisi.api.init(ui=ui)
     except pisi.lockeddbshelve.Error, e:

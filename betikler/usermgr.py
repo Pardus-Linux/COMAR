@@ -8,13 +8,47 @@
 # any later version.
 #
 
+import os
 from string import ascii_letters
+import time
+import fcntl
 
 # parameters
 uid_minimum = 1000
 uid_maximum = 65000
 
 # utility functions
+
+
+class FileLock:
+    def __init__(self, filename):
+        self.filename = filename
+        self.fd = None
+    
+    def lock(self, shared=False, timeout=0):
+        type = fcntl.LOCK_EX
+        if shared:
+            type = fcntl.LOCK_SH
+        self.fd = os.open(self.filename, os.O_WRONLY | os.O_CREAT, 0600)
+        if self.fd == -1:
+            raise "Cannot create lock file"
+        while True:
+            try:
+                fcntl.flock(self.fd, type | fcntl.LOCK_NB)
+                return
+            except IOError:
+                if timeout > 0:
+                    time.sleep(0.2)
+                    timeout -= 0.2
+                else:
+                    os.close(self.fd)
+                    raise
+    
+    def unlock(self):
+        os.close(self.fd)
+
+
+#
 
 def isNameValid(name):
     valid = ascii_letters + "_"
@@ -23,6 +57,7 @@ def isNameValid(name):
 def isRealNameValid(realname):
     return len(filter(lambda x: x == "\n" or x == ":", realname)) == 0
 
+#
 
 class User:
     def __init__(self):
@@ -48,13 +83,15 @@ class Database:
     passwd_path = "/etc/passwd"
     shadow_path = "/etc/shadow"
     group_path = "/etc/group"
+    lock_path = "/etc/.pwd.lock"
     
-    def __init__(self):
+    def __init__(self, for_read=False):
+        self.lock = FileLock(self.lock_path)
+        self.lock.lock(shared=for_read)
+        
         self.users = {}
         self.users_by_name = {}
         self.groups = {}
-        
-        # FIXME: lock files
         
         for line in file(self.passwd_path):
             if line != "" and line != "\n":
@@ -84,12 +121,8 @@ class Database:
                 group.gid = int(parts[2])
                 group.members = parts[3].split(",")
                 self.groups[group.gid] = group
-        
-        # FIXME: unlock files
     
     def sync(self):
-        # FIXME: lock files
-        
         lines = []
         keys = self.users.keys()
         keys.sort()
@@ -127,8 +160,6 @@ class Database:
         f = file(self.group_path, "w")
         f.writelines(lines)
         f.close()
-        
-        # FIXME: unlock files
     
     def next_uid(self):
         for i in range(uid_minimum, uid_maximum):
@@ -139,7 +170,7 @@ class Database:
 # methods
 
 def userList():
-    db = Database()
+    db = Database(for_read=True)
     ret = "\n".join(map(lambda x: "%s" % (db.users[x].uid), db.users))
     return ret
 
@@ -168,7 +199,7 @@ def deleteUser(uid):
     db.sync()
 
 def groupList():
-    db = Database()
+    db = Database(for_read=True)
     ret = "\n".join(map(lambda x: "%s" % (db.groups[x].gid), db.groups))
     return ret
 

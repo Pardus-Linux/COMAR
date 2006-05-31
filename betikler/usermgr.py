@@ -170,8 +170,11 @@ class Database:
 # methods
 
 def userList():
+    def format(dict, uid):
+        item = dict[uid]
+        return "%s\t%s\t%s" % (item.uid, item.name, item.realname)
     db = Database(for_read=True)
-    ret = "\n".join(map(lambda x: "%s" % (db.users[x].uid), db.users))
+    ret = "\n".join(map(lambda x: format(db.users, x), db.users))
     return ret
 
 def setUser(uid, gid, name, realname, homedir, shell):
@@ -199,8 +202,11 @@ def deleteUser(uid):
     db.sync()
 
 def groupList():
+    def format(dict, gid):
+        item = dict[gid]
+        return "%s\t%s" % (item.gid, item.name)
     db = Database(for_read=True)
-    ret = "\n".join(map(lambda x: "%s" % (db.groups[x].gid), db.groups))
+    ret = "\n".join(map(lambda x: format(db.groups, x), db.groups))
     return ret
 
 def setGroup(gid, name):

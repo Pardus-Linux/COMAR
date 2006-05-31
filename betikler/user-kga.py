@@ -136,7 +136,7 @@ class BrowseStack(QVBox):
                 item = GroupItem(self.groups, group)
 
 
-class AddUserStack(QVBox):
+class UserStack(QVBox):
     def __init__(self, window, parent, link):
         QVBox.__init__(self, parent)
 
@@ -145,7 +145,7 @@ class UserManager(QWidgetStack):
     def __init__(self, window, parent, link):
         QWidgetStack.__init__(self, parent)
         self.browse = BrowseStack(window, self, link)
-        self.adduser = AddUserStack(window, self, link)
+        self.user = UserStack(window, self, link)
 
 
 

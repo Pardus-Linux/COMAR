@@ -54,7 +54,7 @@ class GroupItem(QListViewItem):
             return QListViewItem.compare(self, item, col, ascend)
 
 
-class UserManager(QVBox):
+class BrowseStack(QVBox):
     def __init__(self, window, parent, link):
         QWidget.__init__(self, parent)
         self.setMargin(6)
@@ -62,17 +62,17 @@ class UserManager(QVBox):
         
         bar = QToolBar("lala", window, self)
         but = QToolButton(QIconSet(QPixmap("/usr/share/icons/Tulliana-2.0/32x32/actions/add.png")),
-            "Add", "lala", self.addUser, bar)
+            "Add", "lala", self.slotAdd, bar)
         but.setUsesTextLabel(True)
         but.setTextPosition(but.BesideIcon)
         bar.addSeparator()
         but = QToolButton(QIconSet(QPixmap("/usr/share/icons/Tulliana-2.0/32x32/actions/configure.png")),
-            "Edit", "lala", self.addUser, bar)
+            "Edit", "lala", self.slotEdit, bar)
         but.setUsesTextLabel(True)
         but.setTextPosition(but.BesideIcon)
         bar.addSeparator()
         but = QToolButton(QIconSet(QPixmap("/usr/share/icons/Tulliana-2.0/32x32/actions/remove.png")),
-            "Delete", "lala", self.addUser, bar)
+            "Delete", "lala", self.slotDelete, bar)
         but.setUsesTextLabel(True)
         but.setTextPosition(but.BesideIcon)
         
@@ -80,12 +80,9 @@ class UserManager(QVBox):
         bar.setStretchableWidget(lab)
         
         toggle = QRadioButton("Show system user and groups", bar)
-        self.connect(toggle, SIGNAL("toggled(bool)"), self.systemToggle)
+        self.connect(toggle, SIGNAL("toggled(bool)"), self.slotToggle)
         
-        hb = QHBox(self)
-        hb.setSpacing(6)
-        
-        tab = QTabWidget(hb)
+        tab = QTabWidget(self)
         tab.setMargin(6)
         
         self.users = QListView(tab)
@@ -103,21 +100,25 @@ class UserManager(QVBox):
         tab.addTab(self.users, QIconSet(QPixmap("/usr/share/icons/Tulliana-2.0/16x16/apps/personal.png")), "Users")
         tab.addTab(self.groups, QIconSet(QPixmap("/usr/share/icons/Tulliana-2.0/16x16/apps/kuser.png")), "Groups")
         
-        QLabel("Edit area", hb)
-        
         self.link = link
         link.call("User.Manager.userList", id=1)
         link.call("User.Manager.groupList", id=2)
         self.notifier = QSocketNotifier(link.sock.fileno(), QSocketNotifier.Read)
         self.connect(self.notifier, SIGNAL("activated(int)"), self.slotComar)
     
-    def addUser(self):
+    def slotAdd(self):
         pass
     
-    def systemToggle(self, on):
+    def slotEdit(self):
+        pass
+    
+    def slotDelete(self):
+        pass
+    
+    def slotToggle(self, on):
         item = self.users.firstChild()
         while item:
-            if int(str(item.text(0))) < 1000 or int(str(item.text(0))) > 65000:
+            if item.uid < 1000 or item.uid > 65000:
                 item.setVisible(on)
             item = item.nextSibling()
     
@@ -133,6 +134,18 @@ class UserManager(QVBox):
         elif reply[1] == 2:
             for group in unicode(reply[2]).split("\n"):
                 item = GroupItem(self.groups, group)
+
+
+class AddUserStack(QVBox):
+    def __init__(self, window, parent, link):
+        QVBox.__init__(self, parent)
+
+
+class UserManager(QWidgetStack):
+    def __init__(self, window, parent, link):
+        QWidgetStack.__init__(self, parent)
+        self.browse = BrowseStack(window, self, link)
+        self.adduser = AddUserStack(window, self, link)
 
 
 

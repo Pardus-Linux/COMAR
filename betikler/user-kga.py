@@ -12,6 +12,10 @@
 import comar
 from qt import *
 
+def getIconSet(name):
+    return QIconSet(QPixmap("/usr/share/icons/Tulliana-2.0/" + name))
+
+
 class UserItem(QListViewItem):
     def __init__(self, parent, line):
         QListViewItem.__init__(self, parent)
@@ -61,17 +65,17 @@ class BrowseStack(QVBox):
         self.setSpacing(6)
         
         bar = QToolBar("lala", window, self)
-        but = QToolButton(QIconSet(QPixmap("/usr/share/icons/Tulliana-2.0/32x32/actions/add.png")),
+        but = QToolButton(getIconSet("32x32/actions/add.png"),
             "Add", "lala", self.slotAdd, bar)
         but.setUsesTextLabel(True)
         but.setTextPosition(but.BesideIcon)
         bar.addSeparator()
-        but = QToolButton(QIconSet(QPixmap("/usr/share/icons/Tulliana-2.0/32x32/actions/configure.png")),
+        but = QToolButton(getIconSet("32x32/actions/configure.png"),
             "Edit", "lala", self.slotEdit, bar)
         but.setUsesTextLabel(True)
         but.setTextPosition(but.BesideIcon)
         bar.addSeparator()
-        but = QToolButton(QIconSet(QPixmap("/usr/share/icons/Tulliana-2.0/32x32/actions/remove.png")),
+        but = QToolButton(getIconSet("32x32/actions/remove.png"),
             "Delete", "lala", self.slotDelete, bar)
         but.setUsesTextLabel(True)
         but.setTextPosition(but.BesideIcon)
@@ -97,8 +101,8 @@ class BrowseStack(QVBox):
         self.groups.setColumnAlignment(0, Qt.AlignRight)
         self.groups.addColumn("Name")
         
-        tab.addTab(self.users, QIconSet(QPixmap("/usr/share/icons/Tulliana-2.0/16x16/apps/personal.png")), "Users")
-        tab.addTab(self.groups, QIconSet(QPixmap("/usr/share/icons/Tulliana-2.0/16x16/apps/kuser.png")), "Groups")
+        tab.addTab(self.users, getIconSet("16x16/apps/personal.png"), "Users")
+        tab.addTab(self.groups, getIconSet("16x16/apps/kuser.png"), "Groups")
         
         self.link = link
         link.call("User.Manager.userList", id=1)
@@ -139,12 +143,63 @@ class BrowseStack(QVBox):
 class UserStack(QVBox):
     def __init__(self, window, parent, link):
         QVBox.__init__(self, parent)
+        self.setMargin(6)
+        self.setSpacing(6)
+        
+        hb = QHBox(self)
+        hb.setSpacing(6)
+        
+        w = QWidget(hb)
+        grid = QGridLayout(w)
+        grid.setSpacing(6)
+        
+        lab = QLabel("ID:", w)
+        grid.addWidget(lab, 0, 0, Qt.AlignRight)
+        
+        lab = QLabel("Name:", w)
+        grid.addWidget(lab, 1, 0, Qt.AlignRight)
+        
+        lab = QLabel("Real name:", w)
+        self.w_name = QLineEdit(w)
+        grid.addWidget(lab, 2, 0, Qt.AlignRight)
+        grid.addWidget(self.w_name, 2, 1)
+        
+        lab = QLabel("Main group:", w)
+        grid.addWidget(lab, 3, 0, Qt.AlignRight)
+        
+        lab = QLabel("Home:", w)
+        grid.addWidget(lab, 4, 0, Qt.AlignRight)
+        
+        lab = QLabel("Create home dir:", w)
+        grid.addWidget(lab, 5, 0, Qt.AlignRight)
+        
+        lab = QLabel("Shell:", w)
+        grid.addWidget(lab, 6, 0, Qt.AlignRight)
+        
+        lab = QLabel("Password:", w)
+        grid.addWidget(lab, 7, 0, Qt.AlignRight)
+        
+        lab = QLabel("Confirm password:", w)
+        grid.addWidget(lab, 8, 0, Qt.AlignRight)
+        
+        w = QWidget(hb)
+        vb = QVBoxLayout(w)
+        but = QRadioButton("Show all groups", w)
+        vb.addWidget(but, 0, Qt.AlignRight)
+        self.groups = QListView(w)
+        vb.addWidget(self.groups)
+        
+        hb = QHBox(self)
+        hb.setSpacing(12)
+        QLabel(" ", hb)
+        QPushButton(getIconSet("16x16/actions/add.png"), "Add", hb)
+        QPushButton(getIconSet("16x16/actions/cancel.png"), "Cancel", hb)
 
 
 class UserManager(QWidgetStack):
     def __init__(self, window, parent, link):
         QWidgetStack.__init__(self, parent)
-        self.browse = BrowseStack(window, self, link)
+        #self.browse = BrowseStack(window, self, link)
         self.user = UserStack(window, self, link)
 
 

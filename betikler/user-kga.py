@@ -107,8 +107,6 @@ class BrowseStack(QVBox):
         self.link = link
         link.call("User.Manager.userList", id=1)
         link.call("User.Manager.groupList", id=2)
-        self.notifier = QSocketNotifier(link.sock.fileno(), QSocketNotifier.Read)
-        self.connect(self.notifier, SIGNAL("activated(int)"), self.slotComar)
     
     def slotAdd(self):
         pass
@@ -126,18 +124,19 @@ class BrowseStack(QVBox):
                 item.setVisible(on)
             item = item.nextSibling()
     
-    def slotComar(self, sock):
-        reply = self.link.read_cmd()
+    def comarUsers(self, reply):
         if reply[0] != self.link.RESULT:
             return
-        if reply[1] == 1:
-            for user in unicode(reply[2]).split("\n"):
-                item = UserItem(self.users, user)
-                if item.uid < 1000 or item.uid > 65000:
-                    item.setVisible(False)
-        elif reply[1] == 2:
-            for group in unicode(reply[2]).split("\n"):
-                item = GroupItem(self.groups, group)
+        for user in unicode(reply[2]).split("\n"):
+            item = UserItem(self.users, user)
+            if item.uid < 1000 or item.uid > 65000:
+                item.setVisible(False)
+    
+    def comarGroups(self, reply):
+        if reply[0] != self.link.RESULT:
+            return
+        for group in unicode(reply[2]).split("\n"):
+            item = GroupItem(self.groups, group)
 
 
 class PathEntry(QHBox):
@@ -179,7 +178,12 @@ class UserStack(QVBox):
         grid.setSpacing(6)
         
         lab = QLabel("ID:", w)
+        hb2 = QHBox(w)
+        hb2.setSpacing(6)
+        self.w_id = QLineEdit(hb2)
+        self.w_id_auto = QRadioButton("Automatic", hb2)
         grid.addWidget(lab, 0, 0, Qt.AlignRight)
+        grid.addWidget(hb2, 0, 1)
         
         lab = QLabel("Name:", w)
         self.w_nick = QLineEdit(w)
@@ -239,24 +243,34 @@ class UserStack(QVBox):
 
 
 class UserManager(QWidgetStack):
-    def __init__(self, window, parent, link):
+    def __init__(self, window, parent):
+        link = comar.Link()
+        self.link = link
+        self.notifier = QSocketNotifier(link.sock.fileno(), QSocketNotifier.Read)
+        self.connect(self.notifier, SIGNAL("activated(int)"), self.slotComar)
+        
         QWidgetStack.__init__(self, parent)
         #self.browse = BrowseStack(window, self, link)
         self.user = UserStack(window, self, link)
+    
+    def slotComar(self, sock):
+        reply = self.link.read_cmd()
+        if reply[1] == 1:
+            self.browse.comarUsers(reply)
+        elif reply[1] == 2:
+            self.browse.comarGroups(reply)
 
 
 
 
 #
 
-link = comar.Link()
-
 
 app = QApplication([])
 app.connect(app, SIGNAL("lastWindowClosed()"), app, SLOT("quit()"))
 w = QMainWindow()
 w.setMinimumSize(540, 300)
-a = UserManager(w, w, link)
+a = UserManager(w, w)
 w.setCentralWidget(a)
 w.show()
 app.exec_loop()

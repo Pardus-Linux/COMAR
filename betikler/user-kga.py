@@ -66,7 +66,7 @@ class BrowseStack(QVBox):
         
         bar = QToolBar("lala", window, self)
         but = QToolButton(getIconSet("32x32/actions/add.png"),
-            "Add", "lala", self.slotAdd, bar)
+            "Add", "lala", parent.slotAdd, bar)
         but.setUsesTextLabel(True)
         but.setTextPosition(but.BesideIcon)
         bar.addSeparator()
@@ -107,9 +107,6 @@ class BrowseStack(QVBox):
         self.link = link
         link.call("User.Manager.userList", id=1)
         link.call("User.Manager.groupList", id=2)
-    
-    def slotAdd(self):
-        pass
     
     def slotEdit(self):
         pass
@@ -238,8 +235,9 @@ class UserStack(QVBox):
         hb = QHBox(self)
         hb.setSpacing(12)
         QLabel(" ", hb)
-        QPushButton(getIconSet("16x16/actions/add.png"), "Add", hb)
-        QPushButton(getIconSet("16x16/actions/cancel.png"), "Cancel", hb)
+        but = QPushButton(getIconSet("16x16/actions/add.png"), "Add", hb)
+        but = QPushButton(getIconSet("16x16/actions/cancel.png"), "Cancel", hb)
+        self.connect(but, SIGNAL("clicked()"), parent.slotCancel)
 
 
 class UserManager(QWidgetStack):
@@ -250,7 +248,7 @@ class UserManager(QWidgetStack):
         self.connect(self.notifier, SIGNAL("activated(int)"), self.slotComar)
         
         QWidgetStack.__init__(self, parent)
-        #self.browse = BrowseStack(window, self, link)
+        self.browse = BrowseStack(window, self, link)
         self.user = UserStack(window, self, link)
     
     def slotComar(self, sock):
@@ -259,6 +257,12 @@ class UserManager(QWidgetStack):
             self.browse.comarUsers(reply)
         elif reply[1] == 2:
             self.browse.comarGroups(reply)
+    
+    def slotCancel(self):
+        self.raiseWidget(self.browse)
+    
+    def slotAdd(self):
+        self.raiseWidget(self.user)
 
 
 

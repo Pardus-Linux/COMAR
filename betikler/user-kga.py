@@ -140,6 +140,31 @@ class BrowseStack(QVBox):
                 item = GroupItem(self.groups, group)
 
 
+class PathEntry(QHBox):
+    def __init__(self, parent, question, is_dir=True):
+        QHBox.__init__(self, parent)
+        self.is_dir = is_dir
+        self.question = question
+        self.setSpacing(3)
+        self.path = QLineEdit(self)
+        self.path.setMinimumWidth(160)
+        but = QPushButton("...", self)
+        self.connect(but, SIGNAL("clicked()"), self.browse)
+
+    def browse(self):
+        if self.is_dir:
+            s = QFileDialog.getExistingDirectory(self.path.text(), self, "lala", self.question, False)
+        else:
+            s = QFileDialog.getOpenFileName(self.path.text(), "All (*)", self, "lala", self.question)
+        self.path.setText(s)
+
+    def text(self):
+        return str(self.path.text())
+
+    def setText(self, text):
+        self.path.setText(text)
+
+
 class UserStack(QVBox):
     def __init__(self, window, parent, link):
         QVBox.__init__(self, parent)
@@ -157,7 +182,9 @@ class UserStack(QVBox):
         grid.addWidget(lab, 0, 0, Qt.AlignRight)
         
         lab = QLabel("Name:", w)
+        self.w_nick = QLineEdit(w)
         grid.addWidget(lab, 1, 0, Qt.AlignRight)
+        grid.addWidget(self.w_nick, 1, 1)
         
         lab = QLabel("Real name:", w)
         self.w_name = QLineEdit(w)
@@ -168,19 +195,34 @@ class UserStack(QVBox):
         grid.addWidget(lab, 3, 0, Qt.AlignRight)
         
         lab = QLabel("Home:", w)
+        self.w_home = PathEntry(w, "Select home directory for user")
         grid.addWidget(lab, 4, 0, Qt.AlignRight)
+        grid.addWidget(self.w_home, 4, 1)
         
-        lab = QLabel("Create home dir:", w)
-        grid.addWidget(lab, 5, 0, Qt.AlignRight)
+        self.w_home_create = QRadioButton("Create directory", w)
+        grid.addWidget(self.w_home_create, 5, 1)
         
         lab = QLabel("Shell:", w)
+        self.w_shell = QComboBox(True, w)
+        self.w_shell.insertItem("/bin/bash", 0)
+        self.w_shell.insertItem("/bin/false", 1)
         grid.addWidget(lab, 6, 0, Qt.AlignRight)
+        grid.addWidget(self.w_shell, 6, 1)
         
         lab = QLabel("Password:", w)
+        self.w_pass = QLineEdit(w)
+        self.w_pass.setEchoMode(self.w_pass.Password)
         grid.addWidget(lab, 7, 0, Qt.AlignRight)
+        grid.addWidget(self.w_pass, 7, 1)
         
         lab = QLabel("Confirm password:", w)
+        self.w_pass2 = QLineEdit(w)
+        self.w_pass2.setEchoMode(self.w_pass2.Password)
         grid.addWidget(lab, 8, 0, Qt.AlignRight)
+        grid.addWidget(self.w_pass2, 8, 1)
+        
+        lab = QLabel(" ", w)
+        grid.addWidget(lab, 9, 1)
         
         w = QWidget(hb)
         vb = QVBoxLayout(w)

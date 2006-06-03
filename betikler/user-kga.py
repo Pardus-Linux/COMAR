@@ -43,7 +43,7 @@ class GroupItem(QListViewItem):
         args = line.split("\t")
         self.gid = int(args[0])
         self.name = args[1]
-        self.comment = "lala"
+        self.comment = ""
         if len(args) > 2:
             self.comment = args[2]
     
@@ -100,6 +100,7 @@ class BrowseStack(QVBox):
         self.users.setColumnAlignment(1, Qt.AlignHCenter)
         self.users.addColumn("Real name")
         self.users.setResizeMode(QListView.LastColumn)
+        self.users.setAllColumnsShowFocus(True)
         
         self.groups = QListView(tab)
         self.groups.addColumn("ID")
@@ -107,6 +108,7 @@ class BrowseStack(QVBox):
         self.groups.addColumn("Name")
         self.groups.addColumn("Description")
         self.groups.setResizeMode(QListView.LastColumn)
+        self.groups.setAllColumnsShowFocus(True)
         
         tab.addTab(self.users, getIconSet("16x16/apps/personal.png"), "Users")
         tab.addTab(self.groups, getIconSet("16x16/apps/kuser.png"), "Groups")
@@ -166,6 +168,16 @@ class PathEntry(QHBox):
 
     def setText(self, text):
         self.path.setText(text)
+
+
+class UserGroup(QCheckListItem):
+    def __init__(self, parent, group):
+        QCheckListItem.__init__(self, parent, group.name, self.CheckBox)
+        self.name = group.name
+        self.comment = group.comment
+    
+    def text(self, col):
+        return (self.name, self.comment)[col]
 
 
 class UserStack(QVBox):
@@ -238,6 +250,8 @@ class UserStack(QVBox):
         vb.addWidget(but, 0, Qt.AlignRight)
         self.groups = QListView(w)
         self.groups.addColumn("Group")
+        self.groups.addColumn("Description")
+        self.groups.setResizeMode(QListView.LastColumn)
         vb.addWidget(self.groups)
         
         hb = QHBox(self)
@@ -251,7 +265,7 @@ class UserStack(QVBox):
         group = groups.firstChild()
         self.groups.clear()
         while group:
-            QCheckListItem(self.groups, group.name, QCheckListItem.CheckBox)
+            UserGroup(self.groups, group)
             group = group.nextSibling()
 
 

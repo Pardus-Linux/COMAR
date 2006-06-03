@@ -40,11 +40,15 @@ class UserItem(QListViewItem):
 class GroupItem(QListViewItem):
     def __init__(self, parent, line):
         QListViewItem.__init__(self, parent)
-        self.gid, self.name = line.split("\t")
-        self.gid = int(self.gid)
+        args = line.split("\t")
+        self.gid = int(args[0])
+        self.name = args[1]
+        self.comment = "lala"
+        if len(args) > 2:
+            self.comment = args[2]
     
     def text(self, col):
-        return (str(self.gid), self.name)[col]
+        return (str(self.gid), self.name, self.comment)[col]
     
     def compare(self, item, col, ascend):
         if col == 0:
@@ -95,11 +99,14 @@ class BrowseStack(QVBox):
         self.users.addColumn("User name")
         self.users.setColumnAlignment(1, Qt.AlignHCenter)
         self.users.addColumn("Real name")
+        self.users.setResizeMode(QListView.LastColumn)
         
         self.groups = QListView(tab)
         self.groups.addColumn("ID")
         self.groups.setColumnAlignment(0, Qt.AlignRight)
         self.groups.addColumn("Name")
+        self.groups.addColumn("Description")
+        self.groups.setResizeMode(QListView.LastColumn)
         
         tab.addTab(self.users, getIconSet("16x16/apps/personal.png"), "Users")
         tab.addTab(self.groups, getIconSet("16x16/apps/kuser.png"), "Groups")
@@ -230,6 +237,7 @@ class UserStack(QVBox):
         but = QRadioButton("Show all groups", w)
         vb.addWidget(but, 0, Qt.AlignRight)
         self.groups = QListView(w)
+        self.groups.addColumn("Group")
         vb.addWidget(self.groups)
         
         hb = QHBox(self)
@@ -238,6 +246,13 @@ class UserStack(QVBox):
         but = QPushButton(getIconSet("16x16/actions/add.png"), "Add", hb)
         but = QPushButton(getIconSet("16x16/actions/cancel.png"), "Cancel", hb)
         self.connect(but, SIGNAL("clicked()"), parent.slotCancel)
+    
+    def startAdd(self, groups):
+        group = groups.firstChild()
+        self.groups.clear()
+        while group:
+            QCheckListItem(self.groups, group.name, QCheckListItem.CheckBox)
+            group = group.nextSibling()
 
 
 class UserManager(QWidgetStack):
@@ -263,6 +278,7 @@ class UserManager(QWidgetStack):
     
     def slotAdd(self):
         self.raiseWidget(self.user)
+        self.user.startAdd(self.browse.groups)
 
 
 
@@ -273,7 +289,7 @@ class UserManager(QWidgetStack):
 app = QApplication([])
 app.connect(app, SIGNAL("lastWindowClosed()"), app, SLOT("quit()"))
 w = QMainWindow()
-w.setMinimumSize(540, 300)
+w.setMinimumSize(560, 320)
 a = UserManager(w, w)
 w.setCentralWidget(a)
 w.show()

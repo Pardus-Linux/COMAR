@@ -44,8 +44,10 @@ class GroupItem(QListViewItem):
         self.gid = int(args[0])
         self.name = args[1]
         self.comment = ""
+        self.desc = ""
         if len(args) > 2:
             self.comment = args[2]
+            self.desc = args[3]
     
     def text(self, col):
         return (str(self.gid), self.name, self.comment)[col]
@@ -76,11 +78,13 @@ class BrowseStack(QVBox):
         bar.addSeparator()
         but = QToolButton(getIconSet("32x32/actions/configure.png"),
             "Edit", "lala", self.slotEdit, bar)
+        self.edit_but = but
         but.setUsesTextLabel(True)
         but.setTextPosition(but.BesideIcon)
         bar.addSeparator()
         but = QToolButton(getIconSet("32x32/actions/remove.png"),
             "Delete", "lala", self.slotDelete, bar)
+        self.delete_but = but
         but.setUsesTextLabel(True)
         but.setTextPosition(but.BesideIcon)
         
@@ -91,6 +95,8 @@ class BrowseStack(QVBox):
         self.connect(toggle, SIGNAL("toggled(bool)"), self.slotToggle)
         
         tab = QTabWidget(self)
+        self.connect(tab, SIGNAL("currentChanged(QWidget*)"), self.slotTabChanged)
+        self.tab = tab
         tab.setMargin(6)
         
         self.users = QListView(tab)
@@ -101,6 +107,7 @@ class BrowseStack(QVBox):
         self.users.addColumn("Real name")
         self.users.setResizeMode(QListView.LastColumn)
         self.users.setAllColumnsShowFocus(True)
+        self.connect(self.users, SIGNAL("selectionChanged()"), self.slotSelect)
         
         self.groups = QListView(tab)
         self.groups.addColumn("ID")
@@ -109,6 +116,7 @@ class BrowseStack(QVBox):
         self.groups.addColumn("Description")
         self.groups.setResizeMode(QListView.LastColumn)
         self.groups.setAllColumnsShowFocus(True)
+        self.connect(self.groups, SIGNAL("selectionChanged()"), self.slotSelect)
         
         tab.addTab(self.users, getIconSet("16x16/apps/personal.png"), "Users")
         tab.addTab(self.groups, getIconSet("16x16/apps/kuser.png"), "Groups")
@@ -116,6 +124,8 @@ class BrowseStack(QVBox):
         self.link = link
         link.call("User.Manager.userList", id=1)
         link.call("User.Manager.groupList", id=2)
+        
+        self.slotSelect()
     
     def slotEdit(self):
         pass
@@ -123,12 +133,27 @@ class BrowseStack(QVBox):
     def slotDelete(self):
         pass
     
+    def slotSelect(self):
+        bool = False
+        if self.tab.currentPageIndex() == 0:
+            if self.users.selectedItem():
+                bool = True
+        else:
+            if self.groups.selectedItem():
+                bool = True
+        self.edit_but.setEnabled(bool)
+        self.delete_but.setEnabled(bool)
+    
+    def slotTabChanged(self, w):
+        self.slotSelect()
+    
     def slotToggle(self, on):
         item = self.users.firstChild()
         while item:
             if item.uid < 1000 or item.uid > 65000:
                 item.setVisible(on)
             item = item.nextSibling()
+        self.slotSelect()
     
     def comarUsers(self, reply):
         if reply[0] != self.link.RESULT:
@@ -175,9 +200,18 @@ class UserGroup(QCheckListItem):
         QCheckListItem.__init__(self, parent, group.name, self.CheckBox)
         self.name = group.name
         self.comment = group.comment
+        self.desc = group.desc
     
     def text(self, col):
         return (self.name, self.comment)[col]
+    
+    def compare(self, item, col, ascend):
+        if self.comment != "" and item.comment == "":
+            return -1
+        if self.comment == "" and item.comment != "":
+            return 1
+        
+        return QCheckListItem.compare(self, item, 0, 0)
 
 
 class UserStack(QVBox):
@@ -186,8 +220,16 @@ class UserStack(QVBox):
         self.setMargin(6)
         self.setSpacing(6)
         
+        w = QWidget(self)
+        hb = QHBoxLayout(w)
+        lab = QLabel("<b>Add a New User</b>", w)
+        hb.addWidget(lab)
+        toggle = QRadioButton("Show all groups", w)
+        self.connect(toggle, SIGNAL("toggled(bool)"), self.slotToggle)
+        hb.addWidget(toggle, 0, Qt.AlignRight)
+        
         hb = QHBox(self)
-        hb.setSpacing(6)
+        hb.setSpacing(12)
         
         w = QWidget(hb)
         grid = QGridLayout(w)
@@ -213,6 +255,8 @@ class UserStack(QVBox):
         
         lab = QLabel("Main group:", w)
         grid.addWidget(lab, 3, 0, Qt.AlignRight)
+        self.w_main_group = QComboBox(False, w)
+        grid.addWidget(self.w_main_group, 3, 1)
         
         lab = QLabel("Home:", w)
         self.w_home = PathEntry(w, "Select home directory for user")
@@ -246,26 +290,54 @@ class UserStack(QVBox):
         
         w = QWidget(hb)
         vb = QVBoxLayout(w)
-        but = QRadioButton("Show all groups", w)
-        vb.addWidget(but, 0, Qt.AlignRight)
+        vb.setSpacing(3)
+        
         self.groups = QListView(w)
+        self.connect(self.groups, SIGNAL("selectionChanged()"), self.slotSelect)
         self.groups.addColumn("Group")
-        self.groups.addColumn("Description")
+        self.groups.addColumn("Permission")
         self.groups.setResizeMode(QListView.LastColumn)
+        self.groups.setAllColumnsShowFocus(True)
         vb.addWidget(self.groups)
+        
+        self.desc = QTextEdit(w)
+        self.desc.setReadOnly(True)
+        vb.addWidget(self.desc)
         
         hb = QHBox(self)
         hb.setSpacing(12)
         QLabel(" ", hb)
         but = QPushButton(getIconSet("16x16/actions/add.png"), "Add", hb)
+        self.connect(but, SIGNAL("clicked()"), self.slotAdd)
         but = QPushButton(getIconSet("16x16/actions/cancel.png"), "Cancel", hb)
         self.connect(but, SIGNAL("clicked()"), parent.slotCancel)
+    
+    def slotSelect(self):
+        item = self.groups.selectedItem()
+        if item:
+            self.desc.setText("<b>%s</b><br>%s" % (item.name, item.desc))
+        else:
+            self.desc.setText("")
+    
+    def slotToggle(self, bool):
+        group = self.groups.firstChild()
+        while group:
+            if not group.comment:
+                group.setVisible(bool)
+            group = group.nextSibling()
+    
+    def slotAdd(self):
+        #FIXME: check and add
+        self.parent().slotCancel()
     
     def startAdd(self, groups):
         group = groups.firstChild()
         self.groups.clear()
         while group:
-            UserGroup(self.groups, group)
+            g = UserGroup(self.groups, group)
+            if not g.comment:
+                g.setVisible(False)
+            self.w_main_group.insertItem(g.name)
             group = group.nextSibling()
 
 
@@ -291,8 +363,9 @@ class UserManager(QWidgetStack):
         self.raiseWidget(self.browse)
     
     def slotAdd(self):
-        self.raiseWidget(self.user)
-        self.user.startAdd(self.browse.groups)
+        if self.browse.tab.currentPageIndex() == 0:
+            self.raiseWidget(self.user)
+            self.user.startAdd(self.browse.groups)
 
 
 

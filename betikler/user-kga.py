@@ -131,7 +131,22 @@ class BrowseStack(QVBox):
         pass
     
     def slotDelete(self):
-        pass
+        if self.tab.currentPageIndex() == 0:
+            item = self.users.selectedItem()
+            if item:
+                msg = "Should I delete the user\n%s (%d - %s)?" % (
+                    item.name, item.uid, item.nick
+                )
+                if QMessageBox.Yes == QMessageBox.question(self, "Delete User?", msg, QMessageBox.Yes, QMessageBox.No):
+                    pass
+        else:
+            item = self.groups.selectedItem()
+            if item:
+                msg = "Should I delete the group\n%s (%d)?" % (
+                    item.name, item.gid
+                )
+                if QMessageBox.Yes == QMessageBox.question(self, "Delete Group?", msg, QMessageBox.Yes, QMessageBox.No):
+                    pass
     
     def slotSelect(self):
         bool = False

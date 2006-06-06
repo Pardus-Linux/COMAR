@@ -76,7 +76,7 @@ def installPackage(package=None):
             package = package.split(",")
             pisi.api.install(package)
         except Exception, e:
-            return e
+            fail(e)
 
 def removePackage(package=None):
     _init_pisi()
@@ -85,7 +85,7 @@ def removePackage(package=None):
             package = package.split(",")
             pisi.api.remove(package)
 	except Exception, e:
-	    return e
+	    fail(e)
 
 def updateRepository(repo=None):
     _init_pisi()
@@ -93,7 +93,7 @@ def updateRepository(repo=None):
 	try:
 	    pisi.api.update_repo(repo)
 	except Exception, e:
-	    return e
+	    fail(e)
 
 def updateAllRepositories():
     _init_pisi()
@@ -101,7 +101,7 @@ def updateAllRepositories():
 	try:
 	    pisi.api.update_repo(repo)
 	except Exception, e:
-	    return e
+	    fail(e)
 
 def addRepository(name=None,uri=None):
     _init_pisi()
@@ -109,7 +109,7 @@ def addRepository(name=None,uri=None):
 	try:
 	    pisi.api.add_repo(name,uri)
 	except Exception, e:
-	    return e
+	    fail(e)
 
 def removeRepository(repo=None):
     _init_pisi()
@@ -117,7 +117,7 @@ def removeRepository(repo=None):
 	try:
 	    pisi.api.remove_repo(repo)
 	except Exception, e:
-	    return e
+	    fail(e)
 
 def swapRepositories(repo1=None,repo2=None):
     _init_pisi()
@@ -125,7 +125,7 @@ def swapRepositories(repo1=None,repo2=None):
 	try:
 	    pisi.api.ctx.repodb.swap(repo1,repo2)
 	except Exception, e:
-	    return e
+            fail(e)
 
 def installCritical():
     return "NotImplemented"

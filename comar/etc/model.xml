@@ -153,7 +153,7 @@
     <argument>state</argument>
 </method>
 <method name="getState"/>
-<method name="getID"/>
+<notify name="changed"/>
 </class>
 <class name="Stack">
 <method name="getNameServers"/>

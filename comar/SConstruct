@@ -122,6 +122,7 @@ targets = []
 targets.append(env.Install(bindir, comar))
 targets.append(env.Install(etcdir, 'etc/model.xml'))
 targets.append(env.Install(etcdir, 'etc/security-policy.xml'))
+targets.append(env.Install(etcdir, 'etc/security-comments.xml'))
 targets.append(env.Install(incdir, 'bindings/comar.h'))
 targets.append(env.Install(libdir, libcomar))
 targets.append(env.Install(pydir, csapi))

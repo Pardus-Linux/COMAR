@@ -1,0 +1,28 @@
+<comarSecurityComments>
+    <groups>
+        <group name="wheel">
+            <purpose>Çomar administrator</purpose>
+            <purpose xml:lang="tr">Çomar yöneticisi</purpose>
+            <comment>Members can access Çomar administration functions, and can use su and sudo commands.</comment>
+            <comment xml:lang="tr">Çomar yönetim işlevlerine erişebilir, su ve sudo komutlarını kullanabilirler.</comment>
+        </group>
+        <group name="users">
+            <purpose>Çomar user</purpose>
+            <purpose xml:lang="tr">Çomar kullanıcısı</purpose>
+            <comment>Members can access Çomar user functions.</comment>
+            <comment xml:lang="tr">Çomar kullanıcı işlevlerine ulaşabilirler.</comment>
+        </group>
+        <group name="audio">
+            <purpose>Plays audio and music</purpose>
+            <purpose xml:lang="tr">Ses ve müzik çalabilir</purpose>
+            <comment>Members can access audio devices, and play music.</comment>
+            <comment xml:lang="tr">Ses cihazlarına erişebilir ve müzik çalabilirler.</comment>
+        </group>
+        <group name="games">
+            <purpose>Plays games</purpose>
+            <purpose xml:lang="tr">Oyun oynayabilir</purpose>
+            <comment>Members can play games, and access shared high score tables.</comment>
+            <comment xml:lang="tr">Oyunları çalıştırabilir ve ortak skor tablolarına erişebilirler.</comment>
+        </group>
+    </groups>
+</comarSecurityComments>

@@ -77,7 +77,7 @@ class BrowseStack(QVBox):
         but.setTextPosition(but.BesideIcon)
         bar.addSeparator()
         but = QToolButton(getIconSet("32x32/actions/configure.png"),
-            "Edit", "lala", self.slotEdit, bar)
+            "Edit", "lala", parent.slotEdit, bar)
         self.edit_but = but
         but.setUsesTextLabel(True)
         but.setTextPosition(but.BesideIcon)
@@ -126,9 +126,6 @@ class BrowseStack(QVBox):
         link.call("User.Manager.groupList", id=2)
         
         self.slotSelect()
-    
-    def slotEdit(self):
-        pass
     
     def slotDelete(self):
         if self.tab.currentPageIndex() == 0:
@@ -381,6 +378,9 @@ class UserManager(QWidgetStack):
         if self.browse.tab.currentPageIndex() == 0:
             self.raiseWidget(self.user)
             self.user.startAdd(self.browse.groups)
+    
+    def slotEdit(self):
+        pass
 
 
 

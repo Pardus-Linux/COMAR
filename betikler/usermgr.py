@@ -202,11 +202,23 @@ def deleteUser(uid):
     db.sync()
 
 def groupList():
-    def format(dict, gid):
+    import piksemel
+    gdefs = {}
+    doc = piksemel.parse("/etc/comar/security-comments.xml")
+    for item in doc.getTag("groups").tags():
+        gdefs[item.getAttribute("name")] = (
+            item.getTagData("purpose"),
+            item.getTagData("comment")
+        )
+    def format(defs, dict, gid):
         item = dict[gid]
-        return "%s\t%s" % (item.gid, item.name)
+        if defs.has_key(item.name):
+            d = defs[item.name]
+            return "%s\t%s\t%s\t%s" % (item.gid, item.name, d[0], d[1])
+        else:
+            return "%s\t%s" % (item.gid, item.name)
     db = Database(for_read=True)
-    ret = "\n".join(map(lambda x: format(db.groups, x), db.groups))
+    ret = "\n".join(map(lambda x: format(gdefs, db.groups, x), db.groups))
     return ret
 
 def setGroup(gid, name):

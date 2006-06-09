@@ -63,22 +63,27 @@
 <class name="Manager">
 <method name="userList"/>
 
-<method name="setUser">
+<method name="userInfo">
+    <argument>uid</argument>
+</method>
+
+<method name="addUser">
     <argument>uid</argument>
     <argument>gid</argument>
     <argument>name</argument>
     <argument>realname</argument>
     <argument>homedir</argument>
     <argument>shell</argument>
-</method>
-
-<method name="setUserPassword">
-    <argument>uid</argument>
     <argument>password</argument>
+    <argument>groups</argument>
 </method>
 
-<method name="setUserGroups">
+<method name="setUser">
     <argument>uid</argument>
+    <argument>realname</argument>
+    <argument>homedir</argument>
+    <argument>shell</argument>
+    <argument>password</argument>
     <argument>groups</argument>
 </method>
 
@@ -88,7 +93,7 @@
 
 <method name="groupList"/>
 
-<method name="setGroup">
+<method name="addGroup">
     <argument>gid</argument>
     <argument>name</argument>
 </method>

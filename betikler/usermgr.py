@@ -177,7 +177,10 @@ def userList():
     ret = "\n".join(map(lambda x: format(db.users, x), db.users))
     return ret
 
-def setUser(uid, gid, name, realname, homedir, shell):
+def userInfo(uid):
+    pass
+
+def addUser(uid, group, name, realname, homedir, shell, password, groups):
     u = User()
     u.uid = uid
     u.gid = gid
@@ -189,10 +192,7 @@ def setUser(uid, gid, name, realname, homedir, shell):
     db.users[uid] = u
     db.sync()
 
-def setUserPassword(uid, password):
-    pass
-
-def setUserGroups(uid, groups):
+def setUser(uid, realname, homedir, shell, password, groups):
     pass
 
 def deleteUser(uid):
@@ -221,7 +221,7 @@ def groupList():
     ret = "\n".join(map(lambda x: format(gdefs, db.groups, x), db.groups))
     return ret
 
-def setGroup(gid, name):
+def addGroup(gid, name):
     pass
 
 def deleteGroup(gid):

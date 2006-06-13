@@ -190,6 +190,7 @@ def addUser(uid, gid, name, realname, homedir, shell, password, groups):
     if uid == "auto":
         uid = db.next_uid()
     else:
+        uid = int(uid)
         if db.users.has_key(uid):
             fail("This user ID is already used")
     u = User()
@@ -207,7 +208,8 @@ def setUser(uid, realname, homedir, shell, password, groups):
 
 def deleteUser(uid):
     db = Database()
-    if db.has_key(int(uid)):
+    uid = int(uid)
+    if db.users.has_key(uid):
         db.users[uid] = None
     db.sync()
 
@@ -232,7 +234,25 @@ def groupList():
     return ret
 
 def addGroup(gid, name):
-    pass
+    checkName(name)
+    
+    db = Database()
+    if gid == "auto":
+        pass
+    else:
+        if db.groups.has_key(gid):
+            fail("This group ID is already used")
+        gid = int(gid)
+    g = Group()
+    g.gid = gid
+    g.name = name
+    g.members = []
+    db.groups[gid] = g
+    db.sync()
 
 def deleteGroup(gid):
-    pass
+    db = Database()
+    gid = int(gid)
+    if db.groups.has_key(gid):
+        db.groups[gid] = None
+    db.sync()

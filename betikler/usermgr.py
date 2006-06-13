@@ -12,6 +12,8 @@ import os
 from string import ascii_letters
 import time
 import fcntl
+import md5
+import random
 
 # parameters
 uid_minimum = 1000
@@ -111,9 +113,10 @@ class Database:
         for line in file(self.shadow_path):
             if line != "" and line != "\n":
                 parts = line.rstrip("\n").split(":")
-                user = self.users_by_name[parts[0]]
-                user.password = parts[1]
-                user.pwrest = parts[2:]
+                if self.users_by_name.has_key(parts[0]):
+                    user = self.users_by_name[parts[0]]
+                    user.password = parts[1]
+                    user.pwrest = parts[2:]
         
         for line in file(self.group_path):
             if line != "" and line != "\n":
@@ -200,6 +203,8 @@ def addUser(uid, gid, name, realname, homedir, shell, password, groups):
     u.realname = realname
     u.homedir = homedir
     u.shell = shell
+    u.password = shadowCrypt(password)
+    u.pwrest = [ "13094", "0", "99999", "7", "", "", "" ]
     db.users[uid] = u
     db.sync()
 
@@ -207,11 +212,14 @@ def setUser(uid, realname, homedir, shell, password, groups):
     pass
 
 def deleteUser(uid):
-    db = Database()
     uid = int(uid)
+    if uid == 0:
+        fail("You cant delete root user")
+    
+    db = Database()
     if db.users.has_key(uid):
         db.users[uid] = None
-    db.sync()
+        db.sync()
 
 def groupList():
     import piksemel
@@ -256,3 +264,77 @@ def deleteGroup(gid):
     if db.groups.has_key(gid):
         db.groups[gid] = None
     db.sync()
+
+
+#
+# Crypt function for shadow file
+#
+
+def shadowCrypt(password):
+    des_salt = list('./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz')
+    salt, magic = str(random.random())[-8:], '$1$'
+    
+    ctx = md5.new(password)
+    ctx.update(magic)
+    ctx.update(salt)
+    
+    ctx1 = md5.new(password)
+    ctx1.update(salt)
+    ctx1.update(password)
+    
+    final = ctx1.digest()
+    
+    for i in range(len(password), 0 , -16):
+        if i > 16:
+            ctx.update(final)
+        else:
+            ctx.update(final[:i])
+    
+    i = len(passwd)
+    
+    while i:
+        if i & 1:
+            ctx.update('\0')
+        else:
+            ctx.update(password[:1])
+        i = i >> 1
+    final = ctx.digest()
+    
+    for i in range(1000):
+        ctx1 = md5.new()
+        if i & 1:
+            ctx1.update(password)
+        else:
+            ctx1.update(final)
+        if i % 3: ctx1.update(salt)
+        if i % 7: ctx1.update(password)
+        if i & 1:
+            ctx1.update(final)
+        else:
+            ctx1.update(password)
+        final = ctx1.digest()
+    
+    def _to64(v, n):
+        r = ''
+        while (n-1 >= 0):
+            r = r + des_salt[v & 0x3F]
+            v = v >> 6
+            n = n - 1
+        return r
+    
+    rv = magic + salt + '$'
+    final = map(ord, final)
+    l = (final[0] << 16) + (final[6] << 8) + final[12]
+    rv = rv + _to64(l, 4)
+    l = (final[1] << 16) + (final[7] << 8) + final[13]
+    rv = rv + _to64(l, 4)
+    l = (final[2] << 16) + (final[8] << 8) + final[14]
+    rv = rv + _to64(l, 4)
+    l = (final[3] << 16) + (final[9] << 8) + final[15]
+    rv = rv + _to64(l, 4)
+    l = (final[4] << 16) + (final[10] << 8) + final[5]
+    rv = rv + _to64(l, 4)
+    l = final[11]
+    rv = rv + _to64(l, 2)
+    
+    return rv

@@ -50,12 +50,14 @@ class FileLock:
 
 #
 
-def isNameValid(name):
+def checkName(name):
     valid = ascii_letters + "_"
-    return len(filter(lambda x: not x in valid, name)) == 0
+    if len(filter(lambda x: not x in valid, name)) != 0:
+        fail("User name is invalid")
 
-def isRealNameValid(realname):
-    return len(filter(lambda x: x == "\n" or x == ":", realname)) == 0
+def checkRealName(realname):
+    if len(filter(lambda x: x == "\n" or x == ":", realname)) != 0:
+        fail("Real name is invalid")
 
 #
 
@@ -180,7 +182,16 @@ def userList():
 def userInfo(uid):
     pass
 
-def addUser(uid, group, name, realname, homedir, shell, password, groups):
+def addUser(uid, gid, name, realname, homedir, shell, password, groups):
+    checkName(name)
+    checkRealName(realname)
+    
+    db = Database()
+    if uid == "auto":
+        uid = db.next_uid()
+    else:
+        if db.users.has_key(uid):
+            fail("This user ID is already used")
     u = User()
     u.uid = uid
     u.gid = gid
@@ -188,7 +199,6 @@ def addUser(uid, group, name, realname, homedir, shell, password, groups):
     u.realname = realname
     u.homedir = homedir
     u.shell = shell
-    db = Database()
     db.users[uid] = u
     db.sync()
 

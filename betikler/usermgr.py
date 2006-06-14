@@ -248,9 +248,9 @@ def addGroup(gid, name):
     if gid == "auto":
         pass
     else:
+        gid = int(gid)
         if db.groups.has_key(gid):
             fail("This group ID is already used")
-        gid = int(gid)
     g = Group()
     g.gid = gid
     g.name = name
@@ -263,7 +263,7 @@ def deleteGroup(gid):
     gid = int(gid)
     if db.groups.has_key(gid):
         db.groups[gid] = None
-    db.sync()
+        db.sync()
 
 
 #

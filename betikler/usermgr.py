@@ -182,6 +182,24 @@ class Database:
                 return i
 
 
+def get_face():
+    g = glob.glob("/usr/kde/3.5/share/apps/kdm/pics/users/*.png")
+    return random.choice(g)
+
+def setup_home(uid, gid, path):
+    if not os.path.exists(path):
+        os.system('cp -r %s %s' % ('/etc/skel', path))
+    else:
+        for file in glob.glob("/etc/skel/.*"):
+            os.system("cp -fdr %s %s" % (file, path))
+    
+    shutil.copy(head_images.next(), os.path.join(path, '.face.icon'))
+    os.chmod(os.path.join(path, '.face.icon'), 0644)
+    
+    os.system('chown -R %d:%d %s ' % (uid, gid, path))
+    os.chmod(path, 0711)
+
+
 # methods
 
 def userList():
@@ -217,6 +235,7 @@ def addUser(uid, gid, name, realname, homedir, shell, password, groups):
     u.pwrest = [ "13094", "0", "99999", "7", "", "", "" ]
     db.users[uid] = u
     db.set_groups(name, groups.split(","))
+    setup_home(uid, gid, homedir)
     db.sync()
 
 def setUser(uid, realname, homedir, shell, password, groups):

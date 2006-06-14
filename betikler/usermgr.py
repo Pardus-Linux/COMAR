@@ -10,6 +10,8 @@
 
 import os
 from string import ascii_letters
+import shutil
+import glob
 import time
 import fcntl
 import md5
@@ -193,7 +195,7 @@ def setup_home(uid, gid, path):
         for file in glob.glob("/etc/skel/.*"):
             os.system("cp -fdr %s %s" % (file, path))
     
-    shutil.copy(head_images.next(), os.path.join(path, '.face.icon'))
+    shutil.copy(get_face(), os.path.join(path, '.face.icon'))
     os.chmod(os.path.join(path, '.face.icon'), 0644)
     
     os.system('chown -R %d:%d %s ' % (uid, gid, path))
@@ -216,6 +218,8 @@ def userInfo(uid):
 def addUser(uid, gid, name, realname, homedir, shell, password, groups):
     checkName(name)
     checkRealName(realname)
+    
+    gid = int(gid)
     
     db = Database()
     if uid == "auto":
@@ -320,7 +324,7 @@ def shadowCrypt(password):
         else:
             ctx.update(final[:i])
     
-    i = len(passwd)
+    i = len(password)
     
     while i:
         if i & 1:

@@ -166,6 +166,16 @@ class Database:
         f.writelines(lines)
         f.close()
     
+    def set_groups(self, name, grouplist):
+        for gid in self.groups.keys():
+            g = self.groups[gid]
+            if name in g.members:
+                if not g.name in grouplist:
+                    g.members.remove(name)
+            else:
+                if g.name in grouplist:
+                    g.members.append(name)
+    
     def next_uid(self):
         for i in range(uid_minimum, uid_maximum):
             if not self.users.has_key(i):
@@ -206,6 +216,7 @@ def addUser(uid, gid, name, realname, homedir, shell, password, groups):
     u.password = shadowCrypt(password)
     u.pwrest = [ "13094", "0", "99999", "7", "", "", "" ]
     db.users[uid] = u
+    db.set_groups(name, groups.split(","))
     db.sync()
 
 def setUser(uid, realname, homedir, shell, password, groups):

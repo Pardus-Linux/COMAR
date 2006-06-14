@@ -63,6 +63,11 @@ def checkRealName(realname):
     if len(filter(lambda x: x == "\n" or x == ":", realname)) != 0:
         fail("Real name is invalid")
 
+def checkGroupName(name):
+    valid = ascii_letters + "_"
+    if len(filter(lambda x: not x in valid, name)) != 0:
+        fail("Group name '%s' is invalid" % name)
+
 #
 
 class User:
@@ -182,6 +187,11 @@ class Database:
         for i in range(uid_minimum, uid_maximum):
             if not self.users.has_key(i):
                 return i
+    
+    def next_gid(self):
+        for i in range(uid_minimum, uid_maximum):
+            if not self.groups.has_key(i):
+                return i
 
 
 def get_face():
@@ -213,9 +223,40 @@ def userList():
     return ret
 
 def userInfo(uid):
-    pass
+    uid = int(uid)
+    db = Database(for_read=True)
+    if db.users.has_key(uid):
+        u = db.users[uid]
+        groups = []
+        for item in db.groups.keys():
+            if u.name in db.groups[item].members:
+                groups.append(db.groups[item].name)
+        ret = "uid %d\nname %s\nrealname %s\ngid %d\nhomedir %s\nshell %s\ngroups %s" % (
+            u.uid,
+            u.name,
+            u.realname,
+            u.gid,
+            u.homedir,
+            u.shell,
+            ",".join(groups)
+        )
+    else:
+        ret = ""
+    return ret
 
-def addUser(uid, gid, name, realname, homedir, shell, password, groups):
+def addUser(uid, gid, name, password, realname=None, homedir=None, shell=None, groups=None):
+    if not realname:
+        realname = ""
+    if not homedir:
+        homedir = "/home/" + name
+    if not shell:
+        shell = "/bin/bash"
+    if groups:
+        groups = groups.split(",")
+    else:
+        groups = []
+    for item in groups:
+        checkGroupName(item)
     checkName(name)
     checkRealName(realname)
     
@@ -238,7 +279,7 @@ def addUser(uid, gid, name, realname, homedir, shell, password, groups):
     u.password = shadowCrypt(password)
     u.pwrest = [ "13094", "0", "99999", "7", "", "", "" ]
     db.users[uid] = u
-    db.set_groups(name, groups.split(","))
+    db.set_groups(name, groups)
     setup_home(uid, gid, homedir)
     db.sync()
 
@@ -276,11 +317,11 @@ def groupList():
     return ret
 
 def addGroup(gid, name):
-    checkName(name)
+    checkGroupName(name)
     
     db = Database()
     if gid == "auto":
-        pass
+        gid = db.next_gid()
     else:
         gid = int(gid)
         if db.groups.has_key(gid):

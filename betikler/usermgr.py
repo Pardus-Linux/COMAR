@@ -314,7 +314,7 @@ def deleteUser(uid):
     u = db.users.get(uid, None)
     if u:
         db.set_groups(u.name, [])
-        db.users[uid] = None
+        del db.users[uid]
         db.sync()
 
 def groupList():
@@ -358,7 +358,7 @@ def deleteGroup(gid):
     db = Database()
     gid = int(gid)
     if db.groups.has_key(gid):
-        db.groups[gid] = None
+        del db.groups[gid]
         db.sync()
 
 

@@ -284,7 +284,26 @@ def addUser(uid, gid, name, password, realname=None, homedir=None, shell=None, g
     db.sync()
 
 def setUser(uid, realname, homedir, shell, password, groups):
-    pass
+    uid = int(uid)
+    
+    db = Database()
+    u = db.users.get(uid, None)
+    if u:
+        if realname:
+            checkRealName(realname)
+            u.realname = realname
+        if homedir:
+            u.homedir = homedir
+            # FIXME: resetup dir?
+        if shell:
+            u.shell = shell
+        if password:
+            u.password = shadowCrypt(password)
+        if groups:
+            db.set_groups(u.name, groups)
+        db.sync()
+    else:
+        fail("No user with given ID")
 
 def deleteUser(uid):
     uid = int(uid)

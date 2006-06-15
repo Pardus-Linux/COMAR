@@ -311,7 +311,9 @@ def deleteUser(uid):
         fail("You cant delete root user")
     
     db = Database()
-    if db.users.has_key(uid):
+    u = db.users.get(uid, None)
+    if u:
+        db.set_groups(u.name, [])
         db.users[uid] = None
         db.sync()
 

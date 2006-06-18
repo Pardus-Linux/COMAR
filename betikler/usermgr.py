@@ -266,9 +266,16 @@ def addUser(uid, gid, name, password, realname=None, homedir=None, shell=None, g
     if uid == "auto":
         uid = db.next_uid()
     else:
-        uid = int(uid)
+        try:
+            uid = int(uid)
+            if uid < 0 or uid > 65536:
+                raise
+        except:
+            fail("Invalid user ID")
         if db.users.has_key(uid):
             fail("This user ID is already used")
+        if db.users_by_name.has_key(name):
+            fail("This user name is already used")
     u = User()
     u.uid = uid
     u.gid = gid

@@ -103,6 +103,7 @@ class Database:
         self.users = {}
         self.users_by_name = {}
         self.groups = {}
+        self.groups_by_name = {}
         
         for line in file(self.passwd_path):
             if line != "" and line != "\n":
@@ -133,6 +134,7 @@ class Database:
                 group.gid = int(parts[2])
                 group.members = parts[3].split(",")
                 self.groups[group.gid] = group
+                self.groups_by_name[group.name] = group
     
     def sync(self):
         lines = []
@@ -244,7 +246,7 @@ def userInfo(uid):
         ret = ""
     return ret
 
-def addUser(uid, gid, name, password, realname=None, homedir=None, shell=None, groups=None):
+def addUser(uid, name, password, realname=None, homedir=None, shell=None, groups=None):
     if not realname:
         realname = ""
     if not homedir:
@@ -254,15 +256,14 @@ def addUser(uid, gid, name, password, realname=None, homedir=None, shell=None, g
     if groups:
         groups = groups.split(",")
     else:
-        groups = []
+        groups = [ "nogroup" ]
     for item in groups:
         checkGroupName(item)
     checkName(name)
     checkRealName(realname)
     
-    gid = int(gid)
-    
     db = Database()
+    
     if uid == "auto":
         uid = db.next_uid()
     else:
@@ -276,6 +277,13 @@ def addUser(uid, gid, name, password, realname=None, homedir=None, shell=None, g
             fail("This user ID is already used")
         if db.users_by_name.has_key(name):
             fail("This user name is already used")
+    
+    # First group in the list is the user's main group
+    g = db.groups_by_name.get(groups[0], None)
+    if not g:
+        fail("No such group exists")
+    gid = g.gid
+    
     u = User()
     u.uid = uid
     u.gid = gid

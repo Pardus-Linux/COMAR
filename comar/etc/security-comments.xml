@@ -1,14 +1,14 @@
 <comarSecurityComments>
     <groups>
         <group name="wheel">
-            <purpose>Çomar administrator</purpose>
-            <purpose xml:lang="tr">Çomar yöneticisi</purpose>
+            <purpose>Administrator</purpose>
+            <purpose xml:lang="tr">Sistem yöneticisi</purpose>
             <comment>Members can access Çomar administration functions, and can use su and sudo commands.</comment>
             <comment xml:lang="tr">Çomar yönetim işlevlerine erişebilir, su ve sudo komutlarını kullanabilirler.</comment>
         </group>
         <group name="users">
-            <purpose>Çomar user</purpose>
-            <purpose xml:lang="tr">Çomar kullanıcısı</purpose>
+            <purpose>Normal user</purpose>
+            <purpose xml:lang="tr">Normal kullanıcı</purpose>
             <comment>Members can access Çomar user functions.</comment>
             <comment xml:lang="tr">Çomar kullanıcı işlevlerine ulaşabilirler.</comment>
         </group>

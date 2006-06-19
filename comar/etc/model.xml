@@ -69,7 +69,6 @@
 
 <method name="addUser">
     <argument>uid</argument>
-    <argument>gid</argument>
     <argument>name</argument>
     <argument>realname</argument>
     <argument>homedir</argument>

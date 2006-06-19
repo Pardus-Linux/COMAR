@@ -329,9 +329,21 @@ def groupList():
     gdefs = {}
     doc = piksemel.parse("/etc/comar/security-comments.xml")
     for item in doc.getTag("groups").tags():
+        dict = {}
+        for tag in item.tags("purpose"):
+            lang = tag.getAttribute("xml:lang")
+            if not lang:
+                lang = "en"
+            dict[lang] = tag.firstChild().data()
+        dict2 = {}
+        for tag in item.tags("comment"):
+            lang = tag.getAttribute("xml:lang")
+            if not lang:
+                lang = "en"
+            dict2[lang] = tag.firstChild().data()
         gdefs[item.getAttribute("name")] = (
-            item.getTagData("purpose"),
-            item.getTagData("comment")
+            _(dict),
+            _(dict2)
         )
     def format(defs, dict, gid):
         item = dict[gid]

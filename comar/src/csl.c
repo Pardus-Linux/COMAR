@@ -41,6 +41,7 @@ c_i18n(PyObject *self, PyObject *args)
 {
 	char lang[4];
 	PyObject *dict;
+	PyObject *ret;
 
 	lang[0] = bk_channel.lang[0];
 	if (lang[0] == '\0') lang[0] = 'e';
@@ -51,7 +52,9 @@ c_i18n(PyObject *self, PyObject *args)
 	if (!PyArg_ParseTuple(args, "O!", &PyDict_Type, &dict))
 		return NULL;
 
-	return PyDict_GetItemString(dict, lang);
+	ret = PyDict_GetItemString(dict, lang);
+	if (ret) Py_INCREF(ret);
+	return ret;
 }
 
 static PyObject *

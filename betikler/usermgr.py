@@ -275,8 +275,9 @@ def addUser(uid, name, password, realname=None, homedir=None, shell=None, groups
             fail("Invalid user ID")
         if db.users.has_key(uid):
             fail("This user ID is already used")
-        if db.users_by_name.has_key(name):
-            fail("This user name is already used")
+    
+    if db.users_by_name.has_key(name):
+        fail("This user name is already used")
     
     # First group in the list is the user's main group
     g = db.groups_by_name.get(groups[0], None)
@@ -374,6 +375,10 @@ def addGroup(gid, name):
         gid = int(gid)
         if db.groups.has_key(gid):
             fail("This group ID is already used")
+    
+    if db.groups_by_name.has_key(name):
+        fail("This group name is alredy used")
+    
     g = Group()
     g.gid = gid
     g.name = name

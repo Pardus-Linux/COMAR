@@ -88,6 +88,7 @@
 
 <method name="deleteUser">
     <argument>uid</argument>
+    <argument>deletefiles</argument>
 </method>
 
 <method name="groupList"/>

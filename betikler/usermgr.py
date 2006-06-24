@@ -390,8 +390,8 @@ def addGroup(gid, name):
     db.sync()
 
 def deleteGroup(gid):
-    db = Database()
     gid = int(gid)
+    db = Database()
     if db.groups.has_key(gid):
         del db.groups[gid]
         db.sync()

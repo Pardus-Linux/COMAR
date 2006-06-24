@@ -196,21 +196,21 @@ class Database:
                 return i
 
 
-def get_face():
-    g = glob.glob("/usr/kde/3.5/share/apps/kdm/pics/users/*.png")
-    return random.choice(g)
-
 def setup_home(uid, gid, path):
     if not os.path.exists(path):
-        os.system('cp -r %s %s' % ('/etc/skel', path))
-    else:
-        for file in glob.glob("/etc/skel/.*"):
-            os.system("cp -fdr %s %s" % (file, path))
+        # Copy skeleton home dir
+        os.system('/usr/bin/cp -r %s "%s"' % ('/etc/skel', path))
+        # Set a random face icon
+        faces = glob.glob("/usr/kde/3.5/share/apps/kdm/pics/users/*.png")
+        if len(faces) > 0:
+            facepath = os.path.join(path, '.face.icon')
+            os.system('/usr/bin/cp --remove-destination "%s" "%s"' % (random.choice(faces), facepath))
+            os.chmod(facepath, 0644)
+        # Set ownerships
+        os.system('/usr/bin/chown -R %d:%d "%s"' % (uid, gid, path))
     
-    shutil.copy(get_face(), os.path.join(path, '.face.icon'))
-    os.chmod(os.path.join(path, '.face.icon'), 0644)
-    
-    os.system('chown -R %d:%d %s ' % (uid, gid, path))
+    # Make sure at least top of the home dir's permissions are correct
+    os.system('/usr/bin/chown %d:%d "%s"' % (uid, gid, path))
     os.chmod(path, 0711)
 
 
@@ -377,7 +377,7 @@ def addGroup(gid, name):
             fail("This group ID is already used")
     
     if db.groups_by_name.has_key(name):
-        fail("This group name is alredy used")
+        fail("This group name is already used")
     
     g = Group()
     g.gid = gid

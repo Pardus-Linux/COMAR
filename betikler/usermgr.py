@@ -321,7 +321,7 @@ def setUser(uid, realname, homedir, shell, password, groups):
     else:
         fail("No user with given ID")
 
-def deleteUser(uid):
+def deleteUser(uid, deletefiles=None):
     uid = int(uid)
     if uid == 0:
         fail("You cant delete root user")
@@ -329,9 +329,12 @@ def deleteUser(uid):
     db = Database()
     u = db.users.get(uid, None)
     if u:
+        home = u.homedir[:]
         db.set_groups(u.name, [])
         del db.users[uid]
         db.sync()
+        if deletefiles == "true":
+            os.system('rm -rf "%s"' % home)
 
 def groupList():
     import piksemel

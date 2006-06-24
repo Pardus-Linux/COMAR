@@ -56,16 +56,22 @@ class FileLock:
 
 def checkName(name):
     valid = ascii_letters + "_"
-    if len(filter(lambda x: not x in valid, name)) != 0:
+    if name == "" or len(filter(lambda x: not x in valid, name)) != 0:
         fail("User name is invalid")
 
 def checkRealName(realname):
     if len(filter(lambda x: x == "\n" or x == ":", realname)) != 0:
         fail("Real name is invalid")
 
+def checkPassword(password, badlist):
+    if len(password) < 4:
+        fail("Password is too short")
+    if password in badlist:
+        fail("Dont use your name as a password")
+
 def checkGroupName(name):
     valid = ascii_letters + "_"
-    if len(filter(lambda x: not x in valid, name)) != 0:
+    if name == "" or len(filter(lambda x: not x in valid, name)) != 0:
         fail("Group name '%s' is invalid" % name)
 
 #
@@ -246,7 +252,7 @@ def userInfo(uid):
         ret = ""
     return ret
 
-def addUser(uid, name, password, realname=None, homedir=None, shell=None, groups=None):
+def addUser(name, password, uid=None, realname=None, homedir=None, shell=None, groups=None):
     if not realname:
         realname = ""
     if not homedir:
@@ -261,10 +267,11 @@ def addUser(uid, name, password, realname=None, homedir=None, shell=None, groups
         checkGroupName(item)
     checkName(name)
     checkRealName(realname)
+    checkPassword(password, (name, realname))
     
     db = Database()
     
-    if uid == "auto":
+    if uid == None or uid == "auto":
         uid = db.next_uid()
     else:
         try:
@@ -298,6 +305,8 @@ def addUser(uid, name, password, realname=None, homedir=None, shell=None, groups
     db.set_groups(name, groups)
     setup_home(uid, gid, homedir)
     db.sync()
+    
+    return uid
 
 def setUser(uid, realname, homedir, shell, password, groups):
     uid = int(uid)
@@ -309,13 +318,18 @@ def setUser(uid, realname, homedir, shell, password, groups):
             checkRealName(realname)
             u.realname = realname
         if homedir:
-            u.homedir = homedir
-            # FIXME: resetup dir?
+            # Not implemented, ask Gürer
+            pass
         if shell:
             u.shell = shell
         if password:
+            checkPassword(password, (u.name, u.realname, realname))
             u.password = shadowCrypt(password)
         if groups:
+            # FIXME: check main group
+            groups = groups.split(",")
+            for item in groups:
+                checkGroupName(item)
             db.set_groups(u.name, groups)
         db.sync()
     else:
@@ -375,7 +389,12 @@ def addGroup(gid, name):
     if gid == "auto":
         gid = db.next_gid()
     else:
-        gid = int(gid)
+        try:
+            gid = int(gid)
+            if gid < 0 or gid > 65536:
+                raise
+        except:
+            fail("Invalid user ID")
         if db.groups.has_key(gid):
             fail("This group ID is already used")
     
@@ -388,6 +407,8 @@ def addGroup(gid, name):
     g.members = []
     db.groups[gid] = g
     db.sync()
+    
+    return gid
 
 def deleteGroup(gid):
     gid = int(gid)

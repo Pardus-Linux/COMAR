@@ -239,6 +239,10 @@ def userInfo(uid):
         for item in db.groups.keys():
             if u.name in db.groups[item].members:
                 groups.append(db.groups[item].name)
+        grp = db.groups.get(u.gid, None)
+        if grp:
+            groups.remove(grp.name)
+            groups.insert(0, grp.name)
         ret = "uid %d\nname %s\nrealname %s\ngid %d\nhomedir %s\nshell %s\ngroups %s" % (
             u.uid,
             u.name,

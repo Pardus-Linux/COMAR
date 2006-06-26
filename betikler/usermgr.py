@@ -312,7 +312,7 @@ def addUser(name, password, uid=None, realname=None, homedir=None, shell=None, g
     
     return uid
 
-def setUser(uid, realname, homedir, shell, password, groups):
+def setUser(uid, realname=None, homedir=None, shell=None, password=None, groups=None):
     uid = int(uid)
     
     db = Database()

@@ -7,6 +7,17 @@
 <method name="preRemove"/>
 </class>
 
+<class name="PackageHook">
+<method name="setupPackage">
+    <argument>metapath</argument>
+    <argument>filepath</argument>
+</method>
+<method name="cleanupPackage">
+    <argument>metapath</argument>
+    <argument>filepath</argument>
+</method>
+</class>
+
 <class name="Service">
 <method name="info" access="guest"/>
 <method name="setState" profile="package">

@@ -7,7 +7,7 @@
 <method name="preRemove"/>
 </class>
 
-<class name="PackageHook">
+<class name="PackageHandler">
 <method name="setupPackage">
     <argument>metapath</argument>
     <argument>filepath</argument>

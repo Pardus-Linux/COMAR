@@ -10,8 +10,42 @@
 #
 
 import os
+import sys
+import glob
+import shutil
 from distutils.core import setup
 from distutils.command.install import install
+
+version = "1.4"
+
+distfiles = """
+    setup.py
+    comar/*.py
+"""
+
+def make_dist():
+    distdir = "comar-api-%s" % version
+    list = []
+    for t in distfiles.split():
+        list.extend(glob.glob(t))
+    if os.path.exists(distdir):
+        shutil.rmtree(distdir)
+    os.mkdir(distdir)
+    for file_ in list:
+        cum = distdir[:]
+        for d in os.path.dirname(file_).split('/'):
+            dn = os.path.join(cum, d)
+            cum = dn[:]
+            if not os.path.exists(dn):
+                os.mkdir(dn)
+        shutil.copy(file_, os.path.join(distdir, file_))
+    os.popen("tar -czf %s %s" % ("comar-api-" + version + ".tar.gz", distdir))
+    shutil.rmtree(distdir)
+
+if "dist" in sys.argv:
+    make_dist()
+    sys.exit(0)
+
 
 class Install(install):
     def finalize_options(self):
@@ -24,9 +58,10 @@ class Install(install):
     def run(self):
         install.run(self)
 
+
 setup(
     name = 'comar',
-    version = '0.1',
+    version = version,
     description = 'COMAR API Functions',
     url = 'http://www.pardus.org.tr/projeler/comar',
     license = 'GNU GPL2',

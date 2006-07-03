@@ -65,6 +65,7 @@
 <notify name="warning"/>
 <notify name="info"/>
 <notify name="notify"/>
+<notify name="finished"/>
 </class>
 </group>
 

@@ -69,15 +69,18 @@ def _init_pisi():
     except pisi.lockeddbshelve.Error, e:
         notify("System.Manager.error","%s" % str(e))
 
+def finished():
+    notify("System.Manager.finished")
+    
 def installPackage(package=None):
     _init_pisi()
     if package:
         try:
             package = package.split(",")
             pisi.api.install(package)
-        except Exception, e:
-            fail(e)
-
+        except Exception,e:
+            fail(unicode(e))
+                
 def removePackage(package=None):
     _init_pisi()
     if package:
@@ -85,7 +88,8 @@ def removePackage(package=None):
             package = package.split(",")
             pisi.api.remove(package)
 	except Exception, e:
-	    fail(e)
+	    fail(unicode(e))
+    finished()
 
 def updateRepository(repo=None):
     _init_pisi()
@@ -93,7 +97,8 @@ def updateRepository(repo=None):
 	try:
 	    pisi.api.update_repo(repo)
 	except Exception, e:
-	    fail(e)
+	    fail(unicode(e))
+    finished()
 
 def updateAllRepositories():
     _init_pisi()
@@ -101,7 +106,8 @@ def updateAllRepositories():
 	try:
 	    pisi.api.update_repo(repo)
 	except Exception, e:
-	    fail(e)
+	    fail(unicode(e))
+    finished()
 
 def addRepository(name=None,uri=None):
     _init_pisi()
@@ -109,7 +115,8 @@ def addRepository(name=None,uri=None):
 	try:
 	    pisi.api.add_repo(name,uri)
 	except Exception, e:
-	    fail(e)
+	    fail(unicode(e))
+    finished()
 
 def removeRepository(repo=None):
     _init_pisi()
@@ -117,7 +124,8 @@ def removeRepository(repo=None):
 	try:
 	    pisi.api.remove_repo(repo)
 	except Exception, e:
-	    fail(e)
+	    fail(unicode(e))
+    finished()
 
 def swapRepositories(repo1=None,repo2=None):
     _init_pisi()
@@ -125,7 +133,8 @@ def swapRepositories(repo1=None,repo2=None):
 	try:
 	    pisi.api.ctx.repodb.swap(repo1,repo2)
 	except Exception, e:
-            fail(e)
+            fail(unicode(e))
+    finished()
 
 def installCritical():
     return "NotImplemented"

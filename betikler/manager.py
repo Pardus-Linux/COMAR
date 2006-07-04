@@ -45,11 +45,11 @@ class UI(pisi.ui.UI):
         elif event == pisi.ui.upgraded:
             data = "upgraded"
         elif event == pisi.ui.packagestogo:
-            data = string.join(keywords["order"],",")
+            data = ",".join(keywords["order"])
         else:
             return
 
-        self.comar_notify("System.Manager.notify","%s" % data)
+        notify("System.Manager.notify","%s" % data)
         
     def ack(self, msg):
         return True
@@ -58,12 +58,11 @@ class UI(pisi.ui.UI):
         return True
     
     def display_progress(self, **pd):
-        out = "%s,%d,%s,%d,%d" % (pd["filename"],pd['percent'],pd["rate"],pd["symbol"],pd["downloaded_size"],pd["total_size"])
+        out = "%s,%d,%f,%s,%d,%d" % (pd["filename"],pd['percent'],pd["rate"],pd["symbol"],pd["downloaded_size"],pd["total_size"])
         notify("System.Manager.progress", out)
 
 def _init_pisi():
     ui = UI()
-    ui.comar_notify = notify
     try:
         pisi.api.init(ui=ui)
     except pisi.lockeddbshelve.Error, e:

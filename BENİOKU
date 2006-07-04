@@ -1,7 +1,19 @@
-ÇOMAR (COnfiguration MAnageR), sistemin düzgün çalışması
+Çomar (COnfiguration MAnageR), sistemin düzgün çalışması
 için gerekli olan donanım, açılış, ağ, kullanıcı, zaman,
 görüntü gibi ayarların mümkün olduğu kadar otomatik bir biçimde
 yapılmasını sağlayan, kullanıcılara bir yetki kontrolü dahilinde
 bu ayarları basit ve anlaşılır bir biçimde değiştirme olanağı
 sağlayan bir yazılımdır.
+
+
+dizinler:
+
+ahenk:     Merkezi Çomar yönetim sistemi
+api:       ÇomarAPI genel yapılandırma fonksiyonlarını içeren Python paketi
+belgeler:  Belgeler ve sunumlar
+betikler:  Taslak halindeki betikler
+comar:     Çomar sistem servisi, Çomar altyapısının çekirdeği
+mudur:     Pardus açılış ve donanım tanıma sistemi
+smed:      Çomar model.xml dosyası için basit bir editör
+zorg:      Pardus grafik yapılandırma sistemi
 

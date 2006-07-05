@@ -437,15 +437,14 @@ def queryDriver(vendor, device):
     available_drivers = listAvailableDrivers()
     try:
         f = file(xdriverlist)
+    except:
+        print "%s not found" % xdriverlist
+        return None
+    else:
         for line in f:
             if line.startswith(vendor + device):
                 drv = line.rstrip("\n").split(" ")[1]
-    except:
-        print "%s not found" % xdriverlist
-        pass
-
-    if drv in available_drivers:
-        return drv
+                return drv
 
     return None
 

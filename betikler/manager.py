@@ -69,7 +69,7 @@ def _init_pisi():
         notify("System.Manager.error","%s" % str(e))
 
 def finished():
-    notify("System.Manager.finished")
+    notify("System.Manager.finished","")
     
 def installPackage(package=None):
     _init_pisi()
@@ -79,6 +79,7 @@ def installPackage(package=None):
             pisi.api.install(package)
         except Exception,e:
             fail(unicode(e))
+    finished()
                 
 def removePackage(package=None):
     _init_pisi()

@@ -171,7 +171,7 @@ def setRepositories(repos=None):
         for repo in oldRepos:
             pisi.api.remove_repo(repo)
             
-        while index < len(repoList)/2:
+        while index <= len(repoList)/2:
             pisi.api.add_repo(repoList[index],repoList[index+1])
             index = index + 2
         

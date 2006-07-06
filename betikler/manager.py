@@ -80,7 +80,17 @@ def installPackage(package=None):
         except Exception,e:
             fail(unicode(e))
     finished()
-                
+
+def updatePackage(package=None):
+    _init_pisi()
+    if package:
+        try:
+            package = package.split(",")
+            pisi.api.upgrade(package)
+        except Exception,e:
+            fail(unicode(e))
+    finished()
+                                                            
 def removePackage(package=None):
     _init_pisi()
     if package:
@@ -104,6 +114,7 @@ def updateAllRepositories():
     _init_pisi()
     for repo in pisi.context.repodb.list():
 	try:
+            print 'Updating repo',repo
 	    pisi.api.update_repo(repo)
 	except Exception, e:
 	    fail(unicode(e))

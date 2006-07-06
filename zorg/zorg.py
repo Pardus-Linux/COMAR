@@ -15,12 +15,8 @@ import os
 import popen2
 import string
 
-# FIXME:  change when script is ready
-# xdriverlist = "/usr/lib/X11/xdriverlist"
-# MonitorsDB = "/usr/lib/X11/MonitorsDB"
-xdriverlist = "xdriverlist"
-MonitorsDB = "MonitorsDB"
-
+xdriverlist = "/usr/lib/X11/xdriverlist"
+MonitorsDB = "/usr/lib/X11/MonitorsDB"
 xorg_conf = "/etc/X11/xorg.conf"
 
 ### templates ###

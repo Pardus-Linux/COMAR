@@ -173,7 +173,7 @@ def setRepositories(repos=None):
             
         while index < len(repoList)/2:
             pisi.api.add_repo(repoList[index],repoList[index+1])
-            index = index + 1
+            index = index + 2
         
     finished()
 

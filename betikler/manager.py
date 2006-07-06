@@ -24,10 +24,12 @@ class UI(pisi.ui.UI):
     def error(self, msg):
         notify("System.Manager.error","%s" % msg)
 
-    def warning(self, msg):
+    def warning(self, msg, verbose=False):
         notify("System.Manager.warning","%s" % msg)
 
     def notify(self, event, **keywords):
+        data = ""
+        
         if event == pisi.ui.downloading:
             data = "downloading"
         elif event == pisi.ui.installing:
@@ -105,6 +107,7 @@ def updateRepository(repo=None):
     _init_pisi()
     if repo:
 	try:
+            notify("System.Manager.updatingRepo","%s" % repo)
 	    pisi.api.update_repo(repo)
 	except Exception, e:
 	    fail(unicode(e))
@@ -114,7 +117,8 @@ def updateAllRepositories():
     _init_pisi()
     for repo in pisi.context.repodb.list():
 	try:
-            print 'Updating repo',repo
+            print 'Comar repo name',repo
+            notify("System.Manager.updatingRepo","%s" % repo)
 	    pisi.api.update_repo(repo)
 	except Exception, e:
 	    fail(unicode(e))

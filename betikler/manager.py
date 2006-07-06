@@ -24,12 +24,10 @@ class UI(pisi.ui.UI):
     def error(self, msg):
         notify("System.Manager.error","%s" % msg)
 
-    def warning(self, msg, verbose=False):
+    def warning(self, msg):
         notify("System.Manager.warning","%s" % msg)
 
     def notify(self, event, **keywords):
-        data = ""
-        
         if event == pisi.ui.downloading:
             data = "downloading"
         elif event == pisi.ui.installing:

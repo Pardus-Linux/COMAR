@@ -164,10 +164,13 @@ def getRepositories():
 def setRepositories(repos=None):
     _init_pisi()
     if repos:
+        oldRepos = pisi.context.repodb.list()
         repoList = repos.split(",")
         index = 0
 
         while index < len(repoList)/2:
+            if repoList[index] in oldRepos:
+                pisi.api.remove_repo(repoList[index])
             pisi.api.add_repo(repoList[index],repoList[index+1])
             index = index + 1
         

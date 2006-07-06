@@ -37,7 +37,7 @@
 <method name="removePackage">
     <argument>package</argument>
 </method>
-<method name="upgradePackage">
+<method name="updatePackage">
     <argument>package</argument>
 </method>
 <method name="updateRepository">

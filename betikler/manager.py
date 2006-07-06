@@ -115,7 +115,6 @@ def updateAllRepositories():
     _init_pisi()
     for repo in pisi.context.repodb.list():
 	try:
-            print 'Comar repo name',repo
             notify("System.Manager.updatingRepo","%s" % repo)
 	    pisi.api.update_repo(repo)
 	except Exception, e:

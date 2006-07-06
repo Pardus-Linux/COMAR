@@ -139,15 +139,6 @@ def removeRepository(repo=None):
 	    fail(unicode(e))
     finished()
 
-def swapRepositories(repo1=None,repo2=None):
-    _init_pisi()
-    if repo1 and repo2:
-	try:
-	    pisi.api.ctx.repodb.swap(repo1,repo2)
-	except Exception, e:
-            fail(unicode(e))
-    finished()
-
 def installCritical():
     return "NotImplemented"
 
@@ -171,4 +162,14 @@ def getRepositories():
     return "\n".join(B)
 
 def setRepositories(repos=None):
-    return "NotImplemented"
+    _init_pisi()
+    if repos:
+        repoList = repos.split(",")
+        index = 0
+
+        while index < len(repoList)/2:
+            pisi.api.add_repo(repoList[index],repoList[index+1])
+            index = index + 1
+        
+    finished()
+

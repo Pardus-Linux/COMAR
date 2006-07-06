@@ -66,6 +66,7 @@
 <notify name="info"/>
 <notify name="notify"/>
 <notify name="finished"/>
+<notify name="updatingRepo"/>
 </class>
 </group>
 

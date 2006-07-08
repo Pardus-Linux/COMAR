@@ -577,7 +577,7 @@ def querySynaptics(keys_main):
         for line in a.readlines():
             # FIXME: check if kernel does not break anything
             # if "SynPS/2" in line or "AlpsPS/2" in line:
-            if "SynPS/2" in line or "AlpsPS/2" in line:
+            if "SynPS/2" in line:
                 keys_main["SYNAPTICS_MOD"] = 'Load "synaptics"'
                 keys_main["SYNAPTICS_LAY"] = 'InputDevice "Mouse1" "SendCoreEvents"'
                 keys_main["SEC_SYNAPTICS"] = template_synaptics

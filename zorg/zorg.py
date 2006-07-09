@@ -27,7 +27,7 @@ Section "Device"
     Driver     "%(DRIVER)s"
     VendorName "%(VENDORNAME)s"
     BoardName  "%(BOARDNAME)s"
-    BusID      "%(BUSID)s"
+    # BusID      "%(BUSID)s"
     Option     "RenderAccel" "true"
     # Option     "AccelMethod" "exa"
 EndSection

@@ -45,7 +45,8 @@
 </method>
 <method name="updateAllRepositories"/>
 <method name="addRepository">
-    <argument>repository</argument>
+    <argument>name</argument>
+    <argument>uri</argument>
 </method>
 <method name="removeRepository">
     <argument>repository</argument>

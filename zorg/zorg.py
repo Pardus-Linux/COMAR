@@ -586,15 +586,16 @@ def querySynaptics(keys_main):
         pass
 
 def queryKeymap():
+    # Fallback is trq
+    kmap = "trq"
     try:
-        f = file("/etc/conf.d/keymaps")
+        f = file("/etc/conf.d/mudur")
         for line in f.readlines():
-            if line.strip().startswith("KEYMAP="):
-                kmap = line.split('"')[1].strip()
+            if line.strip().startswith("keymap="):
+                kmap = line.split('=')[1].strip()
         f.close()
     except:
-        # Fallback is trq
-        kmap = "trq"
+        pass
 
     return kmap
 

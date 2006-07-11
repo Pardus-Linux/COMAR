@@ -50,13 +50,13 @@ class UI(pisi.ui.UI):
             return
 
         notify("System.Manager.notify","%s" % data)
-        
+
     def ack(self, msg):
         return True
-    
+
     def confirm(self, msg):
         return True
-    
+
     def display_progress(self, **pd):
         out = "%s,%d,%d,%s,%d,%d" % (pd["filename"],pd['percent'],pd["rate"],pd["symbol"],pd["downloaded_size"],pd["total_size"])
         notify("System.Manager.progress", out)
@@ -69,8 +69,9 @@ def _init_pisi():
         notify("System.Manager.error","%s" % str(e))
 
 def finished():
+    pisi.api.finalize()
     notify("System.Manager.finished","")
-    
+
 def installPackage(package=None):
     _init_pisi()
     if package:
@@ -90,7 +91,7 @@ def updatePackage(package=None):
         except Exception,e:
             fail(unicode(e))
     finished()
-                                                            
+
 def removePackage(package=None):
     _init_pisi()
     if package:
@@ -170,10 +171,10 @@ def setRepositories(repos=None):
 
         for repo in oldRepos:
             pisi.api.remove_repo(repo)
-            
+
         while index <= len(repoList)/2:
             pisi.api.add_repo(repoList[index],repoList[index+1])
             index = index + 2
-        
+
     finished()
 

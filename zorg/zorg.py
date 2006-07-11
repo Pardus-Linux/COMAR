@@ -590,9 +590,9 @@ def queryKeymap():
     kmap = "trq"
     try:
         f = file("/etc/conf.d/mudur")
-        for line in f.readlines():
+        for line in f:
             if line.strip().startswith("keymap="):
-                kmap = line.split('=')[1].strip()
+                kmap = line.split('=')[1].strip().strip('"')
         f.close()
     except:
         pass

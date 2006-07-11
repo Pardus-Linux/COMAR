@@ -24,5 +24,11 @@
             <comment>Members can play games, and access shared high score tables.</comment>
             <comment xml:lang="tr">Oyunları çalıştırabilir ve ortak skor tablolarına erişebilirler.</comment>
         </group>
+        <group name="plugdev">
+            <purpose>Media and disc access</purpose>
+            <purpose xml:lang="tr">Medya ve disk erişimi</purpose>
+            <comment>Members can mount discs and removable media (CD, DVD, etc).</comment>
+            <comment xml:lang="tr">Diskleri ve çıkarılabilir medyaları (CD, DVD, vb) bağlayıp kullanabilirler.</comment>
+        </group>
     </groups>
 </comarSecurityComments>

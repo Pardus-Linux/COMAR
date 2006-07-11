@@ -136,10 +136,16 @@ do_register(char *argv[])
 	int cmd;
 	unsigned int id;
 	char *ret;
+	char *path;
 
 	if (!argv[optind] || !argv[optind+1] || !argv[optind+2]) {
 		print_usage();
 		exit(1);
+	}
+
+	path = argv[optind + 2];
+	if (path[0] != '/') {
+		path = realpath(path, NULL);
 	}
 
 	com = comar_connect();
@@ -151,7 +157,7 @@ do_register(char *argv[])
 	comar_send(
 		com, 1,
 		COMAR_REGISTER,
-		argv[optind], argv[optind+1], argv[optind+2],
+		argv[optind], argv[optind+1], path,
 		NULL
 	);
 

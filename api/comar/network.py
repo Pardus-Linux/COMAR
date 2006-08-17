@@ -40,6 +40,9 @@ IFF_MULTICAST = 0x1000      # Supports multicast.
 IFF_PORTSEL = 0x2000        # Can set media type.
 IFF_AUTOMEDIA = 0x4000      # Auto media select active.
 
+# From <linux/if_arp.h>
+ARPHRD_ETHER = 1
+
 
 class IF:
     def __init__(self, ifname):
@@ -67,6 +70,14 @@ class IF:
             return file(path).read().rstrip("\n")
         else:
             return None
+    
+    def isEthernet(self):
+        type = self._sys("type")
+        try:
+            type = int(type)
+        except ValueError:
+            return False
+        return type == ARPHRD_ETHER
     
     def isUp(self):
         result = self._call(SIOCGIFFLAGS)

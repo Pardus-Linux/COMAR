@@ -73,6 +73,9 @@ class IF:
         else:
             return None
     
+    def deviceUID(self):
+        pass
+    
     def isEthernet(self):
         type = self._sys("type")
         try:
@@ -153,3 +156,17 @@ class IF:
 def interfaces():
     for ifname in os.listdir("/sys/class/net"):
         yield IF(ifname)
+
+def findInterface(devuid):
+    pass
+
+def deviceName(devuid):
+    pass
+
+
+class Route:
+    pass
+
+
+class DHCP:
+    pass

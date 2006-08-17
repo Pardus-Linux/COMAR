@@ -99,12 +99,12 @@ class IF:
     def setAddress(self, address=None, mask=None):
         if address:
             result = self._call(SIOCSIFADDR, address)
-            if not result or socket.inet_ntoa(result[20:24]) is not address:
-                return None
+            if not result:
+                return False
         if mask:
             result = self._call(SIOCSIFNETMASK, mask)
-            if not result or socket.inet_ntoa(result[20:24]) is not mask:
-                return None
+            if not result:
+                return False
         return True
     
     def getStats(self):

@@ -84,7 +84,7 @@ class IF:
         ifreq = (self.ifname + '\0' * 16)[:16]
         result = self._call(SIOCGIFFLAGS)
         flags, = struct.unpack('H', result[16:18])
-        flags &= ~self.IFF_UP
+        flags &= ~IFF_UP
         data = struct.pack("16sh", ifreq, flags)
         result = self._ioctl(SIOCSIFFLAGS, data)
         return result

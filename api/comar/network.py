@@ -19,8 +19,8 @@ SIOCGIFFLAGS = 0x8913       # get flags
 SIOCSIFFLAGS = 0x8914       # set flags
 SIOCGIFADDR = 0x8915        # get PA address
 SIOCSIFADDR = 0x8916        # set PA address
-SIOCGIFNETMASK  = 0x891b    # get network PA mask
-SIOCSIFNETMASK  = 0x891c    # set network PA mask
+SIOCGIFNETMASK = 0x891b     # get network PA mask
+SIOCSIFNETMASK = 0x891c     # set network PA mask
 SIOCSIFMTU = 0x8922         # set MTU size
 
 # From <net/if.h>
@@ -46,18 +46,20 @@ ARPHRD_ETHER = 1
 
 class IF:
     def __init__(self, ifname):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.ifname = ifname
+        self.name = ifname
+        self._sock = None
     
     def _ioctl(self, func, args):
-        return fcntl.ioctl(self.sock.fileno(), func, args)
+        if not self._sock:
+            self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        return fcntl.ioctl(self._sock.fileno(), func, args)
     
     def _call(self, func, ip = None):
         if ip:
-            ifreq = (self.ifname + '\0' * 16)[:16]
+            ifreq = (self.name + '\0' * 16)[:16]
             data = struct.pack("16si4s10x", ifreq, socket.AF_INET, socket.inet_aton(ip))
         else:
-            data = (self.ifname + '\0'*32)[:32]
+            data = (self.name + '\0'*32)[:32]
         try:
             result = self._ioctl(func, data)
         except IOError:
@@ -65,7 +67,7 @@ class IF:
         return result
     
     def _sys(self, name):
-        path = os.path.join("/sys/class/net", self.ifname, name)
+        path = os.path.join("/sys/class/net", self.name, name)
         if os.path.exists(path):
             return file(path).read().rstrip("\n")
         else:
@@ -79,20 +81,28 @@ class IF:
             return False
         return type == ARPHRD_ETHER
     
+    def isWireless(self):
+        data = file("/proc/net/wireless").readlines()
+        for line in data[2:]:
+            name = line[:line.find(": ")].strip()
+            if name == self.name:
+                return True
+        return False
+    
     def isUp(self):
         result = self._call(SIOCGIFFLAGS)
         flags, = struct.unpack('H', result[16:18])
         return (flags & IFF_UP) != 0
     
     def up(self):
-        ifreq = (self.ifname + '\0' * 16)[:16]
+        ifreq = (self.name + '\0' * 16)[:16]
         flags = IFF_UP | IFF_RUNNING | IFF_BROADCAST | IFF_MULTICAST
         data = struct.pack("16sh", ifreq, flags)
         result = self._ioctl(SIOCSIFFLAGS, data)
         return result
     
     def down(self):
-        ifreq = (self.ifname + '\0' * 16)[:16]
+        ifreq = (self.name + '\0' * 16)[:16]
         result = self._call(SIOCGIFFLAGS)
         flags, = struct.unpack('H', result[16:18])
         flags &= ~IFF_UP
@@ -132,9 +142,14 @@ class IF:
         return self._sys("mtu")
     
     def setMTU(self, mtu):
-        ifreq = (self.ifname + '\0' * 16)[:16]
+        ifreq = (self.name + '\0' * 16)[:16]
         data = struct.pack("16si", ifreq, mtu)
         result = self._ioctl(SIOCSIFMTU, data)
         if struct.unpack("16si", result)[1] is mtu:
             return True
         return None
+
+
+def interfaces():
+    for ifname in os.listdir("/sys/class/net"):
+        yield IF(ifname)

@@ -69,15 +69,6 @@ class Wireless:
             
         return result
 
-    def getInterfaceList(self):
-        """ Find wireless interfaces """
-        iflist = []
-        path = "/sys/class/net" # FIXME: There may be an ioctl way to do this
-        for interface in os.listdir(path):
-            if os.path.exists(os.path.join(path, interface, "wireless")):
-                iflist.append(interface)
-        return iflist
-
     def getEssid(self, ifname):
         """ Get the ESSID for an interface """
         buffer = array.array('c', '\0' * 16)

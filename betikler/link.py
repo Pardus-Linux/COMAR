@@ -79,7 +79,7 @@ def kernelEvent(data):
         conns = instances("name")
         for conn in conns:
             dev = Dev(conn)
-            if dev.uid and devuid == dev.uid:
+            if dev.ifc and devuid == dev.ifc.deviceUID():
                 if dev.state == "up":
                     dev.up()
                     return

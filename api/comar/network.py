@@ -13,6 +13,7 @@ import os
 import socket
 import fcntl
 import struct
+from comar.device import idsQuery
 
 # From <bits/ioctls.h>
 SIOCGIFFLAGS = 0x8913       # get flags
@@ -182,10 +183,36 @@ def interfaces():
         yield IF(ifname)
 
 def findInterface(devuid):
-    pass
+    if devuid.startswith("pci:") or devuid.startswith("usb:"):
+        # Simplest cast, device is in same slot
+        hw, dev = devuid.rsplit("_", 1)
+        if IF(dev).deviceUID() == devuid:
+            return dev
+        # Device name is changed due to different slot/order
+        for ifc in interfaces():
+            ifchw = ifc.deviceUID().rsplit("_", 1)[0]
+            if ifchw == hw:
+                return ifc.name
+        # Device is not inserted
+        return None
+    # We dont have detailed vendor/device/etc info, so just check for name
+    for ifc in interfaces():
+        if ifc.deviceUID() == devuid:
+            return ifc.name
+    return None
 
 def deviceName(devuid):
-    pass
+    if devuid.startswith("pci:") or devuid.startswith("usb:"):
+        type, rest = devuid.split(":", 1)
+        vendor, device, dev = rest.split("_", 2)
+        if type == "pci":
+            data = "/usr/share/misc/pci.ids"
+        else:
+            data = "/usr/share/misc/usb.ids"
+        return idsQuery(data, vendor, device)
+    if devuid.startswith("logic:"):
+        return devuid.split(":", 1)[1]
+    return devuid
 
 
 class Route:

@@ -13,9 +13,14 @@ import os
 import socket
 import fcntl
 import struct
+import glob
+import subprocess
+import csapi
 from comar.device import idsQuery
 
 # From <bits/ioctls.h>
+SIOCADDRT = 0x890B          # add routing table entry
+SIOCDELRT = 0x890C          # delete routing table entry
 SIOCGIFFLAGS = 0x8913       # get flags
 SIOCSIFFLAGS = 0x8914       # set flags
 SIOCGIFADDR = 0x8915        # get PA address
@@ -46,6 +51,7 @@ ARPHRD_ETHER = 1
 
 
 class IF:
+    """Network interface control class"""
     def __init__(self, ifname):
         self.name = ifname
         self._sock = None
@@ -176,32 +182,70 @@ class IF:
         if struct.unpack("16si", result)[1] is mtu:
             return True
         return None
+    
+    def startAuto(self, timeout=30):
+        if self.isAuto():
+            self.stopAuto()
+        
+        # -R -Y -N to prevent dhcpcd rewrite nameservers
+        #          we should add nameservers, not rewrite them
+        # -H to set hostname due to info from server
+        # -t for timeout
+        
+        cmd = ["/sbin/dhcpcd", "-R", "-Y", "-N", "-t", str(timeout), self.name]
+        return subprocess.call(cmd)
+    
+    def stopAuto(self):
+        subprocess.call(["/sbin/dhcpcd", "-k", self.name])
+    
+    def isAuto(self):
+        path = "/var/run/dhcpcd-%s.pid" % self.name
+        if not os.path.exists(path):
+            return False
+        pid = file(path).read().rstrip("\n")
+        if not os.path.exists("/proc/%s" % pid):
+            return False
+        return True
+    
+    def autoNameServers(self):
+        info_file = "/var/lib/dhcpc/dhcpcd-" + self.name + ".info"
+        try:
+            f = file(info_file)
+        except IOError:
+            return None
+        for line in f:
+            if line.startswith("DNS="):
+                return line[4:].rstrip('\n').split(',')
 
 
 def interfaces():
+    """Iterate over available network interfaces"""
     for ifname in os.listdir("/sys/class/net"):
         yield IF(ifname)
 
 def findInterface(devuid):
+    """Return interface control object for given device unique id"""
     if devuid.startswith("pci:") or devuid.startswith("usb:"):
         # Simplest cast, device is in same slot
         hw, dev = devuid.rsplit("_", 1)
-        if IF(dev).deviceUID() == devuid:
-            return dev
+        ifc = IF(dev)
+        if ifc.deviceUID() == devuid:
+            return ifc
         # Device name is changed due to different slot/order
         for ifc in interfaces():
             ifchw = ifc.deviceUID().rsplit("_", 1)[0]
             if ifchw == hw:
-                return ifc.name
+                return ifc
         # Device is not inserted
         return None
     # We dont have detailed vendor/device/etc info, so just check for name
     for ifc in interfaces():
         if ifc.deviceUID() == devuid:
-            return ifc.name
+            return ifc
     return None
 
 def deviceName(devuid):
+    """Return product/manufacturer name for given device unique id"""
     if devuid.startswith("pci:") or devuid.startswith("usb:"):
         type, rest = devuid.split(":", 1)
         vendor, device, dev = rest.split("_", 2)
@@ -216,8 +260,22 @@ def deviceName(devuid):
 
 
 class Route:
-    pass
-
-
-class DHCP:
-    pass
+    """Network routing control class"""
+    def delete(self, gw, dst = "0.0.0.0", mask = "0.0.0.0"):
+        try:
+            csapi.changeroute(SIOCDELRT, gw, dst, mask)
+        except:
+            pass
+    
+    def deleteDefault(self):
+        self.delete("0.0.0.0")
+    
+    def setDefault(self, gw, dst = "0.0.0.0", mask = "0.0.0.0"):
+        # We must delete previous default gateway and route entry set for gateway
+        # or we will end up with multiple entries
+        self.deleteDefault()
+        self.delete(gw)
+        try:
+            csapi.changeroute(SIOCADDRT, gw, dst, mask)
+        except:
+            pass

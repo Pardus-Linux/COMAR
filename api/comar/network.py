@@ -74,7 +74,31 @@ class IF:
             return None
     
     def deviceUID(self):
-        pass
+        def remHex(str):
+            if str.startswith("0x"):
+                str = str[2:]
+            return str
+        
+        modalias = self._sys("device/modalias")
+        if not modalias:
+            return "logic:%s" % self.name
+        type, rest = modalias.split(":", 1)
+        
+        if type == "pci":
+            vendor = remHex(self._sys("device/vendor"))
+            device = remHex(self._sys("device/device"))
+            return "pci:%s_%s_%s" % (vendor, device, self.name)
+        
+        if type == "usb":
+            path = os.path.join("/sys/class/net", self.name, "device/driver")
+            for item in os.listdir(path):
+                if ":" in item:
+                    path2 = "device/bus/devices/%s" % item.split(":", 1)[0]
+                    vendor = remHex(self._sys(path2 + "/idVendor"))
+                    device = remHex(self._sys(path2 + "/idProduct"))
+                    return "usb:%s_%s_%s" % (vendor, device, self.name)
+        
+        return "%s:%s" % (type, self.name)
     
     def isEthernet(self):
         type = self._sys("type")

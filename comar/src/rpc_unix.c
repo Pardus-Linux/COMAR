@@ -430,8 +430,8 @@ read_rpc(struct connection *c)
 	c->pos += len;
 	if (c->pos >= 8) {
 		c->data_size = get_data_size(c->buffer);
-		if (c->data_size >= c->size) {
-			while (c->data_size >= c->size) {
+		if (c->data_size + 8 >= c->size) {
+			while (c->data_size + 8 >= c->size) {
 				c->size *= 2;
 			}
 			c->buffer = realloc(c->buffer, c->size);

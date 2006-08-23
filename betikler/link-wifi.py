@@ -256,7 +256,7 @@ def scanRemote(device=None):
         ifc = network.findInterface(device)
         if ifc:
             wifi = Wireless(ifc)
-            points = map(lambda x: x.id, wifi.scanSSID())
+            points = map(lambda x: x.id(), wifi.scanSSID())
             return "\n".join(points)
     return ""
 

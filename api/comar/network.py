@@ -108,7 +108,7 @@ class IF:
         return "%s:%s" % (type, self.name)
     
     def isEthernet(self):
-        type = self._sys("type")
+        type = self.sysValue("type")
         try:
             type = int(type)
         except ValueError:

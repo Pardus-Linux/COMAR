@@ -62,6 +62,15 @@ class Wireless:
             return None
     
     def scanSSID(self):
+        class Point:
+            def __init__(self):
+                self.ssid = None
+                self.mode = None
+                self.mac = None
+            
+            def id(self):
+                return "%s (%s, %s)" % (self.ssid, self.mode, self.mac)
+        
         ifc = self.ifc
         if not ifc.isUp():
             # Some drivers cant do the scan while interface is down, doh :(
@@ -70,23 +79,22 @@ class Wireless:
         cmd = subprocess.Popen(["/usr/sbin/iwlist", ifc.name, "scan"], stdout=subprocess.PIPE)
         data = cmd.communicate()[0]
         points = []
-        point = []
-        print data
+        point = None
         for line in data.split("\n"):
             line = line.lstrip()
             if line.startswith("Cell "):
-                if point != []:
+                if point != None:
                     points.append(point)
-                point = []
+                point = Point()
             if "ESSID:" in line:
                 i = line.find('"') + 1
                 j = line.find('"', i)
-                point.append(line[i:j])
+                point.ssid = line[i:j]
             if "Mode:" in line:
-                point.append(line.split("Mode:")[1])
+                point.mode = line.split("Mode:")[1]
             if "Address:" in line:
-                point.append(line.split("Address:")[1].strip())
-        if point != []:
+                point.mac = line.split("Address:")[1].strip()
+        if point != None:
             points.append(point)
         return points
     
@@ -105,7 +113,7 @@ class Wireless:
     
     def setEncryption(self, wep=None):
         ifc = self.ifc
-        if wep:
+        if wep and wep != "":
             os.system("/usr/sbin/iwconfig %s enc restricted %s" % (ifc.name, wep))
         else:
             os.system("/usr/sbin/iwconfig %s enc off" % (ifc.name))
@@ -161,13 +169,10 @@ class Dev:
     
     def up(self):
         ifc = self.ifc
+        wifi = Wireless(ifc)
         if self.remote:
-            wifi = Wireless()
             wifi.setEssid(ifc.name, self.remote)
-        if self.password and self.password != "":
-            os.system("/usr/sbin/iwconfig %s enc restricted %s" % (ifc.name, self.password))
-        else:
-            os.system("/usr/sbin/iwconfig %s enc off" % (ifc.name))
+        wifi.setEncryption(wep=self.password)
         if self.mode == "manual":
             ifc.setAddress(self.address, self.mask)
             ifc.up()
@@ -247,14 +252,13 @@ def deviceList():
     return "\n".join(iflist)
 
 def scanRemote(device=None):
-    a = Scanner()
     if device:
         ifc = network.findInterface(device)
         if ifc:
-            device = ifc.name
-    if not device:
-        device = ""
-    return a.scan(device)
+            wifi = Wireless(ifc)
+            points = map(lambda x: x.id, wifi.scanSSID())
+            return "\n".join(points)
+    return ""
 
 def setConnection(name=None, device=None):
     dict = get_instance("name", name)

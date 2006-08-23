@@ -56,7 +56,7 @@ class IF:
         self.name = ifname
         self._sock = None
     
-    def _ioctl(self, func, args):
+    def ioctl(self, func, args):
         if not self._sock:
             self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         return fcntl.ioctl(self._sock.fileno(), func, args)
@@ -68,12 +68,12 @@ class IF:
         else:
             data = (self.name + '\0'*32)[:32]
         try:
-            result = self._ioctl(func, data)
+            result = self.ioctl(func, data)
         except IOError:
             return None
         return result
     
-    def _sys(self, name):
+    def sysValue(self, name):
         path = os.path.join("/sys/class/net", self.name, name)
         if os.path.exists(path):
             return file(path).read().rstrip("\n")
@@ -86,14 +86,14 @@ class IF:
                 str = str[2:]
             return str
         
-        modalias = self._sys("device/modalias")
+        modalias = self.sysValue("device/modalias")
         if not modalias:
             return "logic:%s" % self.name
         type, rest = modalias.split(":", 1)
         
         if type == "pci":
-            vendor = remHex(self._sys("device/vendor"))
-            device = remHex(self._sys("device/device"))
+            vendor = remHex(self.sysValue("device/vendor"))
+            device = remHex(self.sysValue("device/device"))
             return "pci:%s_%s_%s" % (vendor, device, self.name)
         
         if type == "usb":
@@ -101,8 +101,8 @@ class IF:
             for item in os.listdir(path):
                 if ":" in item:
                     path2 = "device/bus/devices/%s" % item.split(":", 1)[0]
-                    vendor = remHex(self._sys(path2 + "/idVendor"))
-                    device = remHex(self._sys(path2 + "/idProduct"))
+                    vendor = remHex(self.sysValue(path2 + "/idVendor"))
+                    device = remHex(self.sysValue(path2 + "/idProduct"))
                     return "usb:%s_%s_%s" % (vendor, device, self.name)
         
         return "%s:%s" % (type, self.name)
@@ -132,7 +132,7 @@ class IF:
         ifreq = (self.name + '\0' * 16)[:16]
         flags = IFF_UP | IFF_RUNNING | IFF_BROADCAST | IFF_MULTICAST
         data = struct.pack("16sh", ifreq, flags)
-        result = self._ioctl(SIOCSIFFLAGS, data)
+        result = self.ioctl(SIOCSIFFLAGS, data)
         return result
     
     def down(self):
@@ -141,7 +141,7 @@ class IF:
         flags, = struct.unpack('H', result[16:18])
         flags &= ~IFF_UP
         data = struct.pack("16sh", ifreq, flags)
-        result = self._ioctl(SIOCSIFFLAGS, data)
+        result = self.ioctl(SIOCSIFFLAGS, data)
         return result
     
     def getAddress(self):
@@ -163,22 +163,22 @@ class IF:
         return True
     
     def getStats(self):
-        tx_b = self._sys("statistics/tx_bytes")
-        rx_b = self._sys("statistics/rx_bytes")
-        tx_e = self._sys("statistics/tx_errors")
-        rx_e = self._sys("statistics/rx_errors")
+        tx_b = self.sysValue("statistics/tx_bytes")
+        rx_b = self.sysValue("statistics/rx_bytes")
+        tx_e = self.sysValue("statistics/tx_errors")
+        rx_e = self.sysValue("statistics/rx_errors")
         return (tx_b, rx_b, tx_e, rx_e)
     
     def getMAC(self):
-        return self._sys("address")
+        return self.sysValue("address")
     
     def getMTU(self):
-        return self._sys("mtu")
+        return self.sysValue("mtu")
     
     def setMTU(self, mtu):
         ifreq = (self.name + '\0' * 16)[:16]
         data = struct.pack("16si", ifreq, mtu)
-        result = self._ioctl(SIOCSIFMTU, data)
+        result = self.ioctl(SIOCSIFMTU, data)
         if struct.unpack("16si", result)[1] is mtu:
             return True
         return None

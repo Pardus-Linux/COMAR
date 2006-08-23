@@ -26,6 +26,23 @@ SIOCSIWESSID = 0x8B1A   # set essid
 SIOCGIWESSID = 0x8B1B   # get essid
 
 
+class Point:
+    def __init__(self, id=None):
+        self.ssid = None
+        self.mode = None
+        self.mac = None
+        if id:
+            if " (" in id and id.endswith(")"):
+                self.ssid, rest = id.split(" (", 1)
+                self.mode, self.mac = rest.split(" ", 1)
+                self.mac = self.mac[:-1]
+            else:
+                self.ssid = id
+    
+    def id(self):
+        return "%s (%s, %s)" % (self.ssid, self.mode, self.mac)
+
+
 class Wireless:
     modes = ['Auto', 'Ad-Hoc', 'Managed', 'Master', 'Repeat', 'Second', 'Monitor']
     
@@ -51,26 +68,18 @@ class Wireless:
         self._call(SIOCGIWESSID, arg)
         return buffer.tostring().strip('\x00')
     
-    def setSSID(self, essid):
-        if len(essid) > 16:
-            return "ESSID should be 16 char or less" # FIXME: How shall we define error messages ?
-        arg = struct.pack("iHH", id(essid) + 20, len(essid) + 1, 1)
+    def setSSID(self, ssid):
+        point = Point(ssid)
+        buffer = array.array('c', point.ssid)
+        addr, length = buffer.buffer_info()
+        arg = struct.pack("iHH", addr, length + 1, 1)
         self._call(SIOCSIWESSID, arg)
-        if self.getEssid() is essid:
+        if self.getSSID() is point.ssid:
             return True
         else:
             return None
     
     def scanSSID(self):
-        class Point:
-            def __init__(self):
-                self.ssid = None
-                self.mode = None
-                self.mac = None
-            
-            def id(self):
-                return "%s (%s, %s)" % (self.ssid, self.mode, self.mac)
-        
         ifc = self.ifc
         if not ifc.isUp():
             # Some drivers cant do the scan while interface is down, doh :(
@@ -171,7 +180,7 @@ class Dev:
         ifc = self.ifc
         wifi = Wireless(ifc)
         if self.remote:
-            wifi.setEssid(ifc.name, self.remote)
+            wifi.setSSID(self.remote)
         wifi.setEncryption(wep=self.password)
         if self.mode == "manual":
             ifc.setAddress(self.address, self.mask)
@@ -294,7 +303,7 @@ def setState(name=None, state=None):
     
     notify("Net.Link.connectionChanged", "configured state " + name)
     
-    if not dev.dev:
+    if not dev.ifc:
         fail("Device not found")
     
     if state == "up":

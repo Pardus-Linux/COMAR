@@ -322,7 +322,7 @@ def connectionInfo(name=None):
     dict = get_instance("name", name)
     if not dict:
         fail("No such connection")
-    s = "\n".join([name, dict["device"], _device_info(dict["device"])])
+    s = "\n".join([name, dict["device"], network.deviceName(dict["device"])])
     return s
 
 def getRemote(name=None):

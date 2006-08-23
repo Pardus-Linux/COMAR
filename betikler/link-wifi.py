@@ -11,152 +11,127 @@
 
 import os
 import re
-import popen2
+import socket
+import array
+import struct
+import fcntl
+import subprocess
 from comar import network
 
-def capture(cmd):
-    out = []
-    a = popen2.Popen4(cmd)
-    while 1:
-        b = a.fromchild.readline()
-        if b == None or b == "":
-            break
-        out.append(b)
-    return (a.wait(), out)
+# From </usr/include/wireless.h>
+SIOCSIWMODE = 0x8B06    # set the operation mode
+SIOCGIWMODE = 0x8B07    # get operation mode
+SIOCGIWRATE = 0x8B21    # get default bit rate
+SIOCSIWESSID = 0x8B1A   # set essid
+SIOCGIWESSID = 0x8B1B   # get essid
 
 
 class Wireless:
-    """ ioctl stuff """
-
-#   From </usr/include/wireless.h>
-    
-    SIOCSIWMODE = 0x8B06    # set the operation mode
-    SIOCGIWMODE = 0x8B07    # get operation mode
-    SIOCGIWRATE = 0x8B21    # get default bit rate
-    SIOCSIWESSID = 0x8B1A   # set essid
-    SIOCGIWESSID = 0x8B1B   # get essid
-    
     modes = ['Auto', 'Ad-Hoc', 'Managed', 'Master', 'Repeat', 'Second', 'Monitor']
-
-    def __init__(self):
-        # create a socket to communicate with system
-        self.sockfd = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-    def _ioctl(self, func, args):
-        return fcntl.ioctl(self.sockfd.fileno(), func, args)
-
-    def _call(self, ifname, func, arg = None):
-
+    
+    def __init__(self, ifc):
+        self.sock = None
+        self.ifc = ifc
+    
+    def _call(self, func, arg = None):
         if arg is None:
-            data = (ifname + '\0' * 32)[:32]
+            data = (self.ifc.name + '\0' * 32)[:32]
         else:
-            data = (ifname + '\0' * 16)[:16] + arg
-
+            data = (self.ifc.name + '\0' * 16)[:16] + arg
         try:
-            result = self._ioctl(func, data)
+            result = self.ifc.ioctl(func, data)
         except IOError:
             return None
-
         return result
-
-    def _readsys(self, ifname, f):
-        try:
-            fp = file(os.path.join("/sys/class/net", ifname, f))
-            result = fp.readline().rstrip('\n')
-            fp.close()
-        except IOError:
-            return None
-            
-        return result
-
-    def getEssid(self, ifname):
-        """ Get the ESSID for an interface """
+    
+    def getSSID(self):
         buffer = array.array('c', '\0' * 16)
         addr, length = buffer.buffer_info()
         arg = struct.pack('Pi', addr, length)
-
-        self._call(ifname, self.SIOCGIWESSID, arg)
+        self._call(SIOCGIWESSID, arg)
         return buffer.tostring().strip('\x00')
-
-    def getMode(self, ifname):
-        """ Get the operating mode of an interface """
-        result = self._call(ifname, self.SIOCGIWMODE)
+    
+    def setSSID(self, essid):
+        if len(essid) > 16:
+            return "ESSID should be 16 char or less" # FIXME: How shall we define error messages ?
+        arg = struct.pack("iHH", id(essid) + 20, len(essid) + 1, 1)
+        self._call(SIOCSIWESSID, arg)
+        if self.getEssid() is essid:
+            return True
+        else:
+            return None
+    
+    def scanSSID(self):
+        ifc = self.ifc
+        if not ifc.isUp():
+            # Some drivers cant do the scan while interface is down, doh :(
+            ifc.setAddress("0.0.0.0")
+            ifc.up()
+        cmd = subprocess.Popen(["/usr/sbin/iwlist", ifc.name, "scan"], stdout=subprocess.PIPE)
+        data = cmd.communicate()[0]
+        points = []
+        point = []
+        print data
+        for line in data.split("\n"):
+            line = line.lstrip()
+            if line.startswith("Cell "):
+                if point != []:
+                    points.append(point)
+                point = []
+            if "ESSID:" in line:
+                i = line.find('"') + 1
+                j = line.find('"', i)
+                point.append(line[i:j])
+            if "Mode:" in line:
+                point.append(line.split("Mode:")[1])
+            if "Address:" in line:
+                point.append(line.split("Address:")[1].strip())
+        if point != []:
+            points.append(point)
+        return points
+    
+    def getMode(self):
+        result = self._call(SIOCGIWMODE)
         mode = struct.unpack("i", result[16:20])[0]
         return self.modes[mode]
-
+    
+    def setMode(self, mode):
+        arg = struct.pack("l", self.modes.index(mode))
+        self._call(SIOCSIWMODE, arg)
+        if self.getMode() is mode:
+            return True
+        else:
+            return None
+    
+    def setEncryption(self, wep=None):
+        ifc = self.ifc
+        if wep:
+            os.system("/usr/sbin/iwconfig %s enc restricted %s" % (ifc.name, wep))
+        else:
+            os.system("/usr/sbin/iwconfig %s enc off" % (ifc.name))
+    
     def getBitrate(self, ifname):
-        """ Get the bitrate of an interface """
         # Note for UI coder, KILO is not 2^10 in wireless tools world
-
-        result = self._call(ifname, self.SIOCGIWRATE)
-
+        result = self._call(SIOCGIWRATE)
         size = struct.calcsize('ihbb')
         m, e, i, pad = struct.unpack('ihbb', result[16:16+size])
         if e == 0:
             bitrate =  m
         else:
             bitrate = float(m) * 10**e
-
         return bitrate
-
     def getLinkStatus(self, ifname):
         """ Get link status of an interface """
         link = self._readsys(ifname, "wireless/link")
         return int(link)
-
     def getNoiseStatus(self, ifname):
         """ Get noise level of an interface """
         noise = self._readsys(ifname, "wireless/noise")
         return int(noise) - 256
-
     def getSignalStatus(self, ifname):
         """ Get signal status of an interface """
         signal = self._readsys(ifname, "wireless/level")
         return int(signal) - 256
-
-    def setEssid(self, ifname, essid):
-        """ Set the ESSID for an interface """
-        if len(essid) > 16:
-            return "ESSID should be 16 char or less" # FIXME: How shall we define error messages ?
-
-        arg = struct.pack("iHH", id(essid) + 20, len(essid) + 1, 1)
-        self._call(ifname, self.SIOCSIWESSID, arg)
-
-        if self.getEssid is essid:
-            return True
-        else:
-            return None
-
-    def setMode(self, ifname, mode):
-        """ Set the operating mode of an interface """
-        arg = struct.pack("l", self.modes.index(mode))
-        self._call(ifname, self.SIOCSIWMODE, arg)
-
-        if self.getMode is mode:
-            return True
-        else:
-            return None
-
-
-class Scanner:
-    def __init__(self):
-        self.list = []
-    
-    def _collect(self, m):
-        # FIXME: what to do with <hidden> entries?
-        self.list.append(m.group(1))
-        return ""
-    
-    def scan(self, ifc):
-        icfg = network.IF(ifc)
-        if not icfg.isUp():
-            # Some wireless drivers cant do the scan while
-            # interface is down, doh :(
-            icfg.setAddress("0.0.0.0")
-            icfg.up()
-        a = capture("/usr/sbin/iwlist %s scanning" % ifc)
-        re.sub('ESSID:.*"(.*)"', self._collect, "\n".join(a[1]))
-        return "\n".join(self.list)
 
 
 # Internal functions

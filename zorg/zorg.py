@@ -469,16 +469,14 @@ def findPciCards():
             for _dev in os.listdir(sysDir):
                 try:
                     if sysValue(sysDir, _dev, "class").startswith("0x03"):
+                        a = Device()
                         vendorId = lremove(sysValue(sysDir, _dev, "vendor"), "0x")
-                        # Ugly workaround for "one card using 2 PCI bus" case, with fingers crossed
-                        if vendorId == "15ad" or vendorId == "fffe" or sysValue(sysDir, _dev, "irq") !=  "0": 
-                            a = Device()
-                            deviceId = lremove(sysValue(sysDir, _dev, "device"), "0x")
-                            #FIXME: BusID magic to support multiple heads, but breaking pci-e support ?
-                            a.BusId = "PCI:%s" % _dev.replace(".",":").split(":", 1)[1]
-                            a.BoardName, a.VendorName =  queryPCI(vendorId, deviceId)
-                            a.Driver = queryDriver(vendorId, deviceId)
-                            cards.append(a)
+                        deviceId = lremove(sysValue(sysDir, _dev, "device"), "0x")
+                        #FIXME: BusID magic to support multiple heads, but breaking pci-e support ?
+                        a.BusId = "PCI:%s" % _dev.replace(".",":").split(":", 1)[1]
+                        a.BoardName, a.VendorName =  queryPCI(vendorId, deviceId)
+                        a.Driver = queryDriver(vendorId, deviceId)
+                        cards.append(a)
                 except:
                     pass
     return cards

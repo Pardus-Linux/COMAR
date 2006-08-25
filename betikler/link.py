@@ -67,7 +67,9 @@ class Dev:
 
 def kernelEvent(data):
     type, dir = data.split("@", 1)
-    devname = lremove(dir, "/class/net/")
+    if not dir.startswith("/class/net/"):
+        return
+    devname = dir[11:]
     flag = 1
     
     if type == "add":
@@ -79,7 +81,7 @@ def kernelEvent(data):
         conns = instances("name")
         for conn in conns:
             dev = Dev(conn)
-            if dev.ifc and devuid == dev.ifc.deviceUID():
+            if dev.ifc and dev.ifc.name == devname:
                 if dev.state == "up":
                     dev.up()
                     return
@@ -149,7 +151,7 @@ def setState(name=None, state=None):
     
     notify("Net.Link.connectionChanged", "configured state " + name)
     
-    if not dev.dev:
+    if not dev.ifc:
         fail("Device not found")
     
     if state == "up":

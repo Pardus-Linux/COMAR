@@ -1,0 +1,1189 @@
+#LyX 1.4.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 245
+\begin_document
+\begin_header
+\textclass article
+\language turkish
+\inputencoding auto
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Pardus Açýlýþ Sistemi
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset
+
+
+\newpage
+
+\end_layout
+
+\begin_layout Section
+Giriþ
+\end_layout
+
+\begin_layout Standard
+Ýþletim sistemi çekirdeðinin çalýþmaya baþladýðý andan, kullanýcýnýn giriþ
+ yapabileceði ana kadar yapýlan iþlemler, açýlýþ (init) sürecidir.
+ Dosya sistemlerinin baðlanmasý, donaným sürücülerinin yüklenmesi, sistem
+ servislerinin baþlatýlmasý ve grafik arabiriminin çalýþtýrýlýp, giriþ ekranýnýn
+ gösterilmesi bu sürecin kapsamýndadýr.
+\end_layout
+
+\begin_layout Standard
+Bilgisayar kapatýlacaðý zaman, servislerin durdurulmasý, baðlanmýþ dosya
+ sistemlerinin ayrýlmasý da ayný sistem tarafýndan yürütülür.
+\end_layout
+
+\begin_layout Standard
+Pardus 1.1 sürümü ile birlikte kabuk tabanlý klasik açýlýþ sistemini terkedip,
+ Müdür adýyla geliþtirdiðimiz yeni bir sisteme geçtik.
+ Bu belge, daha hýzlý açýlýþ saðlayan, Python diliyle yazýldýðý için geliþtirmes
+i ve bakýmý daha kolay olan bu yeni sistemin kullanýmýný anlatmaktadýr.
+\end_layout
+
+\begin_layout Standard
+Açýlýþ süreci, temel kullaným ve ayarlar bölümleri kullanýcýlara yönelik
+ olup, temel kavramlarý ve özel durumlarda gerekebilecek bilgileri anlatmaktadýr.
+\end_layout
+
+\begin_layout Standard
+Paketleme bilgileri ve servis betikleri bölümleri, sistem yöneticilerine
+ ve entegratörlere yönelik olup, pisi paketi yaparken, yada üçüncü parti
+ bir programa pardus desteði verirken gerekli olan bilgileri vermektedir.
+\end_layout
+
+\begin_layout Standard
+Teknik yapý bölümü, programcýlara yönelik olup, incelemek ve geliþtirmek
+ isteyenlere müdürün bileþenlerini ve teknik ayrýntýlarýný anlatmaktadýr.
+\end_layout
+
+\begin_layout Section
+Açýlýþ Süreci
+\end_layout
+
+\begin_layout Standard
+Bilgisayar açýlýnca, anakart üzerindeki BIOS (Basic Input/Output System,
+ Temel Giriþ/Çýkýþ Sistemi) adý verilen yazýlým çalýþmaya baþlar.
+ Kendi iç denetleme ve donaným hazýrlama sürecini tamamladýktan sonra, öntanýmlý
+ açýlýþ aygýtýndan (bu baðlý bir harddisk, CD okuyucu, ya da USB disk olabilir),
+ MBR (Master Boot Record, Ana Önyükleme Kaydý) adý verilen ve söz konusu
+ kayýt ortamýnýn en baþýnda bulunan ufak önyükleyici yazýlýmý yükler ve
+ çalýþtýrýr.
+\end_layout
+
+\begin_layout Subsection*
+Önyükleyici
+\end_layout
+
+\begin_layout Standard
+Pardusun kurulumu sýrasýnda, öntanýmlý önyükleyici yazýlýmý Grub, kurulum
+ yaptýðýnýz diskin baþýna yerleþtirilecek, ve diskte baþka iþletim sistemleri
+ varsa, bunlar da Grub ayar dosyasýna yazýlacaktýr.
+ Böylece bilgisayarý açýnca karþýsýnýza çýkacak Grub menüsünden hangi iþletim
+ sistemini açmak istediðinizi seçebilirsiniz.
+\end_layout
+
+\begin_layout Standard
+Önyükleyici, BIOS yordamlarýný kullanarak seçtiðiniz iþletim sistemi çekirdeðini
+ belleðe yükletir ve çalýþmayý çekirdeðe devreder.
+\end_layout
+
+\begin_layout Standard
+Linux çekirdeði, içereceði donaným sürücüleri seçilerek özelleþtirilmiþ
+ biçimlerde derlenebilmektedir.
+ Bu sürücüler çekirdeðin içine dahil edilebildiði gibi, gerektiði anda yüklenece
+k modüller olarak da sistemde bulunabilirler.
+ Kullanýlmayan sürücüler çekirdeðin boyutunu ve bellek kullanýmýný arttýrdýklarý
+ için, Pardusta donaným sürücülerini olabildiðince ayrý modüller halinde
+ daðýtýyoruz.
+ Bu þekilde, çalýþan bir sistemde bir modülü çýkartýp, yeni sürümünü yükleyerek
+ kolayca güncellemek de mümkün olmaktadýr.
+\end_layout
+
+\begin_layout Standard
+Önyükleyiciden çekirdeðe geçiþ sýrasýnda, depolama aygýtýnýn sürücüsünü
+ içermeyen bir çekirdek, önyükleyici, aygýtý BIOS aracýlýðýyla kullandýðý
+ için kolayca yüklenebilir, ama yönetimi BIOS'tan alýnca bu aygýta eriþemeyeceði
+ için açýlýþ sürecine devam edemez.
+ Çok sayýda depolama aygýtýnýn sürücülerini çekirdek içine koymak pratik
+ olmadýðý için, bu soruna çare olarak initrd (init ram disk, açýlýþ bellek
+ diski) denilen ikinci bir dosya, önyükleyici tarafýndan çekirdekle birlikte
+ belleðe yüklenir.
+ Bu dosya içinde, ufak bir dosya sistemi þeklinde, daha az yaygýn olan depolama
+ aygýtý sürücüleri bulunmaktadýr.
+ Çekirdek buradan gerekli sürücü varsa yükledikten sonra, bu dosyayý bellekten
+ atar.
+\end_layout
+
+\begin_layout Subsection*
+Çekirdek
+\end_layout
+
+\begin_layout Standard
+Çekirdek donaným yönetimini ele alýp, hazýrlýklarýný tamamladýktan sonra,
+ kök (root) dizin olarak belirtilen yerdeki dosya sistemini açarak, burada
+ /sbin/init programýný çalýþtýrýr.
+ Bu program temel süreç olarak, diðer süreçleri yönetir.
+ Belli olaylar (açýlýþ, kapatma komutu, güç yönetimi, vs) olduðunda ayar
+ dosyasýnda belirtilen komutlarý çalýþtýrýr.
+\end_layout
+
+\begin_layout Subsection*
+Müdür
+\end_layout
+
+\begin_layout Standard
+Müdürün ana kýsmý olan /sbin/mudur.py komutu, açýlýþ sýrasýnda init tarafýndan
+ çaðrýldýðýnda, aygýt yönetimi ve otomatik donaným tanýma (hotplug) için
+ kullanýlan udev servisini baþlatýr.
+ Bu servis bilgisayara USB disk yada CD gibi bir þey taktýðýnýzda, bu olayla
+ ilgilenen programlarýn otomatik çalýþtýrýlmasý, takýlan aygýta eriþim için
+ gereken /dev dizini altýndaki dosyalarýn oluþturulmasý gibi iþleri yapar.
+ Müdür daha sonra depolama aygýtlarýndaki dosya sistemlerini kontrol eder
+ ve baðlar.
+ Müdürün diðer bir parçasý olan /sbin/muavin.py aracýlýðýyla, bilgisayarda
+ hazýr bulunan (coldplug) ve sürücüsü initrd içinde olmayan donanýmlarýn
+ sürücülerini yükletir.
+ Muavin yeni bir donaným takýldýðýnda da udev tarafýndan çaðrýlmakta ve
+ sürücü yükleme iþini yapmaktadýr.
+ Müdür, sistem saatini donaným saatiyle senkronize ettikten ve temel að
+ ayarlarýný da yaptýktan sonra, Pardus'un sistem yapýlandýrma aracý olan
+ Çomar'ý baþlatýr.
+ En son olarak Çomar'a servisleri çalýþtýrmasý komutunu verir.
+\end_layout
+
+\begin_layout Standard
+Kapanýþ sýrasýnda çaðrýldýðýnda ise, önce Çomar'a servisleri durdurmasý
+ komutunu verir.
+ Sonra sistem saatini tekrar donaným saati ile senkronize eder.
+ En son olarak baðlý dosya sistemlerini düzgün bir þekilde ayýrarak, veri
+ kaybý olmadan kapanmalarýný saðlar.
+ Müdür iþini bitirdikten sonra init komutu bilgisayarý kapatmasý yada yeniden
+ baþlatmasý için gerekli komutu çekirdeðe verir.
+\end_layout
+
+\begin_layout Subsection*
+Servisler
+\end_layout
+
+\begin_layout Standard
+Arkaplanda çalýþarak kullanýcýya yada diðer programlara bir takým hizmetler
+ sunan yazýlýmlardýr.
+ Örneðin zemberek uygulamalara Türkçe yazým denetimi desteði saðlarken,
+ DBus masaüstü uygulamalarýnýn iletiþimini, cups ise yazýcý desteðini saðlar.
+ Uzaktan eriþim saðlayan SSH gibi sunucu yazýlýmlarý da birer servis olarak
+ çalýþmakta ve yönetilebilmektedir.
+\end_layout
+
+\begin_layout Standard
+Servisler baþlatýldýðýnda, KDM (KDE Desktop Manager, KDE Masaüstü Yöneticisi)
+ servisi, görüntüye kullanýcý giriþ ekranýný getirir.
+ Buradan kullanýcý ve parolasý ile giriþ yapýldýðýnda da o kullanýcýnýn
+ masaüstü yüklenir ve çalýþmaya baþlar.
+\end_layout
+
+\begin_layout Section
+Temel Kullaným
+\end_layout
+
+\begin_layout Standard
+Açýlýþ ve donaným tanýma sistemi büyük ölçüde otomatik çalýþmaktadýr.
+\end_layout
+
+\begin_layout Standard
+Bilgisayarýnýzda hangi servislerin kurulu olduðunu görmek, bunlarýn açýlýþta
+ baþlayýp baþlamayacaðýný ayarlamak, servislerin çalýþma durumunu denetlemek,
+ gerektiðinde yeniden baþlatmak gibi iþler için, Pardus Yapýlandýrma Merkezi
+ içinde Sistem Seçeneklerinde bulunan Servis Yöneticisi yazýlýmýný kullanabilirs
+iniz.
+\end_layout
+
+\begin_layout Standard
+Komut satýrýndan ve betiklerden servisleri yönetebilmek için /bin/service
+ komutu da bulunmaktadýr.
+\end_layout
+
+\begin_layout Standard
+Kurulu servisleri ve durumlarýný görmek için:
+\end_layout
+
+\begin_layout LyX-Code
+service
+\end_layout
+
+\begin_layout Standard
+komutunu parametresiz olarak veya list parametresi ile verebilirsiniz.
+\end_layout
+
+\begin_layout LyX-Code
+service openssh start
+\end_layout
+
+\begin_layout LyX-Code
+service openssh stop
+\end_layout
+
+\begin_layout LyX-Code
+service openssh restart
+\end_layout
+
+\begin_layout Standard
+komutlarý ilk parametre olarak verilen servisi baþlatacak, durduracak, ve
+ durdurup tekrar baþlatacaktýr.
+\end_layout
+
+\begin_layout LyX-Code
+service openssh reload
+\end_layout
+
+\begin_layout Standard
+komutu bazý servislerde, sunucunun durdurulmadan, ayar dosyalarýný yükleyip
+ kendisine çeki düzen vermesini saðlar.
+ Her servis için geçerli deðildir.
+\end_layout
+
+\begin_layout LyX-Code
+service openssh on
+\end_layout
+
+\begin_layout LyX-Code
+service openssh off
+\end_layout
+
+\begin_layout Standard
+komutlarý ile ayný þekilde servisleri açýp kapayabilirsiniz.
+ Bu þekilde açýp kapattýðýnýz servisler start ve stop'tan farklý olarak,
+ bir dahaki açýlýþta ayný durumda baþlayacaklardýr.
+\end_layout
+
+\begin_layout Subsection*
+Çalýþma Seviyeleri
+\end_layout
+
+\begin_layout Standard
+Temel süreç görevini yürüten init komutu bir çalýþma seviyesi (runlevel)
+ kavramýna sahiptir.
+ Tarihsel olarak 0 ile 6 arasýndaki bu çalýþma seviyesi sistemi çeþitli
+ durumlara getirmek için kullanýlýr.
+ Bu seviyeler,
+\end_layout
+
+\begin_layout Description
+0 Sistemi kapat
+\end_layout
+
+\begin_layout Description
+1 Sistemi tek kullanýcýlý moda geçir
+\end_layout
+
+\begin_layout Description
+2-5 Kullanýcý tanýmlý
+\end_layout
+
+\begin_layout Description
+6 Sistemi yeniden baþlat
+\end_layout
+
+\begin_layout Standard
+Çalýþma seviyesini deðiþtirmek için /sbin/telinit komutu kullanýlabilir.
+ Hangi seviyede ne yapýlacaðý /etc/inittab dosyasýnda belirlenir.
+ Pardus'ta bu seviyeler kendilerine karþýlýk gelen parametre ile müdürü
+ çaðýrmakta ve kullanýcý tanýmlý seviyelerden yalnýz bir tanesi normal çalýþma
+ seviyesi olarak kullanýlmaktadýr.
+ Bu müdür parametreleri,
+\end_layout
+
+\begin_layout Description
+sysinit Temel açýlýþ iþlemlerini yap
+\end_layout
+
+\begin_layout Description
+boot Geri kalan açýlýþ iþlemlerini yap
+\end_layout
+
+\begin_layout Description
+shutdown Kapanýþ iþlemlerini yap (seviye 0)
+\end_layout
+
+\begin_layout Description
+single Tek kullanýcýlý moda geç (seviye 1)
+\end_layout
+
+\begin_layout Description
+default Servisleri çalýþtýr (seviye 3)
+\end_layout
+
+\begin_layout Description
+reboot Kapanýþ iþlemlerini yap (seviye 6)
+\end_layout
+
+\begin_layout Standard
+Burada ihtiyaç duyabileceðiniz bir seviye, telinit S yada telinit 1 komutuyla
+ geçebileceðiniz tek kullanýcýlý seviyedir.
+ Bu seviyede müdür servisleri kapatýr, ve yetkili (root) kullanýcý olarak
+ giriþ yaparak sistemi onarma gibi iþleri yapabilirsiniz.
+ Normal çalýþmaya dönmek için telinit 3 komutunu verebilirsiniz.
+\end_layout
+
+\begin_layout Standard
+Kapanýþ için basitçe reboot veya halt komutlarýný kullanabilirsiniz, daha
+ esnek kapanýþ iþlemleri için shutdown komutuna bakýn.
+\end_layout
+
+\begin_layout Subsection*
+Kayýtlar
+\end_layout
+
+\begin_layout Standard
+Sistem dili, klavye haritasý ve yereli müdürde öntanýmlý deðerlere sahiptir,
+ /etc/conf.d/mudur dosyasýndan ayarlanabilmektedir, ve mudur çekirdek parametresi
+ ile de deðiþtirilebilmektedir.
+ Müdür bu deðerleri belirledikten sonra, kdm gibi programlarýn ayný yerleri
+ dolaþmadan kolayca alabilmesi için, /etc/mudur/ dizini içindeki keymap,
+ language ve locale adlý dosyalara yazar.
+\end_layout
+
+\begin_layout Standard
+Müdür, /var/log/mudur.log dosyasýna karþýlaþtýðý olaylarý kaydetmektedir.
+ Örnek bir dosyadan bir kesit:
+\end_layout
+
+\begin_layout LyX-Code
+Aug 26 13:55:08 (up 7.65) /sbin/mudur.py sysinit
+\end_layout
+
+\begin_layout LyX-Code
+Aug 26 10:55:15 (up 14.44) /sbin/mudur.py boot
+\end_layout
+
+\begin_layout LyX-Code
+Aug 26 10:55:16 (up 15.84) /sbin/mudur.py default
+\end_layout
+
+\begin_layout LyX-Code
+Aug 26 15:58:42 (up 18221.40) /sbin/mudur.py shutdown
+\end_layout
+
+\begin_layout Standard
+Satýrlar, tarih (çalýþma süresi) bilgi biçimindedir.
+ Çalýþma süresi çekirdek çalýþmaya baþladýðý andan itibaren geçen saniye
+ olarak hesaplanmaktadýr.
+ Açýlýþ sýrasýnda sistem saati donaným saati ile senkronize edilirken tarih
+ kýsmýnda saatte bir düzeltme olduðu için olayýn zamanýný daha doðru göstermek
+ için konmuþtur.
+\end_layout
+
+\begin_layout Standard
+Örnekte, sekizinci saniyeye doðru müdür, temel açýlýþ iþlemleri için init
+ tarafýndan çaðrýlmakta, onbeþinci saniyeye doðru geri kalan açýlýþ iþlemleri
+ için çaðrýlmakta, ve onaltýncý saniyeye doðru ise servisleri çalýþtýrmasý
+ için çaðrýlmaktadýr.
+ Yaklaþýk beþ saatlik bir çalýþmanýn sonunda ise kapanýþ iþlemleri için
+ devreye girmiþtir.
+\end_layout
+
+\begin_layout Standard
+Normal çalýþmada yalnýzca uyarý ve hata mesajlarý ile çaðrýlma durumlarý
+ bu dosyaya yazýlmaktadýr.
+ Eðer müdürün tüm çýktýsýnýn kaydedilmesini isterseniz, /etc/conf.d/mudur
+ içinde bir debug=1 satýrýyla, ya da önyükleyiciden vereceðiniz bir mudur=debug
+ çekirdek parametresiyle bunu açabilirsiniz.
+\end_layout
+
+\begin_layout Subsection*
+Diðer Komutlar
+\end_layout
+
+\begin_layout Subsubsection*
+/sbin/muavin.py
+\end_layout
+
+\begin_layout Standard
+Aygýt sürücülerini yükleyen muavin, --debug parametresiyle çaðrýldýðýnda
+ bulduðu aygýtlar için hangi sürücüleri yükleyeceðini listeler.
+ Donaným tanýma ile ilgili bir aksilik olduðunda, bilgi verici olabilir.
+ Bu sürücüleri yüklemesini istiyorsanýz ise --coldplug parametresini kullanabili
+rsiniz.
+\end_layout
+
+\begin_layout Subsubsection*
+/sbin/update-environment
+\end_layout
+
+\begin_layout Standard
+Normal bir çalýþmada ihtiyacýnýz olmayacak bu komutu, eðer elle bir program
+ derlemiþseniz kullanmanýz gerekebilir.
+\end_layout
+
+\begin_layout Standard
+Bazý programlar, sistemde ve kullanýcý oturumlarýnda ayarlanmasý gereken
+ çevre deðiþkenlerine ihtiyaç duyarlar.
+ Örneðin Java, JAVA_HOME adlý bir deðiþkende sistemdeki Java iþleticisinin
+ bulunduðu dizinin adýnýn bulunmasýný ister.
+ QT gibi, kitaplýklarýný /usr/lib gibi standart konumlarýn dýþýnda /usr/qt/3/lib
+ gibi dizinlere koyan uygulamalar ise, yüklenecek kitaplýklarýn bulunabileceði
+ yerleri gösteren LDPATH gibi çevre deðiþkenlerine kendi dizinlerini eklemek
+ isterler.
+\end_layout
+
+\begin_layout Standard
+Program paketlerinin kolayca bu deðiþkenlere deðer atayabilmesi için, /etc/env.d
+ dizini kullanýlmaktadýr.
+ Bir pisi paketi buraya bir dosya koyduðunda, Çomar aracýlýðýyla çalýþtýrýlan
+ update-environment komutu, bu dosyalarý okuyup sistem kabuðu için bir profil
+ dosyasý oluþturmakta, eðer kitaplýk yollarý deðiþmiþse, /etc/ld.so.conf dosyasýný
+ yeni yollarý içerecek þekilde deðiþtirmekte, ve /sbin/ldconfig komutunu
+ çaðýrarak bu yeni dizinlerdeki kitaplýklarýn taranarak dinamik kitaplýk
+ yükleyicinin /etc/ld.so.cache dosyasýnda indekslenmesini saðlamaktadýr.
+\end_layout
+
+\begin_layout Subsubsection*
+/sbin/update-modules
+\end_layout
+
+\begin_layout Standard
+Normal bir çalýþmada ihtiyacýnýz olmayacak bu komutu, eðer elle bir çekirdek
+ modülü derlemiþseniz kullanmanýz gerekebilir.
+\end_layout
+
+\begin_layout Standard
+Çekirdek modülleri içeren pisi paketleri kurulduktan sonra, Çomar aracýlýðýyla
+ çaðrýlan bu komut, /sbin/depmod komutunu çalýþtýrarak, çalýþmakta olan
+ çekirdek için, bu modüllerin hangi aygýtlarý desteklediklerini ve birbirlerine
+ olan baðýmlýlýklarýný gösteren modules.map dosyalarýný oluþturmaktadýr.
+ Her bir çekirdek için /lib/modules/2.6.16.24-49/ gibi dizinlerde bulunan bu
+ dosyalar, muavin ve modprobe komutu tarafýndan kullanýlmaktadýr.
+\end_layout
+
+\begin_layout Standard
+Ayrýca eðer paket /etc/modules.d/ dizini altýna bir dosya yerleþtirmiþse,
+ bu dosyalar taranarak, modüller için yükleme þekil ve parametrelerini gösteren
+ /etc/modprobe.conf dosyasý güncellenmektedir.
+\end_layout
+
+\begin_layout Section
+Ayarlar
+\end_layout
+
+\begin_layout Subsection*
+Önyükleyici Ayarlarý
+\end_layout
+
+\begin_layout Standard
+Önyükleyicinin menüsündeki iþletim sistemleri, ve çekirdeðin hangi seçeneklerle
+ çalýþtýrýlacaðý, /boot/grub/grub.conf dosyasýndan ayarlanmaktadýr.
+ Grub programýnýn belgelerinde bu ayarlarla ilgili detaylý bilgi alabilirsiniz.
+ Bilgisayar açýlýrken, Grub menüsü çýktýðýnda, açacaðýnýz sistemin üzerindeyken
+ e tuþuna basarak da, bu ayarlarý o açýlýþa mahsus olarak deðiþtirebilirsiniz.
+\end_layout
+
+\begin_layout Standard
+Ýþletim sistemi girdilerindeki kernel satýrlarý, yüklenecek Linux çekirdeðini
+ ve parametrelerini belirtmektedir.
+ Söz dizimi
+\end_layout
+
+\begin_layout LyX-Code
+kernel (aygýt)/dosya prm1=deðer prm2=deðer1,deðer2 prm3 ...
+\end_layout
+
+\begin_layout Standard
+biçimindedir.
+ Ýlk bilgi yüklenecek çekirdeðin bulunduðu depolama aygýtý ve çekirdeðin
+ dosya adýdýr.
+ Daha sonra bu çekirdeðe verilen parametreler gelmektedir.
+ Parametreler tek baþýna, bir deðere sahip, yada birden fazla deðerli olabilir.
+\end_layout
+
+\begin_layout Standard
+Gerekebilecek bazý çekirdek parametreleri:
+\end_layout
+
+\begin_layout Description
+quiet Öntanýmlý gelen bu seçenek çekirdeðin donanýmlarý tararken bulduðu
+ teknik bilgileri ekrana basmasýný önler, müdür çalýþmadan önce oluþan bir
+ donaným sorunu varsa, bu seçeneði kaldýrarak daha fazla bilgi alabilirsiniz.
+\end_layout
+
+\begin_layout Description
+splash Açýlýþta grafik logo gösterilmesini saðlar, metin ekranda açýlýþ
+ için, bu seçeneði ve console seçeceðini kaldýrýn.
+\end_layout
+
+\begin_layout Description
+noacpi Standartlara uygun olmayan bazý BIOS'larda bu seçenekle çekirdeði
+ çalýþtýrmak mümkün olmaktadýr.
+\end_layout
+
+\begin_layout Description
+mudur Bu seçenekle müdürün bazý ayarlarýný deðiþtirebilirsiniz.
+ Müdür ayarlarý bölümünde daha ayrýntýlý anlatýlmýþtýr.
+\end_layout
+
+\begin_layout Standard
+Tüm çekirdek parametrelerini ve açýklamalarýný, kernel-source paketini kurduktan
+ sonra /usr/src/linux/Documentation/kernel-parameters.txt dosyasý içinde
+ bulabilirsiniz.
+\end_layout
+
+\begin_layout Subsection*
+Müdür Ayarlarý
+\end_layout
+
+\begin_layout Standard
+Müdür init tarafýndan çalýþtýrýlmaktadýr, genellikle deðiþtirmenize gerek
+ olmayan init ayarlarý /etc/inittab dosyasýnda bulunmaktadýr.
+\end_layout
+
+\begin_layout Standard
+Müdürün kendi ayarlarý ise /etc/conf.d/mudur dosyasýndan ve önyükleyiciyle
+ çekirdeðe verilen mudur parametresinden yapýlabilmektedir.
+ Çekirdekten verilen ayarlar dosyada yazanlarýn yerine kullanýlýr.
+\end_layout
+
+\begin_layout Description
+safe Bu seçenek verilirse, sorun yaratabilecek bazý donaným iþlemleri yapýlmayac
+ak, servislerden ise yalnýzca giriþ ekranýný çýkartan kdm ve baðlý olduðu
+ servisler çalýþtýrýlacaktýr.
+\end_layout
+
+\begin_layout Description
+language Açýlýþta ve giriþ ekranýnda kullanýlacak olan sistem dilini belirler.
+ Öntanýmlý deðeri Türkçe'dir.
+ Kurulum baþka bir dilde yapýlmýþsa, ayar dosyasýnda bu dil seçilidir.
+\end_layout
+
+\begin_layout Description
+keymap Eðer sistem dilinin öntanýmlý klavye haritasýný kullanmak istemiyorsanýz,
+ bu seçenekle baþka bir harita belirleyebilirsiniz.
+\end_layout
+
+\begin_layout Description
+clock Donaným saatiniz Greenwich Merkezi Zamanýna (GMT) göre ayarlýysa bu
+ deðeri UTC yapýn, eðer donaným saatiniz yerel zamana göre ayarlýysa da
+ local yapýn.
+ Öntanýmlý deðeri yerele ayarlý saattir.
+ Bu seçeneði yalnýzca ayar dosyasýndan verebilirsiniz.
+\end_layout
+
+\begin_layout Description
+tty_number Kullanmak istediðiniz metin ekran konsol sayýsý öntanýmlý altý
+ deðerinden farklýysa bu seçenekten belirtebilirsiniz.
+ Bu seçeneði yalnýzca ayar dosyasýndan verebilirsiniz.
+\end_layout
+
+\begin_layout Description
+debug Bu seçenek verilirse müdür tüm çýktýlarýný /var/log/mudur.log dosyasýna
+ yazacak, hata düzeltme bilgileri saðlayacaktýr.
+\end_layout
+
+\begin_layout Standard
+Bazý örnekler:
+\end_layout
+
+\begin_layout LyX-Code
+mudur=safe,debug
+\end_layout
+
+\begin_layout LyX-Code
+mudur=language:tr,keymap:trf
+\end_layout
+
+\begin_layout Subsection*
+Donaným Ayarlarý
+\end_layout
+
+\begin_layout Standard
+Açýlýþta otomatik olarak yüklenemeyen, ya da ne olursa olsun yüklenmesini
+ istediðiniz çekirdek modüllerini /etc/modules.autoload.d dizini içindeki
+ kernel-x.y.z biçimindeki dosyalara her satýra bir modül ismi biçiminde yazabilirs
+iniz.
+ Bu dosyalara bakýlýrken, mesela 2.6.16.24 çekirdeði çalýþýyorsa sýrasýyla
+ varsa kernel-2.6.16 ve kernel-2.6 dosyalarýna bakýlacaktýr.
+\end_layout
+
+\begin_layout Standard
+Ayný þekilde, eðer otomatik yüklenmesi sorunlara yol açan modüller varsa,
+ /etc/hotplug/blacklist dosyasýna, ya da /etc/hotplug/blacklist.d/ dizini
+ içindeki herhangi bir dosyaya, gene bir satýra bir modül ismi gelecek þekilde
+ yazabilirsiniz.
+\end_layout
+
+\begin_layout Standard
+Modüllere özel parametreler vermek için /etc/modules.d içinde bir dosya oluþturup
+, modprobe.conf belgesinde anlatýlan söz dizimi ile alias, install, options
+ gibi komutlarý verebilirsiniz.
+ Müdürün bir parçasý olan update-modules komutu bu dosyalarý dolaþýp bir
+ /etc/modprobe.conf dosyasý oluþturmaktadýr.
+ Komutlarýnýzý bu dosyaya direk yazmayýn, yeni bir modül paketi yada çekirdek
+ kurulduðunda otomatik olarak üstüne yazýlacaktýr.
+\end_layout
+
+\begin_layout Standard
+Bir donaným takýldýðýnda, bununla ilgili bir ayar yapmak, isim vermek, özel
+ bir program çalýþtýrmak gibi þeyler yapmak için, /etc/udev/rules.d/ dizinine
+ bir kural dosyasý koymanýz yeterlidir.
+ Buraya ismi .rules sonekiyle biten yeni bir dosya konduðunda otomatik olarak
+ devreye girmektedir.
+ Kural dosyasýnýn söz dizimi için udev belgelerine bakýn.
+\end_layout
+
+\begin_layout Standard
+Müdür açýlýþ sýrasýnda bazý harddisk parametrelerini ayarlayabilmektedir.
+ Bu tür bir ihtiyacýnýz varsa /etc/conf.d/hdparm dosyasýnda istediðiniz disklere
+ istediðiniz parametreleri verebilirsiniz.
+ Parametrelerin neler olduðunu öðrenmek için hdparm komutunun belgesine
+ bakýn.
+ Bazý parametreler sorunlara yol açabileceðinden dikkatli olmanýz tavsiye
+ edilir.
+ Dosyanýn söz dizimi, aygýt adý = 
+\begin_inset Quotes eld
+\end_inset
+
+parametreler
+\begin_inset Quotes erd
+\end_inset
+
+ biçiminde satýrlardan oluþmaktadýr.
+ Aygýt adý /dev/ dizini altýndaki herhangi bir harddisk aygýtý yada baðlý
+ bulunan tüm diskler için all olabilir.
+\end_layout
+
+\begin_layout Subsection*
+Diðer Ayarlar
+\end_layout
+
+\begin_layout Standard
+Çekirdeðin kapatýlýnca kaybolan ve /proc/sys dosya sistemi aracýlýðýyla
+ yapýlan ayarlarý için, /etc/sysctl.conf dosyasýný kullanabilirsiniz.
+ Örneðin að ayarlarýndan tüm makinelere gönderilen pinglere cevap vermeyi
+ kapatmak için:
+\end_layout
+
+\begin_layout LyX-Code
+net.ipv4.icmp_echo_ignore_broadcasts = 1
+\end_layout
+
+\begin_layout Standard
+gibi bir satýr ekleyebilirsiniz.
+ Açýlýþta bu dosya okunurken, /proc/sys/net/ipv4/ dizinindeki icmp_echo_ignore_b
+roadcasts dosyasýna 1 deðeri yazýlarak çekirdeðin bu özelliði çalýþtýrýlacaktýr.
+ Daha fazla bilgi için sysctl komutuna ve çekirdek belgelerine bakabilirsiniz.
+\end_layout
+
+\begin_layout Standard
+Servislerin ayar dosyalarý da genellikle /etc/conf.d/ dizini içinde durmaktadýr.
+\end_layout
+
+\begin_layout Standard
+Bunlardan önemli bir tanesi local.start ve local.stop dosyalarýdýr.
+ Ýlki açýlýþta, ikincisi ise kapanýþta çalýþtýrýlan birer kabuk betiðidir.
+ Pardus tarafýndan kullanýlmayan ve tamamen kullanýcýlara ait olan bu dosyalarýn
+ içine, Ýhtiyaç halinde kendi özel komutlarýnýzý koyabilirsiniz.
+\end_layout
+
+\begin_layout Section
+Paketleme Bilgileri
+\end_layout
+
+\begin_layout Standard
+Pisi paketi yaparken, paketlediðiniz programý açýlýþ sistemine entegre etmenizi
+ gerektiren çeþitli durumlarla karþýlaþabilirsiniz.
+\end_layout
+
+\begin_layout Subsection*
+Çekirdek Modülü Paketleri
+\end_layout
+
+\begin_layout Standard
+Çekirdek modülleri içeren bir paket yaparken, paketinize /lib/modules/2.6.xx.xx/
+ dizininin hemen altýndaki modules.* dosyalarýný almamalýsýnýz.
+ Aksi takdirde dosya çakýþmalarý ortaya çýkabilir.
+ Modül paketleri kurulurken bu dosyalar sistemdeki modüller taranarak update-mod
+ules komutu tarafýndan düzgün bir þekilde oluþturulacaktýr.
+\end_layout
+
+\begin_layout Standard
+Eðer modülün inþasý sýrasýnda bu dosyalar paket kurulum dizinde oluþuyorsa,
+ actions.py içinde basitçe
+\end_layout
+
+\begin_layout LyX-Code
+pisitools.remove("/lib/modules/*/modules.*")
+\end_layout
+
+\begin_layout Standard
+ile silebilirsiniz.
+\end_layout
+
+\begin_layout Standard
+Eðer bir modülün her açýlýþta mutlaka yüklenmesini istiyorsanýz, Çomar System.Pac
+kage betiðinizde, ihtiyacýnýza göre /etc/modules.autoload.d/ dizini içinde
+ kernel-2.x yada kernel-2.x.y dosyasýnýn sonuna bir satýr olarak ekletebilirsiniz.
+ Dosyada daha önce zaten böyle bir satýr olup olmadýðýný da kontrol edin!
+\end_layout
+
+\begin_layout Standard
+Bir modülün donaným varsa bile otomatik yüklenmesinin önüne geçmek gerekiyorsa
+ ise, /etc/hotplug/blacklist.d/ dizini içine kendi paket adýnýzda bir dosyaya
+ modül adlarýný satýr satýr yazýp koymalýsýnýz.
+\end_layout
+
+\begin_layout Standard
+Modüllerinizin parametreleri, gene paket adýnýzý taþýyan bir dosyada, /etc/modul
+es.d/ dizinine koymalýsýnýz.
+ Kurulumda update-modules, gene otomatik olarak /etc/modprobe.conf dosyasýný
+ güncelleyecektir.
+\end_layout
+
+\begin_layout Subsection*
+Donanýmla Ýlgili Paketler
+\end_layout
+
+\begin_layout Standard
+Donaným takýlma olaylarýný yakalamak ve bunun üzerine bir þeyler yapmak
+ için udev sistemini kullanýn.
+ Hazýrlayacaðýnýz kural dosyasýný /etc/udev/rules.d/ dizinine koymanýz yeterli
+ olacaktýr.
+\end_layout
+
+\begin_layout Subsection*
+Servis Paketleri
+\end_layout
+
+\begin_layout Standard
+Eðer arkaplanda çalýþýp hizmet verecek bir program paketliyorsanýz, ya da
+ açýlýþ sýrasýnda çalýþtýrmanýz gereken komutlar varsa, bir Çomar System.Service
+ betiði yazýp paketinize eklemeniz gerekmektedir.
+ Bu betikle ilgili bilgiler bir sonraki bölümde anlatýlmýþtýr.
+\end_layout
+
+\begin_layout Subsection*
+Çevre Deðiþkenleri
+\end_layout
+
+\begin_layout Standard
+Çevre deðiþkenlerinizi kabuða vermek ve kitaplýk, komut gibi yollara eklemeler
+ yapmak istiyorsanýz, /etc/env.d/ dizinine,
+\end_layout
+
+\begin_layout LyX-Code
+LALA=
+\begin_inset Quotes erd
+\end_inset
+
+deneme
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+LDPATH=
+\begin_inset Quotes erd
+\end_inset
+
+/usr/lala/lib
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+biçiminde satýrlardan oluþan bir dosya koymanýz yeterlidir.
+ Deðiþkenlerinizin önceliðini belirlemek için dosya adýný XX, 00 ile 99
+ arasýnda bir sayý olacak þekilde XXpaketadý biçiminde verin.
+ Bu dosyalar iþlenirken küçük sayýdan büyüðe gidilmekte, ve sonra gelen
+ deðer öncekinin üstüne yazýlmaktadýr.
+ Fakat yol belirten PATH, LDPATH, MANPATH, vb deðiþkenlerde farklý bir mantýk
+ izlenmekte, bu deðiþkenler birbirlerine : iþareti ile eklenmektedir.
+\end_layout
+
+\begin_layout Section
+Servis Betikleri
+\end_layout
+
+\begin_layout Subsection*
+Çomar System.Service Sýnýfý
+\end_layout
+
+\begin_layout Standard
+Müdür için yazýlmýþ servis betikleri Çomar'da bu sýnýfa kayýt olurlar ve
+ aþaðýdaki metotlarý saðlarlar:
+\end_layout
+
+\begin_layout Subsubsection*
+System.Service.info
+\end_layout
+
+\begin_layout Standard
+Servis hakkýnda bilgi döndürür.
+ Ýlk satýr servisin tipi, ikinci satýr durumu, son satýr da yerelleþtirilmiþ
+ olarak servisin adýný verir.
+\end_layout
+
+\begin_layout Standard
+Üç tip servis vardýr:
+\end_layout
+
+\begin_layout Description
+server Apache, OpenSSH, Postfix gibi dýþ bilgisayarlara hizmet veren web,
+ kabuk, eposta sunucu gibi servislerin baþlatma betikleri.
+\end_layout
+
+\begin_layout Description
+local Pardus masaüstünün çalýþabilmesi için yerel programlara hizmet veren
+ DBus, HAL, Zemberek gibi servislerin baþlatma betikleri.
+\end_layout
+
+\begin_layout Description
+script Bir servis baþlatmayan, yalnýzca açýlýþta belli iþlemleri yerine
+ getiren betikler.
+\end_layout
+
+\begin_layout Standard
+Bir servis dört durumda olabilir:
+\end_layout
+
+\begin_layout Description
+on Servis sürekli olarak açýktýr ve þu anda çalýþmaktadýr.
+\end_layout
+
+\begin_layout Description
+started Servis kapalýdýr ama kullanýcý tarafýndan çalýþtýrýlmýþtýr.
+\end_layout
+
+\begin_layout Description
+stopped Servis açýktýr ama bir sebepten dolayý durdurulmuþ yada çalýþamamýþtýr.
+\end_layout
+
+\begin_layout Description
+off Servis kapalýdýr.
+\end_layout
+
+\begin_layout Standard
+Servis tipi ve adý, kullanýcý arayüzlerinde göstermek için tasarlanmýþtýr.
+\end_layout
+
+\begin_layout Subsubsection*
+System.Service.start
+\end_layout
+
+\begin_layout Standard
+Servisi baþlatýr.
+\end_layout
+
+\begin_layout Subsubsection*
+System.Service.stop
+\end_layout
+
+\begin_layout Standard
+Servisi durdurur.
+\end_layout
+
+\begin_layout Subsubsection*
+System.Service.reload
+\end_layout
+
+\begin_layout Standard
+Eðer servis destekliyorsa durdurmadan ayarlarýný tekrar yükleyip güncellemesini
+ saðlar.
+\end_layout
+
+\begin_layout Subsubsection*
+System.Service.setState (state)
+\end_layout
+
+\begin_layout Standard
+Servisin durumunu deðiþtirir.
+ Eðer state parametresi "on" verilirse, servis çalýþtýrýlýr ve sürekli olarak
+ açýk konuma getirilir.
+ Böylece bilgisayarý yeniden baþlattýðýnýzda servis otomatik olarak açýlacaktýr.
+ State "off" verilerek servis kapatýlýp çalýþmayacak þekilde ayarlanýr.
+\end_layout
+
+\begin_layout Subsubsection*
+System.Service.ready
+\end_layout
+
+\begin_layout Standard
+Servis eðer "on" olarak ayarlanmýþsa, start metodunu çaðýrarak baþlatýr.
+ Müdür açýlýþ sýrasýnda tüm servislere bu çaðrýyý yaparak servisleri baþlatmakta
+dýr.
+\end_layout
+
+\begin_layout Subsubsection*
+System.Service.changed
+\end_layout
+
+\begin_layout Standard
+Bu uyarý bir servisin durumu deðiþtiðinde gönderilir.
+ Parametre olarak "started" ve "stopped" deðerlerini verir.
+\end_layout
+
+\begin_layout Subsection*
+Çomar comar.service Modülü
+\end_layout
+
+\begin_layout Standard
+Servis betiklerinde sýk kullanýlan fonksiyonlar comar-api paketi ile gelen
+ bu Python modülünde saðlanmýþtýr.
+\end_layout
+
+\begin_layout Standard
+Betiklerde:
+\end_layout
+
+\begin_layout LyX-Code
+from comar.service import *
+\end_layout
+
+\begin_layout Standard
+þeklinde kullandýðýnýzda info, setState, ready metotlarý sizin için tanýmlanmýþ
+ olacaktýr.
+ Böylece yalnýzca start ve stop metotlarý ile bir servis betiði yazabilirsiniz.
+\end_layout
+
+\begin_layout Standard
+Bu modüldeki fonksiyonlar, betik tipi ve adýný betiðinizin içindeki serviceType
+ ve serviceDesc deðiþkenlerinden okuyacaktýr.
+\end_layout
+
+\begin_layout Standard
+Eðer çalýþýp çalýþmadýðýna göre True/False döndüren bir status fonksiyonunuz
+ varsa, bu da servisinizin durumunu info çaðrýsýnda raporlarken kullanýlacaktýr.
+\end_layout
+
+\begin_layout Standard
+Bu modülü import ettiðiniz halde, bu fonksiyonlarý kendiniz de tanýmlayabilirsin
+iz, bu durumda betiðiniz içindekiler çalýþacaktýr.
+\end_layout
+
+\begin_layout Standard
+Modülde ayrýca þu yardýmcý fonksiyonlar bulunmaktadýr:
+\end_layout
+
+\begin_layout Subsubsection*
+run()
+\end_layout
+
+\begin_layout Standard
+Parametre olarak verilen komutu yeni bir kabuk açmadan çalýþtýrýr.
+ Komutun dönüþ deðerini döndürür.
+\end_layout
+
+\begin_layout Standard
+Örnek:
+\end_layout
+
+\begin_layout LyX-Code
+run("/sbin/start-stop-daemon --start --quiet --exec /usr/sbin/cpufreqd")
+\end_layout
+
+\begin_layout Subsubsection*
+checkDaemon()
+\end_layout
+
+\begin_layout Standard
+Verilen pid dosyasýnýn gösterdiði servisin çalýþýp çalýþmadýðýna bakar.
+\end_layout
+
+\begin_layout Standard
+Örnek:
+\end_layout
+
+\begin_layout LyX-Code
+def status():
+\end_layout
+
+\begin_layout LyX-Code
+    return checkDaemon("/var/run/kdm.pid")
+\end_layout
+
+\begin_layout Subsubsection*
+waitBus()
+\end_layout
+
+\begin_layout Standard
+Dosya adý verilen unix sokete baðlanýlabiliyorsa True aksi halde False deðerini
+ döndürür.
+ Bir servisin baþlatýlmasý ile istemcileri dinlemeye baþlamasý arasýnda
+ bir süre geçiyorsa bu komutla bekleyebilirsiniz.
+\end_layout
+
+\begin_layout Standard
+Opsiyonel timeout parametresi ile maksimum bekleme süresini (öntanýmlý 5
+ saniye), wait parametresi ile de deneme aralýklarýný (öntanýmlý 0.1 saniye)
+ ayarlayabilirsiniz.
+ Eðer stream deðil de datagram tipinde bir sokete baðlanmanýz gerekiyorsa
+ False deðerli bir stream parametresi vermelisiniz.
+\end_layout
+
+\begin_layout Standard
+Örnek (kütük servisi hazýr mý?):
+\end_layout
+
+\begin_layout LyX-Code
+waitBus("/dev/log", stream=False)
+\end_layout
+
+\begin_layout Standard
+Örnek (dbus servisi hazýr mý?):
+\end_layout
+
+\begin_layout LyX-Code
+waitBus("/var/lib/dbus/system_bus_socket")
+\end_layout
+
+\begin_layout Subsubsection*
+loadEnvironment()
+\end_layout
+
+\begin_layout Standard
+Çevre deðiþkenlerini /etc/profile.env dosyasýndan okuyup çalýþan süreç için
+ geçerli kýlar.
+ Böylece buradaki deðiþkenleri kullanan servisleri, ayrý bir kabuk baþlatmadan
+ çalýþtýrabilirsiniz.
+\end_layout
+
+\begin_layout Subsubsection*
+config
+\end_layout
+
+\begin_layout Standard
+Bu bir Python sözlük deðiþkeni olup, /etc/conf.d/betikpaketadý dosyasýndaki
+ isim=deðer biçimindeki ayarlarý içermiþtir.
+ Eðer kullandýðýnýz ayar dosyasý adý betik adýndan farklýysa serviceConf
+ deðiþkenine dosya adýný verebilirsiniz (gene /etc/conf.d içinde bir dosya
+ olmak üzere).
+\end_layout
+
+\begin_layout Section
+Teknik Yapý
+\end_layout
+
+\begin_layout Standard
+Pardus açýlýþ sisteminde, olabildiðince modern bir yapý kullanýyoruz.
+ Aygýt dosyasý oluþturma, donaným tanýma programlarýný tetikleme iþleri
+ tamamen udev tarafýndan yapýlmakta, çekirdek ile udev arasýnda eski hotplug
+ sistemi yerine netlink soket baðlantýsý kullanýlmakta, donanýma ait modülün
+ bulunmasý sysfs dosya sisteminden gelen üretici/ürün gibi bilgilerle kurulu
+ olan modüllerin desteklediklerinin listesi karþýlaþtýrýlarak dinamik olarak
+ yapýlmakta, açýlýþ sistemi ve servis betikleri yüksek seviyeli Python diliyle
+ yazýlmakta.
+\end_layout
+
+\begin_layout Subsection*
+Temel yaklaþýmýmýz
+\end_layout
+
+\begin_layout Itemize
+Donaným tanýma dinamik olmalý, kurulu sistem donanýmda deðiþiklikler olduðunda,
+ yeniden elle ayar istemeden, çalýþmaya devam edebilmelidir,
+\end_layout
+
+\begin_layout Itemize
+Programlarýn sistemle entegrasyonu kolay ve problemsiz olmalýdýr,
+\end_layout
+
+\begin_layout Itemize
+Açýlýþtaki erken bir sorun sistemi kurtarmayý çok zorlaþtýrmakta olduðu
+ için, temel iþlemler çok saðlam olmalý, bir hata çýktýðýnda bunu düzeltmek
+ için çaba göstermeli, daha güvenli açýlýþ seçenekleri saðlamalýdýr,
+\end_layout
+
+\begin_layout Itemize
+Sistem esnek olmakla birlikte, yeterli performansý da saðlamalýdýr.
+\end_layout
+
+\begin_layout Subsection*
+Tasarým Kararlarý
+\end_layout
+
+\begin_layout Description
+Python Nedeni çok açýk.
+ Kabuk, awk, perl, sed betiklerinden oluþan çorba yerine, bakýmý ve okumasý
+ kolay, ihtiyacýmýz olan karakter dizisi (string) ve liste, sözlük gibi
+ veritiplerini çok güçlü bir þekilde destekleyen, fonksiyonel ve nesne tabanlý,
+ hýzlý ve temiz program geliþtirilebilen bir dil seçtik.
+ Kod büyüklüðü büyük ölçüde kýsalýrken, özelliklerimiz ve hýzýmýz arttý.
+\end_layout
+
+\begin_layout Description
+Disk\InsetSpace ~
+hýzý Harddisklerin oldukça yüksek olan okuma hýzý, kafanýn gereksiz
+ hareketleriyle büyük ölçüde düþüyor.
+ Bunu önlemek için, müdürün ana kýsmýný tek bir dosya (mudur.py) olarak tuttuk,
+ dýþardan çaðýrdýðýmýz programlarý tam yollarý ile (/sbin/mount þeklinde)
+ çaðýrdýk, Python yorumlayýcýsýnýn bir defada yüklenince birçok modülü (os,
+ sys, string, time, glob, vb) saðlýyor olmasýnýn avantajýný kullandýk, kabuðun
+ zayýflýðý nedeniyle çok kullanýlmak zorunda kalýnmýþ geçici dosyalardan
+ kaçýndýk.
+\end_layout
+
+\begin_layout Description
+Çomar Klasik /etc/init.d/ altýndaki kabuk betikleri yerine Python ile yazýlmýþ
+ Çomar betikleri kullanmayý seçtik.
+ Dezavantajý servis betiklerinin yeniden yazýlmasýnýn gerekmesi.
+ Daðýtýmda servis betiði gerektiren uygulama sayýsýnýn %5 altýnda olmasý
+ ve bu betikleri yazmanýn, Python gibi kolay bir dille birer start ve stop
+ metodu yazmaktan ibaret olmasý, ve Pisi paketçilerinin zaten Python ile
+ çalýþýyor olmasý, bu dezavantajý önemsiz kýlýyor.
+ Hazýr Çomar yapýsýný kullanmak, servisleri yöneten araçlar yapmayý, ve
+ servis yönetimi yetkilerini kullanýcýlara daðýtabilmeyi çok kolaylaþtýrmakta.
+\end_layout
+
+\begin_layout Description
+init Baþka açýlýþ sistemi denemelerinin (initng, depinit, vs) tersine, temel
+ süreci deðiþtirmekten kaçýndýk.
+ Bu süreç kendi iþini çok iyi yapýyor ve yýllarýn saðlamlýðýna sahip.
+ Paralelliði temel açýlýþ bitmeden zaten baþlatamýyoruz, þu anda Çomar ile
+ servisleri paralel çalýþtýrýyoruz, müdür de init tarafýndan çalýþtýrýlýyor.
+\end_layout
+
+\begin_layout Description
+sleep En çok kaçýndýðýmýz komut.
+ Kafadan bir süre bekleyip bir takým olaylarýn olduðunu varsaymak yerine,
+ o olayýn gerçekten olup olmadýðýný kontrol ediyoruz.
+ Mesela syslogd baþlatýp bir saniye beklemek yerine, /dev/log soketinin
+ açýlmasýný bekliyoruz, böylece hem daha saðlam, hem de daha hýzlý çalýþýyor.
+\end_layout
+
+\begin_layout Section
+Belge Geçmiþi
+\end_layout
+
+\begin_layout Itemize
+Ýlk sürüm (2006-08-25), Gürer Özen
+\end_layout
+
+\end_body
+\end_document

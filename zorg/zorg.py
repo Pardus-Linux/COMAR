@@ -40,7 +40,7 @@ Section "Monitor"
     ModelName   "%(MODEL)s"
     HorizSync    %(HSYNC)s
     VertRefresh  %(VREF)s
-    
+
 %(MODELINES)s
 EndSection
 """
@@ -149,7 +149,7 @@ Section "InputDevice"
     Driver     "mouse"
     Option     "Protocol" "ExplorerPS/2"
     Option     "Device" "/dev/input/mice"
-    Option     "ZAxisMapping" "4 5"    
+    Option     "ZAxisMapping" "4 5"
     Option     "Buttons" "5"
 EndSection
 
@@ -385,7 +385,7 @@ def ModeLine(dict={}):
     results["vTim1"]    = vTim1
     results["vTim2"]    = vTim2
     results["vTim3"]    = vTim3
-    
+
     return results
 
 def calcModeLine(w, h, vfreq):
@@ -648,7 +648,7 @@ def keysMonitors(monitors):
         else:
             keys_mon["MODELINES"] = "".join(monitors[i].modelines)
             keys_mon["MODES"] = monitors[i].res
-        
+
         # FIXME: check for the driver and set depth due to it
         keys_mon["DEPTH"] = "16"
 
@@ -680,7 +680,7 @@ def autoConfigureDisplay():
 
     # We need card data to check for lcd displays
     monitors = findMonitors(cards)
-    
+
     # start over and begin to fill the templates
     keys_main = {}
 
@@ -689,7 +689,7 @@ def autoConfigureDisplay():
 
     # and then the monitor
     keys_main["SEC_MONITOR"], keys_main["SEC_SCREEN"] = keysMonitors(monitors)
-    
+
     # input devices
     querySynaptics(keys_main)
     keys_main["KEYMAP"] = queryKeymap()

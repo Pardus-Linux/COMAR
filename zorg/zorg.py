@@ -57,6 +57,20 @@ Section "InputDevice"
     # "Option    "AccelFactor" "0.04"
 EndSection
 """
+
+template_alps = """
+Section "InputDevice"
+    Identifier "Mouse1"
+    Driver     "synaptics"
+    Option     "Protocol" "auto-dev"
+    Option     "Device" "/dev/input/mouse1"
+    Option     "SHMConfig" "true"
+    Option     "MinSpeed" "0.50"
+    Option     "MaxSpeed" "1.00"
+    # "Option    "AccelFactor" "0.04"
+EndSection
+"""
+
 template_screen = """
 Section "Screen"
     Identifier "Screen%(N)s"
@@ -579,6 +593,10 @@ def querySynaptics(keys_main):
                 keys_main["SYNAPTICS_MOD"] = 'Load "synaptics"'
                 keys_main["SYNAPTICS_LAY"] = 'InputDevice "Mouse1" "SendCoreEvents"'
                 keys_main["SEC_SYNAPTICS"] = template_synaptics
+            elif "AlpsPS/2" in line:
+                keys_main["SYNAPTICS_MOD"] = 'Load "synaptics"'
+                keys_main["SYNAPTICS_LAY"] = 'InputDevice "Mouse1" "SendCoreEvents"'
+                keys_main["SEC_SYNAPTICS"] = template_alps
         a.close()
     except:
         pass

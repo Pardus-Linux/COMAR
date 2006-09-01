@@ -476,7 +476,8 @@ Normal bir çalýþmada ihtiyacýnýz olmayacak bu komutu, eðer elle bir çekirdek
 Çekirdek modülleri içeren pisi paketleri kurulduktan sonra, Çomar aracýlýðýyla
  çaðrýlan bu komut, /sbin/depmod komutunu çalýþtýrarak, çalýþmakta olan
  çekirdek için, bu modüllerin hangi aygýtlarý desteklediklerini ve birbirlerine
- olan baðýmlýlýklarýný gösteren modules.map dosyalarýný oluþturmaktadýr.
+ olan baðýmlýlýklarýný gösteren modules.*map, modules.dep, modules.alias dosyalarýn
+ý oluþturmaktadýr.
  Her bir çekirdek için /lib/modules/2.6.16.24-49/ gibi dizinlerde bulunan bu
  dosyalar, muavin ve modprobe komutu tarafýndan kullanýlmaktadýr.
 \end_layout
@@ -1093,7 +1094,7 @@ Pardus açýlýþ sisteminde, olabildiðince modern bir yapý kullanýyoruz.
  Aygýt dosyasý oluþturma, donaným tanýma programlarýný tetikleme iþleri
  tamamen udev tarafýndan yapýlmakta, çekirdek ile udev arasýnda eski hotplug
  sistemi yerine netlink soket baðlantýsý kullanýlmakta, donanýma ait modülün
- bulunmasý sysfs dosya sisteminden gelen üretici/ürün gibi bilgilerle kurulu
+ bulunmasý sysfs dosya sisteminden gelen üretici/ürün gibi bilgilerle, kurulu
  olan modüllerin desteklediklerinin listesi karþýlaþtýrýlarak dinamik olarak
  yapýlmakta, açýlýþ sistemi ve servis betikleri yüksek seviyeli Python diliyle
  yazýlmakta.
@@ -1178,6 +1179,22 @@ sleep En çok kaçýndýðýmýz komut.
  Mesela syslogd baþlattýktan sonra, iþlemlere devam etmeden bir saniye beklemek
  yerine, /dev/log soketinin açýlmasýný bekliyoruz, böylece süreçlerimiz
  hem daha saðlam, hem de daha hýzlý oluyor.
+\end_layout
+
+\begin_layout Description
+udev Hemen hemen tüm daðýtýmlar tarafýndan kullanýlýyor.
+ Klasik diskte tutulan sabit /dev dizinine ve bir süre çekirdeðe dahil olup
+ sonra atýlan devfs sistemine göre, çok temiz ve esnek.
+\end_layout
+
+\begin_layout Description
+muavin Donaným tanýma sýrasýnda udev ile modprobe arasýnda bizim muavin
+ programýmýz bulunuyor.
+ Çekirdekten gelen MODALIAS deðerini direk modprobe etmemekteki amacýmýz,
+ araya daha esnek bir kontrol sokabilmek.
+ MODALIAS, özellikle ISAPNP gibi veri yollarýnda henüz baþarýlý deðil.
+ Muavin ayrýca, CPU frekans modülleri gibi, daha sezgisel metotlarla bulunan
+ modüllerle de ilgileniyor.
 \end_layout
 
 \begin_layout Section

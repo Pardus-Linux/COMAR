@@ -970,16 +970,14 @@ from comar.service import *
 þeklinde kullandýðýnýzda info, setState, ready metotlarý sizin için tanýmlanmýþ
  olacaktýr.
  Böylece yalnýzca start ve stop metotlarý ile bir servis betiði yazabilirsiniz.
+ Bu hazýr fonksiyonlar, betik tipi ve adý bilgisini betiðinizin içinde tanýmlaya
+caðýnýz serviceType ve serviceDesc deðiþkenlerinden alacaktýr.
 \end_layout
 
 \begin_layout Standard
-Bu modüldeki fonksiyonlar, betik tipi ve adýný betiðinizin içindeki serviceType
- ve serviceDesc deðiþkenlerinden okuyacaktýr.
-\end_layout
-
-\begin_layout Standard
-Eðer çalýþýp çalýþmadýðýna göre True/False döndüren bir status fonksiyonunuz
- varsa, bu da servisinizin durumunu info çaðrýsýnda raporlarken kullanýlacaktýr.
+Eðer servisinizin çalýþýp çalýþmadýðýna göre True/False döndüren bir status
+ fonksiyonu yazarsanýz, bu da servisinizin durumunu info çaðrýsýnda raporlarken
+ kullanýlacaktýr.
 \end_layout
 
 \begin_layout Standard
@@ -1041,8 +1039,8 @@ Dosya adý verilen unix sokete baðlanýlabiliyorsa True aksi halde False deðerini
 
 \begin_layout Standard
 Opsiyonel timeout parametresi ile maksimum bekleme süresini (öntanýmlý 5
- saniye), wait parametresi ile de deneme aralýklarýný (öntanýmlý 0.1 saniye)
- ayarlayabilirsiniz.
+ saniye), yine opsiyonel wait parametresi ile de deneme aralýklarýný (öntanýmlý
+ 0.1 saniye) ayarlayabilirsiniz.
  Eðer stream deðil de datagram tipinde bir sokete baðlanmanýz gerekiyorsa
  False deðerli bir stream parametresi vermelisiniz.
 \end_layout
@@ -1080,10 +1078,10 @@ config
 
 \begin_layout Standard
 Bu bir Python sözlük deðiþkeni olup, /etc/conf.d/betikpaketadý dosyasýndaki
- isim=deðer biçimindeki ayarlarý içermiþtir.
- Eðer kullandýðýnýz ayar dosyasý adý betik adýndan farklýysa serviceConf
- deðiþkenine dosya adýný verebilirsiniz (gene /etc/conf.d içinde bir dosya
- olmak üzere).
+ isim=deðer biçimindeki ayarlarý içerir.
+ Eðer kullandýðýnýz ayar dosyasý adý betiðinizin paket adýndan farklýysa
+ serviceConf deðiþkenine dosya adýný verebilirsiniz (gene /etc/conf.d/ içinde
+ bir dosya olmak üzere).
 \end_layout
 
 \begin_layout Section
@@ -1139,8 +1137,12 @@ Python Nedeni çok açýk.
 
 \begin_layout Description
 Disk\InsetSpace ~
-hýzý Harddisklerin oldukça yüksek olan okuma hýzý, kafanýn gereksiz
- hareketleriyle büyük ölçüde düþüyor.
+hýzý Harddisklerin oldukça yüksek olan okuma hýzý, harddiskin okuyucu
+ kafasýnýn gereksiz dolaþýmýyla büyük ölçüde düþüyor.
+ Bu aþýrý dolaþýmýn sebepleri arasýnda dosya sisteminin fragmentasyonu,
+ çok sayýda dosyaya eriþim, okuma/yazma iþlemlerinin farklý dosyalar üzerinde
+ içiçe yapýlmalarý, okuma iþleminin tek seferde deðil, ara ara parçalar
+ halinde yapýlmasý var.
  Bunu önlemek için, müdürün ana kýsmýný tek bir dosya (mudur.py) olarak tuttuk,
  dýþardan çaðýrdýðýmýz programlarý tam yollarý ile (/sbin/mount þeklinde)
  çaðýrdýk, Python yorumlayýcýsýnýn bir defada yüklenince birçok modülü (os,
@@ -1171,10 +1173,11 @@ init Baþka açýlýþ sistemi denemelerinin (initng, depinit, vs) tersine, temel
 
 \begin_layout Description
 sleep En çok kaçýndýðýmýz komut.
- Kafadan bir süre bekleyip bir takým olaylarýn olduðunu varsaymak yerine,
+ Kafadan bir süre uyuyup, beklediðimiz olayýn tamamlandýðýný varsaymak yerine,
  o olayýn gerçekten olup olmadýðýný kontrol ediyoruz.
- Mesela syslogd baþlatýp bir saniye beklemek yerine, /dev/log soketinin
- açýlmasýný bekliyoruz, böylece hem daha saðlam, hem de daha hýzlý çalýþýyor.
+ Mesela syslogd baþlattýktan sonra, iþlemlere devam etmeden bir saniye beklemek
+ yerine, /dev/log soketinin açýlmasýný bekliyoruz, böylece süreçlerimiz
+ hem daha saðlam, hem de daha hýzlý oluyor.
 \end_layout
 
 \begin_layout Section

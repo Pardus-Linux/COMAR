@@ -1,0 +1,1225 @@
+#LyX 1.4.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 245
+\begin_document
+\begin_header
+\textclass article
+\language turkish
+\inputencoding auto
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Pardus Init System
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset
+
+
+\newpage
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+All the operations held beginning with the the moment the operating system's
+ kernel starts and the moment the user can log in is the boot phase.
+ Mounting file systems, loading hardware drivers, starting system services
+ and loading the graphical interface and presenting the login screen are
+ all part of this process.
+\end_layout
+
+\begin_layout Standard
+When the computer is to be shut down, stopping of the services and unmounting
+ mounted filesystems is also held by the same process.
+\end_layout
+
+\begin_layout Standard
+With Pardus release 1.1, we have moved to a new system that we call Müdür,
+ leaving behind the classical boot process that is based on shell.
+ This document explains the usage of this new system, which allows a faster
+ boot and initialization, and that which is easier to develop and maintain
+ as it is written in Python.
+\end_layout
+
+\begin_layout Standard
+The sections "Boot Process", "Basic Usage", and "Settings" are aimed towards
+ users, and they explain the basic terms and information that may be needed
+ in specific conditions.
+\end_layout
+
+\begin_layout Standard
+The sections "Packaging Information" and "Service Scripts" are aimed towards
+ system administrators and integrators, and provide information needed when
+ preparing a Pisi package or adding Pardus support to a third-party application.
+\end_layout
+
+\begin_layout Standard
+The section "Technical Structure" is aimed towards programmers and explains
+ the components and details of Müdür to those who want to examine or develop
+ it.
+\end_layout
+
+\begin_layout Section
+Boot Process
+\end_layout
+
+\begin_layout Standard
+When the computer powers up, the software named BIOS (Basic Input/Output
+ System) on the mainboard starts running.
+ After completing its own internal check and hardware preparation processes,
+ it loads and runs the small boot loader application found in the MBR (Master
+ Boot Record) at the very beginning of the default boot device (which can
+ be a connected hard disk, CD-ROM drive or a USB disk).
+\end_layout
+
+\begin_layout Subsection*
+Boot Loader
+\end_layout
+
+\begin_layout Standard
+In the installation of Pardus, the default boot loader Grub will be put
+ to the beginning of the disk Pardus is installed to, and if there are any
+ other operating systems in the disk, they will be written to the Grub settings
+ file.
+ This way, you can choose which operating system you want to run from the
+ Grub menu when you turn on your computer..
+\end_layout
+
+\begin_layout Standard
+Boot loader loads the operating system kernel that you chose into memory
+ with the help of BIOS procedures (called interrupts), and passes execution
+ to the kernel.
+\end_layout
+
+\begin_layout Standard
+The Linux kernel can be compiled customizedly by choosing what hardware
+ drivers to contain.These drivers can either be included in the kernel or
+ in the system as modules to be loaded when necessary.As unused drivers increase
+ the size and memory consumption of the kernel, we distribute hardware drivers
+ as seperate modules as much as possible.This way, it is also possible to
+ easily update by removing a module and installing its new version 
+\end_layout
+
+\begin_layout Standard
+In moving on to the kernel from the boot loader, a kernel that does not
+ contain the driver of the storage device can easily be loaded as the boot
+ loader uses the device with the help of BIOS, but the kernel can not go
+ on the boot/init process as it won't be able to "reach" this device once
+ it gets the execution from the BIOS.As it is not practical to put the drivers
+ to many storage environments, the boot loader loads into memory a second
+ file called initrd (init ram disk) together with the kernel to solve this
+ problem.In this file, less common storage device drivers are included, like
+ a small file system.The kernel removes this file from the memory after loading
+ necessary drivers (if any) from inside it.
+\end_layout
+
+\begin_layout Subsection*
+The Kernel
+\end_layout
+
+\begin_layout Standard
+After the kernel takes over hardware management and finishes its "preparations",
+ opens the file system defined as root and starts the program /sbin/init.This
+ program, being the base process, administers other processes.It runs the
+ commands givens in the settings file for some predefined events (turning
+ on the computer, shutting it down, power management etc.)
+\end_layout
+
+\begin_layout Subsection*
+Müdür
+\end_layout
+
+\begin_layout Standard
+When the command /sbin/mudur.py, the main part of Müdür, is called by init
+ when booting, it starts the udev service that is used for device management
+ and automatic hardware recognition (hotplug).
+ This service handles jobs like automatically running the related software
+ and creating files under /dev directory that are needed to access the plugged
+ device/inserted media when you plug in a USB disk or insert a CD.Müdür then
+ checks the filesystems in those storage devices and mounts them.
+ With /sbin/muavin.py, another part of Müdür, Müdür makes load the other
+ hardware that is already in or part of the computer (coldplug) but whose
+ driver is not included in initrd.
+ When a new hardware is plugged, Muavin is also called by udev and handles
+ loading of the driver(s).
+ After sychronizing system clock with the hardware clock and making base
+ network settings, Müdür starts Çomar, the configuration manager of Pardus.
+ As a last step, it commands Çomar to start the services.
+\end_layout
+
+\begin_layout Standard
+When called during shutdown, it first tells Çomar to stop the services.
+ Then synchronizes the system clock with the hardware clock again.
+ Lastly, it unmounts mounted filesystems accordingly and makes sure they
+ are turned off without data loss.
+ After Müdür finishes its job, the init command gives the kernel the necessary
+ command to turn off or restart the computer.
+ 
+\end_layout
+
+\begin_layout Subsection*
+Services
+\end_layout
+
+\begin_layout Standard
+Services are software that present the user or other programs with some
+ functions, running in the background.
+ For example, zemberek gives software Turkish syntax support, DBus provides
+ desktop applications inter-communication, and cups provides printer support.
+  Server software like SSH (which allows remote connections) also work as
+ a service and are manageable.
+ 
+\end_layout
+
+\begin_layout Standard
+When the services are started, the KDM (KDE Desktop Manager) service brings
+ forward the user login screen.
+ When username and password are entered, that user's desktop is loaded and
+ starts running.
+ 
+\end_layout
+
+\begin_layout Section
+Basic Usage
+\end_layout
+
+\begin_layout Standard
+Boot and hardware recognition systems run mostly automatically.
+ 
+\end_layout
+
+\begin_layout Standard
+You can use Service Manager that is in System Options in Pardus Configuration
+ Manager for jobs like seeing which services are installed in your computer,
+ setting them to start or not when booting, checking the services' status,
+ and restarting them when needed.
+ 
+\end_layout
+
+\begin_layout Standard
+To manage services from command line and scripts, there is also the /bin/service
+ command.
+ 
+\end_layout
+
+\begin_layout Standard
+To see installed packages and their status, give the:
+\end_layout
+
+\begin_layout LyX-Code
+service
+\end_layout
+
+\begin_layout Standard
+command without a parameter or with the "list" parameter.
+ 
+\end_layout
+
+\begin_layout Standard
+The commands
+\end_layout
+
+\begin_layout LyX-Code
+service openssh start
+\end_layout
+
+\begin_layout LyX-Code
+service openssh stop
+\end_layout
+
+\begin_layout LyX-Code
+service openssh restart
+\end_layout
+
+\begin_layout Standard
+will start, stop or restart the service given as the first parameter.
+ 
+\end_layout
+
+\begin_layout Standard
+The command
+\end_layout
+
+\begin_layout LyX-Code
+service openssh reload
+\end_layout
+
+\begin_layout Standard
+in some services, makes the service reload its settings files and rearrange
+ itself accordingly without stopping the server.
+ It is not in use and effective in every service.
+ 
+\end_layout
+
+\begin_layout Standard
+With the
+\end_layout
+
+\begin_layout LyX-Code
+service openssh on
+\end_layout
+
+\begin_layout LyX-Code
+service openssh off
+\end_layout
+
+\begin_layout Standard
+commands, you can start and stop the services in the same manner.
+ But the services that you start or stop this way will start if turned "on"
+ or will not start if turned "off" at the next bootup.
+\end_layout
+
+\begin_layout Subsection*
+RunLevels
+\end_layout
+
+\begin_layout Standard
+The init command that runs the base process jobs has a runlevel concept.
+ This runlevel system, historically between 0 and 6, is used to get the
+ system to certain conditions.
+ These levels are,
+\end_layout
+
+\begin_layout Description
+0 Turn the system off
+\end_layout
+
+\begin_layout Description
+1 Get the system to single-user mode
+\end_layout
+
+\begin_layout Description
+2-5 User defined
+\end_layout
+
+\begin_layout Description
+6 Restart the system
+\end_layout
+
+\begin_layout Standard
+The command /sbin/telinit could be used to change runlevel.
+ What to do in which runlevel is defined in the file /etc/inittab.
+ In Pardus, these levels call müdür with the corresponding parametrer and
+ only one of the user defined runlevels is used as the normal runlevel.
+ These müdür parameters are
+\end_layout
+
+\begin_layout Description
+sysinit Do the base boot/init operations
+\end_layout
+
+\begin_layout Description
+boot Do the rest of the boot/init operations
+\end_layout
+
+\begin_layout Description
+shutdown Do shutdown operations (runlevel 0)
+\end_layout
+
+\begin_layout Description
+single Get the system to single-user mode (level 1)
+\end_layout
+
+\begin_layout Description
+default Run the services (level 3)
+\end_layout
+
+\begin_layout Description
+reboot Do shutdown operations (level 6)
+\end_layout
+
+\begin_layout Standard
+A level you could need here is the single-user level, which you could get
+ to with the commands "telinit 5" and "telinit 1".
+ In this level, müdür shuts down the services and you can login as root
+ and do things like repairing the system.
+ You can give the command "telinit 3" to return to normal run mode.
+ 
+\end_layout
+
+\begin_layout Standard
+You can use reboot and halt commands for shutdown; look at the "shutdown"
+ command for more flexible shutdown operations.
+ 
+\end_layout
+
+\begin_layout Subsection*
+Records
+\end_layout
+
+\begin_layout Standard
+System language, keyboard map and locale has predefined values in müdür.
+ They can be set in the file /etc/conf.d/mudur and can be changed via kernel
+ parameter mudur.
+ After Müdür sets these values, for programs like kdm to not visit the same
+ places and again for them to get the values easily, it writes them to files
+ named keymap, language and locale in /etc/mudur/.
+\end_layout
+
+\begin_layout Standard
+Müdür saves the events it encounters to /var/log/mudur.log.
+ Part of a sample file:
+\end_layout
+
+\begin_layout LyX-Code
+Aug 26 13:55:08 (up 7.65) /sbin/mudur.py sysinit
+\end_layout
+
+\begin_layout LyX-Code
+Aug 26 10:55:15 (up 14.44) /sbin/mudur.py boot
+\end_layout
+
+\begin_layout LyX-Code
+Aug 26 10:55:16 (up 15.84) /sbin/mudur.py default
+\end_layout
+
+\begin_layout LyX-Code
+Aug 26 15:58:42 (up 18221.40) /sbin/mudur.py shutdown
+\end_layout
+
+\begin_layout Standard
+The lines have the form "date (job run time) information".
+ Job run time is calculated as the seconds that has passed since the kernel
+ started working.
+ It is put there in order to show better the time of the event as there
+ occurs a correction in date when synchronizing the system clock to hardware
+ clock in boot.
+ 
+\end_layout
+
+\begin_layout Standard
+In the example, müdür is called for base boot/init operations towards the
+ 8th second, for the rest of the boot/init operations towards the 15th second,
+ and is called at around the 16th second for it to start the services.
+ And it once again runs for shutdown operations after a work of about five
+ hours.
+\end_layout
+
+\begin_layout Standard
+In normal run mode, only warning and error messages and call statuses are
+ written to this file.
+ If you want all output of müdür to be saved, you can do so with a debug=1
+ line in /etc/conf.d/mudur or with a mudur=debug kernel parameter given in
+ the boot loader.
+\end_layout
+
+\begin_layout Subsection*
+Other Commands
+\end_layout
+
+\begin_layout Subsubsection*
+/sbin/muavin.py
+\end_layout
+
+\begin_layout Standard
+Muavin that loads device drivers lists which drivers to load for the found
+ devices when called with the -debug parameter.
+ This can be informative when there is a problem with hardware recognition.If
+ you want it to load these drivers, you can use the --coldplug parameter.
+\end_layout
+
+\begin_layout Subsubsection*
+/sbin/update-environment
+\end_layout
+
+\begin_layout Standard
+You might have to use this command, which you won't normally need, if you
+ compiled a program manually.
+\end_layout
+
+\begin_layout Standard
+Some programs need environment variables that needs to be set in the system
+ and user sessions.
+ For example Java wants the directory name that the Java executables are
+ in to be set in a variable named JAVA_HOME.
+ Applications, -like QT- putting their libraries in non-standard locations
+ like /usr/qt3/lib instead of standard locations like /usr/lib want to add
+ their own directory path to environment variables like LDPATH, which shows
+ where loadable libraries can be found.
+ 
+\end_layout
+
+\begin_layout Standard
+The directory /etc/env.d is used for program packages to be able to assign
+ values to these variables.
+ When a pisi package puts a file here, the command update-environment run
+ by the help of Çomar reads these files and creates a profile file for the
+ system shell, changes the file /etc/ld.so.conf file to contain the new paths
+ if the library paths have changed, and makes the dynamic library loader
+ index these new directories in the file /etc/ld.so.cache using the command
+ /sbin/ldconfig.
+\end_layout
+
+\begin_layout Subsubsection*
+/sbin/update-modules
+\end_layout
+
+\begin_layout Standard
+You might have to use these command, which you won't normally need to run,
+ if you compiled a kernel module manually.
+\end_layout
+
+\begin_layout Standard
+This command, run after the installation of pisi packages that contain kernel
+ modules by Çomar, runs the command /sbin/depmod, and creates the files
+ modules.*map, modules.dep and modules.alias that show which devices these
+ modules support and their dependencies.
+  These files that are in directories like /lib/modules/2.6.16.24-29/ for each
+ kernel are used by muavin and the modprobe command.
+\end_layout
+
+\begin_layout Standard
+Also if the package has placed a file in the directory /etc/modules.d/, these
+ files are scanned and the file /etc/modprobe.conf, showing the load type
+ and parameteres is updated.
+\end_layout
+
+\begin_layout Section
+Settings
+\end_layout
+
+\begin_layout Subsection*
+Bootloader Settings
+\end_layout
+
+\begin_layout Standard
+The list of operating systems in the menu of the bootloader and with what
+ parameters the kernel will run is set from the file /boot/grub/grub.conf.
+ You can get detailed information on these settings from the documentation
+ of the Grub software.
+ You can also change these settings only for that session when your choice
+ cursor is on the system that you will boot by pressing 'e' when the computer
+ is turned on and the Grub menu comes out.
+\end_layout
+
+\begin_layout Standard
+The kernel line in the operating system records of Grub define the Linux
+ kernel to be loaded and its parameters.
+ The syntax is as follows:
+\end_layout
+
+\begin_layout LyX-Code
+kernel (device)/file param1=value param2=value1,value2,value3 param3 ...
+\end_layout
+
+\begin_layout Standard
+The first part is the the storage device the kernel is in and the filename
+ of the kernel.
+ After that comes the parameteres to be sent to that kernel.Parameters can
+ be alone, with a value, or with more than one value.
+\end_layout
+
+\begin_layout Standard
+Some kernel parameters that can be needed:
+\end_layout
+
+\begin_layout Description
+quiet This option, on by default, disallows the kernel to print technical
+ data that it finds when scanning for hardware, if there is a hardware problem
+ that occurred before müdür started, you can remove this option and ger
+ more information.
+\end_layout
+
+\begin_layout Description
+splash Makes show a graphical logo at boot, for a textmode boot, remove
+ this option and "console" option.
+\end_layout
+
+\begin_layout Description
+noacpi In some BIOSes that do not comply to the standards, it is possible
+ to run the kernel with this option.
+\end_layout
+
+\begin_layout Description
+mudur You can change some settings of müdür with this option.
+ It is explained in more detail in the section "Müdür settings".
+\end_layout
+
+\begin_layout Standard
+You can find all the kernel parameters and their explanations in /usr/src/linux/
+Documentation/kernel-parameters.txt after installing the kernel-source package.
+\end_layout
+
+\begin_layout Subsection*
+Müdür Settings
+\end_layout
+
+\begin_layout Standard
+Müdür is called by init, and init settings which you normally won't need
+ to modify are found in the file /etc/inittab.
+\end_layout
+
+\begin_layout Standard
+The settings of Müdür itself can be made in /etc/conf.d/mudur file and the
+ kernel parameter mudur given with the bootloader.
+ The settings given from the kernel are used instead of the ones in the
+ file.
+\end_layout
+
+\begin_layout Description
+safe If this option is given, some hardware operations that can cause problems
+ won't be made and of the services, only the kdm service and the services
+ it depends on will be run.
+\end_layout
+
+\begin_layout Description
+language It defines the language that will be used in boot and the login
+ screen.
+ The default value is Turkish.
+ If the installation is done in another language, that language is selected
+ in the settings file.
+\end_layout
+
+\begin_layout Description
+keymap If you don't want to use the default keyboard map of the system language,
+ you can select another map with this option.
+\end_layout
+
+\begin_layout Description
+clock If you hardware clock is set according to Greenwich Mean Time (GMT)
+ set its value to UTC, if your hardware clock is set to local time set its
+ value to local.The default value is local time.This option can only be given
+ in the settings file.
+\end_layout
+
+\begin_layout Description
+tty_number If the number of textmode consoles you want to use is different
+ than six, you can define this option.This option can only be given in the
+ settings file.
+\end_layout
+
+\begin_layout Description
+debug If this option is given, müdür will save all its output in the file
+ /var/log/mudur.log, and provide error correction information.
+\end_layout
+
+\begin_layout Standard
+Some samples:
+\end_layout
+
+\begin_layout LyX-Code
+mudur=safe,debug
+\end_layout
+
+\begin_layout LyX-Code
+mudur=language:tr,keymap:trf
+\end_layout
+
+\begin_layout Subsection*
+Hardware Settings
+\end_layout
+
+\begin_layout Standard
+The kernel modules that could not be loaded at bootup or you want loaded
+ whatever happens, you can write one module name in each line to files named
+ like kernel-x.y.z under the directory /etc/modules.autoload.d directory.When
+ looking for these files, if for example kernel 2.6.16.24 is running, kernel-2.6.16
+ and kernel-2.6 files will be checked in that order.
+\end_layout
+
+\begin_layout Standard
+In the same manner, if there are modules that cause trouble if autoloaded,
+ they can be written to the file /etc/hotplug/blacklist or any file in /etc/hotp
+lug/blacklist.d/ directory again one module name in one line.
+\end_layout
+
+\begin_layout Standard
+To give specific parameters to modules, you can create a file in /etc/modules.d
+ and give commands like alias, install, options according to the syntax
+ given in modprobe.conf.The update-modules command which is a part of Müdür
+ looks for these files and creates a /etc/modprobe.conf file.Do not write
+ your commands to this file directly as it will be automatically overwritten
+ when you install a new module package or kernel.
+\end_layout
+
+\begin_layout Standard
+It is enough to put a rule file in the /etc/udev/rules.d/ directory in order
+ to do things like making settings, naming or running a specific program
+ when a hardware is plugged.When a files with an extension of .rules is put
+ here, it is automatically involved in the system.For the syntax of the rules
+ file, check udev documentation.
+\end_layout
+
+\begin_layout Standard
+Müdür can set some of the hard disk parameters during boot-up.
+ If you are in such a need, you can give the parameters you want to the
+ disks you want in the /etc/conf.d/hdparm file.To learn what the parameters
+ are, check the documentation for the hdparm command.As some parameters can
+ cause you trouble, it is advised to be careful.The syntax of the file consists
+ of lines like, device name = 
+\begin_inset Quotes eld
+\end_inset
+
+parameters
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Device name can be any harddisk device found under the /dev/ directory,
+ or "all" for all the disks connected.
+\end_layout
+
+\begin_layout Subsection*
+Other Settings
+\end_layout
+
+\begin_layout Standard
+You can use the /etc/sysctl.conf file for kernel settings that are lost when
+ shut down and are done with the help of filesystem /proc/sys.For example,
+ in order to turn off answering to pings sent to all computers, you can
+ add a line like:
+\end_layout
+
+\begin_layout LyX-Code
+net.ipv4.icmp_echo_ignore_broadcasts = 1
+\end_layout
+
+\begin_layout Standard
+.
+ When this file is read during boot-up, this particular ability of the kernel
+ will be run by writing the value "1" to the icmp_echo_ignore_broadcasts
+ file under /proc/sys/net/ipv4.
+ For more information, you can consult to kernel documentation  and the
+ sysctl command.
+\end_layout
+
+\begin_layout Standard
+The settings files of the services are also generally in the directory /etc/conf.
+d/
+\end_layout
+
+\begin_layout Standard
+Two important files among them are the local.start and local.stop files.
+ The first one is a shell script run when booting up and the second one
+ is a shell script run when shutting down.If needed, you can put your own
+ commands in these files which are not used by Pardus and which belong totally
+ to the users.
+\end_layout
+
+\begin_layout Section
+Packaging Information
+\end_layout
+
+\begin_layout Standard
+When creating a Pisi package, you might encounter situations where you need
+ to make the program you packed part of the boot-up process.
+\end_layout
+
+\begin_layout Subsection*
+Kernel Module Packages
+\end_layout
+
+\begin_layout Standard
+When making a package that includes kernel modules, you must not include
+ the modules.* files from right under the /lib/modules/2.6.xx.xx/ directory,
+ or else you may come up with file conflicts.
+ These files will be automatically generated using the update-modules command
+ by scanning the modules in the system when module packages are being installed.
+\end_layout
+
+\begin_layout Standard
+If these files are generated in the package installation directory when
+ building the module, you can simply delete them in actions.py by a
+\end_layout
+
+\begin_layout LyX-Code
+pisitools.remove("/lib/modules/*/modules.*")
+\end_layout
+
+\begin_layout Standard
+line.
+\end_layout
+
+\begin_layout Standard
+If you want a module to be loaded whatsoever in every boot, you can have
+ it written as a line in kernel-2.x or kernel-2.x.y file (depending on your
+ need) under the directory /etc/modules.autoload.d/ in your Çomar System.Package
+ script.
+ Also check if a line like that is already in the file.
+\end_layout
+
+\begin_layout Standard
+If it necessary to avoid automatic loading of a module even if the hardware
+ exists, you must write the module name to a seperate line in a file named
+ the same as your package name in /etc/hotplug/blacklist.d/ directory.
+\end_layout
+
+\begin_layout Standard
+The modules to your parameters you must also write to a file that has your
+ module's name in the /etc/modules.d/ directory.During the installation, update-mo
+dules will again automatically update /etc/modprobe.conf file.
+\end_layout
+
+\begin_layout Subsection*
+Hardware Packages
+\end_layout
+
+\begin_layout Standard
+Use the udev system in order to catch hardware freezes and do somethings
+ on them.It shall be enough to put the rules file that you will prepare to
+ /etc/udev/rules.d/ directory.
+\end_layout
+
+\begin_layout Subsection*
+Service Packages
+\end_layout
+
+\begin_layout Standard
+If you are packing a file that will work and serve in the background, or
+ if there are commands that you need run during bootup, you need to write
+ a Çomar System.Service script and add it to your package.Information on that
+ script is given in the next section.
+\end_layout
+
+\begin_layout Subsection*
+Environment Variables
+\end_layout
+
+\begin_layout Standard
+If you want to send environment variables to the shell and make additions
+ to library or command paths, it is enough to put lines like
+\end_layout
+
+\begin_layout LyX-Code
+LALA=
+\begin_inset Quotes erd
+\end_inset
+
+trying
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+LDPATH=
+\begin_inset Quotes erd
+\end_inset
+
+/usr/lala/lib
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+to a file in /etc/env.d/ directory.To define priorities to your variables,
+ name the file like XXpackagename where XX is a number between 00 to 99.
+ When these files are interpreted and added to the system, the system starts
+ with 00 and goes towards 99, and each new value overwrites the previous
+ one.
+ This is true except for variables about paths, like PATH, LDPATH, MANPATH
+ etc., as those are added to one another with : signs.
+\end_layout
+
+\begin_layout Section
+Service Scripts
+\end_layout
+
+\begin_layout Subsection*
+Çomar System.Service Class
+\end_layout
+
+\begin_layout Standard
+Service scripts written for Müdür get recorded in this class in Çomar, and
+ they provide the following methods:
+\end_layout
+
+\begin_layout Subsubsection*
+System.Service.info
+\end_layout
+
+\begin_layout Standard
+Returns information about the service.
+ The first line gives the type of the service, the second gives status,
+ and the last line gives the localized name of the service.
+\end_layout
+
+\begin_layout Standard
+There are three types of services:
+\end_layout
+
+\begin_layout Description
+server Init scripts of web, shell or email services like Apache, OpenSSH,
+ and Postfix, serving other computers.
+\end_layout
+
+\begin_layout Description
+local Init scripts of services like DBus, HAL and Zemberek that serve local
+ software for the Pardus desktop to function properly.
+\end_layout
+
+\begin_layout Description
+script Scripts that do not start a service but rather do some predefined
+ functons in the boot process.
+\end_layout
+
+\begin_layout Standard
+A service can be in four situations:
+\end_layout
+
+\begin_layout Description
+on The service is on at all times and is currently working.
+\end_layout
+
+\begin_layout Description
+started The service is normally turned off but is started by the user.
+\end_layout
+
+\begin_layout Description
+stopped The service is normally on but is stopped for some reason, or it
+ could not start normally.
+\end_layout
+
+\begin_layout Description
+off The service is turned off.
+\end_layout
+
+\begin_layout Standard
+Service type and name, is designed to be shown in user interfaces.
+\end_layout
+
+\begin_layout Subsubsection*
+System.Service.start
+\end_layout
+
+\begin_layout Standard
+Starts the service.
+\end_layout
+
+\begin_layout Subsubsection*
+System.Service.stop
+\end_layout
+
+\begin_layout Standard
+Stops the service.
+\end_layout
+
+\begin_layout Subsubsection*
+System.Service.reload
+\end_layout
+
+\begin_layout Standard
+If the service supports the operation, this makes the service reload its
+ settings and refresh itself.
+\end_layout
+
+\begin_layout Subsubsection*
+System.Service.setState (state)
+\end_layout
+
+\begin_layout Standard
+Changes the state of the service.If the "state" parameter is given "on",
+ the service gets started and is set to start everytime the system is turned
+ on or restarted.Giving the state "off" will stop the service and remove
+ it from system init procedures so that it doesn't start automatically.
+\end_layout
+
+\begin_layout Subsubsection*
+System.Service.ready
+\end_layout
+
+\begin_layout Standard
+If the service is set "on", this calls the start method.
+ Müdür sends this message to all of the services at boot and starts them.
+\end_layout
+
+\begin_layout Subsubsection*
+System.Service.changed
+\end_layout
+
+\begin_layout Standard
+This warning is sent when the status of the service changes.
+ Returns parameter "started" or "stopped".
+\end_layout
+
+\begin_layout Subsection*
+Çomar comar.service Module
+\end_layout
+
+\begin_layout Standard
+Frequently used functions in service scripts are provided in this Python
+ module, which comes with the comar-api package.
+\end_layout
+
+\begin_layout Standard
+When you use
+\end_layout
+
+\begin_layout LyX-Code
+from comar.service import *
+\end_layout
+
+\begin_layout Standard
+in your scripts, the info, setState and ready methods will be defined for
+ you.This way, you can write a service script with only the start and stop
+ methods.These readily available functions get script type and name information
+ from the serviceType and serviceDesc variables that you will define in
+ your script.
+\end_layout
+
+\begin_layout Standard
+If you write a status function that returns True if your service is running
+ or False otherwise, it will be used when reporting the status of your service
+ in the info call.
+\end_layout
+
+\begin_layout Standard
+Even if you import this module, you can define these functions yourself;
+ and in that case, what you defined in your script will be used.
+\end_layout
+
+\begin_layout Standard
+You can also find these functions in the module:
+\end_layout
+
+\begin_layout Subsubsection*
+run()
+\end_layout
+
+\begin_layout Standard
+Runs a command (its parameter) without starting a new shell and returns
+ the command's return value.
+\end_layout
+
+\begin_layout Standard
+An example:
+\end_layout
+
+\begin_layout LyX-Code
+run("/sbin/start-stop-daemon --start --quiet --exec /usr/sbin/cpufreqd")
+\end_layout
+
+\begin_layout Subsubsection*
+checkDaemon()
+\end_layout
+
+\begin_layout Standard
+Checks to see if the service pointed by the pid file is running or not.
+\end_layout
+
+\begin_layout Standard
+An example:
+\end_layout
+
+\begin_layout LyX-Code
+def status():
+\end_layout
+
+\begin_layout LyX-Code
+    return checkDaemon("/var/run/kdm.pid")
+\end_layout
+
+\begin_layout Subsubsection*
+waitBus()
+\end_layout
+
+\begin_layout Standard
+Returns True if the Unix socket whose filename is given as a parameter could
+ be connected or False otherwise.
+ You can use this command to wait if there is a time gap between the start
+ of a service and it being able to listen to the clients.
+\end_layout
+
+\begin_layout Standard
+With the optional parameter "timeout", you can set the maximum waiting time
+ (default 5 seconds) and with the again optional parameter "wait", you can
+ set the interval between the "tries" (default 0.1 second).
+ If you are trying to connect to a socket of the type datagram rather than
+ of type stream, you must also provide a parameter "stream" with a value
+ of "false".
+\end_layout
+
+\begin_layout Standard
+An example (is the log service ready?):
+\end_layout
+
+\begin_layout LyX-Code
+waitBus("/dev/log", stream=False)
+\end_layout
+
+\begin_layout Standard
+One more: (is the dbus service ready?):
+\end_layout
+
+\begin_layout LyX-Code
+waitBus("/var/lib/dbus/system_bus_socket")
+\end_layout
+
+\begin_layout Subsubsection*
+loadEnvironment()
+\end_layout
+
+\begin_layout Standard
+It reads the environment variables from the /etc/profile.env file and makes
+ them accessible for the currently-running process.
+ This way, you can run the services that use those variables without starting
+ a new shell.
+\end_layout
+
+\begin_layout Subsubsection*
+config
+\end_layout
+
+\begin_layout Standard
+This is actually a Python dictionary variable containing the settings as
+ name=value pairs found in /etc/conf.d/scriptpackagename.If the name of the
+ settings file you are using is different from that of the script package
+ name, you can assign the filename to the serviceConf variable (again as
+ a file in /etc/conf.d)
+\end_layout
+
+\begin_layout Section
+Technical Structure
+\end_layout
+
+\begin_layout Standard
+We are using a structure as modern as possible in Pardus boot system.
+ Works like creating device files and recognizing hardware are handled totally
+ by udev, netlink socket connection is used instead of the old hotplug system
+ between the kernel and udev, finding of the module of a hardware is held
+ dynamically by comparing information like producer/product that come from
+ the sysfs file system and what hardware already installed modules support;
+ the boot system and service scripts are written in the high-level language
+ of Python.
+\end_layout
+
+\begin_layout Subsection*
+Our primary approach
+\end_layout
+
+\begin_layout Itemize
+Hardware recognition must be dynamic, the installed system must be able
+ to keep on working normally without requiring any manual settings when
+ hardware changes occur.
+\end_layout
+
+\begin_layout Itemize
+Integration of the programs to the system must be easy and free of potential
+ problems.
+\end_layout
+
+\begin_layout Itemize
+An early problem in the boot probess makes it hard to rescue the system;
+ and thus, primary operations must be very concrete, and the system must
+ try and work to fix it when an error occurs, and must provide more secure
+ boot options.
+\end_layout
+
+\begin_layout Itemize
+The system must be flexible, but nevertheless provide the requires performance.
+\end_layout
+
+\begin_layout Subsection*
+Design Decisions
+\end_layout
+
+\begin_layout Description
+The reason for choosing Python is pretty obvious.We chose a language which
+ is easy to read and maintain, which has a powerful support for string,
+ list and dictionary types, which is object-oriented and functional, in
+ which fast and clean programming is the main consideration.The sourcecode
+ size decreases drastically, and on the other side, our properties and speed
+ increases.
+\end_layout
+
+\begin_layout Description
+Disk\InsetSpace ~
+speed That pretty high reading speed of harddisks fall considerably
+ as a result of the unnecessary movements of the harddisk's reader heads.
+ Among the reasons of these unnecessary movements are the fragmentation
+ of the filesystem, access to many files, making the read and write operations
+ in one another on different files, and making read operations not at once
+ but one piece at a time.
+ In order to avoid that, we kept the main part of Müdür as a single file
+ (mudur.py), we called external files with their full path (like /sbin/mount),
+ we made use of the advantage of the Python interpreter providing many modules
+ (os, sys, string, time, glob etc.) being loaded at once, and we avoided
+ using temporary files which has to be used frequently as a result of the
+ kernel's weakness.
+\end_layout
+
+\begin_layout Description
+Çomar We chose using Çomar scripts instead of the classical shell scripts
+ under /etc/init.d/.
+ The disadvantage here is having to use the service scripts again.
+ But there being software which require service scripts in distribution
+ under 5%, it being only composed of only writing a start and stop method
+ in a language easy as Python, and Pisi packagers being already working
+ with Python make this disadvantage practically unimportant.
+ Using an already established Çomar structure makes it easy to write tools
+ to manage the services and distribute service management authority to users.
+\end_layout
+
+\begin_layout Description
+init Unlike other boot system trials (like initng, depinit), we kept away
+ from changing the base process.This process does its job very good and has
+ the power of years in it.
+ We do not start working parallelly before the boot process ends; we are
+ running Çomar and the services parallel and Müdür is started by init.
+\end_layout
+
+\begin_layout Description
+sleep The command we stay most away from.
+ Instead of "sleep"ing for a while and assuming that the events we are waiting
+ for are completed, we check if those events are actually realized.For example,
+ instead of starting syslogd and waiting for a second before going on with
+ the operations, we wait for the /dev/log socket to be open; this way, it
+ works both faster and more concrete.
+\end_layout
+
+\begin_layout Description
+udev It is used by almost all distributions.
+ It is much more clean and flexible than the classical /dev directory which
+ is kept in the disk and the devfs which is part of the kernel for a while
+ and then is thrown away.
+\end_layout
+
+\begin_layout Description
+During hardware recognition, our muavin program is between udev and modprobe.
+ Our purpose in not modprobing the MODALIAS value that comes from the kernel
+ is to be able to include a more flexible control in-between.
+ MODALIAS is not yet successful especially in buses like ISAPNP.
+ Muavin also takes care of modules like CPU frequency modules which include
+ more heuristic methods.
+\end_layout
+
+\begin_layout Section
+Document History
+\end_layout
+
+\begin_layout Itemize
+First release (2006-08-25), Gürer Özen
+\end_layout
+
+\end_body
+\end_document

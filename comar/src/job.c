@@ -77,7 +77,7 @@ do_register(int node, const char *app, const char *fname)
 		return -1;
 	}
 
-	db_put_script(node, app, code, codelen);
+	db_put_script(node, app, buf, 0);
 
 	send_result(CMD_RESULT, "registered", 10);
 

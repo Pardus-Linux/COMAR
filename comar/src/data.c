@@ -13,6 +13,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <sys/file.h>
+#include <unistd.h>
 
 #include "cfg.h"
 #include "data.h"
@@ -56,10 +58,13 @@ check_db_format(void)
 	return 0;
 }
 
+static char *code_lock_name;
+
 int
 db_init(void)
 {
 	struct stat fs;
+	size_t size;
 
 	if (stat(cfg_data_dir, &fs) != 0) {
 		if (0 != mkdir(cfg_data_dir, S_IRWXU)) {
@@ -70,7 +75,19 @@ db_init(void)
 		// FIXME: check perms and owner
 	}
 
-	if (check_db_format()) return 1;
+	if (check_db_format()) return -2;
+
+	size = strlen(cfg_data_dir) + 11;
+	code_lock_name = malloc(size);
+	if (!code_lock_name) return -3;
+	snprintf(code_lock_name, size, "%s/code", cfg_data_dir);
+	if (stat(code_lock_name, &fs) != 0) {
+		if (0 != mkdir(code_lock_name, S_IRWXU)) {
+			log_error("Cannot create data dir '%s'\n", code_lock_name);
+			return -1;
+		}
+	}
+	snprintf(code_lock_name, size, "%s/code/lock", cfg_data_dir);
 
 	// FIXME: check and recover db files
 	return 0;
@@ -266,18 +283,11 @@ int
 db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 {
 	struct databases db;
-	char *key;
 	int e, ret = -1;
 
 	if (open_env(&db, APP_DB | MODEL_DB | CODE_DB)) goto out;
 
-	key = make_key(node_no, app);
-	if (!key) goto out;
-
 	e = append_item(db.app, app, model_get_path(node_no));
-	if (e) goto out;
-
-	e = put_data(db.code, key, buffer, size);
 	if (e) goto out;
 
 	e = append_item(db.model, model_get_path(node_no), app);
@@ -286,6 +296,9 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 	ret = 0;
 out:
 	close_env(&db);
+	if (ret == 0) {
+		ret = db_save_code(node_no, app, buffer);
+	}
 	return ret;
 }
 
@@ -403,16 +416,44 @@ make_code_key(int node_no, const char *app)
 	return key;
 }
 
+static int
+lock_code_db(int is_exclusive)
+{
+	int fd;
+
+	fd = open(code_lock_name, O_WRONLY | O_CREAT, 0600);
+	if (fd == -1) {
+		log_error("Code lock problem");
+		// FIXME: handle better
+		return -1;
+	}
+	if (is_exclusive)
+		flock(fd, LOCK_EX);
+	else
+		flock(fd, LOCK_SH);
+	return fd;
+}
+
+static void
+unlock_code_db(int fd)
+{
+	flock(fd, LOCK_UN);
+	close(fd);
+}
+
 int
 db_load_code(int node_no, const char *app, char **bufferp)
 {
 	char *key;
 	char *code;
+	int fd;
 
 	key = make_code_key(node_no, app);
 	if (!key) return -1;
-printf("app[%s]\n",key);
+
+	fd = lock_code_db(0);
 	code = load_file(key, NULL);
+	unlock_code_db(fd);
 	if (!code) return -2;
 
 	*bufferp = code;
@@ -423,11 +464,16 @@ int
 db_save_code(int node_no, const char *app, const char *buffer)
 {
 	char *key;
+	int fd;
+	int ret;
 
 	key = make_code_key(node_no, app);
 	if (!key) return -1;
 
-	if (save_file(key, buffer, strlen(buffer)) != 0) return -2;
+	fd = lock_code_db(1);
+	ret = save_file(key, buffer, strlen(buffer));
+	unlock_code_db(fd);
+	if (ret != 0) return -2;
 	return 0;
 }
 

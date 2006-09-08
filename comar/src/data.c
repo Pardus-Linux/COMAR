@@ -285,7 +285,7 @@ db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 	struct databases db;
 	int e, ret = -1;
 
-	if (open_env(&db, APP_DB | MODEL_DB | CODE_DB)) goto out;
+	if (open_env(&db, APP_DB | MODEL_DB)) goto out;
 
 	e = append_item(db.app, app, model_get_path(node_no));
 	if (e) goto out;

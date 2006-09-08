@@ -46,6 +46,21 @@ load_file(const char *fname, int *sizeptr)
 }
 
 int
+save_file(const char *fname, const char *buffer, size_t size)
+{
+	FILE *f;
+
+	f = fopen(fname, "wb");
+	if (!f) return -1;
+	if (fwrite(buffer, size, 1, f) < 1) {
+		fclose(f);
+		return -2;
+	}
+	fclose(f);
+	return 0;
+}
+
+int
 utf8_is_valid(const char *str, size_t size)
 {
 	int i;

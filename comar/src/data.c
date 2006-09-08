@@ -381,6 +381,57 @@ out:
 }
 
 static char *
+make_code_key(int node_no, const char *app)
+{
+	const char *path;
+	char *key;
+	char *t;
+	size_t size;
+
+	path = model_get_path(node_no);
+	size = strlen(cfg_data_dir) + 6 + strlen(path) + 1 + strlen(app) + 4;
+
+	key = malloc(size);
+	if (!key) return NULL;
+
+	snprintf(key, size, "%s/code/%s_%s.py", cfg_data_dir, path, app);
+
+	for (t = key + size - 5; *t != '/'; t--) {
+		if (*t == '.') *t = '_';
+	}
+
+	return key;
+}
+
+int
+db_load_code(int node_no, const char *app, char **bufferp)
+{
+	char *key;
+	char *code;
+
+	key = make_code_key(node_no, app);
+	if (!key) return -1;
+printf("app[%s]\n",key);
+	code = load_file(key, NULL);
+	if (!code) return -2;
+
+	*bufferp = code;
+	return 0;
+}
+
+int
+db_save_code(int node_no, const char *app, const char *buffer)
+{
+	char *key;
+
+	key = make_code_key(node_no, app);
+	if (!key) return -1;
+
+	if (save_file(key, buffer, strlen(buffer)) != 0) return -2;
+	return 0;
+}
+
+static char *
 make_profile_key(int method, const char *app, const char *inst_key, const char *inst_value)
 {
 	size_t len;

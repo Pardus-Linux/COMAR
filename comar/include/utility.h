@@ -13,6 +13,7 @@
 #include <sys/time.h>
 
 unsigned char *load_file(const char *fname, int *sizeptr);
+int save_file(const char *fname, const char *buffer, size_t size);
 
 int utf8_is_valid(const char *str, size_t size);
 

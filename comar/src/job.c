@@ -114,8 +114,12 @@ do_event(const char *event, int node, const char *app, struct pack *p)
 
 	csl_setup();
 
-	if (0 != db_get_code(node, app, &code, &code_size)) {
-		return -1;
+	if (db_load_code(node, app, &code) == 0) {
+		code_size = 0;
+	} else {
+		if (0 != db_get_code(node, app, &code, &code_size)) {
+			return -1;
+		}
 	}
 
 	gettimeofday(&start, NULL);
@@ -155,9 +159,13 @@ do_execute(int node, const char *app, struct pack *pak)
 
 	csl_setup();
 
-	if (0 != db_get_code(model_parent(node), app, &code, &code_size)) {
-		send_result(CMD_NONE, "noapp", 5);
-		return -1;
+	if (db_load_code(model_parent(node), app, &code) == 0) {
+		code_size = 0;
+	} else {
+		if (0 != db_get_code(model_parent(node), app, &code, &code_size)) {
+			send_result(CMD_NONE, "noapp", 5);
+			return -1;
+		}
 	}
 
 	gettimeofday(&start, NULL);

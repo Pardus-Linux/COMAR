@@ -362,6 +362,7 @@ csl_execute(char *code, size_t size, const char *func_name, struct pack *pak, ch
 	PyObject *pCode, *pModule, *pDict, *pFunc, *pValue, *pStr;
 	PyObject *pArgs, *pkArgs;
 	PyMethodDef *meth;
+	node *n;
 
 	pModule = PyImport_AddModule("__builtin__");
 	pDict = PyModule_GetDict(pModule);
@@ -370,10 +371,24 @@ csl_execute(char *code, size_t size, const char *func_name, struct pack *pak, ch
 		PyDict_SetItemString(pDict, meth->ml_name, pCode);
 	}
 
-	pCode = PyMarshal_ReadObjectFromString(code, size);
-	if (!pCode) {
-		log_exception();
-		return CSL_BADCODE;
+	if (size == 0) {
+		n = PyParser_SimpleParseString(code, Py_file_input);
+		if (!n) {
+			log_exception();
+			return CSL_BADCODE;
+		}
+		pCode = (PyObject *) PyNode_Compile(n, "lala");
+		PyNode_Free(n);
+		if (!pCode) {
+			log_exception();
+			return CSL_BADCODE;
+		}
+	} else {
+		pCode = PyMarshal_ReadObjectFromString(code, size);
+		if (!pCode) {
+			log_exception();
+			return CSL_BADCODE;
+		}
 	}
 	pModule = PyImport_ExecCodeModule("csl", pCode);
 	Py_DECREF(pCode);

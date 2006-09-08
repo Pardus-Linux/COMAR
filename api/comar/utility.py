@@ -19,16 +19,20 @@ class FileLock:
         self.filename = filename
         self.fd = None
     
-    def lock(self, shared=False, timeout=0):
+    def lock(self, shared=False, timeout=-1):
         type = fcntl.LOCK_EX
         if shared:
             type = fcntl.LOCK_SH
+        if timeout != -1:
+            type |= fcntl.LOCK_NB
+        
         self.fd = os.open(self.filename, os.O_WRONLY | os.O_CREAT, 0600)
         if self.fd == -1:
             raise "Cannot create lock file"
+        
         while True:
             try:
-                fcntl.flock(self.fd, type | fcntl.LOCK_NB)
+                fcntl.flock(self.fd, type)
                 return
             except IOError:
                 if timeout > 0:

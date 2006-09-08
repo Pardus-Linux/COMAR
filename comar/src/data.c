@@ -341,8 +341,9 @@ db_del_app(const char *app)
 		}
 		free(list2);
 
+		e = db_delete_code(model_lookup_class(t), app);
 		e = del_data(db.code, make_key(model_lookup_class(t), app));
-		if (e) goto out;
+		//if (e) goto out;
 	}
 
 	free(list);
@@ -472,6 +473,23 @@ db_save_code(int node_no, const char *app, const char *buffer)
 
 	fd = lock_code_db(1);
 	ret = save_file(key, buffer, strlen(buffer));
+	unlock_code_db(fd);
+	if (ret != 0) return -2;
+	return 0;
+}
+
+int
+db_delete_code(int node_no, const char *app)
+{
+	char *key;
+	int fd;
+	int ret;
+
+	key = make_code_key(node_no, app);
+	if (!key) return -1;
+
+	fd = lock_code_db(1);
+	ret = unlink(key);
 	unlock_code_db(fd);
 	if (ret != 0) return -2;
 	return 0;

@@ -12,6 +12,41 @@
 import os
 import fcntl
 import time
+import subprocess
+
+def run(*cmd):
+    """Run a command without running a shell"""
+    if len(cmd) == 1:
+        if isinstance(cmd[0], basestring):
+            return subprocess.call(cmd[0].split())
+        else:
+            return subprocess.call(cmd[0])
+    else:
+        return subprocess.call(cmd)
+
+def checkDaemon(pidfile):
+    if not os.path.exists(pidfile):
+        return False
+    pid = file(pidfile).read().rstrip("\n")
+    if not os.path.exists("/proc/%s" % pid):
+        return False
+    return True
+
+def waitBus(unix_name, timeout=5, wait=0.1, stream=True):
+    import socket
+    import time
+    if stream:
+        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    else:
+        sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+    while timeout > 0:
+        try:
+            sock.connect(unix_name)
+            return True
+        except:
+            timeout -= wait
+        time.sleep(wait)
+    return False
 
 
 class FileLock:

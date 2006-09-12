@@ -87,7 +87,7 @@ add_group(iks *tag, int level, struct acl_class *ac)
 	name = iks_find_attrib(tag, "name");
 	if (!name) return;
 	grp = getgrnam(name);
-	if (!name) {
+	if (!grp) {
 		log_error("Security policy group '%s' not available\n", name);
 		return;
 	}

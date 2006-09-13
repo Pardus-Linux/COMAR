@@ -504,6 +504,7 @@ def queryPanel(mon):
     "Size of device LFP (local flat panel) is",
     "Size of device LFP",
     "Size of device DFP",
+    "Virtual screen size determined to be ",
     "Detected LCD/plasma panel ("
     ]
     a = capture("/usr/bin/X -probeonly -allowMouseOpenFail -logfile /var/log/xlog")

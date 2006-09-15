@@ -18,17 +18,23 @@
             <comment>Members can access audio devices, and play music.</comment>
             <comment xml:lang="tr">Ses cihazlarına erişebilir ve müzik çalabilirler.</comment>
         </group>
-        <group name="games">
-            <purpose>Plays games</purpose>
-            <purpose xml:lang="tr">Oyun oynayabilir</purpose>
-            <comment>Members can play games, and access shared high score tables.</comment>
-            <comment xml:lang="tr">Oyunları çalıştırabilir ve ortak skor tablolarına erişebilirler.</comment>
+        <group name="disk">
+            <purpose>Fixed storage units</purpose>
+            <purpose xml:lang="tr">Sabit depolama birimleri</purpose>
+            <comment>Members can access fixed storage units like hard disks.</comment>
+            <comment xml:lang="tr">Sabit disk gibi sabit depolama birimlerine erişebilirler.</comment>
         </group>
-        <group name="plugdev">
-            <purpose>Media and disc access</purpose>
-            <purpose xml:lang="tr">Medya ve disk erişimi</purpose>
-            <comment>Members can mount discs and removable media (CD, DVD, etc).</comment>
-            <comment xml:lang="tr">Diskleri ve çıkarılabilir medyaları (CD, DVD, vb) bağlayıp kullanabilirler.</comment>
+        <group name="removable">
+            <purpose>Removable storage units</purpose>
+            <purpose xml:lang="tr">Çıkarılabilir depolama birimleri</purpose>
+            <comment>Members can mount removable media (CD, DVD, USB disk, etc).</comment>
+            <comment xml:lang="tr">Çıkarılabilir medyaları (CD, DVD, USB disk, vb) bağlayıp kullanabilirler.</comment>
+        </group>
+        <group name="pnp">
+            <purpose>Peripheral devices</purpose>
+            <purpose xml:lang="tr">Çevre birimleri</purpose>
+            <comment>Members can use peripheral devices (printer, scanner, camera, etc).</comment>
+            <comment xml:lang="tr">Çevre birimlerini (yazıcı, tarayıcı, kamera, vb) kullanabilirler.</comment>
         </group>
     </groups>
 </comarSecurityComments>

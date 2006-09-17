@@ -36,5 +36,17 @@
             <comment>Members can use peripheral devices (printer, scanner, camera, etc).</comment>
             <comment xml:lang="tr">Çevre birimlerini (yazıcı, tarayıcı, kamera, vb) kullanabilirler.</comment>
         </group>
+        <group name="power">
+            <purpose>Power control</purpose>
+            <purpose xml:lang="tr">Güç yönetimi</purpose>
+            <comment>Members can shutdown, reboot and suspend the computer.</comment>
+            <comment xml:lang="tr">Bilgisayarı kapatabilir, yeniden başlatabilir ve askıya alabilirler.</comment>
+        </group>
+        <group name="dialout">
+            <purpose>Modem and Fax devices</purpose>
+            <purpose xml:lang="tr">Modem ve Faks aygıtları</purpose>
+            <comment>Members can use modem and fax devices to communicate over the phone lines.</comment>
+            <comment xml:lang="tr">Modem ve faks aygıtlarıyla telefon hatları üzerinden iletişim kurabilirler.</comment>
+        </group>
     </groups>
 </comarSecurityComments>

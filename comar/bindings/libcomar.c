@@ -121,8 +121,8 @@ comar_send_arg(comar_t *com, const char *str, size_t size)
 	if (0 == size) size = strlen(str);
 
 	need = com->size + 2 + size + 1;
-	if (com->max < need) {
-		while (com->max < need) com->max *= 2;
+	if (com->max < need + 8) {
+		while (com->max < need + 8) com->max *= 2;
 		com->buffer = realloc(com->buffer, com->max);
 		if (!com->buffer) return 0;
 	}

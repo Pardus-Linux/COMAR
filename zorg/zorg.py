@@ -15,9 +15,10 @@ import os
 import popen2
 import string
 
+xorg_conf = "/etc/X11/xorg.conf"
 xdriverlist = "/usr/lib/X11/xdriverlist"
 MonitorsDB = "/usr/lib/X11/MonitorsDB"
-xorg_conf = "/etc/X11/xorg.conf"
+driver_path = "/usr/lib/xorg/modules/drivers"
 
 ### templates ###
 template_videocard = """
@@ -435,9 +436,9 @@ class Monitor:
         self.eisaid = ""
         self.depth = "16"
 
-def listAvailableDrivers(driver_path = '/usr/lib/modules/drivers'):
+def listAvailableDrivers(d = driver_path):
     a = []
-    for drv in os.listdir(driver_path):
+    for drv in os.listdir(d):
         if drv.endswith("_drv.so"):
             if drv[:-7] not in a:
                 a.append(drv[:-7])

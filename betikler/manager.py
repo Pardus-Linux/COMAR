@@ -29,9 +29,9 @@ class UI(pisi.ui.UI):
 
     def notify(self, event, **keywords):
         if event == pisi.ui.downloading:
-            data = "downloading"
+            data = ",".join(["downloading", keywords["name"]])
         elif event == pisi.ui.installing:
-            data = "installing"
+            data = ",".join(["installing", keywords["name"]])
         elif event == pisi.ui.configuring:
             data = "configuring"
         elif event == pisi.ui.extracting:

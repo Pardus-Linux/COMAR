@@ -37,7 +37,7 @@ class UI(pisi.ui.UI):
         elif event == pisi.ui.extracting:
             data = "extracting"
         elif event == pisi.ui.removing:
-            data = "removing"
+            data = ",".join(["removing", keywords["name"]])
         elif event == pisi.ui.installed:
             data = "installed"
         elif event == pisi.ui.removed:

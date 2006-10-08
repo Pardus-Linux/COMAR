@@ -18,7 +18,8 @@ import string
 xorg_conf = "/etc/X11/xorg.conf"
 xdriverlist = "/usr/lib/X11/xdriverlist"
 MonitorsDB = "/usr/lib/X11/MonitorsDB"
-driver_path = "/usr/lib/xorg/modules/drivers"
+# driver_path = "/usr/lib/xorg/modules/drivers"
+driver_path = "/usr/lib/modules/drivers"
 
 ### templates ###
 template_videocard = """
@@ -247,6 +248,16 @@ def lremove(str, pre):
         return str[len(pre):]
     return str
 
+def loadFile(_file):
+    try:
+        f = file(_file)
+        d = [a.lstrip() for a in f]
+        d = filter(lambda x: not (x.startswith("#") or x == ""), d)
+        f.close()
+        return d
+    except:
+        return None
+
 ### modeline calc ###
 
 def GetInt(name, dict, default=0):
@@ -446,18 +457,14 @@ def listAvailableDrivers(d = driver_path):
 
 def queryDriver(vendor, device):
     available_drivers = listAvailableDrivers()
-    try:
-        f = file(xdriverlist)
-    except:
-        print "%s not found" % xdriverlist
-        return None
-    else:
+    f = loadFile(xdriverlist)
+    if f is not None:
         for line in f:
             if line.startswith(vendor + device):
                 drv = line.rstrip("\n").split(" ")[1]
                 return drv
-
-    return None
+    else:
+        return None
 
 def queryPCI(vendor, device):
     f = file("/usr/share/misc/pci.ids")
@@ -562,15 +569,14 @@ def queryDDC():
             mon.vref_max = atoi(line[line.find("vfreq=") + 6:])
 
     if eisaid:
-        f = file(MonitorsDB)
+        f = loadFile(MonitorsDB)
         for line in f:
-            if not line.startswith("#"):
-                l = line.split(";")
-                if eisaid == string.upper(l[2]).strip():
-                    mon.vendorname = l[0].lstrip()
-                    mon.modelname = l[1].lstrip()
-                    mon.hsync_min, mon.hsync_max = l[3].strip().split("-")
-                    mon.vref_min, mon.vref_max = l[4].strip().split("-")
+            l = line.split(";")
+            if eisaid == string.upper(l[2]).strip():
+                mon.vendorname = l[0].lstrip()
+                mon.modelname = l[1].lstrip()
+                mon.hsync_min, mon.hsync_max = l[3].strip().split("-")
+                mon.vref_min, mon.vref_max = l[4].strip().split("-")
 
     for m in mon.modelines:
         t = m[m.find("ModeLine"):].split()[1]

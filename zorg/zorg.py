@@ -447,6 +447,48 @@ class Monitor:
         self.eisaid = ""
         self.depth = "16"
 
+class intelFix:
+    def __init__(self):
+        self.biosmodes = {}
+        self.cfgmodes = {}
+
+    def readconfig(self):
+        dict = {}
+        f = loadFile("/etc/conf.d/915resolution")
+        for line in f:
+            if "=" in line:
+                k, v = line.split("=", 1)
+                k = k.strip()
+                v = v.strip()
+                if v.startswith('"') or v.startswith("'"):
+                    v = v[1:-1]
+                dict[k] = v
+
+        return dict
+
+    def getbiosmodes(self):
+        dict = {}
+        f = capture("/usr/sbin/915resolution -l")[1]
+        for line in f:
+            if line.startswith("Mode") and not line.startswith("Mode Table"):
+                g1, m, g2, res, depth, g3 = line.split(" ", 5)
+                dict[m] = "%s%s" % (res.replace("x", " ").replace(",", " "), depth)
+
+        return dict
+
+    def listbiosmodes(self):
+        self.biosmodes = self.getbiosmodes()
+        for k in self.biosmodes:
+            print "%s -> %s" % (k, self.biosmodes[k])
+
+
+    def replacemodes(self):
+        self.cfgmodes = self.readconfig()
+        for k in self.cfgmodes:
+            # capture("/usr/sbin/915resolution %s %s" % (k, self.cfgmodes[k]))
+            print "%s -> %s" % (k, self.cfgmodes[k])
+
+
 def xisrunning():
     if os.path.exists("/tmp/.X0-lock"):
         return True

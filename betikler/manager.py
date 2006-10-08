@@ -68,9 +68,9 @@ def _init_pisi():
     except pisi.lockeddbshelve.Error, e:
         notify("System.Manager.error","%s" % str(e))
 
-def finished():
+def finished(operation=""):
     pisi.api.finalize()
-    notify("System.Manager.finished","")
+    notify("System.Manager.finished", operation)
 
 def installPackage(package=None):
     _init_pisi()
@@ -80,7 +80,7 @@ def installPackage(package=None):
             pisi.api.install(package)
         except Exception,e:
             fail(unicode(e))
-    finished()
+    finished("System.Manager.installPackage")
 
 def updatePackage(package=None):
     _init_pisi()
@@ -90,7 +90,7 @@ def updatePackage(package=None):
             pisi.api.upgrade(package)
         except Exception,e:
             fail(unicode(e))
-    finished()
+    finished("System.Manager.updatePackage")
 
 def removePackage(package=None):
     _init_pisi()
@@ -100,7 +100,7 @@ def removePackage(package=None):
             pisi.api.remove(package)
 	except Exception, e:
 	    fail(unicode(e))
-    finished()
+    finished("System.Manager.removePackage")
 
 def updateRepository(repo=None):
     _init_pisi()
@@ -110,7 +110,7 @@ def updateRepository(repo=None):
 	    pisi.api.update_repo(repo)
 	except Exception, e:
 	    fail(unicode(e))
-    finished()
+    finished("System.Manager.updateRepository")
 
 def updateAllRepositories():
     _init_pisi()
@@ -120,7 +120,7 @@ def updateAllRepositories():
 	    pisi.api.update_repo(repo)
 	except Exception, e:
 	    fail(unicode(e))
-    finished()
+    finished("System.Manager.updateAllRepositories")
 
 def addRepository(name=None,uri=None):
     _init_pisi()
@@ -129,7 +129,7 @@ def addRepository(name=None,uri=None):
 	    pisi.api.add_repo(name,uri)
 	except Exception, e:
 	    fail(unicode(e))
-    finished()
+    finished("System.Manager.addRepository")
 
 def removeRepository(repo=None):
     _init_pisi()
@@ -138,7 +138,7 @@ def removeRepository(repo=None):
 	    pisi.api.remove_repo(repo)
 	except Exception, e:
 	    fail(unicode(e))
-    finished()
+    finished("System.Manager.removeRepository")
 
 def installCritical():
     return "NotImplemented"
@@ -176,5 +176,5 @@ def setRepositories(repos=None):
             pisi.api.add_repo(repoList[index],repoList[index+1])
             index = index + 2
 
-    finished()
+    finished("System.Manager.setRepositories")
 

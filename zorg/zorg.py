@@ -449,10 +449,11 @@ class Monitor:
 
 def listAvailableDrivers(d = driver_path):
     a = []
-    for drv in os.listdir(d):
-        if drv.endswith("_drv.so"):
-            if drv[:-7] not in a:
-                a.append(drv[:-7])
+    if os.path.exists(d):
+        for drv in os.listdir(d):
+            if drv.endswith("_drv.so"):
+                if drv[:-7] not in a:
+                    a.append(drv[:-7])
     return a
 
 def queryDriver(vendor, device):

@@ -472,7 +472,7 @@ class intelFix:
         for line in f:
             if line.startswith("Mode") and not line.startswith("Mode Table"):
                 g1, m, g2, res, depth, g3 = line.split(" ", 5)
-                dict[m] = "%s%s" % (res.replace("x", " ").replace(",", " "), depth)
+                dict[m] = "%s %s" % (res.replace("x", " ")[:-1], depth)
 
         return dict
 

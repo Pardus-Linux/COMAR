@@ -452,7 +452,7 @@ class intelFix:
         self.biosmodes = {}
         self.cfgmodes = {}
 
-    def readconfig(self):
+    def _readconfig(self):
         dict = {}
         f = loadFile("/etc/conf.d/915resolution")
         for line in f:
@@ -466,7 +466,7 @@ class intelFix:
 
         return dict
 
-    def getbiosmodes(self):
+    def _getbiosmodes(self):
         dict = {}
         f = capture("/usr/sbin/915resolution -l")[1]
         for line in f:
@@ -477,13 +477,13 @@ class intelFix:
         return dict
 
     def listbiosmodes(self):
-        self.biosmodes = self.getbiosmodes()
+        self.biosmodes = self._getbiosmodes()
         for k in self.biosmodes:
             print "%s -> %s" % (k, self.biosmodes[k])
 
 
     def replacemodes(self):
-        self.cfgmodes = self.readconfig()
+        self.cfgmodes = self._readconfig()
         for k in self.cfgmodes:
             # capture("/usr/sbin/915resolution %s %s" % (k, self.cfgmodes[k]))
             print "%s -> %s" % (k, self.cfgmodes[k])

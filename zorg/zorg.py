@@ -447,6 +447,12 @@ class Monitor:
         self.eisaid = ""
         self.depth = "16"
 
+def xisrunning():
+    if os.path.exists("/tmp/.X0-lock"):
+        return True
+    else:
+        return False
+
 def listAvailableDrivers(d = driver_path):
     a = []
     if os.path.exists(d):
@@ -505,32 +511,36 @@ def findPciCards():
     return cards
 
 def queryPanel(mon):
-    patterns = [
-    "Panel size is",
-    "Panel Size is",
-    "Panel Size from BIOS:",
-    "Detected panel size via",
-    "Size of device LFP (local flat panel) is",
-    "Size of device LFP",
-    "Size of device DFP",
-    "Virtual screen size determined to be ",
-    "Detected LCD/plasma panel ("
-    ]
-    a = capture("/usr/bin/X -probeonly -allowMouseOpenFail -logfile /var/log/xlog")
-    if a[0] != 0:
-        print "X -probeonly failed!"
-        return
-    f = file("/var/log/xlog")
-    for line in f.readlines():
-        for p in patterns:
-            if p in line:
-                b = line[line.find(p)+len(p):]
-                mon.panel_w = atoi(b)
-                b = b[b.find("x")+1:]
-                mon.panel_h = atoi(b)
-                break
-    f.close()
-    return None
+    if xisrunning() == True:
+        print "X is running, we are not querying panel"
+        return None
+    else:
+        patterns = [
+        "Panel size is",
+        "Panel Size is",
+        "Panel Size from BIOS:",
+        "Detected panel size via",
+        "Size of device LFP (local flat panel) is",
+        "Size of device LFP",
+        "Size of device DFP",
+        "Virtual screen size determined to be ",
+        "Detected LCD/plasma panel ("
+        ]
+        a = capture("/usr/bin/X -probeonly -allowMouseOpenFail -logfile /var/log/xlog")
+        if a[0] != 0:
+            print "X -probeonly failed!"
+            return
+        f = file("/var/log/xlog")
+        for line in f.readlines():
+            for p in patterns:
+                if p in line:
+                    b = line[line.find(p)+len(p):]
+                    mon.panel_w = atoi(b)
+                    b = b[b.find("x")+1:]
+                    mon.panel_h = atoi(b)
+                    break
+        f.close()
+        return None
 
 def queryDDC():
     mon = Monitor()

@@ -251,7 +251,7 @@ def lremove(str, pre):
 def loadFile(_file):
     try:
         f = file(_file)
-        d = [a.lstrip() for a in f]
+        d = [a.lstrip().rstrip("\n") for a in f]
         d = filter(lambda x: not (x.startswith("#") or x == ""), d)
         f.close()
         return d

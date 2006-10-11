@@ -36,6 +36,8 @@ class UI(pisi.ui.UI):
             data = "configuring"
         elif event == pisi.ui.extracting:
             data = "extracting"
+        elif event == pisi.ui.updatingrepo:
+            data = ",".join(["updatingrepo", keywords["name"]])
         elif event == pisi.ui.removing:
             data = ",".join(["removing", keywords["name"]])
         elif event == pisi.ui.installed:
@@ -46,6 +48,8 @@ class UI(pisi.ui.UI):
             data = "upgraded"
         elif event == pisi.ui.packagestogo:
             data = ",".join(keywords["order"])
+        elif event == pisi.ui.progressed:
+            data = ",".join(["progressed", keywords["info"], str(keywords["percent"])])
         else:
             return
 

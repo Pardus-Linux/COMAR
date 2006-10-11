@@ -33,9 +33,9 @@ class UI(pisi.ui.UI):
         elif event == pisi.ui.installing:
             data = ",".join(["installing", keywords["name"]])
         elif event == pisi.ui.configuring:
-            data = "configuring"
+            data = ",".join(["configuring", keywords["name"]])
         elif event == pisi.ui.extracting:
-            data = "extracting"
+            data = ",".join(["extracting", keywords["name"]])
         elif event == pisi.ui.updatingrepo:
             data = ",".join(["updatingrepo", keywords["name"]])
         elif event == pisi.ui.removing:

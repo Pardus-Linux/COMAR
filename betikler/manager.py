@@ -49,7 +49,7 @@ class UI(pisi.ui.UI):
         elif event == pisi.ui.packagestogo:
             data = ",".join(keywords["order"])
         elif event == pisi.ui.progressed:
-            data = ",".join(["progressed", keywords["info"], str(keywords["percent"])])
+            data = ",".join(["progressed", keywords["operation"], keywords["info"], str(keywords["percent"])])
         else:
             return
 

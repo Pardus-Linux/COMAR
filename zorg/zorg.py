@@ -65,11 +65,10 @@ Section "InputDevice"
     Identifier "Mouse1"
     Driver     "synaptics"
     Option     "Protocol" "auto-dev"
-    Option     "Device" "/dev/input/mouse1"
     Option     "SHMConfig" "true"
     Option     "MinSpeed" "0.50"
     Option     "MaxSpeed" "1.00"
-    # "Option    "AccelFactor" "0.04"
+    # Option    "AccelFactor" "0.04"
 EndSection
 """
 

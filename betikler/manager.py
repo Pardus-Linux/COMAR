@@ -48,8 +48,6 @@ class UI(pisi.ui.UI):
             data = "upgraded"
         elif event == pisi.ui.packagestogo:
             data = ",".join(keywords["order"])
-        elif event == pisi.ui.progressed:
-            data = ",".join(["progressed", keywords["operation"], keywords["info"], str(keywords["percent"])])
         else:
             return
 
@@ -61,8 +59,12 @@ class UI(pisi.ui.UI):
     def confirm(self, msg):
         return True
 
-    def display_progress(self, **pd):
-        out = "%s,%d,%d,%s,%d,%d" % (pd["filename"],pd['percent'],pd["rate"],pd["symbol"],pd["downloaded_size"],pd["total_size"])
+    def display_progress(self, operation, percent, info="", **kw):
+        if operation == "fetching":
+            out = "%s,%s,%d,%d,%s,%d,%d" % (operation, kw["filename"],percent,kw["rate"],kw["symbol"],
+                                            kw["downloaded_size"],kw["total_size"])
+        else:
+            out = "%s,%d,%s" % (operation, percent, info)
         notify("System.Manager.progress", out)
 
 def _init_pisi():

@@ -28,18 +28,16 @@ class UI(pisi.ui.UI):
         notify("System.Manager.warning","%s" % msg)
 
     def notify(self, event, **keywords):
-        if event == pisi.ui.downloading:
-            data = ",".join(["downloading", keywords["name"]])
-        elif event == pisi.ui.installing:
-            data = ",".join(["installing", keywords["name"]])
+        if event == pisi.ui.installing:
+            data = ",".join(["installing", keywords["package"].name])
         elif event == pisi.ui.configuring:
-            data = ",".join(["configuring", keywords["name"]])
+            data = ",".join(["configuring", keywords["package"].name])
         elif event == pisi.ui.extracting:
-            data = ",".join(["extracting", keywords["name"]])
+            data = ",".join(["extracting", keywords["package"].name])
         elif event == pisi.ui.updatingrepo:
             data = ",".join(["updatingrepo", keywords["name"]])
         elif event == pisi.ui.removing:
-            data = ",".join(["removing", keywords["name"]])
+            data = ",".join(["removing", keywords["package"].name])
         elif event == pisi.ui.installed:
             data = "installed"
         elif event == pisi.ui.removed:

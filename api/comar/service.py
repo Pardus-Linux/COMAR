@@ -84,11 +84,7 @@ def ready():
         start()
 
 def setState(state=None):
-    if state == "on":
-        from csl import start
-        start()
-    elif state == "off":
-        from csl import stop
-        stop()
-    else:
+    if state != "on" or state != "off":
         fail("Unknown state '%s'" % state)
+    notify("System.Service.changed", state)
+

@@ -74,8 +74,8 @@ class FileLock:
                     time.sleep(0.2)
                     timeout -= 0.2
                 else:
-                    os.close(self.fd)
                     raise
     
     def unlock(self):
-        os.close(self.fd)
+        fcntl.flock(self.fd, LOCK_UN)
+

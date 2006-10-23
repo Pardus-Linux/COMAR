@@ -11,8 +11,6 @@
 # Please read the COPYING file.
 #
 
-import sys
-import signal
 import string
 
 import pisi.api
@@ -21,8 +19,6 @@ import pisi.packagedb
 import pisi.lockeddbshelve
 import pisi.ui
 import pisi.context
-
-CANCELED = 100
 
 class UI(pisi.ui.UI):
     def error(self, msg):
@@ -70,13 +66,16 @@ class UI(pisi.ui.UI):
         notify("System.Manager.progress", out)
 
 def _init_pisi():
-    signal.signal(signal.SIGINT, sig_handler)
     ui = UI()
     try:
         pisi.api.init(ui=ui)
     except pisi.lockeddbshelve.Error, e:
         notify("System.Manager.error","%s" % str(e))
 
+def cancelled():
+    pisi.api.finalize()
+    fail("System.Manager.cancelled")
+    
 def finished(operation=""):
     pisi.api.finalize()
     notify("System.Manager.finished", operation)
@@ -87,6 +86,8 @@ def installPackage(package=None):
         try:
             package = package.split(",")
             pisi.api.install(package)
+        except KeyboardInterrupt:
+            cancelled()
         except Exception,e:
             fail(unicode(e))
     finished("System.Manager.installPackage")
@@ -97,6 +98,8 @@ def updatePackage(package=None):
         try:
             package = package.split(",")
             pisi.api.upgrade(package)
+        except KeyboardInterrupt:
+            cancelled()
         except Exception,e:
             fail(unicode(e))
     finished("System.Manager.updatePackage")
@@ -107,6 +110,8 @@ def removePackage(package=None):
 	try:
             package = package.split(",")
             pisi.api.remove(package)
+        except KeyboardInterrupt:
+            cancelled()
 	except Exception, e:
 	    fail(unicode(e))
     finished("System.Manager.removePackage")
@@ -117,6 +122,8 @@ def updateRepository(repo=None):
 	try:
             notify("System.Manager.updatingRepo","%s" % repo)
 	    pisi.api.update_repo(repo)
+        except KeyboardInterrupt:
+            cancelled()
 	except Exception, e:
 	    fail(unicode(e))
     finished("System.Manager.updateRepository")
@@ -127,6 +134,8 @@ def updateAllRepositories():
 	try:
             notify("System.Manager.updatingRepo","%s" % repo)
 	    pisi.api.update_repo(repo)
+        except KeyboardInterrupt:
+            cancelled()
 	except Exception, e:
 	    fail(unicode(e))
     finished("System.Manager.updateAllRepositories")
@@ -136,6 +145,8 @@ def addRepository(name=None,uri=None):
     if name and uri:
 	try:
 	    pisi.api.add_repo(name,uri)
+        except KeyboardInterrupt:
+            cancelled()
 	except Exception, e:
 	    fail(unicode(e))
     finished("System.Manager.addRepository")
@@ -145,6 +156,8 @@ def removeRepository(repo=None):
     if repo:
 	try:
 	    pisi.api.remove_repo(repo)
+        except KeyboardInterrupt:
+            cancelled()
 	except Exception, e:
 	    fail(unicode(e))
     finished("System.Manager.removeRepository")
@@ -186,7 +199,3 @@ def setRepositories(repos=None):
             index = index + 2
 
     finished("System.Manager.setRepositories")
-
-def sig_handler(sig, frame):
-    pisi.api.finalize()
-    sys.exit(CANCELED)

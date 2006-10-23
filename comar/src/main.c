@@ -121,6 +121,10 @@ main(int argc, char *argv[])
 					proc_get(p, &ipc, pak, size);
 					job_start(cmd, &ipc, pak);
 					break;
+				case CMD_CANCEL:
+					proc_get(p, &ipc, pak, size);
+					job_cancel(&ipc.source);
+					break;
 				case CMD_NOTIFY:
 				case CMD_RESULT:
 				case CMD_RESULT_START:

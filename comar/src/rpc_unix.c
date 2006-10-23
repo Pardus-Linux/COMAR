@@ -43,7 +43,8 @@ enum {
 	RPC_ASKNOTIFY,
 	RPC_GETLIST,
 	RPC_CHECKACL,
-	RPC_DUMP_PROFILE
+	RPC_DUMP_PROFILE,
+	RPC_CANCEL
 };
 
 #define RPC_SHUTDOWN 42
@@ -379,6 +380,11 @@ parse_rpc(struct connection *c)
 				pack_put(rpc_pak, t, sz);
 			}
 			proc_put(TO_PARENT, CMD_CALL_PACKAGE, &ipc, rpc_pak);
+			return 0;
+
+		case RPC_CANCEL:
+			// no parameter
+			proc_put(TO_PARENT, CMD_CANCEL, &ipc, NULL);
 			return 0;
 
 		case RPC_GETLIST:

@@ -14,6 +14,7 @@
 #include "utility.h"
 
 int job_start(int cmd, struct ipc_struct *ipc, struct pack *pak);
+void job_cancel(struct ipc_source *source);
 
 
 #endif /* JOB_H */

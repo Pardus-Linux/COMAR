@@ -12,11 +12,20 @@
 
 #include "utility.h"
 
+struct ipc_source {
+	void *chan;
+	unsigned int cookie;
+	int id;
+	unsigned char lang[4];
+};
+
 struct ProcChild {
 	int from;
 	int to;
 	pid_t pid;
 	const char *desc;
+	// keep track of command source, used by job_cancel
+	struct ipc_source source;
 };
 
 struct Proc {
@@ -27,13 +36,6 @@ struct Proc {
 	int nr_children;
 	int max_children;
 	struct ProcChild *children;
-};
-
-struct ipc_source {
-	void *chan;
-	unsigned int cookie;
-	int id;
-	unsigned char lang[4];
 };
 
 struct ipc_struct {
@@ -60,6 +62,7 @@ enum {
 	CMD_REMOVE,
 	CMD_CALL,
 	CMD_CALL_PACKAGE,
+	CMD_CANCEL,
 	CMD_GETLIST,
 	CMD_NOTIFY,
 	CMD_DUMP_PROFILE,

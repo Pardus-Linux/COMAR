@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 
 #include "csl.h"
 #include "process.h"
@@ -386,7 +387,24 @@ job_start(int cmd, struct ipc_struct *ipc, struct pack *pak)
 
 	p = proc_fork(job_proc, "ComarJob");
 	if (!p) return -1;
+	p->source = ipc->source;
 
 	if (proc_put(p, cmd, ipc, pak)) return -1;
 	return 0;
+}
+
+void
+job_cancel(struct ipc_source *source)
+{
+	struct ProcChild *child;
+	int i;
+
+	for (i = 0; i < my_proc.nr_children; i++) {
+		child = &my_proc.children[i];
+		if (child->source.chan == source->chan
+		    && child->source.cookie == source->cookie
+		    && child->source.id == source->id) {
+			kill(child->pid, SIGINT);
+		}
+	}
 }

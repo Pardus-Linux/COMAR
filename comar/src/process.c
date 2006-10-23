@@ -46,7 +46,6 @@ handle_signals(void)
 	ign.sa_flags = 0;
 
 	sigaction(SIGTERM, &act, NULL);
-	sigaction(SIGINT, &act, NULL);
 	sigaction(SIGPIPE, &ign, NULL);
 }
 

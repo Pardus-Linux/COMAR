@@ -12,6 +12,7 @@
 #
 
 import string
+import signal
 
 import pisi.api
 import pisi.installdb
@@ -73,6 +74,7 @@ def _init_pisi():
         notify("System.Manager.error","%s" % str(e))
 
 def cancelled():
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
     pisi.api.finalize()
     fail("System.Manager.cancelled")
     

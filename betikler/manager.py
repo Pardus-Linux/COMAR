@@ -11,6 +11,8 @@
 # Please read the COPYING file.
 #
 
+import sys
+import signal
 import string
 
 import pisi.api
@@ -19,6 +21,8 @@ import pisi.packagedb
 import pisi.lockeddbshelve
 import pisi.ui
 import pisi.context
+
+CANCELED = 100
 
 class UI(pisi.ui.UI):
     def error(self, msg):
@@ -66,6 +70,7 @@ class UI(pisi.ui.UI):
         notify("System.Manager.progress", out)
 
 def _init_pisi():
+    signal.signal(signal.SIGINT, sig_handler)
     ui = UI()
     try:
         pisi.api.init(ui=ui)
@@ -182,3 +187,6 @@ def setRepositories(repos=None):
 
     finished("System.Manager.setRepositories")
 
+def sig_handler(sig, frame):
+    pisi.api.finalize()
+    sys.exit(CANCELED)

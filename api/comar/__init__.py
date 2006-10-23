@@ -45,6 +45,8 @@ class Link:
     __ASKNOTIFY = 13
     __GETLIST = 14
     __CHECKACL = 15
+    __DUMPPROFILE = 16
+    __CANCEL = 17
     
     def __init__(self, sockname="/var/run/comar.socket"):
         try:
@@ -187,6 +189,12 @@ class Link:
             else:
                 a.extend(args)
         pak = self.__pack(self.__CALL_PACKAGE, id, a)
+        self.sock.send(pak)
+    
+    def cancel(self, id=0):
+        """Cancel previously started operations.
+        """
+        pak = self.__pack(self.__CANCEL, id, [])
         self.sock.send(pak)
     
     def get_packages(self, classname, id=0):

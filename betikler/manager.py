@@ -88,6 +88,7 @@ def installPackage(package=None):
         try:
             package = package.split(",")
             pisi.api.install(package)
+            finished("System.Manager.installPackage")
         except KeyboardInterrupt:
             cancelled()
         except Exception,e:
@@ -100,6 +101,7 @@ def updatePackage(package=None):
         try:
             package = package.split(",")
             pisi.api.upgrade(package)
+            finished("System.Manager.updatePackage")
         except KeyboardInterrupt:
             cancelled()
         except Exception,e:
@@ -112,6 +114,7 @@ def removePackage(package=None):
 	try:
             package = package.split(",")
             pisi.api.remove(package)
+            finished("System.Manager.removePackage")
         except KeyboardInterrupt:
             cancelled()
 	except Exception, e:
@@ -123,7 +126,8 @@ def updateRepository(repo=None):
     if repo:
 	try:
             notify("System.Manager.updatingRepo","%s" % repo)
-	    pisi.api.update_repo(repo)
+            pisi.api.update_repo(repo)
+            finished("System.Manager.updateRepository")
         except KeyboardInterrupt:
             cancelled()
 	except Exception, e:
@@ -135,7 +139,8 @@ def updateAllRepositories():
     for repo in pisi.context.repodb.list():
 	try:
             notify("System.Manager.updatingRepo","%s" % repo)
-	    pisi.api.update_repo(repo)
+            pisi.api.update_repo(repo)
+            finished("System.Manager.updateAllRepositories")
         except KeyboardInterrupt:
             cancelled()
 	except Exception, e:
@@ -145,11 +150,12 @@ def updateAllRepositories():
 def addRepository(name=None,uri=None):
     _init_pisi()
     if name and uri:
-	try:
-	    pisi.api.add_repo(name,uri)
+        try:
+            pisi.api.add_repo(name,uri)
+            finished("System.Manager.addRepository")
         except KeyboardInterrupt:
             cancelled()
-	except Exception, e:
+        except Exception, e:
 	    fail(unicode(e))
     finished("System.Manager.addRepository")
 
@@ -157,7 +163,8 @@ def removeRepository(repo=None):
     _init_pisi()
     if repo:
 	try:
-	    pisi.api.remove_repo(repo)
+            pisi.api.remove_repo(repo)
+            finished("System.Manager.removeRepository")
         except KeyboardInterrupt:
             cancelled()
 	except Exception, e:

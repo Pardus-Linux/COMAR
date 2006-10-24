@@ -79,6 +79,7 @@ def cancelled():
     fail("System.Manager.cancelled")
     
 def finished(operation=""):
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
     pisi.api.finalize()
     notify("System.Manager.finished", operation)
 

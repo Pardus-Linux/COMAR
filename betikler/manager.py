@@ -13,6 +13,8 @@
 
 import string
 
+notify("System.Manager.notify","started")
+
 try:
     import pisi.api
     import pisi.installdb

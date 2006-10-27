@@ -84,7 +84,7 @@ def ready():
         start()
 
 def setState(state=None):
-    if state != "on" or state != "off":
+    if state != "on" and state != "off":
         fail("Unknown state '%s'" % state)
     notify("System.Service.changed", state)
 

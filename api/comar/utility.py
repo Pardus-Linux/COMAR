@@ -77,5 +77,5 @@ class FileLock:
                     raise
     
     def unlock(self):
-        fcntl.flock(self.fd, LOCK_UN)
+        fcntl.flock(self.fd, fcntl.LOCK_UN)
 

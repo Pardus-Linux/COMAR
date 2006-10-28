@@ -3,50 +3,66 @@
         <group name="wheel">
             <purpose>Administrator</purpose>
             <purpose xml:lang="tr">Sistem yöneticisi</purpose>
+            <purpose xml:lang="nl">Administrator</purpose>
             <comment>Members can access Çomar administration functions, and can use su and sudo commands.</comment>
             <comment xml:lang="tr">Çomar yönetim işlevlerine erişebilir, su ve sudo komutlarını kullanabilirler.</comment>
+            <comment xml:lang="nl">Toegang tot de Comar administator functies en de su en sodo commandos gebruiken.</comment>
         </group>
         <group name="users">
             <purpose>Normal user</purpose>
             <purpose xml:lang="tr">Normal kullanıcı</purpose>
+            <purpose xml:lang="nl">Normale gebruiker</purpose>
             <comment>Members can access Çomar user functions.</comment>
             <comment xml:lang="tr">Çomar kullanıcı işlevlerine ulaşabilirler.</comment>
+            <comment xml:lang="nl">Toegang tot Comar gebruikers functies.</comment>
         </group>
         <group name="audio">
             <purpose>Plays audio and music</purpose>
             <purpose xml:lang="tr">Ses ve müzik çalabilir</purpose>
+            <purpose xml:lang="nl">Speel audio en muziek</purpose>
             <comment>Members can access audio devices, and play music.</comment>
             <comment xml:lang="tr">Ses cihazlarına erişebilir ve müzik çalabilirler.</comment>
+            <comment xml:lang="nl">Toegang tot audio apparaten, en luister muziek.</comment>
         </group>
         <group name="disk">
             <purpose>Fixed storage units</purpose>
             <purpose xml:lang="tr">Sabit depolama birimleri</purpose>
+            <purpose xml:lang="nl">Vaste opslagmedia</purpose>
             <comment>Members can access fixed storage units like hard disks.</comment>
             <comment xml:lang="tr">Sabit disk gibi sabit depolama birimlerine erişebilirler.</comment>
+            <comment xml:lang="nl">Toegang tot vaste opslagmedia als de harde schijf.</comment>
         </group>
         <group name="removable">
             <purpose>Removable storage units</purpose>
             <purpose xml:lang="tr">Çıkarılabilir depolama birimleri</purpose>
+            <purpose xml:lang="nl">Verwijderbare opslagmedia</purpose>
             <comment>Members can mount removable media (CD, DVD, USB disk, etc).</comment>
             <comment xml:lang="tr">Çıkarılabilir medyaları (CD, DVD, USB disk, vb) bağlayıp kullanabilirler.</comment>
+            <comment xml:lang="nl">Mount verwijderbare media (CD, DVD, USB stick, etc).</comment>
         </group>
         <group name="pnp">
             <purpose>Peripheral devices</purpose>
             <purpose xml:lang="tr">Çevre birimleri</purpose>
+            <purpose xml:lang="nl">Randapparatuur</purpose>
             <comment>Members can use peripheral devices (printer, scanner, camera, etc).</comment>
             <comment xml:lang="tr">Çevre birimlerini (yazıcı, tarayıcı, kamera, vb) kullanabilirler.</comment>
+            <comment xml:lang="nl">Gebruik randapparatuur (printer, scanner, camera etc).</comment>
         </group>
         <group name="power">
             <purpose>Power control</purpose>
             <purpose xml:lang="tr">Güç yönetimi</purpose>
+            <purpose xml:lang="nl">Stroomverbruik</purpose>
             <comment>Members can shutdown, reboot and suspend the computer.</comment>
             <comment xml:lang="tr">Bilgisayarı kapatabilir, yeniden başlatabilir ve askıya alabilirler.</comment>
+            <comment xml:lang="nl">Aflsuiten, herstarten, en slaapstand van computer.</comment>
         </group>
         <group name="dialout">
             <purpose>Modem and Fax devices</purpose>
             <purpose xml:lang="tr">Modem ve Faks aygıtları</purpose>
+            <purpose xml:lang="nl">Modem en Fax apparatuur</purpose>
             <comment>Members can use modem and fax devices to communicate over the phone lines.</comment>
             <comment xml:lang="tr">Modem ve faks aygıtlarıyla telefon hatları üzerinden iletişim kurabilirler.</comment>
+            <comment xml:lang="nl">Gebruik modem en fax voor communicatie over de telefoonlijn.</comment>
         </group>
     </groups>
 </comarSecurityComments>

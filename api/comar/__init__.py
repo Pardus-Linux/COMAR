@@ -24,6 +24,40 @@ import struct
 class Error(Exception):
     pass
 
+
+class Reply:
+    cmdmap = {
+        0: "result",
+        1: "fail",
+        2: "none",
+        3: "denied",
+        4: "error",
+        5: "start",
+        6: "end",
+        7: "notify"
+    }
+    
+    def __init__(self, cmd, id, data, script="comar"):
+        self.cmd = cmd
+        self.command = self.cmdmap[cmd]
+        self.id = id
+        self.data = data
+        self.script = script
+    
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return (self.cmd, self.id, self.data, self.script)[key]
+        raise IndexError("Index should be an integer")
+    
+    def __str__(self):
+        return "%s (%s, %d) = [%s]" % (
+            self.command,
+            self.script,
+            self.id,
+            self.data
+        )
+
+
 class Link:
     """A class for communicating with comard."""
     
@@ -114,9 +148,9 @@ class Link:
             data = None
         if cmd == self.RESULT:
             t = data.split(' ', 1)
-            return (cmd, head[1], t[1], t[0])
+            return Reply(cmd, head[1], t[1], t[0])
         else:
-            return (cmd, head[1], data)
+            return Reply(cmd, head[1], data)
     
     def read_cmd(self):
         """Read a reply from comard.

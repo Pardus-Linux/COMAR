@@ -39,20 +39,33 @@ class Reply:
         7: "notify"
     }
     
-    def __init__(self, cmd, id, data, script="comar"):
-        self.cmd = cmd
+    def __init__(self, cmd, id, data):
+        # We keep a copy of data in old style parsed order for old clients
+        if cmd == 0:
+            tmp = data.split(" ", 1)
+            self._obsolete = (cmd, id, tmp[1], tmp[0])
+        else:
+            self._obsolete = (cmd, id, data)
+        
         self.command = self.cmdmap[cmd]
         self.id = id
-        self.old_data = data
         self.data = data
-        self.script = script
+        
+        # Sender script information is embedded in data for certain replies
+        self.script = "comar"
+        if self.command in ("result", "none", "fail", "error"):
+            if " " in data:
+                self.script, self.data = data.split(" ", 1)
+        
+        # Further parse notification message
         self.notify = None
         if self.command == "notify":
             self.notify, self.script, self.data = data.split("\n", 2)
     
     def __getitem__(self, key):
+        # Obsolete access method, use class methods for new clients
         if isinstance(key, int):
-            return (self.cmd, self.id, self.old_data, self.script)[key]
+            return self._obsolete[key]
         raise IndexError("Index should be an integer")
     
     def __str__(self):
@@ -159,11 +172,8 @@ class Link:
                 raise Error('Connection closed')
         else:
             data = None
-        if cmd == self.RESULT:
-            t = data.split(' ', 1)
-            return Reply(cmd, head[1], t[1], t[0])
-        else:
-            return Reply(cmd, head[1], data)
+        
+        return Reply(cmd, head[1], data)
     
     def read_cmd(self):
         """Read a reply from comard.

@@ -235,7 +235,7 @@ write_rpc(struct connection *c, unsigned int cmd, int id, const char *buffer, si
 	head[6] = (id >> 8) & 0xFF;
 	head[7] = id & 0xFF;
 
-	if (RPC_RESULT == cmd) {
+	if (RPC_RESULT == cmd || RPC_FAIL == cmd || RPC_NONE == cmd || RPC_ERROR == cmd) {
 		char *s;
 		size_t sz;
 

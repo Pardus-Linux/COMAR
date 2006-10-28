@@ -33,7 +33,7 @@ send_result(int cmd, const char *data, size_t size)
 	ipc.source = bk_channel;
 	p = pack_new(128);
 
-	if (CMD_RESULT == cmd) {
+	if (CMD_RESULT == cmd || CMD_ERROR == cmd || CMD_FAIL == cmd || CMD_NONE == cmd) {
 		if (bk_app)
 			pack_put(p, bk_app, strlen(bk_app));
 		else
@@ -278,7 +278,7 @@ do_call(int node, struct pack *pak)
 		send_result(CMD_RESULT_END, NULL, 0);
 	}
 
-    if ((model_flags(node) & P_GLOBAL) && ok) {
+	if ((model_flags(node) & P_GLOBAL) && ok) {
 		db_put_profile(node, NULL, p);
 		pack_delete(p);
 	}

@@ -8,12 +8,12 @@ capability of their peers.
 
 directories:
 
-ahenk:     Çomar distributed management system
+ahenk:     Çomar distributed management system draft
 api:       ComarAPI Python package for generic configuration operations
 belgeler:  Documentation
 betikler:  Work-in-progress scripts
 comar:     Çomar system service, core part of the Çomar framework
 mudur:     Pardus initialization and hardware detection subsystem
-smed:      Simple editor for Çomar model.xml files
+smed:      Simple editor for Çomar model.xml files (out-of-date, needs maintenance)
 zorg:      Pardus display configuration subsystem
 

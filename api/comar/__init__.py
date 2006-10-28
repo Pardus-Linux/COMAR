@@ -175,7 +175,7 @@ class Link:
                 break
         return self.read()
     
-    def localize(self, localename):
+    def localize(self, localename=None):
         """Set the language for translated replies.
         
         Since comard has no way to detect caller's locale, this command
@@ -185,6 +185,13 @@ class Link:
         
         You can get the localename parameter from locale.getlocale call.
         """
+        if not localename:
+            import locale
+            lang = locale.setlocale(locale.LC_MESSAGES)
+            if "_" in lang:
+                localename = lang.split("_", 1)[0]
+            else:
+                localename = "en"
         pak = self.__pack(self.__LOCALIZE, 0, [localename])
         self.sock.send(pak)
     

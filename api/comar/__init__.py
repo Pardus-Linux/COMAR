@@ -41,21 +41,32 @@ class Reply:
         self.cmd = cmd
         self.command = self.cmdmap[cmd]
         self.id = id
+        self.old_data = data
         self.data = data
         self.script = script
+        self.notify = None
+        if self.command == "notify":
+            self.notify, self.script, self.data = data.split("\n", 2)
     
     def __getitem__(self, key):
         if isinstance(key, int):
-            return (self.cmd, self.id, self.data, self.script)[key]
+            return (self.cmd, self.id, self.old_data, self.script)[key]
         raise IndexError("Index should be an integer")
     
     def __str__(self):
-        return "%s (%s, %d) = [%s]" % (
-            self.command,
-            self.script,
-            self.id,
-            self.data
-        )
+        if self.command == "notify":
+            return "notify (%s, %s) = [%s]" % (
+                self.script,
+                self.notify,
+                self.data
+            )
+        else:
+            return "%s (%s, %d) = [%s]" % (
+                self.command,
+                self.script,
+                self.id,
+                self.data
+            )
 
 
 class Link:

@@ -26,6 +26,8 @@ class Error(Exception):
 
 
 class Reply:
+    """Representation of comar daemon's message."""
+    
     cmdmap = {
         0: "result",
         1: "fail",
@@ -70,7 +72,7 @@ class Reply:
 
 
 class Link:
-    """A class for communicating with comard."""
+    """A class for communicating with comar daemon."""
     
     # rpc commands, keep in sync with rpc_unix.c
     RESULT = 0

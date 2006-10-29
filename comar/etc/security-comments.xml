@@ -38,7 +38,7 @@
             <purpose xml:lang="nl">Verwijderbare opslagmedia</purpose>
             <comment>Members can mount removable media (CD, DVD, USB disk, etc).</comment>
             <comment xml:lang="tr">Çıkarılabilir medyaları (CD, DVD, USB disk, vb) bağlayıp kullanabilirler.</comment>
-            <comment xml:lang="nl">Mount verwijderbare media (CD, DVD, USB stick, etc).</comment>
+            <comment xml:lang="nl">Koppel verwijderbare media aan (CD, DVD, USB stick, etc).</comment>
         </group>
         <group name="pnp">
             <purpose>Peripheral devices</purpose>

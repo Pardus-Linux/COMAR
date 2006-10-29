@@ -53,7 +53,12 @@ c_i18n(PyObject *self, PyObject *args)
 		return NULL;
 
 	ret = PyDict_GetItemString(dict, lang);
-	if (ret) Py_INCREF(ret);
+	if (!ret) ret = PyDict_GetItemString(dict, "en");
+	if (ret) {
+		Py_INCREF(ret);
+	} else {
+		log_error("Script '%s' used i18n without providing an English default\n", bk_app);
+	}
 	return ret;
 }
 

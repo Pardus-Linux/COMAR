@@ -836,6 +836,8 @@ def boot():
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
+        intelfix = intelFix()
+        intelfix.replacemodes()
         if not os.path.exists(xorg_conf):
             autoConfigure()
     else:

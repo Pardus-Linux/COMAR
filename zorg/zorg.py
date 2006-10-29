@@ -14,12 +14,12 @@
 import os
 import popen2
 import string
+import sys
 
 xorg_conf = "/etc/X11/xorg.conf"
 xdriverlist = "/usr/lib/X11/xdriverlist"
 MonitorsDB = "/usr/lib/X11/MonitorsDB"
-# driver_path = "/usr/lib/xorg/modules/drivers"
-driver_path = "/usr/lib/modules/drivers"
+driver_path = "/usr/lib/xorg/modules/drivers"
 
 ### templates ###
 template_videocard = """
@@ -225,15 +225,13 @@ def unlink(path):
     except:
         pass
 
-def capture(cmd):
-    out = []
-    a = popen2.Popen4(cmd)
-    while 1:
-        b = a.fromchild.readline()
-        if b == None or b == "":
-            break
-        out.append(b)
-    return (a.wait(), out)
+def capture(*cmd):
+    a = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return a.communicate()
+
+def run(*cmd):
+    f = file("/dev/null", "w")
+    return subprocess.call(cmd, stdout=f)
 
 def grepini(lines, sect, key):
     flag = 0
@@ -286,6 +284,7 @@ def loadFile(_file):
         return d
     except:
         return None
+
 
 ### modeline calc ###
 
@@ -491,13 +490,14 @@ class intelFix:
                 v = v.strip()
                 if v.startswith('"') or v.startswith("'"):
                     v = v[1:-1]
-                dict[k] = v
+                if " " in v:
+                    dict[k] = v
 
         return dict
 
     def _getbiosmodes(self):
         dict = {}
-        f = capture("/usr/sbin/915resolution -l")[1]
+        f = capture("/usr/sbin/915resolution", "-l")[0]
         for line in f:
             if line.startswith("Mode") and not line.startswith("Mode Table"):
                 g1, m, g2, res, depth, g3 = line.split(" ", 5)
@@ -510,13 +510,20 @@ class intelFix:
         for k in self.biosmodes:
             print "%s -> %s" % (k, self.biosmodes[k])
 
-
     def replacemodes(self):
         self.cfgmodes = self._readconfig()
         for k in self.cfgmodes:
-            # capture("/usr/sbin/915resolution %s %s" % (k, self.cfgmodes[k]))
-            print "%s -> %s" % (k, self.cfgmodes[k])
+            cmd = ["/usr/sbin/915resolution", k]
+            cmd.extend(self.cfgmodes[k].split())
+            run(cmd)
 
+
+def parseCmdline():
+    cmds = "".join(loadFile("/proc/cmdline"))
+    for opt in cmds.split():
+        if opt.startswith("xorg="):
+            return opt[5:]
+    return ""
 
 def xisrunning():
     if os.path.exists("/tmp/.X0-lock"):
@@ -597,8 +604,8 @@ def queryPanel(mon):
         "Virtual screen size determined to be ",
         "Detected LCD/plasma panel ("
         ]
-        a = capture("/usr/bin/X -probeonly -allowMouseOpenFail -logfile /var/log/xlog")
-        if a[0] != 0:
+        a = run("/usr/bin/X", "-probeonly", "-allowMouseOpenFail", "-logfile", "/var/log/xlog")
+        if a != 0:
             print "X -probeonly failed!"
             return
         f = file("/var/log/xlog")
@@ -617,11 +624,11 @@ def queryDDC():
     mon = Monitor()
     eisaid = ""
     ddc = capture("/usr/sbin/ddcxinfos")
-    if ddc[0] != 0:
+    if ddc[1] != '':
         print "ddcxinfos failed!"
         return mon
 
-    for line in ddc[1]:
+    for line in ddc[0]:
         t = line.find("truly")
         if t != -1:
             mon.wide = atoi(line[t+6:])
@@ -752,7 +759,7 @@ def keysMonitors(monitors):
 
         if monitors[i].panel_h and monitors[i].panel_w:
             keys_mon["MODELINES"] = calcModeLine(monitors[i].panel_w, monitors[i].panel_h, 60)
-            keys_mon["MODES"] = '"%dx%d" "800x600" "640x480" "1024x768"' % (monitors[i].panel_w, monitors[i].panel_h)
+            keys_mon["MODES"] = '"%dx%d" "800x600" "640x480"' % (monitors[i].panel_w, monitors[i].panel_h)
         else:
             keys_mon["MODELINES"] = "".join(monitors[i].modelines)
             keys_mon["MODES"] = monitors[i].res
@@ -768,17 +775,17 @@ def keysMonitors(monitors):
 
 # om call
 
-def autoConfigureDisplay():
+def autoConfigure():
     # detect graphic card and find monitor of first card, yet
     cards = findPciCards()
 
     # if could not find driver from driverlist try X -configure
     if not cards[0].Driver:
         print "Trying to probe with X"
-        a = capture("/usr/bin/X -configure -logfile /var/log/xlog")
-        if a[0] != 0:
+        a = run("/usr/bin/X", "-configure", "-logfile", "/var/log/xlog")
+        if a != 0:
             print "X -configure failed!"
-            return -1
+            sys.exit(1)
         home = os.getenv("HOME", "")
         f = file(home + "/xorg.conf.new")
         conf = f.readlines()
@@ -805,5 +812,33 @@ def autoConfigureDisplay():
     write_tmpl(template_main, keys_main, xorg_conf)
 
 # test
-autoConfigureDisplay()
+
+def boot():
+    cmd = parseCmdline()
+    if cmd == "off":
+        sys.exit(1)
+    elif cmd == "probe":
+        intelfix = intelFix()
+        intelfix.replacemodes()
+        unlink(xorg_conf)
+        autoConfigure()
+    elif cmd == "safe":
+        #FIXME: add safe modes
+        print "doing nothing for now"
+        # unlink(xorg_conf)
+        # write_safe_config
+    else:
+        intelfix = intelFix()
+        intelfix.replacemodes()
+        if not os.path.exists(xorg_conf):
+            autoConfigure()
+
+
+if __name__ == "__main__":
+    if len(sys.argv) == 1:
+        if not os.path.exists(xorg_conf):
+            autoConfigure()
+    else:
+        if sys.argv[1] == "--boot":
+            boot()
 

@@ -141,15 +141,15 @@ def updateRepository(repo=None):
 
 def updateAllRepositories():
     _init_pisi()
-    for repo in pisi.context.repodb.list():
-	try:
+    try:
+        for repo in pisi.context.repodb.list():
             notify("System.Manager.updatingRepo","%s" % repo)
             pisi.api.update_repo(repo)
-            pisi.api.finalize()
-        except KeyboardInterrupt:
-            cancelled()
-	except Exception, e:
-	    fail(unicode(e))
+        pisi.api.finalize()
+    except KeyboardInterrupt:
+        cancelled()
+    except Exception, e:
+        fail(unicode(e))
     finished("System.Manager.updateAllRepositories")
 
 def addRepository(name=None,uri=None):

@@ -1,0 +1,29 @@
+This file is intended to simplify translators work. It points to the
+translatable resources in ÇOMAR framework, and explains their translation
+methods in a prioritized order. All translators of ÇOMAR are advised to
+use this map.
+
+==> mudur/po/mudur.pot
+
+This is a standart po file with Pardus initialization subsystem Mudur's
+boot messages, and other related command line tools messages. Translations
+appear at Pardus boot screen and command line consoles when the commands
+like service, update-*, etc are used.
+
+==> comar/etc/security-comments.xml
+
+This XML file contains explanations of the distribution specific permission
+groups. These translations appear on user management interfaces, particularly
+in user-manager program.
+
+For each group, you should translate <purpose> and <comment> tags.
+Translated tags should be added with proper xml:lang attributes. Purpose
+tells which devices or control operations are accessible by the group in
+a few words. Comment is a full sentence which explains the details of
+the permission.
+
+==> comar/po/comar.pot
+
+This is a standart po file with Çomar system service's command line options
+and a few of its messages. Users won't see them normally.
+

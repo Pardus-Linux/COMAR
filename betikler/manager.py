@@ -201,16 +201,22 @@ def getRepositories():
 def setRepositories(repos=None):
     _init_pisi()
     if repos:
-        oldRepos = pisi.context.repodb.list()
-        repoList = repos.split(",")
-        index = 0
+        try:
+            notify("System.Manager.notify", "savingrepos")
+            oldRepos = pisi.context.repodb.list()
+            repoList = repos.split(",")
+            index = 0
 
-        for repo in oldRepos:
-            pisi.api.remove_repo(repo)
+            for repo in oldRepos:
+                pisi.api.remove_repo(repo)
 
-        while index <= len(repoList)/2:
-            pisi.api.add_repo(repoList[index],repoList[index+1])
-            index = index + 2
+            while index <= len(repoList)/2:
+                pisi.api.add_repo(repoList[index],repoList[index+1])
+                index = index + 2
 
-    pisi.api.finalize()
+            pisi.api.finalize()
+        except KeyboardInterrupt:
+            cancelled()
+        except Exception, e:
+            fail(unicode(e))
     finished("System.Manager.setRepositories")

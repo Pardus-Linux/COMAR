@@ -186,7 +186,7 @@ class Link:
         """
         while 1:
             fds = select.select([self.sock], [], [])
-            print "COMARDEBUG: fds ( %s )" % fds
+            print "COMARDEBUG: fds ( %s )" % str(fds)
             if fds[0] != []:
                 break
         return self.read()

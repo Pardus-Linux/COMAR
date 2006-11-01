@@ -149,21 +149,11 @@
 
 <group name="Net">
 <class name="Filter">
-<method name="setRule" profile="package">
-    <instance>no</instance>
-    <argument>description</argument>
-    <argument>direction</argument>
-    <argument>protocol</argument>
-    <argument>type</argument>
-    <argument>src</argument>
-    <argument>dst</argument>
-    <argument>sport</argument>
-    <argument>dport</argument>
-    <argument>action</argument>
-    <argument>log</argument>
+<method name="setRule">
+    <argument>rule</argument>
 </method>
-<method name="unsetRule" profile="package" profileOp="delete">
-    <instance>no</instance>
+<method name="unsetRule">
+    <argument>rule</argument>
 </method>
 <method name="getRules"/>
 <method name="setState" profile="package">

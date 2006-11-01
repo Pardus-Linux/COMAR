@@ -152,9 +152,6 @@
 <method name="setRule">
     <argument>rule</argument>
 </method>
-<method name="unsetRule">
-    <argument>rule</argument>
-</method>
 <method name="getRules"/>
 <method name="setState" profile="package">
     <argument>state</argument>

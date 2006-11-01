@@ -43,6 +43,8 @@ class UI(pisi.ui.UI):
             data = ",".join(["updatingrepo", keywords["name"]])
         elif event == pisi.ui.removing:
             data = ",".join(["removing", keywords["package"].name])
+        elif event == pisi.ui.cached:
+            data = ",".join(["cached", keywords["name"], str(keywords["size"])])
         elif event == pisi.ui.installed:
             data = "installed"
         elif event == pisi.ui.removed:

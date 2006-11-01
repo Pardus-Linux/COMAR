@@ -160,14 +160,17 @@ class Link:
             return None
         try:
             data = self.sock.recv(8)
+            print "COMARDEBUG: data len", len(data)
         except:
             raise Error('Connection closed')
         head = struct.unpack('!ii', str(data))
         cmd = head[0] >> 24
         size = head[0] & 0x00ffffff
+        print "COMARDEBUG: cmd, size", cmd, size
         if size:
             try:
                 data = self.sock.recv(size, socket.MSG_WAITALL)
+                print "COMARDEBUG: data len2", size, len(data)
             except:
                 raise Error('Connection closed')
         else:
@@ -183,6 +186,7 @@ class Link:
         """
         while 1:
             fds = select.select([self.sock], [], [])
+            print "COMARDEBUG: fds ( %s )" % fds
             if fds[0] != []:
                 break
         return self.read()

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2005,2006 TUBITAK/UEKAE
+# Copyright (C) 2005, 2006 TUBITAK/UEKAE
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
@@ -139,11 +139,14 @@ EndSection
 template_main = """
 Section "Module"
     Load "dbe"      # Double buffer extension
+    Load "extmod"
     SubSection "extmod"
         Option "omit xfree86-dga"   # don't initialise the DGA extension
     EndSubSection
     Load "type1"
     Load "freetype"
+    Load "record"
+    Load "xtrap"
     Load "glx"
     Load "dri"
     Load "v4l"
@@ -160,10 +163,9 @@ EndSection
 
 Section "Files"
     RgbPath  "/usr/lib/X11/rgb"
-    FontPath "/usr/share/fonts/dejavu/"
     FontPath "/usr/share/fonts/misc/"
+    FontPath "/usr/share/fonts/dejavu/"
     FontPath "/usr/share/fonts/TTF/"
-    FontPath "/usr/share/fonts/encodings/"
     FontPath "/usr/share/fonts/freefont/"
     FontPath "/usr/share/fonts/TrueType/"
     FontPath "/usr/share/fonts/corefonts"
@@ -171,6 +173,7 @@ Section "Files"
     FontPath "/usr/share/fonts/Type1/"
     FontPath "/usr/share/fonts/100dpi/"
     FontPath "/usr/share/fonts/75dpi/"
+    FontPath "/usr/share/fonts/encodings/"
 EndSection
 
 Section "ServerFlags"
@@ -194,7 +197,7 @@ Section "InputDevice"
     Driver     "mouse"
     Option     "Protocol" "ExplorerPS/2"
     Option     "Device" "/dev/input/mice"
-    Option     "ZAxisMapping" "4 5"
+    Option     "ZAxisMapping" "4 5 6 7"
     Option     "Buttons" "5"
 EndSection
 
@@ -210,8 +213,8 @@ Section "ServerLayout"
     %(SYNAPTICS_LAY)s
     InputDevice "Keyboard0" "CoreKeyboard"
     # Multihead stuff
-    # Screen      0  "Screen0" LeftOf "Screen1"
-    # Screen      1  "Screen1" 0 0
+    # Screen      0  "Screen0" 0 0
+    # Screen      1  "Screen1" LeftOf "Screen0"
     Option      "Xinerama" "off"
     Option      "Clone" "off"
 EndSection
@@ -498,7 +501,7 @@ class intelFix:
     def _getbiosmodes(self):
         dict = {}
         f = capture("/usr/sbin/915resolution", "-l")[0]
-        for line in f:
+        for line in f.split("\n"):
             if line.startswith("Mode") and not line.startswith("Mode Table"):
                 g1, m, g2, res, depth, g3 = line.split(" ", 5)
                 dict[m] = "%s %s" % (res.replace("x", " ")[:-1], depth)
@@ -628,13 +631,13 @@ def queryDDC():
         print "ddcxinfos failed!"
         return mon
 
-    for line in ddc[0]:
+    for line in ddc[0].split("\n"):
         t = line.find("truly")
         if t != -1:
             mon.wide = atoi(line[t+6:])
         t = line.find("EISA ID=")
         if t != -1:
-            eisaid = line[line.find("EISA ID=")+8:line.find("\r")].upper().strip()
+            eisaid = line[line.find("EISA ID=")+8:].upper().strip()
         t = line.find("kHz HorizSync")
         if t != -1:
             mon.hsync_min = atoi(line)
@@ -644,7 +647,7 @@ def queryDDC():
             mon.vref_min = atoi(line)
             mon.vref_max = atoi(line[line.find("-") + 1:])
         if line[:8] == "ModeLine":
-            mon.modelines.append("    " +line)
+            mon.modelines.append("    %s\n" % line)
 
     if mon.hsync_max == 0 or mon.vref_max == 0:
         # in case those not probed separately, get them from modelines

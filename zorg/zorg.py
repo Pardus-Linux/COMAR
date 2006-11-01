@@ -47,7 +47,7 @@ EndSection
 
 template_synaptics = """
 Section "InputDevice"
-    Identifier "Mouse1"
+    Identifier "Touchpad"
     Driver     "synaptics"
     Option     "Protocol" "auto-dev"
     # Option     "Device" "/dev/input/mouse0"
@@ -70,7 +70,7 @@ EndSection
 
 template_alps = """
 Section "InputDevice"
-    Identifier "Mouse1"
+    Identifier "Touchpad"
     Driver     "synaptics"
     Option     "Protocol" "auto-dev"
     Option     "SHMConfig" "true"
@@ -689,11 +689,11 @@ def querySynaptics(keys_main):
             # if "SynPS/2" in line or "AlpsPS/2" in line:
             if "SynPS/2" in line:
                 keys_main["SYNAPTICS_MOD"] = 'Load "synaptics"'
-                keys_main["SYNAPTICS_LAY"] = 'InputDevice "Mouse1" "SendCoreEvents"'
+                keys_main["SYNAPTICS_LAY"] = 'InputDevice "Touchpad" "SendCoreEvents"'
                 keys_main["SEC_SYNAPTICS"] = template_synaptics
             elif "AlpsPS/2" in line:
                 keys_main["SYNAPTICS_MOD"] = 'Load "synaptics"'
-                keys_main["SYNAPTICS_LAY"] = 'InputDevice "Mouse1" "SendCoreEvents"'
+                keys_main["SYNAPTICS_LAY"] = 'InputDevice "Touchpad" "SendCoreEvents"'
                 keys_main["SEC_SYNAPTICS"] = template_alps
         a.close()
     except:

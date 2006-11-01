@@ -12,7 +12,7 @@
 #
 
 import os
-import popen2
+import subprocess
 import string
 import sys
 
@@ -82,7 +82,7 @@ Section "InputDevice"
     Option     "BottomEdge" "640"
     Option     "FingerLow" "7"
     Option     "FingerHigh" "8"
-    Option     "MaxTapTime" "180"
+    Option     "MaxTapTime" "300"
     Option     "MaxTapMove" "110"
     Option     "EmulateMidButtonTime" "75"
     Option     "VertScrollDelta" "20"
@@ -515,7 +515,7 @@ class intelFix:
         for k in self.cfgmodes:
             cmd = ["/usr/sbin/915resolution", k]
             cmd.extend(self.cfgmodes[k].split())
-            run(cmd)
+            run(*cmd)
 
 
 def parseCmdline():

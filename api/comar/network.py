@@ -186,6 +186,11 @@ class IF:
     def startAuto(self, timeout=30):
         if self.isAuto():
             self.stopAuto()
+            import time
+            tt = 5
+            while tt > 0 and self.isAuto():
+                time.sleep(0.2)
+                tt -= 0.2
         
         # -R -Y -N to prevent dhcpcd rewrite nameservers
         #          we should add nameservers, not rewrite them

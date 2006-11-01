@@ -12,6 +12,8 @@
 
 #include "utility.h"
 
+extern int shutdown_activated;
+
 struct ipc_source {
 	void *chan;
 	unsigned int cookie;

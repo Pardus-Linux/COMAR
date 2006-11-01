@@ -20,7 +20,7 @@
 #include "log.h"
 
 struct Proc my_proc;
-static int shutdown_activated = 0;
+int shutdown_activated = 0;
 static char *name_addr;
 static size_t name_size;
 
@@ -192,7 +192,8 @@ void
 proc_check_shutdown(void)
 {
 	if (shutdown_activated) {
-		proc_finish();
+		if (my_proc.parent.from != -1)
+			proc_finish();
 	}
 }
 
@@ -258,9 +259,7 @@ proc_setup_fds(fd_set *fds)
 	int i;
 	int max = 0;
 
-	if (shutdown_activated) {
-		proc_finish();
-	}
+	proc_check_shutdown();
 
 	FD_ZERO(fds);
 	sock = my_proc.parent.from;

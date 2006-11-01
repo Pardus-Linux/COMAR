@@ -49,6 +49,8 @@ enum {
 
 #define RPC_SHUTDOWN 42
 
+static int comar_shutting_down = 0;
+
 struct connection {
 	struct connection *next, *prev;
 	unsigned int cookie;
@@ -191,6 +193,9 @@ rem_conn(struct connection *c)
 	if (conns == c) conns = c->next;
 	if (c->notify_mask) free(c->notify_mask);
 	if (c->buffer) free(c->buffer);
+	if (comar_shutting_down) {
+		// FIXME: send a cancel all my jobs command here
+	}
 	free(c);
 }
 
@@ -458,8 +463,10 @@ add_rpc_fds(fd_set *fds, int max)
 	struct connection *c;
 
 	// listening pipe
-	FD_SET(pipe_fd, fds);
-	if (pipe_fd >= max) max = pipe_fd + 1;
+	if (!comar_shutting_down) {
+		FD_SET(pipe_fd, fds);
+		if (pipe_fd >= max) max = pipe_fd + 1;
+	}
 	// current connections
 	for (c = conns; c; c = c->next) {
 		FD_SET(c->sock, fds);
@@ -474,7 +481,7 @@ handle_rpc_fds(fd_set *fds)
 	struct connection *c;
 	int sock;
 
-	if (FD_ISSET(pipe_fd, fds)) {
+	if (!comar_shutting_down && FD_ISSET(pipe_fd, fds)) {
 		// new connection
 		struct sockaddr_un cname;
 		size_t size = sizeof(cname);
@@ -542,6 +549,11 @@ rpc_proc(void)
 		max = add_rpc_fds(&fds, max);
 		if (1 == proc_select_fds(&fds, max, &p, &cmd, &size, -1)) {
 			switch (cmd) {
+				case CMD_SHUTDOWN:
+					comar_shutting_down = 1;
+					close(pipe_fd);
+					pipe_fd = -1;
+					break;
 				case CMD_NOTIFY:
 					proc_get(p, &ipc, rpc_pak, size);
 					pack_get(rpc_pak, &s, &sz);

@@ -71,6 +71,7 @@ main(int argc, char *argv[])
 	struct pack *pak;
 	int cmd;
 	int size;
+	int shut_rpc_flag = 0;
 
 	setlocale(LC_MESSAGES, "");
 	bindtextdomain("comar", "/usr/share/locale");
@@ -103,6 +104,14 @@ main(int argc, char *argv[])
 
 	// Ready to run
 	while (1) {
+		if (shutdown_activated) {
+			if (!shut_rpc_flag) {
+				proc_put(proc_get_rpc(), CMD_SHUTDOWN, NULL, NULL);
+				shut_rpc_flag = 1;
+			}
+			if (my_proc.nr_children <= 2)
+				proc_finish();
+		}
 		if (1 == proc_listen(&p, &cmd, &size, 1)) {
 			log_debug(LOG_IPC, "Main switch, cmd=%d\n", cmd);
 			switch (cmd) {
@@ -119,7 +128,9 @@ main(int argc, char *argv[])
 				case CMD_DUMP_PROFILE:
 				case CMD_EVENT:
 					proc_get(p, &ipc, pak, size);
-					job_start(cmd, &ipc, pak);
+					if (!shutdown_activated) {
+						job_start(cmd, &ipc, pak);
+					}
 					break;
 				case CMD_CANCEL:
 					proc_get(p, &ipc, pak, size);

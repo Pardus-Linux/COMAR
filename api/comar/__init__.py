@@ -21,6 +21,10 @@ import socket
 import select
 import struct
 
+class Error(Exception):
+    """Obsolete class, dont use in new clients"""
+    pass
+
 class CannotConnect(Exception):
     """Connection to the comar failed"""
     pass

@@ -117,7 +117,7 @@ class Link:
         try:
             self.sock = socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
             self.sock.connect(sockname)
-        except:
+        except socket.error:
             raise CannotConnect('Connection to COMAR socket %s failed' % sockname)
     
     def __pack(self, cmd, id, args):

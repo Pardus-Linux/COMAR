@@ -157,6 +157,14 @@
     <argument>state</argument>
 </method>
 <method name="getState"/>
+<method name="setProfile" profile="package">
+    <argument>profile</argument>
+    <argument>save_filter</argument>
+    <argument>save_raw</argument>
+    <argument>save_mangle</argument>
+    <argument>save_nat</argument>
+</method>
+<method name="getProfile"/>
 <notify name="changed"/>
 </class>
 <class name="Stack">

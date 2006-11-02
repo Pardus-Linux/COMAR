@@ -21,7 +21,12 @@ import socket
 import select
 import struct
 
-class Error(Exception):
+class CannotConnect(Exception):
+    """Connection to the comar failed"""
+    pass
+
+class LinkClosed(Exception):
+    """Connection with comar is closed"""
     pass
 
 
@@ -113,7 +118,7 @@ class Link:
             self.sock = socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
             self.sock.connect(sockname)
         except:
-            raise Error('Cannot connect to the COMAR daemon')
+            raise CannotConnect('Connection to COMAR socket %s failed' % sockname)
     
     def __pack(self, cmd, id, args):
         size = 0
@@ -129,6 +134,16 @@ class Link:
                     args2.append(0)
         pak = struct.pack(fmt, (cmd << 24) | size, id, *args2)
         return pak
+    
+    def __recv(self, size):
+        data = ""
+        while size:
+            tmp = self.sock.recv(size, socket.MSG_WAITALL)
+            if tmp == "":
+                raise LinkClosed("recv failed at %d of %d" % (size, len(data)))
+            data += tmp
+            size -= len(tmp)
+        return data
     
     def read(self):
         """Read a reply from comar.
@@ -158,18 +173,12 @@ class Link:
         fds = select.select([self.sock], [], [], 0)
         if fds[0] == []:
             return None
-        try:
-            data = self.sock.recv(8, socket.MSG_WAITALL)
-        except:
-            raise
+        data = self.__recv(8)
         head = struct.unpack('!ii', str(data))
         cmd = head[0] >> 24
         size = head[0] & 0x00ffffff
         if size:
-            try:
-                data = self.sock.recv(size, socket.MSG_WAITALL)
-            except:
-                raise Error('Connection closed')
+            data = self.__recv(size)
         else:
             data = None
         

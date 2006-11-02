@@ -131,7 +131,7 @@ class Link:
         return pak
     
     def read(self):
-        """Read a reply from comard.
+        """Read a reply from comar.
         
         If there isn't any data waiting at connection, this function
         immediately returns None. If there is data, returned value
@@ -159,19 +159,15 @@ class Link:
         if fds[0] == []:
             return None
         try:
-            data = self.sock.recv(8)
-            if len(data) < 8:
-                raise RuntimeException("borkbork1 %d" % len(data))
+            data = self.sock.recv(8, socket.MSG_WAITALL)
         except:
-            raise Error('Connection closed')
+            raise
         head = struct.unpack('!ii', str(data))
         cmd = head[0] >> 24
         size = head[0] & 0x00ffffff
         if size:
             try:
                 data = self.sock.recv(size, socket.MSG_WAITALL)
-                if len(data) < size:
-                    raise RuntimeException("borkbork2 %d %d" % (size, len(data)))
             except:
                 raise Error('Connection closed')
         else:
@@ -180,15 +176,13 @@ class Link:
         return Reply(cmd, head[1], data)
     
     def read_cmd(self):
-        """Read a reply from comard.
+        """Read a reply from comar.
         
         This method behaves like read method, except that it waits until
         a full message comes from the COMAR daemon.
         """
         while 1:
             fds = select.select([self.sock], [], [])
-            if len(fds) != 3:
-                raise RuntimeException("borkbork3 %d" % len(fds))
             if fds[0] != []:
                 break
         return self.read()
@@ -196,7 +190,7 @@ class Link:
     def localize(self, localename=None):
         """Set the language for translated replies.
         
-        Since comard has no way to detect caller's locale, this command
+        Since comar has no way to detect caller's locale, this command
         is used for sending user's language to the comard. Afterwards,
         all the jobs started with API calls uses translated messages in
         their replies.

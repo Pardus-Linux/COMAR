@@ -140,7 +140,7 @@ class Link:
         while size:
             tmp = self.sock.recv(size, socket.MSG_WAITALL)
             if tmp == "":
-                raise LinkClosed("recv failed at %d of %d" % (size, len(data)))
+                raise LinkClosed("recv failed at %d of %d" % (len(data), size))
             data += tmp
             size -= len(tmp)
         return data

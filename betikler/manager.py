@@ -94,7 +94,7 @@ def installPackage(package=None):
     if package:
         try:
             package = package.split(",")
-            pisi.api.install(package)
+            pisi.api.install(package, ignore_file_conflicts=True)
             pisi.api.finalize()
         except KeyboardInterrupt:
             cancelled()

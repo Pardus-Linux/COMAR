@@ -16,10 +16,10 @@ import subprocess
 import string
 import sys
 
-xorg-conf = "/etc/X11/xorg.conf"
+xorg_conf = "/etc/X11/xorg.conf"
 driver_path = "/usr/lib/xorg/modules/drivers"
-xorg-off = "/var/run/xorg-off"
-xorg-lock = "/tmp/.X0-lock"
+xorg_off = "/var/run/xorg_off"
+xorg_lock = "/tmp/.X0-lock"
 xdriverlist = "/usr/lib/X11/xdriverlist"
 MonitorsDB = "/usr/lib/X11/MonitorsDB"
 
@@ -535,7 +535,7 @@ def parseCmdline():
     return ""
 
 def xisrunning():
-    if os.path.exists(xorg-lock):
+    if os.path.exists(xorg_lock):
         return True
     else:
         return False
@@ -737,7 +737,7 @@ def findMonitors(cards):
     # check lcd panel
     lcd_drivers = [ "nv", "nvidia", "ati", "via", "i810", "sis" ]
     if cards[0].Driver in lcd_drivers:
-        write_tmpl(template_probe_display, { "PROBE_DRIVER": cards[0].Driver }, xorg-conf)
+        write_tmpl(template_probe_display, { "PROBE_DRIVER": cards[0].Driver }, xorg_conf)
         queryPanel(mon)
 
     monitors.append(mon)
@@ -818,7 +818,7 @@ def autoConfigure():
     querySynaptics(keys_main)
     keys_main["KEYMAP"] = queryKeymap()
 
-    write_tmpl(template_main, keys_main, xorg-conf)
+    write_tmpl(template_main, keys_main, xorg_conf)
 
 # test
 
@@ -828,26 +828,26 @@ def startNormal():
     if xisrunning():
         print "Xorg is running, please stop it first"
         sys.exit(1)
-    if not os.path.exists(xorg-conf):
+    if not os.path.exists(xorg_conf):
         autoConfigure()
 
 def boot():
     cmd = parseCmdline()
     if cmd == "off":
-        if not os.path.exists(xorg-off):
-            touch(xorg-off)
+        if not os.path.exists(xorg_off):
+            touch(xorg_off)
             print "Not starting zorg due to kernel parameter xorg=off"
             sys.exit(1)
         else:
             startNormal()
 
     elif cmd == "probe":
-        unlink(xorg-conf)
+        unlink(xorg_conf)
         startNormal()
     elif cmd == "safe":
         #FIXME: add safe modes
         print "doing nothing for now"
-        # unlink(xorg-conf)
+        # unlink(xorg_conf)
         # write_safe_config
     else:
         startNormal()

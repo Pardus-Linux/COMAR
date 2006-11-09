@@ -16,10 +16,12 @@ import subprocess
 import string
 import sys
 
-xorg_conf = "/etc/X11/xorg.conf"
+xorg-conf = "/etc/X11/xorg.conf"
+driver_path = "/usr/lib/xorg/modules/drivers"
+xorg-off = "/var/run/xorg-off"
+xorg-lock = "/tmp/.X0-lock"
 xdriverlist = "/usr/lib/X11/xdriverlist"
 MonitorsDB = "/usr/lib/X11/MonitorsDB"
-driver_path = "/usr/lib/xorg/modules/drivers"
 
 ### templates ###
 template_videocard = """
@@ -222,6 +224,13 @@ EndSection
 def unlink(path):
     try:
         os.unlink(path)
+    except:
+        pass
+
+def touch(_file):
+    try:
+        if not os.path.exists(_file):
+            file(_file, "w").close()
     except:
         pass
 
@@ -526,7 +535,7 @@ def parseCmdline():
     return ""
 
 def xisrunning():
-    if os.path.exists("/tmp/.X0-lock"):
+    if os.path.exists(xorg-lock):
         return True
     else:
         return False
@@ -728,7 +737,7 @@ def findMonitors(cards):
     # check lcd panel
     lcd_drivers = [ "nv", "nvidia", "ati", "via", "i810", "sis" ]
     if cards[0].Driver in lcd_drivers:
-        write_tmpl(template_probe_display, { "PROBE_DRIVER": cards[0].Driver }, xorg_conf)
+        write_tmpl(template_probe_display, { "PROBE_DRIVER": cards[0].Driver }, xorg-conf)
         queryPanel(mon)
 
     monitors.append(mon)
@@ -809,37 +818,43 @@ def autoConfigure():
     querySynaptics(keys_main)
     keys_main["KEYMAP"] = queryKeymap()
 
-    write_tmpl(template_main, keys_main, xorg_conf)
+    write_tmpl(template_main, keys_main, xorg-conf)
 
 # test
+
+def startNormal():
+    intelfix = intelFix()
+    intelfix.replacemodes()
+    if xisrunning():
+        print "Xorg is running, please stop it first"
+        sys.exit(1)
+    if not os.path.exists(xorg-conf):
+        autoConfigure()
 
 def boot():
     cmd = parseCmdline()
     if cmd == "off":
-        sys.exit(1)
+        if not os.path.exists(xorg-off):
+            touch(xorg-off)
+            print "Not starting zorg due to kernel parameter xorg=off"
+            sys.exit(1)
+        else:
+            startNormal()
+
     elif cmd == "probe":
-        intelfix = intelFix()
-        intelfix.replacemodes()
-        unlink(xorg_conf)
-        autoConfigure()
+        unlink(xorg-conf)
+        startNormal()
     elif cmd == "safe":
         #FIXME: add safe modes
         print "doing nothing for now"
-        # unlink(xorg_conf)
+        # unlink(xorg-conf)
         # write_safe_config
     else:
-        intelfix = intelFix()
-        intelfix.replacemodes()
-        if not os.path.exists(xorg_conf):
-            autoConfigure()
-
+        startNormal()
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
-        intelfix = intelFix()
-        intelfix.replacemodes()
-        if not os.path.exists(xorg_conf):
-            autoConfigure()
+        startNormal()
     else:
         if sys.argv[1] == "--boot":
             boot()

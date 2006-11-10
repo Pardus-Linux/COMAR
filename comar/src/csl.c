@@ -265,6 +265,35 @@ c_get_instance(PyObject *self, PyObject *args)
 	return dict;
 }
 
+static PyObject *
+c_set_instance(PyObject *self, PyObject *args, PyObject *kwargs)
+{
+	struct pack *p;
+	int ret;
+	PyObject *key, *value;
+	char *str;
+	size_t strlen;
+	int pos = 0;
+
+	proc_check_shutdown();
+
+	p = pack_new(512);
+	if (!p) return NULL;
+
+	while(PyDict_Next(kwargs, &pos, &key, &value)) {
+		PyString_AsStringAndSize(key, &str, &strlen);
+		pack_put(p, str, strlen);
+		PyString_AsStringAndSize(value, &str, &strlen);
+		pack_put(p, str, strlen);
+	}
+
+	ret = db_put_profile(bk_node, bk_app, p);
+	if (ret != 0) return NULL;
+
+	Py_INCREF(Py_None);
+	return Py_None;
+}
+
 static PyMethodDef methods[] = {
 	{ "script", c_script, METH_NOARGS, "Return package name" },
 	{ "_", c_i18n, METH_VARARGS, "Return localized text from a dictionary" },
@@ -274,6 +303,7 @@ static PyMethodDef methods[] = {
 	{ "instances", c_instances, METH_VARARGS, "Get list of class's instances from profile" },
 	{ "get_profile", c_get_profile, METH_VARARGS, "Get method's arguments from profile" },
 	{ "get_instance", c_get_instance, METH_VARARGS, "Get instance's arguments from profile" },
+	{ "set_instance", (PyCFunction)c_set_instance, METH_KEYWORDS, "Set instance's arguments from profile" },
 	{ NULL, NULL, 0, NULL }
 };
 

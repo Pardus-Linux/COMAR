@@ -93,6 +93,47 @@ class Reply:
             )
 
 
+class Call:
+    def __init__(self, link, group, class_=None, package=None, func=None):
+        self.link = link
+        self.group = group
+        self.class_ = class_
+        self.package = package
+        self.func = func
+    
+    def __repr__(self):
+        return "Comar Call object %s.%s[%s].%s" % (
+            self.group, self.class_, self.package, self.func
+        )
+    
+    def __getitem__(self, key):
+        if not self.class_:
+            raise KeyError, "Package should be selected after class"
+        if not isinstance(key, basestring):
+            raise KeyError
+        return Call(self.link, self.group, self.class_, key)
+    
+    def __getattr__(self, name):
+        if self.class_:
+            c = Call(self.link, self.group, self.class_, self.package, name)
+            return c.call
+        else:
+            if name[0] < 'A' or name[0] > 'Z':
+                raise AttributeError
+            return Call(self.link, self.group, name)
+    
+    def call(self, **args):
+        method = "%s.%s.%s" % (self.group, self.class_, self.func)
+        id = 0
+        if args.has_key("id"):
+            id = args["id"]
+            del args["id"]
+        if self.package:
+            self.link.call_package(method, self.package, args, id)
+        else:
+            self.link.call(method, args, id)
+
+
 class Link:
     """A class for communicating with comar daemon."""
     
@@ -123,6 +164,12 @@ class Link:
             self.sock.connect(sockname)
         except socket.error:
             raise CannotConnect('Connection to COMAR socket %s failed' % sockname)
+    
+    def __getattr__(self, name):
+        if name[0] < 'A' or name[0] > 'Z':
+            raise AttributeError
+        
+        return Call(self, name)
     
     def __pack(self, cmd, id, args):
         size = 0

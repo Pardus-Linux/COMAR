@@ -68,8 +68,9 @@ class FstabError(Exception):
     pass
 
 class Fstab:
-    def __init__(self, File = "/etc/fstab"):
+    def __init__(self, File = "/etc/fstab", debug = False):
         self.File = File
+        self.Debug = debug
         if os.path.isfile(File):
             self.content = self.__emergeContent()
         else:
@@ -101,16 +102,22 @@ class Fstab:
                 self.__allPartitions[p].update(self.__fstabPartitions[p])
 
     def writeContent(self, File = None):
-        if not File:
-            File = self.File
-        try:
-            f = open(File, "w")
-        except IOError:
-            raise FstabError, "Unable to write: %s"
- 
-        for line in self.content:
-            f.write(line)
-        f.close()
+        if not self.Debug:
+            if not File:
+                File = self.File
+            try:
+                f = open(File, "w")
+            except IOError:
+                # raise FstabError, "Unable to write: %s"
+                print "Unable to write: %s" % File
+                sys.exit(1)
+
+            for line in self.content:
+                f.write(line)
+            f.close()
+        else:
+            for line in self.content:
+                print line.rstrip("\n")
 
     def __emergeContent(self):
         return [line for line in open(self.File).readlines() if not line.startswith('#') if not line.startswith("\n")]
@@ -204,11 +211,14 @@ class Fstab:
         if attr_dict.get('options') == None:
             attr_dict['options'] = self.defaultFileSystemOptions.get(attr_dict['file_system']) or self.defaultFileSystemOptions['defaults']
 
-        if not os.path.exists(attr_dict['mount_point']):
-            try:
-                os.mkdir(attr_dict['mount_point'])
-            except OSError:
-                print ("Unable to create mount point: '%s' for '%s'" % (attr_dict['mount_point'], partition))
+        if not self.Debug:
+            if not os.path.exists(attr_dict['mount_point']):
+                try:
+                    os.mkdir(attr_dict['mount_point'])
+                except OSError:
+                    print ("Unable to create mount point: '%s' for '%s'" % (attr_dict['mount_point'], partition))
+        else:
+            pass
 
         self.content.append("%-11s %-20s %-9s %-20s %s %s\n" % (partition, 
                                                          attr_dict['mount_point'], 
@@ -231,7 +241,12 @@ class Fstab:
 
 
 if __name__ == "__main__":
-    f = Fstab(File = "/etc/fstab")
+    if len(sys.argv) > 1 and sys.argv[1] == "--debug":
+        dbg = True
+    else:
+        dbg = False
+
+    f = Fstab(File = "/etc/fstab", debug = dbg)
     f.delDepartedPartitions()
     f.addAvailablePartitions()
     f.writeContent()

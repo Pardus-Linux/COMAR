@@ -73,7 +73,7 @@
 <group name="User">
 
 <class name="Manager">
-<method name="userList"/>
+<method name="userList" access="guest"/>
 
 <method name="userInfo">
     <argument>uid</argument>
@@ -103,7 +103,7 @@
     <argument>deletefiles</argument>
 </method>
 
-<method name="groupList"/>
+<method name="groupList" access="guest"/>
 
 <method name="addGroup">
     <argument>gid</argument>
@@ -135,12 +135,12 @@
 <argument>hour</argument>
 <argument>minute</argument>
 <argument>second</argument></method>
-<method name="getDate"/>
+<method name="getDate" access="guest"/>
 <method name="loadFromHW"/>
 <method name="saveToHW"/>
 <method name="setTimeZone">
 <argument>zone</argument></method>
-<method name="getTimeZone"/>
+<method name="getTimeZone" access="guest"/>
 </class>
 <class name="Jobs">
 </class>
@@ -168,19 +168,19 @@
 <notify name="changed"/>
 </class>
 <class name="Stack">
-<method name="getNameServers"/>
+<method name="getNameServers" access="guest"/>
 <method name="setNameServers">
     <argument>nameservers</argument>
 </method>
-<method name="getHostNames"/>
+<method name="getHostNames" access="guest"/>
 <method name="setHostNames" profile="global">
     <argument>hostnames</argument>
 </method>
 </class>
 <class name="Link">
-<method name="modes"/>
-<method name="linkInfo"/>
-<method name="deviceList"/>
+<method name="modes" access="guest"/>
+<method name="linkInfo" access="guest"/>
+<method name="deviceList" access="guest"/>
 <method name="scanRemote">
     <argument>device</argument>
 </method>
@@ -213,8 +213,8 @@
     <instance>name</instance>
     <argument>state</argument>
 </method>
-<method name="connections"/>
-<method name="connectionInfo">
+<method name="connections" access="user"/>
+<method name="connectionInfo" access="user">
     <instance>name</instance>
 </method>
 <method name="getRemote">
@@ -229,7 +229,7 @@
 <method name="getState">
     <instance>name</instance>
 </method>
-<notify name="stateChanged"/>
+<notify name="stateChanged" access="user"/>
 <notify name="connectionChanged"/>
 <notify name="deviceChanged"/>
 </class>

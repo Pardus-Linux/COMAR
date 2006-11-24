@@ -258,7 +258,7 @@ def deviceName(devuid):
             data = "/usr/share/misc/pci.ids"
         else:
             data = "/usr/share/misc/usb.ids"
-        return idsQuery(data, vendor, device)
+        return idsQuery(data, vendor, device) + " (%s)" % dev
     if devuid.startswith("logic:"):
         return devuid.split(":", 1)[1]
     return devuid

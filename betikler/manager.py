@@ -80,6 +80,7 @@ def _init_pisi():
         cancelled()
     except pisi.lockeddbshelve.Error, e:
         notify("System.Manager.error","%s" % str(e))
+        fail()
 
 def cancelled():
     if pisi.context.initialized:

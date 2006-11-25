@@ -119,27 +119,27 @@ def updatePackage(package=None):
 def removePackage(package=None):
     _init_pisi()
     if package:
-	try:
+        try:
             package = package.split(",")
             pisi.api.remove(package)
             pisi.api.finalize()
         except KeyboardInterrupt:
             cancelled()
-	except Exception, e:
-	    fail(unicode(e))
+        except Exception, e:
+            fail(unicode(e))
     finished("System.Manager.removePackage")
 
 def updateRepository(repo=None):
     _init_pisi()
     if repo:
-	try:
+        try:
             notify("System.Manager.updatingRepo","%s" % repo)
             pisi.api.update_repo(repo)
             pisi.api.finalize()
         except KeyboardInterrupt:
             cancelled()
-	except Exception, e:
-	    fail(unicode(e))
+        except Exception, e:
+            fail(unicode(e))
     finished("System.Manager.updateRepository")
 
 def updateAllRepositories():
@@ -164,19 +164,19 @@ def addRepository(name=None,uri=None):
         except KeyboardInterrupt:
             cancelled()
         except Exception, e:
-	    fail(unicode(e))
+            fail(unicode(e))
     finished("System.Manager.addRepository")
 
 def removeRepository(repo=None):
     _init_pisi()
     if repo:
-	try:
+        try:
             pisi.api.remove_repo(repo)
             pisi.api.finalize()
         except KeyboardInterrupt:
             cancelled()
-	except Exception, e:
-	    fail(unicode(e))
+        except Exception, e:
+            fail(unicode(e))
     finished("System.Manager.removeRepository")
 
 def installCritical():

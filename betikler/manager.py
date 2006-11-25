@@ -129,12 +129,12 @@ def removePackage(package=None):
             fail(unicode(e))
     finished("System.Manager.removePackage")
 
-def updateRepository(repo=None):
+def updateRepository(repository=None):
     _init_pisi()
-    if repo:
+    if repository:
         try:
-            notify("System.Manager.updatingRepo","%s" % repo)
-            pisi.api.update_repo(repo)
+            notify("System.Manager.updatingRepo","%s" % repository)
+            pisi.api.update_repo(repository)
             pisi.api.finalize()
         except KeyboardInterrupt:
             cancelled()

@@ -22,45 +22,59 @@ def getIconSet(name, group=KIcon.Toolbar):
     return KGlobal.iconLoader().loadIconSet(name, group)
 
 
-class Model(QListView):
+class ClassItem(QListViewItem):
+    def __init__(self, parent, group_name, tag):
+        QListViewItem.__init__(self, parent)
+        self.group = group_name
+        self.name = tag.getAttribute("name")
+        self.setText(0, "%s.%s" % (self.group, self.name))
+        self.methods = []
+        for item in tag.tags("method"):
+            self.methods.append(item.getAttribute("name"))
+
+
+class ModelView(QHBox):
     def __init__(self, parent):
-        QListView.__init__(self, parent)
-        self.addColumn("")
-        self.addColumn("")
-        self.header().hide()
-        self.setTreeStepSize(self.treeStepSize() * 1.2)
-        self.setSorting(-1)
+        QHBox.__init__(self, parent)
+        self.setSpacing(6)
+        
+        self.classes = QListView(self)
+        self.classes.addColumn("Classes")
+        self.classes.setAllColumnsShowFocus(True)
+        self.classes.setSorting(-1)
+        self.connect(self.classes, SIGNAL("selectionChanged()"), self.slotClass)
+        
+        self.methods = QListView(self)
+        self.methods.addColumn("Methods")
+        self.methods.setAllColumnsShowFocus(True)
+        self.methods.setSorting(-1)
+        self.connect(self.methods, SIGNAL("selectionChanged()"), self.slotMethod)
+        
         self.load("/etc/comar/model.xml")
     
     def load(self, modelfile):
         doc = piksemel.parse(modelfile)
-        for group_tag in doc.tags("group"):
-            group = QListViewItem(self)
-            group.setPixmap(0, getIconSet("kwikdisk.png").pixmap(QIconSet.Automatic, QIconSet.Normal))
-            group.setText(1, group_tag.getAttribute("name"))
-            group.setOpen(True)
-            for class_tag in group_tag.tags("class"):
-                class_ = QListViewItem(group)
-                class_.setPixmap(0, getIconSet("kuser.png").pixmap(QIconSet.Automatic, QIconSet.Normal))
-                class_.setText(1, class_tag.getAttribute("name"))
-                class_.setOpen(True)
-                for method_tag in class_tag.tags("method"):
-                    method = QListViewItem(class_)
-                    method.setPixmap(0, getIconSet("kservices.png").pixmap(QIconSet.Automatic, QIconSet.Normal))
-                    method.setText(1, method_tag.getAttribute("name"))
-                    method.setOpen(True)
-                for notify_tag in class_tag.tags("notify"):
-                    notify = QListViewItem(class_)
-                    notify.setPixmap(0, getIconSet("remote.png").pixmap(QIconSet.Automatic, QIconSet.Normal))
-                    notify.setText(1, notify_tag.getAttribute("name"))
-                    notify.setOpen(True)
+        for group in doc.tags("group"):
+            name = group.getAttribute("name")
+            for class_ in group.tags("class"):
+                ClassItem(self.classes, name, class_)
+    
+    def slotClass(self):
+        item = self.classes.selectedItem()
+        self.methods.clear()
+        if item:
+            for name in item.methods:
+                QListViewItem(self.methods, name)
+    
+    def slotMethod(self):
+        pass
 
 
 class MainWindow(KMainWindow):
     def __init__(self):
         KMainWindow.__init__(self)
         self.setMinimumSize(560, 440)
-        self.setCaption(u"ÇOMAR System Model Editor")
+        self.setCaption(u"Çomar Model Tool")
         
         mb = self.menuBar()
         file_ = QPopupMenu(self)
@@ -71,7 +85,7 @@ class MainWindow(KMainWindow):
         file_.insertSeparator()
         file_.insertItem("&Quit", self.quit, self.CTRL + self.Key_Q)
         
-        self.model = Model(self)
+        self.model = ModelView(self)
         self.setCentralWidget(self.model)
     
     def quit(self):
@@ -92,7 +106,7 @@ def main(args):
         "comodel",
         "Comodel",
         "1.0",
-        I18N_NOOP("Pardus distribution media maker"),
+        I18N_NOOP("Comar Model Tool"),
         KAboutData.License_GPL
     )
     KCmdLineArgs.init(args, about)

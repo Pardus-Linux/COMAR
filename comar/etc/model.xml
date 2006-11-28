@@ -59,7 +59,7 @@
 <method name="setRepositories">
     <argument>repos</argument>
 </method>
-<method name="cleanCache">
+<method name="clearCache">
     <argument>cacheDir</argument>
     <argument>limit</argument>
 </method>

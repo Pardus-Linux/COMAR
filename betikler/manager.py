@@ -226,7 +226,7 @@ def setRepositories(repos=None):
             fail(unicode(e))
     finished("System.Manager.setRepositories")
 
-def cleanCache(cacheDir, limit):
+def clearCache(cacheDir, limit):
     import os
     import glob
     from sets import Set as set
@@ -284,4 +284,4 @@ def cleanCache(cacheDir, limit):
     else:
         removeAll(cacheDir)
 
-    finished("System.Manager.cleanCache")
+    finished("System.Manager.clearCache")

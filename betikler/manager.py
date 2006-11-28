@@ -22,6 +22,8 @@ try:
     import pisi.lockeddbshelve
     import pisi.ui
     import pisi.context
+    import pisi.util as util
+    from pisi.version import Version
 except KeyboardInterrupt:
     fail("System.Manager.cancelled")
 
@@ -223,3 +225,63 @@ def setRepositories(repos=None):
         except Exception, e:
             fail(unicode(e))
     finished("System.Manager.setRepositories")
+
+def cleanCache(cacheDir, limit):
+    import os
+    import glob
+    from sets import Set as set
+
+    def getPackageLists(pkgList):
+        latest = {}
+        for f in pkgList:
+            try:
+                name, version = util.parse_package_name(f)
+                if latest.has_key(name):
+                    if Version(latest[name]) < Version(version):
+                        latest[name] = version
+                else:
+                    if version:
+                        latest[name] = version
+            except:
+                pass
+
+        latestVersions = []
+        for pkg in latest:
+            latestVersions.append("%s-%s" % (pkg, latest[pkg]))
+
+        oldVersions = list(set(pkgList) - set(latestVersions))
+        return oldVersions, latestVersions
+
+    def getRemoveOrder(cacheDir, pkgList):
+        sizes = {}
+        for pkg in pkgList:
+            sizes[pkg] = os.stat(os.path.join(cacheDir, pkg) + ".pisi").st_size
+
+        # sort dictionary by value from PEP-265
+        from operator import itemgetter
+        return sorted(sizes.iteritems(), key=itemgetter(1), reverse=False)
+
+    def removeOrderByLimit(cacheDir, order, limit):
+        totalSize = 0
+        for pkg, size in order:
+            totalSize += size
+            if totalSize >= limit:
+                try:
+                    os.remove(os.path.join(cacheDir, pkg) + ".pisi")
+                except exceptions.OSError:
+                    pass
+
+    def removeAll(cacheDir):
+        import shutil
+        shutil.rmtree(cacheDir, True)
+
+    limit = int(limit)
+    pkgList = map(lambda x: os.path.basename(x).split(".pisi")[0], glob.glob("%s/*.pisi" % cacheDir))
+    if limit:
+        old, latest = getPackageLists(pkgList)
+        order = getRemoveOrder(cacheDir, latest) + getRemoveOrder(cacheDir, old)
+        removeOrderByLimit(cacheDir, order, limit)
+    else:
+        removeAll(cacheDir)
+
+    finished("System.Manager.cleanCache")

@@ -59,6 +59,10 @@
 <method name="setRepositories">
     <argument>repos</argument>
 </method>
+<method name="cleanCache">
+    <argument>cacheDir</argument>
+    <argument>limit</argument>
+</method>
 <notify name="progress"/>
 <notify name="error"/>
 <notify name="warning"/>

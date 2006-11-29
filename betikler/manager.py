@@ -272,8 +272,12 @@ def clearCache(cacheDir, limit):
                     pass
 
     def removeAll(cacheDir):
-        import shutil
-        shutil.rmtree(cacheDir, True)
+        cached = glob.glob("%s/*.pisi" % cacheDir) + glob.glob("%s/*.part" % cacheDir)
+        for pkg in cached:
+            try:
+                os.remove(pkg)
+            except exceptions.OSError:
+                pass
 
     limit = int(limit)
     pkgList = map(lambda x: os.path.basename(x).split(".pisi")[0], glob.glob("%s/*.pisi" % cacheDir))

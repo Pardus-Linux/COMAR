@@ -205,6 +205,11 @@
     <instance>name</instance>
     <argument>remote</argument>
 </method>
+<method name="setNameService" profile="package">
+    <instance>name</instance>
+    <argument>namemode</argument>
+    <argument>nameserver</argument>
+</method>
 <method name="setAuthentication" profile="package">
     <instance>name</instance>
     <argument>authmode</argument>

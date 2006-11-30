@@ -182,7 +182,6 @@
 </method>
 </class>
 <class name="Link">
-<method name="modes" access="guest"/>
 <method name="linkInfo" access="guest"/>
 <method name="deviceList" access="guest"/>
 <method name="scanRemote">
@@ -221,21 +220,12 @@
 <method name="connectionInfo" access="user">
     <instance>name</instance>
 </method>
-<method name="getRemote">
-    <instance>name</instance>
-</method>
-<method name="getAddress">
-    <instance>name</instance>
-</method>
 <method name="getAuthentication">
     <instance>name</instance>
 </method>
-<method name="getState">
-    <instance>name</instance>
-</method>
-<notify name="stateChanged" access="user"/>
-<notify name="connectionChanged"/>
-<notify name="deviceChanged"/>
+<notify name="stateChanged" access="guest"/>
+<notify name="connectionChanged" access="user"/>
+<notify name="deviceChanged" access="guest"/>
 </class>
 </group>
 

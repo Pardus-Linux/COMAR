@@ -173,7 +173,10 @@
 </class>
 <class name="Stack">
 <method name="getNameServers" access="guest"/>
-<method name="setNameServers">
+<method name="setNameServers" profile="global">
+    <argument>nameservers</argument>
+</method>
+<method name="useNameServers">
     <argument>nameservers</argument>
 </method>
 <method name="getHostNames" access="guest"/>

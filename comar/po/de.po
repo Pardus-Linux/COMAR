@@ -1,22 +1,25 @@
+# translation of de.po to Deutsch
 # COMAR - Configuration Manager.
 # Copyright (C) 2006 TUBITAK/UEKAE
 # This file is distributed under the same license as the COMAR package.
 #
+# Mustafa M. Ölcerman <oelcerman@fussballkreis.org>, 2006.
 msgid ""
 msgstr ""
-"Project-Id-Version: comar\n"
+"Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-04-07 09:56+0300\n"
-"PO-Revision-Date: 2006-05-07 09:56+0300\n"
-"Last-Translator: x <noone@ADDRESS>\n"
-"Language-Team: de <de@li.org>\n"
+"PO-Revision-Date: 2006-12-04 21:14+0200\n"
+"Last-Translator: Mustafa M. Ölcerman <oelcerman@fussballkreis.org>\n"
+"Language-Team: Deutsch <http://liste.uludag.org.tr/mailman/listinfo/pardus-translation-de>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.11.4\n"
 
 #: src/main.c:77
 msgid "This program is a system service and should not be started by users."
-msgstr ""
+msgstr "Dieses Programm ist ein System-Dienst und sollte nicht durch einen Benutzer gestartet werden."
 
 #: src/cfg.c:62
 msgid ""
@@ -43,3 +46,4 @@ msgid ""
 "Free Software Foundation; either version 2 of the License, or (at your\n"
 "option) any later version.\n"
 msgstr ""
+

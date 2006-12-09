@@ -224,7 +224,7 @@
     <instance>name</instance>
     <argument>state</argument>
 </method>
-<method name="connections" access="user"/>
+<method name="connections" access="guest"/>
 <method name="connectionInfo" access="user">
     <instance>name</instance>
 </method>

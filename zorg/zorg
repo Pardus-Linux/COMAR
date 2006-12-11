@@ -817,6 +817,13 @@ def autoConfigure():
         unlink(home + "/xorg.conf.new")
         cards[0].Driver = grepini(conf, 'Section "Device"', "\tDriver")
 
+    # Use nvidia if nv is found
+    available_drivers = listAvailableDrivers()
+    if "nvidia" in available_drivers:
+        for i in range(len(cards)):
+            if cards[i].Driver == "nv":
+                cards[i].Driver = "nvidia"
+
     # We need card data to check for lcd displays
     monitors = findMonitors(cards)
 

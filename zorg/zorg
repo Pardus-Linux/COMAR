@@ -31,7 +31,7 @@ Section "Device"
     Driver     "%(DRIVER)s"
     VendorName "%(VENDORNAME)s"
     BoardName  "%(BOARDNAME)s"
-    # BusID      "%(BUSID)s"
+    %(BUSID)s
 EndSection
 """
 
@@ -213,7 +213,7 @@ Section "ServerLayout"
     InputDevice "Keyboard0" "CoreKeyboard"
     # Multihead stuff
     # Screen      0  "Screen0" 0 0
-    # Screen      1  "Screen1" LeftOf "Screen0"
+    # Screen      1  "Screen1" RightOf "Screen0"
     Option      "Xinerama" "off"
     Option      "Clone" "off"
 EndSection
@@ -233,6 +233,15 @@ def touch(_file):
             file(_file, "w").close()
     except:
         pass
+
+def backup(_file):
+    try:
+        if os.path.exists(_file):
+            os.rename(_file, "%s-backup" % _file)
+        return True
+    except:
+        print "Could not backup %s" % _file
+        return False
 
 def capture(*cmd):
     a = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -466,7 +475,7 @@ class Device:
         self.Driver = None
         self.VendorName = "unknown"
         self.BoardName = "unknown"
-        self.BusId = None
+        self.BusId = ""
 
 class Monitor:
     def __init__(self):
@@ -589,7 +598,7 @@ def findPciCards():
                         vendorId = lremove(sysValue(sysDir, _dev, "vendor"), "0x")
                         deviceId = lremove(sysValue(sysDir, _dev, "device"), "0x")
                         #FIXME: BusID magic to support multiple heads, but breaking pci-e support ?
-                        a.BusId = "PCI:%s" % _dev.replace(".",":").split(":", 1)[1]
+                        a.BusId = '#BusID      "PCI:%s"' % _dev.replace(".",":").split(":", 1)[1]
                         a.BoardName, a.VendorName =  queryPCI(vendorId, deviceId)
                         a.Driver = queryDriver(vendorId, deviceId)
                         cards.append(a)
@@ -631,7 +640,7 @@ def queryPanel(mon):
 
 def queryDDC():
     mon = Monitor()
-    eisaid = ""
+
     ddc = capture("/usr/sbin/ddcxinfos")
     if ddc[1] != '':
         print "ddcxinfos failed!"
@@ -643,7 +652,7 @@ def queryDDC():
             mon.wide = atoi(line[t+6:])
         t = line.find("EISA ID=")
         if t != -1:
-            eisaid = line[line.find("EISA ID=")+8:].upper().strip()
+            mon.eisaid = line[line.find("EISA ID=")+8:].upper().strip()
         t = line.find("kHz HorizSync")
         if t != -1:
             mon.hsync_min = atoi(line)
@@ -666,11 +675,11 @@ def queryDDC():
             mon.hsync_max = atoi(line[line.find("hfreq=") + 6:])
             mon.vref_max = atoi(line[line.find("vfreq=") + 6:])
 
-    if eisaid:
+    if mon.eisaid != "":
         f = loadFile(MonitorsDB)
         for line in f:
             l = line.split(";")
-            if eisaid == string.upper(l[2]).strip():
+            if mon.eisaid == string.upper(l[2]).strip():
                 mon.vendorname = l[0].lstrip()
                 mon.modelname = l[1].lstrip()
                 mon.hsync_min, mon.hsync_max = l[3].strip().split("-")
@@ -767,10 +776,16 @@ def keysMonitors(monitors):
         keys_mon["VREF"] = str(monitors[i].vref_min) + "-" + str(monitors[i].vref_max)
 
         if monitors[i].panel_h and monitors[i].panel_w:
-            keys_mon["MODELINES"] = calcModeLine(monitors[i].panel_w, monitors[i].panel_h, 60)
+            if monitors[i].eisaid != "":
+                keys_mon["MODELINES"] = ""
+            else:
+                keys_mon["MODELINES"] = calcModeLine(monitors[i].panel_w, monitors[i].panel_h, 60)
             keys_mon["MODES"] = '"%dx%d" "800x600" "640x480"' % (monitors[i].panel_w, monitors[i].panel_h)
         else:
-            keys_mon["MODELINES"] = "".join(monitors[i].modelines)
+            if monitors[i].eisaid != "":
+                keys_mon["MODELINES"] = ""
+            else:
+                keys_mon["MODELINES"] = "".join(monitors[i].modelines)
             keys_mon["MODES"] = monitors[i].res
 
         # FIXME: check for the driver and set depth due to it
@@ -820,7 +835,48 @@ def autoConfigure():
 
     write_tmpl(template_main, keys_main, xorg_conf)
 
-# test
+def safeConfigure():
+    # set failsafe graphics card
+    cards = []
+
+    a = Device()
+    a.BoardName = "VESA configured board"
+    a.VendorName = "VESA configured vendor"
+    a.Driver = "vesa"
+    cards.append(a)
+
+    # set failsafe monitor stuff
+    monitors = []
+    mon = Monitor()
+
+    mon.vendorname = "VESA configured vendor"
+    mon.modelname = "VESA configured model"
+
+    mon.hsync_min = 31.5
+    mon.hsync_max = 50
+    mon.vref_min = 50
+    mon.vref_max = 70
+    mon.res = '"800x600" "640x480"'
+
+    monitors.append(mon)
+
+    # start over and begin to fill the templates
+    keys_main = {}
+
+    # with gfx first
+    keys_main["SEC_VIDEOCARD"] = keysVideoCards(cards)
+
+    # and then the monitor
+    keys_main["SEC_MONITOR"], keys_main["SEC_SCREEN"] = keysMonitors(monitors)
+
+    # input devices
+    keys_main["KEYMAP"] = queryKeymap()
+    keys_main["SYNAPTICS_MOD"] = ""
+    keys_main["SEC_SYNAPTICS"] = ""
+    keys_main["SYNAPTICS_LAY"] = ""
+
+    write_tmpl(template_main, keys_main, xorg_conf)
+
 
 def startNormal():
     intelfix = intelFix()
@@ -834,28 +890,34 @@ def startNormal():
 def boot():
     cmd = parseCmdline()
     if cmd == "off":
-        if not os.path.exists(xorg_off):
-            touch(xorg_off)
-            print "Not starting zorg due to kernel parameter xorg=off"
-            sys.exit(1)
-        else:
-            startNormal()
-
+        sys.exit(1)
     elif cmd == "probe":
-        unlink(xorg_conf)
-        startNormal()
+        if backup(xorg_conf):
+            startNormal()
+        else:
+            sys.exit(1)
     elif cmd == "safe":
-        #FIXME: add safe modes
-        print "doing nothing for now"
-        # unlink(xorg_conf)
-        # write_safe_config
+        if backup(xorg_conf):
+            safeConfigure()
+            startNormal()
+        else:
+            sys.exit(1)
     else:
         startNormal()
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
         startNormal()
-    else:
-        if sys.argv[1] == "--boot":
+    elif sys.argv[1] == "--boot":
             boot()
+    elif sys.argv[1] == "--safe":
+        if backup(xorg_conf):
+            safeConfigure()
+        else:
+            sys.exit(1)
+    elif sys.argv[1] == "--probe":
+        if backup(xorg_conf):
+            startNormal()
+        else:
+            sys.exit(1)
 

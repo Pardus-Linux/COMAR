@@ -598,7 +598,7 @@ def findPciCards():
                         vendorId = lremove(sysValue(sysDir, _dev, "vendor"), "0x")
                         deviceId = lremove(sysValue(sysDir, _dev, "device"), "0x")
                         #FIXME: BusID magic to support multiple heads, but breaking pci-e support ?
-                        a.BusId = '#BusID      "PCI:%s"' % _dev.replace(".",":").split(":", 1)[1]
+                        a.BusId = '# BusID      "PCI:%s"' % _dev.replace(".",":").split(":", 1)[1]
                         a.BoardName, a.VendorName =  queryPCI(vendorId, deviceId)
                         a.Driver = queryDriver(vendorId, deviceId)
                         cards.append(a)

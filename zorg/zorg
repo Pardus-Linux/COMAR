@@ -493,7 +493,7 @@ class Monitor:
         self.eisaid = ""
         self.depth = "16"
 
-class intelFix:
+class intelWorkaround:
     def __init__(self):
         self.biosmodes = {}
         self.cfgmodes = {}
@@ -548,6 +548,10 @@ def xisrunning():
         return True
     else:
         return False
+
+def intelFix():
+    i = intelWorkaround()
+    i.replacemodes()
 
 def listAvailableDrivers(d = driver_path):
     a = []
@@ -886,8 +890,7 @@ def safeConfigure():
 
 
 def startNormal():
-    intelfix = intelFix()
-    intelfix.replacemodes()
+    intelFix()
     if xisrunning():
         print "Xorg is running, please stop it first"
         sys.exit(1)
@@ -927,4 +930,6 @@ if __name__ == "__main__":
             startNormal()
         else:
             sys.exit(1)
+    elif sys.argv[1] == "--intelfix":
+            intelFix()
 

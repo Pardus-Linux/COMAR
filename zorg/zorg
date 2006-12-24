@@ -902,7 +902,7 @@ def startNormal():
     if xisrunning():
         print "Xorg is running, please stop it first"
         sys.exit(1)
-    if not os.path.exists(xorg_conf)
+    if not os.path.exists(xorg_conf):
         if not isVirtual():
             autoConfigure()
 

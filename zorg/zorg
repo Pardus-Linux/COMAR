@@ -800,6 +800,14 @@ def keysMonitors(monitors):
 
     return sec_monitor, sec_screen
 
+def isVirtual():
+    # Xen detection
+    if os.path.exists("/proc/xen/capabilities"):
+        # if we are in dom0 then no extra work needed
+        if loadFile("/proc/xen/capabilities") == []:
+            # if we are in domU then no need to try configure X
+            return True
+        return False
 
 # om call
 
@@ -894,8 +902,9 @@ def startNormal():
     if xisrunning():
         print "Xorg is running, please stop it first"
         sys.exit(1)
-    if not os.path.exists(xorg_conf):
-        autoConfigure()
+    if not os.path.exists(xorg_conf)
+        if not isVirtual():
+            autoConfigure()
 
 def boot():
     cmd = parseCmdline()

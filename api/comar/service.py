@@ -30,23 +30,23 @@ def is_on():
     return state
 
 def loadConfig():
+    conf = {}
     try:
         from csl import serviceConf
-    except:
+    except ImportError:
         serviceConf = script()[0]
-    dict = {}
-    try:
-        for line in file("/etc/conf.d/%s" % serviceConf):
-            if line != "" and not line.startswith("#") and "=" in line:
-                key, value = line.split("=", 1)
-                key = key.strip()
-                value = value.strip()
-                if value.startswith('"') or value.startswith("'"):
-                    value = value[1:-1]
-                dict[key] = value
-    except:
-        pass
-    return dict
+    filename = "/etc/conf.d/%s" % serviceConf
+    if not os.path.exists(filename):
+        return
+    for line in file(filename):
+        if line != "" and not line.startswith("#") and "=" in line:
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip()
+            if value.startswith('"') or value.startswith("'"):
+                value = value[1:-1]
+            conf[key] = value
+    return conf
 
 def loadEnvironment():
     basePath = "/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:"
@@ -58,7 +58,31 @@ def loadEnvironment():
     # PATH in profile.env doesn't have some default paths
     os.environ["PATH"] = basePath + os.environ.get("PATH", "")
 
-config = loadConfig()
+
+class Config(dict):
+    def __init__(self):
+        self.first_time = True
+    
+    def __load(self):
+        self.first_time = False
+        conf = loadConfig()
+        for item in conf:
+            self[item] = conf[item]
+    
+    def __check(self, func, args):
+        if self.first_time:
+            self.__load()
+        return func(self, *args)
+    
+    __getitem__ = lambda self, item: self.__check(dict.__getitem__, [item])
+    __str__ = lambda self: self.__check(dict.__str__, [])
+    __len__ = lambda self: self.__check(dict.__len__, [])
+    __iter__ = lambda self: self.__check(dict.__iter__, [])
+    __contains__ = lambda self, item: self.__check(dict.__contains__, [item])
+    get = lambda self, *args: self.__check(dict.get, args)
+
+
+config = Config()
 
 # default methods
 
@@ -87,4 +111,3 @@ def setState(state=None):
     if state != "on" and state != "off":
         fail("Unknown state '%s'" % state)
     notify("System.Service.changed", state)
-

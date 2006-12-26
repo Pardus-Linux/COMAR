@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-11-23 16:30+0200\n"
-"PO-Revision-Date: 2006-11-26 16:51+0200\n"
+"PO-Revision-Date: 2006-12-26 01:06+0200\n"
 "Last-Translator: Willem Gielen <w.gielen@gmail.com>\n"
 "Language-Team: Nederlands <Pardus-translation-nl@pardus.org.tr>\n"
 "MIME-Version: 1.0\n"
@@ -43,7 +43,7 @@ msgstr "Starten diensten"
 
 #: bin/mudur.py:453
 msgid "Cannot connect to COMAR, services won't be started"
-msgstr "Kan geen verbinding maken met COMAR. diensten worden niet gestart."
+msgstr "Kan geen verbinding maken met COMAR, diensten worden niet gestart."
 
 #: bin/mudur.py:458
 msgid "Cannot start system logger"
@@ -83,11 +83,11 @@ msgstr "Controleren root bestandssysteem"
 
 #: bin/mudur.py:546
 msgid "Filesystem repaired, but reboot needed!"
-msgstr "Bestandsysteem gerepareerd, systeem zal opnieuw opgestart moeten worden!"
+msgstr "Bestandssysteem gerepareerd, opnieuw opgestart noodzakelijk!"
 
 #: bin/mudur.py:550
 msgid "Rebooting in 10 seconds ..."
-msgstr "Herstart na 10 seconden..."
+msgstr "Herstart over 10 seconden..."
 
 #: bin/mudur.py:552
 msgid "Rebooting..."
@@ -95,7 +95,7 @@ msgstr "Herstarten..."
 
 #: bin/mudur.py:555
 msgid "Filesystem couldn't be fixed :("
-msgstr "Bestandsysteem kon niet gerepareerd worden :("
+msgstr "Bestandssysteem kon niet gerepareerd worden :("
 
 #: bin/mudur.py:558
 msgid "Skipping root filesystem check (fstab's passno == 0)"
@@ -124,15 +124,15 @@ msgstr "Controleren van alle bestandsystemen"
 
 #: bin/mudur.py:643
 msgid "Filesystem errors corrected"
-msgstr "Fouten in het systeembestanden gecorrigeerd"
+msgstr "Fouten in systeembestanden gecorrigeerd"
 
 #: bin/mudur.py:645
 msgid "Fsck could not correct all errors, manual repair needed"
-msgstr "Fsck kon niet alle problemen oplossen. Handmatige reparatie is vereist."
+msgstr "Fsck kon niet alle problemen oplossen. Handmatige reparatie is vereist"
 
 #: bin/mudur.py:658
 msgid "Mounting USB filesystem"
-msgstr "Aankoppelen USB-bestandssysteem"
+msgstr "Aankoppelen USB bestandssysteem"
 
 #: bin/mudur.py:664
 msgid "Mounting local filesystems"
@@ -164,7 +164,7 @@ msgstr "Opschonen /tmp"
 
 #: bin/mudur.py:764
 msgid "Syncing system clock to hardware clock"
-msgstr "Synchroniseren systeemklok met hardwareklok"
+msgstr "Synchroniseren systeemklok op hardwareklok"
 
 #: bin/mudur.py:767
 msgid "Failed to sync clocks"
@@ -186,9 +186,7 @@ msgstr "Opnieuw aankoppelen bestandssystemen als alleen-lezen"
 msgid ""
 "An internal error occured. Please report to the bugs.pardus.org.tr with "
 "following information:"
-msgstr ""
-"Een interne fout is opgetreden. Meld alstublieft de foutmelding aan bugs."
-"pardus.org.tr met de  volgende informatie:"
+msgstr "Een interne fout is opgetreden. Meld alstublieft de foutmelding aan bugs.pardus.org.tr met de  volgende informatie:"
 
 #: bin/mudur.py:893
 msgid "Mounting /sys"
@@ -204,7 +202,7 @@ msgstr "Starten Coldplug"
 
 #: bin/mudur.py:934
 msgid "Setting up localhost"
-msgstr "instellen localhost"
+msgstr "Instellen localhost"
 
 #: bin/mudur.py:944
 msgid "Updating environment variables"
@@ -245,7 +243,7 @@ msgstr "ja"
 
 #: bin/service.py:89
 msgid "Service"
-msgstr "Service"
+msgstr "Dienst"
 
 #: bin/service.py:90
 msgid "Status"
@@ -261,22 +259,22 @@ msgstr "Beschrijving"
 
 #: bin/service.py:153
 msgid "You should be the root user in order to control the comar service."
-msgstr "U dient een root-gebruiker te zijn om gebruik te maken van de comar-diensten."
+msgstr "U dient de root-gebruiker te zijn om gebruik te maken van de comar dienst."
 
 #: bin/service.py:195
 #, python-format
 msgid "Service '%s' started."
-msgstr "Dienst '%s' is gestart."
+msgstr "Dienst '%s' gestart."
 
 #: bin/service.py:197
 #, python-format
 msgid "Service '%s' stopped."
-msgstr "Dienst '%s' is gestopt."
+msgstr "Dienst '%s' gestopt."
 
 #: bin/service.py:202
 #, python-format
 msgid "Service '%s' reloaded."
-msgstr "Dienst '%s' is opnieuw geladen."
+msgstr "Dienst '%s' opnieuw geladen."
 
 #: bin/service.py:204
 #, python-format

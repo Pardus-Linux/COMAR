@@ -10,7 +10,6 @@
 #
 
 import os
-import subprocess
 
 from comar.utility import *
 

@@ -227,7 +227,7 @@ event_proc(void)
 
 		proc_check_shutdown();
 
-		if (select(sock + 1, &fds, NULL, NULL, &tv) > 0) {
+		if (select(sock + 1, &fds, NULL, NULL, NULL) > 0) {
 			if (FD_ISSET(sock, &fds)) {
 				size_t size;
 				size = recv(sock, &buf, sizeof(buf), 0);

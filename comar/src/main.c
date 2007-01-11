@@ -112,7 +112,7 @@ main(int argc, char *argv[])
 			if (my_proc.nr_children <= 2)
 				proc_finish();
 		}
-		if (1 == proc_listen(&p, &cmd, &size, 1)) {
+		if (1 == proc_listen(&p, &cmd, &size, -1)) {
 			log_debug(LOG_IPC, "Main switch, cmd=%d\n", cmd);
 			switch (cmd) {
 				case CMD_SHUTDOWN:

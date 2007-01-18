@@ -16,7 +16,7 @@ import shutil
 from distutils.core import setup
 from distutils.command.install import install
 
-version = "1.9"
+version = "1.10"
 
 distfiles = """
     setup.py

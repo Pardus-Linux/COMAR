@@ -219,6 +219,7 @@ class IF:
         except IOError:
             return None
         for line in f:
+            line = line.strip()
             if line.startswith("DNS="):
                 return line[4:].rstrip('\n').split(',')
 

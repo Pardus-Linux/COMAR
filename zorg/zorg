@@ -22,6 +22,7 @@ xorg_off = "/var/run/xorg_off"
 xorg_lock = "/tmp/.X0-lock"
 xdriverlist = "/usr/lib/X11/xdriverlist"
 MonitorsDB = "/usr/lib/X11/MonitorsDB"
+truecolorCards = ["i810", "nv", "nvidia", "radeon", "fglrx"]
 
 ### templates ###
 template_videocard = """
@@ -768,7 +769,7 @@ def keysVideoCards(cards):
         sec += template_videocard % keys_vc
     return sec
 
-def keysMonitors(monitors):
+def keysMonitors(monitors, cards):
     sec_monitor = ""
     sec_screen = ""
     for i in range(len(monitors)):
@@ -793,7 +794,10 @@ def keysMonitors(monitors):
             keys_mon["MODES"] = monitors[i].res
 
         # FIXME: check for the driver and set depth due to it
-        keys_mon["DEPTH"] = "16"
+        if cards[i].Driver in truecolorCards:
+            keys_mon["DEPTH"] = "24"
+        else:
+            keys_mon["DEPTH"] = "16"
 
         sec_monitor += template_monitor % keys_mon
         sec_screen += template_screen % keys_mon
@@ -846,7 +850,7 @@ def autoConfigure():
     keys_main["SEC_VIDEOCARD"] = keysVideoCards(cards)
 
     # and then the monitor
-    keys_main["SEC_MONITOR"], keys_main["SEC_SCREEN"] = keysMonitors(monitors)
+    keys_main["SEC_MONITOR"], keys_main["SEC_SCREEN"] = keysMonitors(monitors, cards)
 
     # input devices
     querySynaptics(keys_main)

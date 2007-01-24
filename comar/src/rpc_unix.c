@@ -44,7 +44,8 @@ enum {
 	RPC_GETLIST,
 	RPC_CHECKACL,
 	RPC_DUMP_PROFILE,
-	RPC_CANCEL
+	RPC_CANCEL,
+	RPC_EVENT
 };
 
 #define RPC_SHUTDOWN 42
@@ -385,6 +386,22 @@ parse_rpc(struct connection *c)
 				pack_put(rpc_pak, t, sz);
 			}
 			proc_put(TO_PARENT, CMD_CALL_PACKAGE, &ipc, rpc_pak);
+			return 0;
+
+		case RPC_EVENT:
+			// class name, function name, app name, data
+			if (get_arg(&args, &t, &sz) != 1) return -1;
+			no = model_lookup_class(t);
+			if (!acl_is_capable(CMD_EVENT, no, &c->cred)) return -1;
+			ipc.node = no;
+			pack_reset(rpc_pak);
+			if (get_arg(&args, &t, &sz) != 1) return -1;
+			pack_put(rpc_pak, t, sz);
+			if (get_arg(&args, &t, &sz) != 1) return -1;
+			pack_put(rpc_pak, t, sz);
+			if (get_arg(&args, &t, &sz) != 1) return -1;
+			pack_put(rpc_pak, t, sz);
+			proc_put(TO_PARENT, CMD_EVENT, &ipc, rpc_pak);
 			return 0;
 
 		case RPC_CANCEL:

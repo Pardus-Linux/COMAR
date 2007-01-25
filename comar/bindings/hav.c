@@ -41,6 +41,7 @@ print_usage(void)
 		"   remove <package-name>\n"
 		"   list <class>\n"
 		"   listen <notify-name>...\n"
+		"   event <class-name> <func-name> <package-name> <data>\n"
 		"   dump\n"
 		"options:\n"
 		"   -w, --nowait        Do not wait for an answer.\n"
@@ -308,6 +309,38 @@ do_dump(char *argv[])
 	comar_disconnect(com);
 }
 
+static void
+do_event(char *argv[])
+{
+	comar_t *com;
+	int cmd;
+	unsigned int id;
+	char *ret;
+
+	if (!argv[optind] || !argv[optind+1] || !argv[optind+2] || !argv[optind+3]) {
+		print_usage();
+		exit(1);
+	}
+
+	com = comar_connect();
+	if (!com) {
+		puts("Cannot connect to COMAR daemon");
+		exit(2);
+	}
+
+	comar_send(
+		com, 1,
+		COMAR_EVENT,
+		argv[optind],
+		argv[optind+1],
+		argv[optind+2],
+		argv[optind+3],
+		NULL
+	);
+
+	comar_disconnect(com);
+}
+
 static struct cmd_s {
 	const char *cmd;
 	void (*func)(char *argv[]);
@@ -318,7 +351,8 @@ static struct cmd_s {
 	{ "remove", do_remove },
 	{ "list", do_list },
 	{ "listen", do_listen },
-	{ "dump", do_dump }
+	{ "dump", do_dump },
+	{ "event", do_event },
 };
 
 int

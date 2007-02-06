@@ -724,12 +724,10 @@ def querySynaptics(keys_main):
 def queryKeymap():
     # Fallback is trq
     kmap = "trq"
+    keymap_file = "/etc/mudur/keymap"
     try:
-        f = file("/etc/conf.d/mudur")
-        for line in f:
-            if line.strip().startswith("keymap="):
-                kmap = line.split('=')[1].strip().strip('"')
-        f.close()
+        if os.path.exists(keymap_file):
+            kmap = file(keymap_file).read().strip().rstrip("\n")
     except:
         pass
 

@@ -156,7 +156,7 @@
 <method name="setRule">
     <argument>rule</argument>
 </method>
-<method name="getRules"/>
+<method name="getRules" access="guest"/>
 <method name="setState" profile="package">
     <argument>state</argument>
 </method>
@@ -168,8 +168,8 @@
     <argument>save_mangle</argument>
     <argument>save_nat</argument>
 </method>
-<method name="getProfile"/>
-<notify name="changed"/>
+<method name="getProfile" access="guest"/>
+<notify name="changed" access="guest"/>
 </class>
 <class name="Stack">
 <method name="getNameServers" access="guest"/>

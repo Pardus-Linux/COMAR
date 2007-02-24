@@ -75,10 +75,12 @@
         <group name="pnpadmin">
             <purpose>Administrator of Peripheral devices</purpose>
             <purpose xml:lang="tr">Çevre birimleri Yöneticisi</purpose>
+            <purpose xml:lang="nl">Administrator voor randapparatuur</purpose>
             <purpose xml:lang="de">Administrator für Peripheriegeräte</purpose>
             <purpose xml:lang="es">Administrador de dispositivos periféricos</purpose>
             <comment>Members can administrate peripheral devices (printer, scanner, camera, etc).</comment>
             <comment xml:lang="tr">Çevre birimlerini (yazıcı, tarayıcı, kamera, vb) yönetebilirler.</comment>
+            <comment xml:lang="nl">Gebruik randapparatuur (printer, scanner, camera etc).</comment>
             <comment xml:lang="de">Mitglieder können die Peripheriegeräte (Drucker, Scanner, Kamera, etc.) verwalten.</comment>
             <comment xml:lang="es">Miembros pueden administrar dispositivos periféricos (Impresora, Scaner, Camara, etc.).</comment>
         </group>

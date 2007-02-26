@@ -17,6 +17,7 @@ import string
 import sys
 
 xorg_conf = "/etc/X11/xorg.conf"
+activeCard = "/etc/X11/activeCard"
 driver_path = "/usr/lib/xorg/modules/drivers"
 xorg_off = "/var/run/xorg_off"
 xorg_lock = "/tmp/.X0-lock"
@@ -243,6 +244,12 @@ def backup(_file):
     except:
         print "Could not backup %s" % _file
         return False
+
+def saveActiveCard(cards):
+    f = file(activeCard, "w")
+    for card in cards:
+        f.write("%s\n" % card.DeviceInfo)
+    f.close()
 
 def capture(*cmd):
     a = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -606,6 +613,7 @@ def findPciCards():
                         a.BusId = '# BusID      "PCI:%s"' % _dev.replace(".",":").split(":", 1)[1]
                         a.BoardName, a.VendorName =  queryPCI(vendorId, deviceId)
                         a.Driver = queryDriver(vendorId, deviceId)
+                        a.DeviceInfo = "%s:%s" % (vendorId,deviceId)
                         cards.append(a)
                 except:
                     pass
@@ -838,6 +846,9 @@ def autoConfigure():
             if cards[i].Driver == "nv":
                 cards[i].Driver = "nvidia"
 
+    # Save active cards for checking next boots.
+    saveActiveCard(cards)
+
     # We need card data to check for lcd displays
     monitors = findMonitors(cards)
 
@@ -898,9 +909,21 @@ def safeConfigure():
 
     write_tmpl(template_main, keys_main, xorg_conf)
 
+def checkActiveCard():
+    cards = findPciCards()
+    if os.path.exists(activeCard):
+        activeCards = file(activeCard,'r').readlines()
+        for i in range(len(activeCards)):
+            if not cards[i].DeviceInfo == activeCards[i]:
+                print "Card changed Zorg reconfigures X"
+                backup(xorg_conf)
+    else:
+        # For the first time
+        saveActiveCard(cards)    
 
 def startNormal():
     intelFix()
+    checkActiveCard()
     if xisrunning():
         print "Xorg is running, please stop it first"
         sys.exit(1)

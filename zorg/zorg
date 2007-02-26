@@ -914,7 +914,7 @@ def checkActiveCard():
     if os.path.exists(activeCard):
         activeCards = file(activeCard,'r').readlines()
         for i in range(len(activeCards)):
-            if not cards[i].DeviceInfo == activeCards[i]:
+            if not cards[i].DeviceInfo == activeCards[i].strip("\n"):
                 print "Card changed Zorg reconfigures X"
                 backup(xorg_conf)
     else:

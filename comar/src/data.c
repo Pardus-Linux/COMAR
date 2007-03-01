@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2005-2006, TUBITAK/UEKAE
+** Copyright (c) 2005-2007, TUBITAK/UEKAE
 **
 ** This program is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU General Public License as published by the
@@ -308,6 +308,7 @@ db_del_app(const char *app)
 	struct databases db;
 	char *list, *list2, *t, *s;
 	int e, ret = -1;
+	int no;
 
 	if (open_env(&db, APP_DB | MODEL_DB | CODE_DB)) goto out;
 
@@ -341,9 +342,11 @@ db_del_app(const char *app)
 		}
 		free(list2);
 
-		e = db_delete_code(model_lookup_class(t), app);
-		e = del_data(db.code, make_key(model_lookup_class(t), app));
-		//if (e) goto out;
+		no = model_lookup_class(t);
+		if (no != -1) {
+			e = db_delete_code(no, app);
+			e = del_data(db.code, make_key(no, app));
+		}
 	}
 
 	free(list);

@@ -919,11 +919,11 @@ def checkActiveCard():
         activeCards = file(activeCard,'r').readlines()
         for i in range(len(activeCards)):
             if not cards[i].DeviceInfo == activeCards[i].strip("\n"):
-                print "Card changed Zorg reconfigures X"
+                print "Videocards changed, Zorg is reconfiguring X"
                 backup(xorg_conf)
     else:
         # For the first time
-        saveActiveCard(cards)    
+        saveActiveCard(cards)
 
 def startNormal():
     intelFix()

@@ -739,6 +739,10 @@ def queryKeymap():
     except:
         pass
 
+    # workaround for pt_BR and some latin1 variants
+    if "-" in kmap:
+        kmap = kmap.split("-", 1)[0]
+
     return kmap
 
 def findMonitors(cards):

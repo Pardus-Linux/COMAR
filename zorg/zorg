@@ -632,6 +632,7 @@ def queryPanel(mon):
         "Size of device LFP (local flat panel) is",
         "Size of device LFP",
         "Size of device DFP",
+        "Virtual size is ",
         "Virtual screen size determined to be ",
         "Detected LCD/plasma panel ("
         ]

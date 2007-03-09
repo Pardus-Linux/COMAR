@@ -634,8 +634,7 @@ def queryPanel(mon):
         "Size of device LFP",
         "Size of device DFP",
         "Virtual screen size determined to be ",
-        "Detected LCD/plasma panel (",
-        "Virtual size is "
+        "Detected LCD/plasma panel ("
         ]
         a = run("/usr/bin/X", "-probeonly", "-allowMouseOpenFail", "-logfile", "/var/log/xlog")
         if a != 0:

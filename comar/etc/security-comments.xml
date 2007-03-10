@@ -7,12 +7,14 @@
 			<purpose xml:lang="de">Administrator</purpose>
 			<purpose xml:lang="es">Administrador</purpose>
 			<purpose xml:lang="pt_BR">Administrador</purpose>
+			<purpose xml:lang="fr">Administrateur</purpose>
 			<comment>Members can access Çomar administration functions, and can use su and sudo commands.</comment>
 			<comment xml:lang="tr">Çomar yönetim işlevlerine erişebilir, su ve sudo komutlarını kullanabilirler.</comment>
 			<comment xml:lang="nl">Toegang tot de Comar administator functies en de su en sodo commandos gebruiken.</comment>
 			<comment xml:lang="de">Mitglieder können Zugang zur Comar Administration haben und können su und sudo Kommandos ausführen.</comment>
 			<comment xml:lang="es">Miembros pueden acceder funciones administrativos de Comar y pueden usar los comandos su y sudo.</comment>
 			<comment xml:lang="pt_BR">Membros podem acessar funções administrativas do Comar e podem usar os comandos su e sudo.</comment>
+			<comment xml:lang="fr">Les membres ont accès aux fonctions d'administration et peuvent utiliser les commandes su et sudo.</comment>
 		</group>
 		<group name="users">
 			<purpose>Normal user</purpose>
@@ -21,12 +23,14 @@
 			<purpose xml:lang="de">Normaler Benutzer</purpose>
 			<purpose xml:lang="es">Usuario Normal</purpose>
 			<purpose xml:lang="pt_BR">Usuário Normal</purpose>
+			<purpose xml:lang="fr">Utilisateur normal</purpose>
 			<comment>Members can access Çomar user functions.</comment>
 			<comment xml:lang="tr">Çomar kullanıcı işlevlerine ulaşabilirler.</comment>
 			<comment xml:lang="nl">Toegang tot Comar gebruikers functies.</comment>
 			<comment xml:lang="de">Mitglieder können Zugang zu Comar Benutzerfunktionalitäten haben.</comment>
 			<comment xml:lang="es">Miembros pueden acceder funciones de usuarios de Comar.</comment>
 			<comment xml:lang="pt_BR">Membros podem acessar as funções de usuário do Comar.</comment>
+			<comment xml:lang="fr">Les membres ont accès aux fonctions utilisateurs de Comar.</comment>
 		</group>
 		<group name="audio">
 			<purpose>Plays audio and music</purpose>
@@ -35,12 +39,14 @@
 			<purpose xml:lang="de">Spielt Audio und Musik ab</purpose>
 			<purpose xml:lang="es">Reproduce audio y musica</purpose>
 			<purpose xml:lang="pt_BR">Reproduz áudio e música</purpose>
+			<purpose xml:lang="fr">Jouer des sons et des musiques</purpose>
 			<comment>Members can access audio devices, and play music.</comment>
 			<comment xml:lang="tr">Ses cihazlarına erişebilir ve müzik çalabilirler.</comment>
 			<comment xml:lang="nl">Toegang tot audio apparaten, en luister muziek.</comment>
 			<comment xml:lang="de">Mitglieder können Zugang zu den Audiogeräten haben und können Musik abpsielen.</comment>
 			<comment xml:lang="es">Miembros pueden acceder dispositivos de audio y reproducir musica.</comment>
 			<comment xml:lang="pt_BR">Membros podem acessar dispositivos de áudio e reproduzir música.</comment>
+			<comment xml:lang="fr">Les membres ont accès au périphériques audios et peuvent écouter de la musique.</comment>
 		</group>
 		<group name="disk">
 			<purpose>Fixed storage units</purpose>
@@ -49,12 +55,14 @@
 			<purpose xml:lang="de">Lokale Datenträger</purpose>
 			<purpose xml:lang="es">Unidades de Almacenamiento fijos</purpose>
 			<purpose xml:lang="pt_BR">Unidades fixas de armazenamento</purpose>
+			<purpose xml:lang="fr">Unitée fixes de stockage</purpose>
 			<comment>Members can access fixed storage units like hard disks.</comment>
 			<comment xml:lang="tr">Sabit disk gibi sabit depolama birimlerine erişebilirler.</comment>
 			<comment xml:lang="nl">Toegang tot vaste opslagmedia als de harde schijf.</comment>
 			<comment xml:lang="de">Mitglieder können Zugang zur lokalen Datenträgerverwaltung haben.</comment>
 			<comment xml:lang="es">Miembros pueden acceder medios de almacenamientos fijos, como discos rígidos.</comment>
 			<comment xml:lang="pt_BR">Membros podem acessar unidades fixas de armazenamento, como discos rígidos.</comment>
+			<comment xml:lang="fr">Les membres ont accès aux unités fixes de stockage comme les disques durs.</comment>
 		</group>
 		<group name="removable">
 			<purpose>Removable storage units</purpose>
@@ -63,12 +71,14 @@
 			<purpose xml:lang="de">Wechseldatenträger</purpose>
 			<purpose xml:lang="es">Medios removibles</purpose>
 			<purpose xml:lang="pt_BR">Unidades de armazenamento removíveis</purpose>
+			<purpose xml:lang="fr">Unités mobiles de stockage</purpose>
 			<comment>Members can mount removable media (CD, DVD, USB disk, etc).</comment>
 			<comment xml:lang="tr">Çıkarılabilir medyaları (CD, DVD, USB disk, vb) bağlayıp kullanabilirler.</comment>
 			<comment xml:lang="nl">Koppel verwijderbare media aan (CD, DVD, USB stick, etc).</comment>
 			<comment xml:lang="de">Mitglieder können Wechseldatenträger (CD, DVD, USB-Stick, etc.) mounten.</comment>
 			<comment xml:lang="es">Miembros pueden montar medios removibles (CD, DVD, USB-Stick, etc.).</comment>
 			<comment xml:lang="pt_BR">Membros podem montar mídias removíveis (CD, DVD, USB-Stick, etc.).</comment>
+			<comment xml:lang="fr">Les membres peuvent monter les médias mobiles (CD, DVD, Disques USB, etc.)</comment>
 		</group>
 		<group name="pnp">
 			<purpose>Peripheral devices</purpose>
@@ -77,12 +87,14 @@
 			<purpose xml:lang="de">Peripheriegeräte</purpose>
 			<purpose xml:lang="es">Dispositivos Periféricos</purpose>
 			<purpose xml:lang="pt_BR">Dispositivos Periféricos</purpose>
+			<purpose xml:lang="fr">Périphériques</purpose>
 			<comment>Members can use peripheral devices (printer, scanner, camera, etc).</comment>
 			<comment xml:lang="tr">Çevre birimlerini (yazıcı, tarayıcı, kamera, vb) kullanabilirler.</comment>
 			<comment xml:lang="nl">Gebruik randapparatuur (printer, scanner, camera etc).</comment>
 			<comment xml:lang="de">Mitglieder können die Peripheriegeräte (Drucker, Scanner, Kamera, etc.) verwenden.</comment>
 			<comment xml:lang="es">Miembros pueden utilizar dispositivos periféricos (Impresora, Scaner, Camara, etc.).</comment>
 			<comment xml:lang="pt_BR">Membros podem utilizar dispositivos periféricos (Impressora, Scanner, Câmera, etc.).</comment>
+			<comment xml:lang="fr">Les membres ont accès aux périphériques (imprimante, scanner, caméra, etc.).</comment>
 		</group>
 		<group name="pnpadmin">
 			<purpose>Administrator of Peripheral devices</purpose>
@@ -90,11 +102,13 @@
 			<purpose xml:lang="de">Administrator für Peripheriegeräte</purpose>
 			<purpose xml:lang="es">Administrador de dispositivos periféricos</purpose>
 			<purpose xml:lang="pt_BR">Administrador de dispositivos periféricos</purpose>
+			<purpose xml:lang="fr">Administrateur de périphériques</purpose>
 			<comment>Members can administrate peripheral devices (printer, scanner, camera, etc).</comment>
 			<comment xml:lang="tr">Çevre birimlerini (yazıcı, tarayıcı, kamera, vb) yönetebilirler.</comment>
 			<comment xml:lang="de">Mitglieder können die Peripheriegeräte (Drucker, Scanner, Kamera, etc.) verwalten.</comment>
 			<comment xml:lang="es">Miembros pueden administrar dispositivos periféricos (Impresora, Scaner, Camara, etc.).</comment>
 			<comment xml:lang="pt_BR">Membros podem administrar dispositivos periféricos (Impressora, Scanner, Câmera, etc.).</comment>
+			<comment xml:lang="fr">Les membres peuvent administrer les périphériques (imprimantes, scanner, caméra, etc.).</comment>
 		</group>
 		<group name="power">
 			<purpose>Power control</purpose>
@@ -103,12 +117,14 @@
 			<purpose xml:lang="de">Energieverwaltung</purpose>
 			<purpose xml:lang="es">Administración de Encendido</purpose>
 			<purpose xml:lang="pt_BR">Controle de energia</purpose>
+			<purpose xml:lang="fr">Controle de la mise en route</purpose>
 			<comment>Members can shutdown, reboot and suspend the computer.</comment>
 			<comment xml:lang="tr">Bilgisayarı kapatabilir, yeniden başlatabilir ve askıya alabilirler.</comment>
 			<comment xml:lang="nl">Aflsuiten, herstarten, en slaapstand van computer.</comment>
 			<comment xml:lang="de">Mitglieder können den Rechner herunterfahren, neu starten und in den Standby-Modus setzen.</comment>
 			<comment xml:lang="es">Miembros pueden apagar, rebootear y suspender la computadora.</comment>
 			<comment xml:lang="pt_BR">Membros podem desligar, reiniciar e suspender o computador.</comment>
+			<comment xml:lang="fr">Les membres peuvent éteindre, redémarrer et mettre en hibernation l'ordinateur.</comment>
 		</group>
 		<group name="dialout">
 			<purpose>Modem and Fax devices</purpose>
@@ -117,12 +133,14 @@
 			<purpose xml:lang="de">Modem und Fax Geräte</purpose>
 			<purpose xml:lang="es">Dispositivos de Modem y Fax</purpose>
 			<purpose xml:lang="pt_BR">Dispositivos de Modem e Fax</purpose>
+			<purpose xml:lang="fr">Modems et Fax</purpose>
 			<comment>Members can use modem and fax devices to communicate over the phone lines.</comment>
 			<comment xml:lang="tr">Modem ve faks aygıtlarıyla telefon hatları üzerinden iletişim kurabilirler.</comment>
 			<comment xml:lang="nl">Gebruik modem en fax voor communicatie over de telefoonlijn.</comment>
 			<comment xml:lang="de">Mitglieder können Modem und Fax Geräte verwenden, um über die Telefonleitung zu kommunizieren.</comment>
 			<comment xml:lang="es">Miembros pueden utilizar dispositivos de modem y fax para la comunicación sobre la línea telefónica.</comment>
 			<comment xml:lang="pt_BR">Membros podem utilizar dispositivos de modem e fax para se comunicar através de linhas telefônicas.</comment>
+			<comment xml:lang="fr">Les membres peuvent utiliser les modems et les fax pour communiquer via les lignes téléphoniques.</comment>
 		</group>
 	</groups>
 </comarSecurityComments>

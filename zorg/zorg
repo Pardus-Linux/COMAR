@@ -618,7 +618,12 @@ def findPciCards():
                         cards.append(a)
                 except:
                     pass
-    return cards
+    if not len(cards) == 0:
+        return cards
+    else:
+        # FIXME: this machine might be a server with no cards, but I am not sure if we could let kdm start
+        # Since kdm might be a terminal server, this is left to the user, for now 
+        sys.exit(0)
 
 def queryPanel(mon):
     if xisrunning() == True:

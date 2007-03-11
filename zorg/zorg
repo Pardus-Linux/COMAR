@@ -921,7 +921,13 @@ def safeConfigure():
 
 def checkActiveCard():
     cards = findPciCards()
-    if os.path.exists(activeCard):
+
+    # if there are no pci cards on the machine, we write an empty state file, hence we can start
+    # kdm and cards will be probed again in the next boot. This is not nice, but may be useful
+    # in hardware error cases.
+    if len(cards) == 0:
+        saveActiveCard(cards)
+    elif os.path.exists(activeCard):
         activeCards = file(activeCard,'r').readlines()
         for i in range(len(activeCards)):
             if not cards[i].DeviceInfo == activeCards[i].strip("\n"):

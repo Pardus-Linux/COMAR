@@ -618,7 +618,7 @@ def findPciCards():
                         cards.append(a)
                 except:
                     pass
-    if not len(cards) == 0:
+    if len(cards):
         return cards
     else:
         # FIXME: this machine might be a server with no cards, but I am not sure if we could let kdm start
@@ -925,7 +925,7 @@ def checkActiveCard():
     # if there are no pci cards on the machine, we write an empty state file, hence we can start
     # kdm and cards will be probed again in the next boot. This is not nice, but may be useful
     # in hardware error cases.
-    if len(cards) == 0:
+    if not len(cards):
         saveActiveCard(cards)
     elif os.path.exists(activeCard):
         activeCards = file(activeCard,'r').readlines()

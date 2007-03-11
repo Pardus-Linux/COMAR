@@ -827,6 +827,9 @@ def isVirtual():
 # om call
 
 def autoConfigure():
+    if isVirtual():
+        return
+
     # detect graphic card and find monitor of first card, yet
     cards = findPciCards()
 
@@ -915,6 +918,9 @@ def safeConfigure():
     write_tmpl(template_main, keys_main, xorg_conf)
 
 def checkActiveCard():
+    if not isVirtual():
+        return
+
     cards = findPciCards()
     if os.path.exists(activeCard):
         activeCards = file(activeCard,'r').readlines()
@@ -933,8 +939,7 @@ def startNormal():
         print "Xorg is running, please stop it first"
         sys.exit(1)
     if not os.path.exists(xorg_conf):
-        if not isVirtual():
-            autoConfigure()
+        autoConfigure()
 
 def boot():
     cmd = parseCmdline()

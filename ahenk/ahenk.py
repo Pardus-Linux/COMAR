@@ -22,7 +22,7 @@ def do_call(method, args=None):
     else:
         com.call(method)
     a = com.read_cmd()
-    return a
+    return a.data
 
 rpc = SimpleXMLRPCServer.SimpleXMLRPCServer(("localhost", 8000))
 rpc.register_function(do_call, "call")

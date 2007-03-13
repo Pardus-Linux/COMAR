@@ -28,6 +28,8 @@ def checkDaemon(pidfile):
     if not os.path.exists(pidfile):
         return False
     pid = file(pidfile).read().rstrip("\n")
+    if len(pid) == 0 or len(filter(lambda x: not x in "0123456789", pid)) > 0:
+        return False
     if not os.path.exists("/proc/%s" % pid):
         return False
     return True

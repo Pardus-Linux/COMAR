@@ -877,14 +877,14 @@ def autoConfigure():
 
     write_tmpl(template_main, keys_main, xorg_conf)
 
-def safeConfigure():
+def safeConfigure(_driver = "vesa"):
     # set failsafe graphics card
     cards = []
 
     a = Device()
     a.BoardName = "VESA configured board"
     a.VendorName = "VESA configured vendor"
-    a.Driver = "vesa"
+    a.Driver = _driver
     cards.append(a)
 
     # set failsafe monitor stuff

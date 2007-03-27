@@ -611,7 +611,8 @@ def findPciCards():
                         vendorId = lremove(sysValue(sysDir, _dev, "vendor"), "0x")
                         deviceId = lremove(sysValue(sysDir, _dev, "device"), "0x")
                         #FIXME: BusID magic to support multiple heads, but breaking pci-e support ?
-                        a.BusId = '# BusID      "PCI:%s"' % _dev.replace(".",":").split(":", 1)[1]
+                        busId = tuple(int(x, 16) for x in _dev.replace(".",":").split(":")[1:4])
+                        a.BusId = '# BusID      "PCI:%d:%d:%d"' % busId
                         a.BoardName, a.VendorName =  queryPCI(vendorId, deviceId)
                         a.Driver = queryDriver(vendorId, deviceId)
                         a.DeviceInfo = "%s:%s" % (vendorId,deviceId)
@@ -909,7 +910,7 @@ def safeConfigure(_driver = "vesa"):
     keys_main["SEC_VIDEOCARD"] = keysVideoCards(cards)
 
     # and then the monitor
-    keys_main["SEC_MONITOR"], keys_main["SEC_SCREEN"] = keysMonitors(monitors)
+    keys_main["SEC_MONITOR"], keys_main["SEC_SCREEN"] = keysMonitors(monitors, cards)
 
     # input devices
     keys_main["KEYMAP"] = queryKeymap()

@@ -601,7 +601,9 @@ def queryPCI(vendor, device):
 
 def findPciCards():
     cards = []
-    for bus in ["pci", "pci_express"]:
+    # read only PCI for now, see if it borks
+    # for bus in ["pci", "pci_express"]:
+    for bus in ["pci"]:
         sysDir = os.path.join("/sys/bus", bus, "devices")
         if os.path.isdir(sysDir):
             for _dev in os.listdir(sysDir):

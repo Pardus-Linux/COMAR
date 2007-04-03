@@ -12,6 +12,7 @@
 import os
 import fcntl
 import time
+import socket
 import subprocess
 
 
@@ -48,7 +49,6 @@ def checkDaemon(pidfile):
     return True
 
 def waitBus(unix_name, timeout=5, wait=0.1, stream=True):
-    import socket
     if stream:
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     else:

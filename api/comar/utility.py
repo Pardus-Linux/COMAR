@@ -14,11 +14,13 @@ import fcntl
 import time
 import subprocess
 
+
 class execReply(int):
     def __init__(self, value):
         int.__init__(self, value)
         self.stdout = None
         self.stderr = None
+
 
 def run(*cmd):
     """Run a command without running a shell"""
@@ -47,7 +49,6 @@ def checkDaemon(pidfile):
 
 def waitBus(unix_name, timeout=5, wait=0.1, stream=True):
     import socket
-    import time
     if stream:
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     else:
@@ -91,4 +92,3 @@ class FileLock:
     
     def unlock(self):
         fcntl.flock(self.fd, fcntl.LOCK_UN)
-

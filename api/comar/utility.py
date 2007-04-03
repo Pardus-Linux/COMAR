@@ -14,17 +14,14 @@ import fcntl
 import time
 import subprocess
 
-class execReply:
-    def __init__(self, code, stdout, stderr):
-        self.code = code
-        self.stdout = stdout
-        self.stderr = stderr
-    
-    def __str__(self):
-        return self.code
+class execReply(int):
+    def __init__(self, value):
+        int.__init__(self, value)
+        self.stdout = None
+        self.stderr = None
 
-def execute(*cmd):
-    """Run a command and return an object containing output and error code."""
+def run(*cmd):
+    """Run a command without running a shell"""
     command = []
     if len(cmd) == 1:
         if isinstance(cmd[0], basestring):
@@ -34,18 +31,9 @@ def execute(*cmd):
     else:
         command = cmd
     proc = subprocess.Popen(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-    out, err = proc.communicate()
-    return execReply(code=proc.wait(), stdout=out, stderr=err)
-
-def run(*cmd):
-    """Run a command without running a shell"""
-    if len(cmd) == 1:
-        if isinstance(cmd[0], basestring):
-            return subprocess.call(cmd[0].split())
-        else:
-            return subprocess.call(cmd[0])
-    else:
-        return subprocess.call(cmd)
+    reply = execReply(proc.wait())
+    reply.stdout, reply.stderr = proc.communicate()
+    return reply
 
 def checkDaemon(pidfile):
     if not os.path.exists(pidfile):

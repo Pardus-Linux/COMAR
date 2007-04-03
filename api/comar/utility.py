@@ -14,6 +14,29 @@ import fcntl
 import time
 import subprocess
 
+class execReply:
+    def __init__(self, code, stdout, stderr):
+        self.code = code
+        self.stdout = stdout
+        self.stderr = stderr
+    
+    def __str__(self):
+        return self.code
+
+def execute(*cmd):
+    """Run a command and return an object containing output and error code."""
+    command = []
+    if len(cmd) == 1:
+        if isinstance(cmd[0], basestring):
+            command = cmd[0].split()
+        else:
+            command = cmd[0]
+    else:
+        command = cmd
+    proc = subprocess.Popen(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    out, err = proc.communicate()
+    return execReply(code=proc.wait(), stdout=out, stderr=err)
+
 def run(*cmd):
     """Run a command without running a shell"""
     if len(cmd) == 1:

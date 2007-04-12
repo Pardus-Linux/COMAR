@@ -41,7 +41,7 @@ def run(*cmd):
 def checkDaemon(pidfile):
     if not os.path.exists(pidfile):
         return False
-    pid = file(pidfile).read().rstrip("\n")
+    pid = file(pidfile).read().split("\n")[0]
     if len(pid) == 0 or len(filter(lambda x: not x in "0123456789", pid)) > 0:
         return False
     if not os.path.exists("/proc/%s" % pid):

@@ -553,15 +553,15 @@ class intelWorkaround:
 
 
 def parseCmdline():
+    keys_jail = ""
     cmds = "".join(loadFile("/proc/cmdline"))
+
     for opt in cmds.split():
         if opt.startswith("xorg="):
             cmd = opt[5:]
         if opt.startswith("mudur="):
             if "thin" in opt[6:].split(","):
                 keys_jail = template_jail
-            else:
-                keys_jail = ""
 
     return cmd
 

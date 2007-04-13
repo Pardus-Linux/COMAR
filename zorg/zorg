@@ -137,8 +137,7 @@ Section "Device"
 EndSection
 """
 
-template_jail = """
-    # Prevent virtual terminal switching
+template_jail = """    # Prevent virtual terminal switching
     Option     "DontVTSwitch" "true"
     # Prevent killing X
     Option     "DontZap" "true"

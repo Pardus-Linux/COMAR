@@ -552,18 +552,12 @@ class intelWorkaround:
             run(*cmd)
 
 
-def parseCmdline():
-    keys_jail = ""
-    cmds = "".join(loadFile("/proc/cmdline"))
+def getKernelOpt(cmdopt):
+    for cmd in "".join(loadFile("/proc/cmdline")).split():
+        if cmd.startswith("%s=" % cmdopt):
+            return cmd[len(cmdopt)+1:]
 
-    for opt in cmds.split():
-        if opt.startswith("xorg="):
-            cmd = opt[5:]
-        if opt.startswith("mudur="):
-            if "thin" in opt[6:].split(","):
-                keys_jail = template_jail
-
-    return cmd
+    return ""
 
 def xisrunning():
     if os.path.exists(xorg_lock):
@@ -845,6 +839,12 @@ def isVirtual():
             return True
         return False
 
+def getJail():
+    if "thin" in getKernelOpt("mudur").split(","):
+        return template_jail
+    else:
+        return ""
+
 # om call
 
 def autoConfigure():
@@ -892,7 +892,7 @@ def autoConfigure():
     keys_main["KEYMAP"] = queryKeymap()
 
     # check if we are in jail
-    keys_main["SEC_JAIL"] = keys_jail
+    keys_main["SEC_JAIL"] = getJail()
 
     write_tmpl(template_main, keys_main, xorg_conf)
 
@@ -937,7 +937,7 @@ def safeConfigure(_driver = "vesa"):
     keys_main["SYNAPTICS_LAY"] = ""
 
     # check if we are in jail
-    keys_main["SEC_JAIL"] = keys_jail
+    keys_main["SEC_JAIL"] = getJail()
 
     write_tmpl(template_main, keys_main, xorg_conf)
 
@@ -974,7 +974,7 @@ def startNormal():
                 safeConfigure("fbdev")
 
 def boot():
-    cmd = parseCmdline()
+    cmd = getKernelOpt("xorg")
     if cmd == "off":
         sys.exit(1)
     elif cmd == "probe":

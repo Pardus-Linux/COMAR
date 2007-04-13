@@ -137,6 +137,12 @@ Section "Device"
 EndSection
 """
 
+template_jail = """
+    # Prevent virtual terminal switching
+    Option     "DontVTSwitch" "true"
+    # Prevent killing X
+    Option     "DontZap" "true"
+"""
 template_main = """
 Section "Module"
     Load "dbe"      # Double buffer extension
@@ -184,6 +190,7 @@ Section "ServerFlags"
     Option     "StandbyTime" "0"
     Option     "SuspendTime" "0"
     Option     "OffTime" "0"
+%(SEC_JAIL)s
 EndSection
 
 Section "InputDevice"
@@ -549,8 +556,14 @@ def parseCmdline():
     cmds = "".join(loadFile("/proc/cmdline"))
     for opt in cmds.split():
         if opt.startswith("xorg="):
-            return opt[5:]
-    return ""
+            cmd = opt[5:]
+        if opt.startswith("mudur="):
+            if "thin" in opt[6:].split(","):
+                keys_jail = template_jail
+            else:
+                keys_jail = ""
+
+    return cmd
 
 def xisrunning():
     if os.path.exists(xorg_lock):
@@ -878,6 +891,9 @@ def autoConfigure():
     querySynaptics(keys_main)
     keys_main["KEYMAP"] = queryKeymap()
 
+    # check if we are in jail
+    keys_main["SEC_JAIL"] = keys_jail
+
     write_tmpl(template_main, keys_main, xorg_conf)
 
 def safeConfigure(_driver = "vesa"):
@@ -919,6 +935,9 @@ def safeConfigure(_driver = "vesa"):
     keys_main["SYNAPTICS_MOD"] = ""
     keys_main["SEC_SYNAPTICS"] = ""
     keys_main["SYNAPTICS_LAY"] = ""
+
+    # check if we are in jail
+    keys_main["SEC_JAIL"] = keys_jail
 
     write_tmpl(template_main, keys_main, xorg_conf)
 

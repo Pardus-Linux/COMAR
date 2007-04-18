@@ -14,8 +14,18 @@ import ldap.modlist
 
 
 class DomainComponent:
-    def __init__(self, name):
+    def __init__(self, conn, dn, name):
+        self.conn = conn
+        self.dn = dn
         self.name = name
+    
+    def expand(self):
+        ret = self.conn.search_s(self.dn, ldap.SCOPE_ONELEVEL, "objectClass=organization")
+        kids = []
+        for dn, attr in ret:
+            kid = DomainComponent(self.conn, dn, attr["dc"][0])
+            kids.append(kid)
+        return kids
 
 
 class Domain:
@@ -23,6 +33,7 @@ class Domain:
         self.name = name
         
         self.host = "127.0.0.1"
+        self.base_dn = "dc=example,dc=com"
         self.bind_dn = "cn=Manager,dc=example,dc=com"
         self.bind_password = "*****"
         self.conn = None
@@ -40,10 +51,15 @@ class Domain:
         attr["dc"] = ["example"]
         attr["o"] = ["Example Company"]
         entry = ldap.modlist.addModlist(attr)
-        self.conn.add_s("dc=example,dc=com", entry)
+        self.conn.add_s(self.base_dn, entry)
     
     def expand(self):
         if self.conn == None:
             self.connect()
         
-        return [DomainComponent("Pardus"), DomainComponent("Optik")]
+        ret = self.conn.search_s(self.base_dn, ldap.SCOPE_ONELEVEL, "objectClass=organization")
+        kids = []
+        for dn, attr in ret:
+            kid = DomainComponent(self.conn, dn, attr["dc"][0])
+            kids.append(kid)
+        return kids

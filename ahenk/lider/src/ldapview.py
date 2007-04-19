@@ -9,7 +9,9 @@
 # option) any later version. Please read the COPYING file.
 #
 
+import os
 from qt import *
+import piksemel
 
 import ldapmodel
 
@@ -39,8 +41,30 @@ class Browser(QListView):
         
         self.connect(self, SIGNAL("expanded(QListViewItem*)"), self.slotExpand)
         
-        Item(self, ldapmodel.Domain("Test"))
+        self.load()
     
     def slotExpand(self, item):
         for kid in item.item.expand():
             Item(self, kid, item)
+    
+    def configFile(self):
+        return os.path.join(os.getenv("HOME"), ".ahenk-lider.xml")
+    
+    def load(self):
+        path = self.configFile()
+        if os.path.exists(path):
+            doc = piksemel.parse(path)
+            for tag in doc.getTag("Domains").tags("Domain"):
+                dom = ldapmodel.Domain()
+                dom.fromXML(tag)
+                Item(self, dom)
+    
+    def save(self):
+        path = self.configFile()
+        doc = piksemel.newDocument("AhenkLider")
+        doms = doc.insertTag("Domains")
+        item = self.firstChild()
+        while item:
+            doms.insertNode(item.item.toXML())
+            item = item.nextSibling()
+        file(path, "w").write(doc.toPrettyString())

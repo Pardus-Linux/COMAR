@@ -14,17 +14,34 @@ import ldap.modlist
 import piksemel
 
 
+class DomainObject:
+    def __init__(self, conn, dn, attr):
+        self.dn = dn
+        self.attr = attr
+        self.name = "lala"
+        if attr.has_key("cn"):
+            self.name = unicode(attr["cn"][0])
+
+
 class DomainComponent:
     def __init__(self, conn, dn, name):
         self.conn = conn
         self.dn = dn
         self.name = name
     
+    def objects(self):
+        ret = self.conn.search_s(self.dn, ldap.SCOPE_ONELEVEL, "(!(objectClass=organization))")
+        kids = []
+        for dn, attr in ret:
+            kid = DomainObject(self.conn, dn, attr)
+            kids.append(kid)
+        return kids
+    
     def expand(self):
         ret = self.conn.search_s(self.dn, ldap.SCOPE_ONELEVEL, "objectClass=organization")
         kids = []
         for dn, attr in ret:
-            kid = DomainComponent(self.conn, dn, attr["dc"][0])
+            kid = DomainComponent(self.conn, dn, unicode(attr["dc"][0]))
             kids.append(kid)
         return kids
 
@@ -72,6 +89,17 @@ class Domain:
         entry = ldap.modlist.addModlist(attr)
         self.conn.add_s(self.base_dn, entry)
     
+    def objects(self):
+        if self.conn == None:
+            self.connect()
+        
+        ret = self.conn.search_s(self.base_dn, ldap.SCOPE_ONELEVEL, "(!(objectClass=organization))")
+        kids = []
+        for dn, attr in ret:
+            kid = DomainObject(self.conn, dn, attr)
+            kids.append(kid)
+        return kids
+    
     def expand(self):
         if self.conn == None:
             self.connect()
@@ -79,6 +107,6 @@ class Domain:
         ret = self.conn.search_s(self.base_dn, ldap.SCOPE_ONELEVEL, "objectClass=organization")
         kids = []
         for dn, attr in ret:
-            kid = DomainComponent(self.conn, dn, attr["dc"][0])
+            kid = DomainComponent(self.conn, dn, unicode(attr["dc"][0]))
             kids.append(kid)
         return kids

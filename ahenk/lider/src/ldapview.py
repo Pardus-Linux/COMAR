@@ -16,7 +16,7 @@ import piksemel
 import ldapmodel
 
 
-class Item(QListViewItem):
+class BrowserItem(QListViewItem):
     def __init__(self, tree, item, parent=None):
         if parent:
             QListViewItem.__init__(self, parent)
@@ -45,7 +45,7 @@ class Browser(QListView):
     
     def slotExpand(self, item):
         for kid in item.item.expand():
-            Item(self, kid, item)
+            BrowserItem(self, kid, item)
     
     def configFile(self):
         return os.path.join(os.getenv("HOME"), ".ahenk-lider.xml")
@@ -57,7 +57,7 @@ class Browser(QListView):
             for tag in doc.getTag("Domains").tags("Domain"):
                 dom = ldapmodel.Domain()
                 dom.fromXML(tag)
-                Item(self, dom)
+                BrowserItem(self, dom)
     
     def save(self):
         path = self.configFile()
@@ -68,3 +68,18 @@ class Browser(QListView):
             doms.insertNode(item.item.toXML())
             item = item.nextSibling()
         file(path, "w").write(doc.toPrettyString())
+
+
+class ObjectItem(QListViewItem):
+    def __init__(self, tree, item):
+        QListViewItem.__init__(self, tree)
+        self.item = item
+    
+    def text(self, col):
+        return self.item.name
+
+
+class Objects(QListView):
+    def __init__(self, parent):
+        QListView.__init__(self, parent)
+        self.addColumn("")

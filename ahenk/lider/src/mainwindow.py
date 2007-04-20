@@ -86,7 +86,7 @@ class DomainProperties(KDialog):
         if not self.dom:
             self.dom = ldapmodel.Domain()
         self.setValues()
-        ldapview.Item(self.parent().browser, self.dom)
+        ldapview.BrowserItem(self.parent().browser, self.dom)
         self.parent().browser.save()
         KDialog.accept(self)
     
@@ -116,9 +116,16 @@ class MainWindow(KMainWindow):
         self.act_add_domain.addTo(bar)
         self.act_add_dc.addTo(bar)
         
-        self.browser = ldapview.Browser(self)
+        hb = QHBox(self)
+        hb.setMargin(3)
+        hb.setSpacing(6)
+        
+        self.browser = ldapview.Browser(hb)
         self.connect(self.browser, SIGNAL("selectionChanged()"), self.slotBrowserChange)
-        self.setCentralWidget(self.browser)
+        
+        self.objects = ldapview.Objects(hb)
+        
+        self.setCentralWidget(hb)
         
         self.slotBrowserChange()
     
@@ -130,6 +137,9 @@ class MainWindow(KMainWindow):
         item = self.browser.selectedItem()
         if item:
             dc = True
+            self.objects.clear()
+            for obj in item.item.objects():
+                ldapview.ObjectItem(self.objects, obj)
         
         self.act_add_dc.setEnabled(dc)
     

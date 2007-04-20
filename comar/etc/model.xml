@@ -74,6 +74,40 @@
 </group>
 
 
+<group name="Boot">
+	<class name="Loader">
+		<method name="listOptions" access="guest"/>
+		<method name="getOption" access="guest">
+			<argument>key</argument>
+		</method>
+		<method name="setOption">
+			<argument>key</argument>
+			<argument>value</argument>
+		</method>
+		<method name="listEntries" access="guest"/>
+		<method name="getEntry" access="guest">
+			<argument>index</argument>
+		</method>
+		<method name="addEntry">
+			<argument>title</argument>
+			<argument>commands</argument>
+		</method>
+		<method name="removeEntry">
+			<argument>index</argument>
+		</method>
+		<method name="updateEntry">
+			<argument>index</argument>
+			<argument>title</argument>
+			<argument>commands</argument>
+		</method>
+		<method name="updateKernelEntry">
+			<argument>version</argument>
+		</method>
+		<notify name="changed" access="guest"/>
+	</class>
+</group>
+
+
 <group name="User">
 
 <class name="Manager">
@@ -212,6 +246,10 @@
     <instance>name</instance>
     <argument>namemode</argument>
     <argument>nameserver</argument>
+</method>
+<method name="setMTU" profile="package">
+    <instance>name</instance>
+    <argument>mtu</argument>
 </method>
 <method name="setAuthentication" profile="package">
     <instance>name</instance>

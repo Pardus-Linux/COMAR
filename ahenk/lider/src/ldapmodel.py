@@ -14,6 +14,32 @@ import ldap.modlist
 import piksemel
 
 
+class LdapClass:
+    def fromEntry(self, attr):
+        for item in self.entryDescription:
+            if attr.has_key(item[1]):
+                if item[2] == int:
+                    val = int(attr[item[1]][0])
+                elif item[2] == str:
+                    val = unicode(attr[item[1]][0])
+                else:
+                    val = attr[item[1]]
+            else:
+                val = item[3]
+            setattr(self, item[0], val)
+    
+    def toEntry(self):
+        attr = {}
+        for item in self.entryDescription:
+            val = getattr(self, item[0])
+            if item[2] == int:
+                val = [str(val)]
+            elif item[2] == str:
+                val = [val]
+            attr[item[1]] = val
+        return attr
+
+
 class DomainObject:
     def __init__(self, conn, dn, attr):
         self.dn = dn
@@ -77,6 +103,10 @@ class Domain:
     def connect(self):
         self.conn = ldap.open(self.host)
         self.conn.simple_bind_s(self.bind_dn, self.bind_password)
+    
+    def collapse(self):
+        self.conn.unbind_s()
+        self.conn = None
     
     def insertDC(self, name):
         if self.conn == None:

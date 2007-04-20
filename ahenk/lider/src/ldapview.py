@@ -40,6 +40,7 @@ class Browser(QListView):
         self.setRootIsDecorated(True)
         
         self.connect(self, SIGNAL("expanded(QListViewItem*)"), self.slotExpand)
+        self.connect(self, SIGNAL("collapsed(QListViewItem*)"), self.slotCollapse)
         
         self.load()
     
@@ -51,6 +52,10 @@ class Browser(QListView):
             kid = tmp
         for kid in item.item.expand():
             BrowserItem(self, kid, item)
+    
+    def slotCollapse(self, item):
+        if isinstance(item.item, ldapmodel.Domain):
+            item.item.collapse()
     
     def configFile(self):
         return os.path.join(os.getenv("HOME"), ".ahenk-lider.xml")

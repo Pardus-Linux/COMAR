@@ -44,6 +44,11 @@ class Browser(QListView):
         self.load()
     
     def slotExpand(self, item):
+        kid = item.firstChild()
+        while kid:
+            tmp = kid.nextSibling()
+            item.takeItem(kid)
+            kid = tmp
         for kid in item.item.expand():
             BrowserItem(self, kid, item)
     

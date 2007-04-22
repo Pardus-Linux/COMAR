@@ -103,8 +103,7 @@
 		<method name="updateKernelEntry">
 			<argument>version</argument>
 		</method>
-		<notify name="progress" access="guest"/>
-		<notify name="finished" access="guest"/>
+		<notify name="changed" access="guest"/>
 	</class>
 </group>
 

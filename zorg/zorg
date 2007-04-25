@@ -23,7 +23,7 @@ xorg_off = "/var/run/xorg_off"
 xorg_lock = "/tmp/.X0-lock"
 xdriverlist = "/usr/lib/X11/xdriverlist"
 MonitorsDB = "/usr/lib/X11/MonitorsDB"
-truecolorCards = ["i810", "nv", "nvidia", "radeon", "fglrx"]
+truecolorCards = ["i810", "intel", "nv", "nvidia", "radeon", "fglrx"]
 
 ### templates ###
 template_videocard = """

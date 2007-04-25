@@ -628,7 +628,7 @@ def findPciCards():
         return cards
     else:
         # FIXME: this machine might be a server with no cards, but I am not sure if we could let kdm start
-        # Since kdm might be a terminal server, this is left to the user, for now 
+        # Since kdm might be on a terminal server, we start it and leave the decision to the user 
         sys.exit(0)
 
 def queryPanel(mon):

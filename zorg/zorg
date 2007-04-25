@@ -832,11 +832,11 @@ def keysMonitors(monitors, cards):
 def isVirtual():
     # Xen detection
     if os.path.exists("/proc/xen/capabilities"):
-        # if we are in dom0 then no extra work needed
+        # We are in dom0, act like normal system
         if loadFile("/proc/xen/capabilities") == []:
-            # if we are in domU then no need to try configure X
+            # We are in domU, configure X to use fbdev if exists
             return True
-        return False
+    return False
 
 def getJail():
     if not "nojail" in getKernelOpt("xorg"):

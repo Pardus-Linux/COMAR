@@ -231,6 +231,13 @@ EndSection
 
 
 ### api ###
+def printz(_str, error=False):
+    if error:
+        print _str
+        sys.exit(1)
+    if debug:
+        print _str
+
 def unlink(path):
     try:
         os.unlink(path)
@@ -250,7 +257,7 @@ def backup(_file):
             os.rename(_file, "%s-backup" % _file)
         return True
     except:
-        print "Could not backup %s" % _file
+        printz("Could not backup %s" % _file)
         return False
 
 def saveActiveCard(cards):
@@ -318,7 +325,6 @@ def loadFile(_file):
         return d
     except:
         return ""
-
 
 ### modeline calc ###
 
@@ -634,7 +640,7 @@ def findPciCards():
 
 def queryPanel(mon):
     if xisrunning():
-        print "X is running, we are not querying panel"
+        printz("We are not querying panel since X is running")
         return None
     else:
         patterns = [
@@ -669,7 +675,7 @@ def queryDDC():
 
     ddc = capture("/usr/sbin/ddcxinfos")
     if ddc[1] != '':
-        print "ddcxinfos failed!"
+        printz("ddcxinfos failed!")
         return mon
 
     for line in ddc[0].split("\n"):
@@ -849,11 +855,10 @@ def autoConfigure():
 
     # if could not find driver from driverlist try X -configure
     if not cards[0].Driver:
-        print "Trying to probe with X"
+        printz("Could not find the video card. Trying to probe with X.")
         a = run("/usr/bin/X", "-configure", "-logfile", "/var/log/xlog")
         if a != 0:
-            print "X -configure failed!"
-            sys.exit(1)
+            printz("X -configure failed!", 1)
         home = os.getenv("HOME", "")
         f = file(home + "/xorg.conf.new")
         conf = f.readlines()
@@ -949,7 +954,7 @@ def checkActiveCard():
         activeCards = file(activeCard,'r').readlines()
         for i in range(len(activeCards)):
             if not cards[i].DeviceInfo == activeCards[i].strip("\n"):
-                print "Videocards changed, Zorg is reconfiguring X"
+                printz("Videocards changed, Zorg is reconfiguring X")
                 backup(xorg_conf)
     else:
         # For the first time
@@ -960,12 +965,11 @@ def startNormal():
     if not isVirtual():
         checkActiveCard()
         if xisrunning():
-            print "Xorg is running, please stop it first"
-            sys.exit(1)
+            printz("Xorg is running, please stop it first", 1)
         if not os.path.exists(xorg_conf):
             autoConfigure()
         else:
-            print "%s exits, doing nothing" % xorg_conf
+            printz("%s exits, doing nothing" % xorg_conf)
     else:
         if not os.path.exists(xorg_conf):
             if os.path.exists("/dev/fb/0"):

@@ -581,7 +581,8 @@ def queryDriver(vendor, device):
     for line in loadFile(xdriverlist):
         if line.startswith(vendor + device):
             drv = line.rstrip("\n").split(" ")[1]
-            return drv
+            if drv in available_drivers:
+                return drv
     return None
 
 def queryPCI(vendor, device):

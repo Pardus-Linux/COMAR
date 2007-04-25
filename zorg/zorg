@@ -255,6 +255,7 @@ def backup(_file):
     try:
         if os.path.exists(_file):
             os.rename(_file, "%s-backup" % _file)
+        printz("Wrote backup %s-backup" % _file)
         return True
     except:
         printz("Could not backup %s" % _file)
@@ -301,6 +302,7 @@ def atoi(s):
     return ret
 
 def write_tmpl(tmpl, keys, fname):
+    printz("Writing template to %s" % fname)
     f = file(fname, "w")
     f.write(tmpl % keys)
     f.close()
@@ -552,6 +554,7 @@ class intelWorkaround:
         self.cfgmodes = self._readconfig()
         for k in self.cfgmodes:
             cmd = ["/usr/sbin/915resolution", k]
+            printz("Setting Intel BIOS mode %s as %s" % (k, self.cfgmodes[k]))
             cmd.extend(self.cfgmodes[k].split())
             run(*cmd)
 

@@ -839,8 +839,9 @@ def isVirtual():
         return False
 
 def getJail():
-    if "thin" in getKernelOpt("mudur").split(",") and not "nojail" in getKernelOpt("xorg").split(","):
-        return template_jail
+    if not "nojail" in getKernelOpt("xorg").split(","):
+        if "thin" in getKernelOpt("mudur").split(",") or "jail" in getKernelOpt("xorg").split(","):
+            return template_jail
     else:
         return ""
 

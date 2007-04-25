@@ -90,7 +90,11 @@
 		</method>
 		<method name="addEntry">
 			<argument>title</argument>
-			<argument>commands</argument>
+			<argument>root</argument>
+			<argument>os_type</argument>
+			<argument>kernel</argument>
+			<argument>initrd</argument>
+			<argument>options</argument>
 		</method>
 		<method name="removeEntry">
 			<argument>index</argument>
@@ -98,7 +102,11 @@
 		<method name="updateEntry">
 			<argument>index</argument>
 			<argument>title</argument>
-			<argument>commands</argument>
+			<argument>root</argument>
+			<argument>os_type</argument>
+			<argument>kernel</argument>
+			<argument>initrd</argument>
+			<argument>options</argument>
 		</method>
 		<method name="updateKernelEntry">
 			<argument>version</argument>

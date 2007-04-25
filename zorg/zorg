@@ -554,7 +554,7 @@ class intelWorkaround:
 def getKernelOpt(cmdopt):
     for cmd in "".join(loadFile("/proc/cmdline")).split():
         if cmd.startswith("%s=" % cmdopt):
-            return cmd[len(cmdopt)+1:]
+            return cmd[len(cmdopt)+1:].split(",")
 
     return ""
 
@@ -839,8 +839,8 @@ def isVirtual():
         return False
 
 def getJail():
-    if not "nojail" in getKernelOpt("xorg").split(","):
-        if "thin" in getKernelOpt("mudur").split(",") or "jail" in getKernelOpt("xorg").split(","):
+    if not "nojail" in getKernelOpt("xorg"):
+        if "thin" in getKernelOpt("mudur") or "jail" in getKernelOpt("xorg"):
             return template_jail
     else:
         return ""
@@ -974,7 +974,7 @@ def startNormal():
                 safeConfigure("fbdev")
 
 def boot():
-    cmds = getKernelOpt("xorg").split(",")
+    cmds = getKernelOpt("xorg")
     if "off" in cmds:
         sys.exit(1)
     elif "probe" in cmds:

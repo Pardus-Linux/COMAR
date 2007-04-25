@@ -839,7 +839,7 @@ def isVirtual():
         return False
 
 def getJail():
-    if "thin" in getKernelOpt("mudur").split(","):
+    if "thin" in getKernelOpt("mudur").split(",") and not "nojail" in getKernelOpt("xorg").split(","):
         return template_jail
     else:
         return ""
@@ -973,15 +973,15 @@ def startNormal():
                 safeConfigure("fbdev")
 
 def boot():
-    cmd = getKernelOpt("xorg")
-    if cmd == "off":
+    cmds = getKernelOpt("xorg").split(",")
+    if "off" in cmds:
         sys.exit(1)
-    elif cmd == "probe":
+    elif "probe" in cmds:
         if backup(xorg_conf):
             startNormal()
         else:
             sys.exit(1)
-    elif cmd == "safe":
+    elif "safe" in cmds:
         if backup(xorg_conf):
             safeConfigure()
             startNormal()

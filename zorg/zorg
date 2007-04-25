@@ -231,8 +231,8 @@ EndSection
 
 
 ### api ###
-def printz(_str, error=False):
-    if error:
+def printz(_str, _error=False):
+    if _error:
         print _str
         sys.exit(1)
     if debug:
@@ -656,7 +656,7 @@ def queryPanel(mon):
         ]
         a = run("/usr/bin/X", "-probeonly", "-allowMouseOpenFail", "-logfile", "/var/log/xlog")
         if a != 0:
-            print "X -probeonly failed!"
+            printz("X -probeonly failed!")
             return
         f = file("/var/log/xlog")
         for line in f.readlines():

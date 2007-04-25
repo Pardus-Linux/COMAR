@@ -1025,6 +1025,6 @@ if __name__ == "__main__":
         # Just run intel workaround and exit
         intel("fix")
     elif "--intellist" in sys.argv:
-        # Just run intel workaround and exit
+        # List available BIOS modes for intel cards
         intel("list")
 

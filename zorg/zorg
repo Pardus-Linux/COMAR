@@ -633,7 +633,7 @@ def findPciCards():
         sys.exit(0)
 
 def queryPanel(mon):
-    if xisrunning() == True:
+    if xisrunning():
         print "X is running, we are not querying panel"
         return None
     else:

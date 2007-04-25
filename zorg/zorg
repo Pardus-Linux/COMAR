@@ -546,8 +546,7 @@ class intelWorkaround:
 
     def listbiosmodes(self):
         self.biosmodes = self._getbiosmodes()
-        for k in self.biosmodes:
-            print "%s -> %s" % (k, self.biosmodes[k])
+        return self.biosmodes
 
     def replacemodes(self):
         self.cfgmodes = self._readconfig()
@@ -570,9 +569,17 @@ def xisrunning():
     else:
         return False
 
-def intelFix():
+def intel(_type="fix"):
     i = intelWorkaround()
-    i.replacemodes()
+
+    if _type == "list":
+        _modes = i.listbiosmodes()
+        keys = _modes.keys()
+        keys.sort()
+        for k in keys:
+            print "Mode %s = %s bits/pixel" % (k, _modes[k].replace(" ", "x", 1).replace(" ", "\t", 1))
+    else:
+        i.replacemodes()
 
 def listAvailableDrivers(d = driver_path):
     a = []
@@ -961,7 +968,7 @@ def checkActiveCard():
         saveActiveCard(cards)
 
 def startNormal():
-    intelFix()
+    intel("fix")
     if not isVirtual():
         checkActiveCard()
         if xisrunning():
@@ -1016,5 +1023,8 @@ if __name__ == "__main__":
             sys.exit(1)
     elif "--intelfix" in sys.argv:
         # Just run intel workaround and exit
-        intelFix()
+        intel("fix")
+    elif "--intellist" in sys.argv:
+        # Just run intel workaround and exit
+        intel("list")
 

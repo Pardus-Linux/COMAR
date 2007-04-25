@@ -963,6 +963,8 @@ def startNormal():
             sys.exit(1)
         if not os.path.exists(xorg_conf):
             autoConfigure()
+        else:
+            print "%s exits, doing nothing" % xorg_conf
     else:
         if not os.path.exists(xorg_conf):
             if os.path.exists("/dev/fb/0"):

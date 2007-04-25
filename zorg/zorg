@@ -838,8 +838,7 @@ def getJail():
     if not "nojail" in getKernelOpt("xorg"):
         if "thin" in getKernelOpt("mudur") or "jail" in getKernelOpt("xorg"):
             return template_jail
-    else:
-        return ""
+    return ""
 
 # om call
 

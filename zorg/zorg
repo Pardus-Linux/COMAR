@@ -233,7 +233,7 @@ EndSection
 ### api ###
 def printz(_str, _error=False):
     if _error:
-        print _str
+        print "ERROR: %s" % _str
         sys.exit(1)
     if debug:
         print _str
@@ -255,10 +255,10 @@ def backup(_file):
     try:
         if os.path.exists(_file):
             os.rename(_file, "%s-backup" % _file)
-        printz("Wrote backup %s-backup" % _file)
+        printz("-> Wrote backup %s-backup" % _file)
         return True
     except:
-        printz("Could not backup %s" % _file)
+        printz("-> Could not backup %s" % _file)
         return False
 
 def saveActiveCard(cards):
@@ -302,7 +302,7 @@ def atoi(s):
     return ret
 
 def write_tmpl(tmpl, keys, fname):
-    printz("Writing template to %s" % fname)
+    printz("-> Writing template to %s" % fname)
     f = file(fname, "w")
     f.write(tmpl % keys)
     f.close()
@@ -554,7 +554,7 @@ class intelWorkaround:
         self.cfgmodes = self._readconfig()
         for k in self.cfgmodes:
             cmd = ["/usr/sbin/915resolution", k]
-            printz("Setting Intel BIOS mode %s as %s" % (k, self.cfgmodes[k]))
+            printz("-> Setting Intel BIOS mode %s as %s" % (k, self.cfgmodes[k]))
             cmd.extend(self.cfgmodes[k].split())
             run(*cmd)
 
@@ -599,6 +599,7 @@ def queryDriver(vendor, device):
         if line.startswith(vendor + device):
             drv = line.rstrip("\n").split(" ")[1]
             if drv in available_drivers:
+                printz("%s:%s driver is %s" % (vendor, device, drv))
                 return drv
     return None
 
@@ -614,6 +615,7 @@ def queryPCI(vendor, device):
         else:
             if line.startswith("\t"):
                 if line.startswith("\t" + device):
+                    printz("%s:%s is %s - %s" % (vendor, device, company, line[6:].strip()))
                     return line[6:].strip(), company
             elif not line.startswith("#"):
                 flag = 0
@@ -650,7 +652,7 @@ def findPciCards():
 
 def queryPanel(mon):
     if xisrunning():
-        printz("We are not querying panel since X is running")
+        printz("-> Not querying panel, X is running")
         return None
     else:
         patterns = [
@@ -664,10 +666,13 @@ def queryPanel(mon):
         "Virtual screen size determined to be ",
         "Detected LCD/plasma panel ("
         ]
+
+        printz("-> Querying panel with X")
         a = run("/usr/bin/X", "-probeonly", "-allowMouseOpenFail", "-logfile", "/var/log/xlog")
         if a != 0:
             printz("X -probeonly failed!")
             return
+
         f = file("/var/log/xlog")
         for line in f.readlines():
             for p in patterns:
@@ -676,6 +681,7 @@ def queryPanel(mon):
                     mon.panel_w = atoi(b)
                     b = b[b.find("x")+1:]
                     mon.panel_h = atoi(b)
+                    printz("   found %sx%s" % (mon.panel_w, mon.panel_h))
                     break
         f.close()
         return None
@@ -683,9 +689,10 @@ def queryPanel(mon):
 def queryDDC():
     mon = Monitor()
 
+    printz("-> Probing DDC")
     ddc = capture("/usr/sbin/ddcxinfos")
     if ddc[1] != '':
-        printz("ddcxinfos failed!")
+        printz("   ddcxinfos failed!")
         return mon
 
     for line in ddc[0].split("\n"):
@@ -746,10 +753,12 @@ def querySynaptics(keys_main):
             # FIXME: check if kernel does not break anything
             # if "SynPS/2" in line or "AlpsPS/2" in line:
             if "SynPS/2" in line:
+                printz("-> Found Synaptics Touchpad")
                 keys_main["SYNAPTICS_MOD"] = 'Load "synaptics"'
                 keys_main["SYNAPTICS_LAY"] = 'InputDevice "Touchpad" "SendCoreEvents"'
                 keys_main["SEC_SYNAPTICS"] = template_synaptics
             elif "AlpsPS/2" in line:
+                printz("-> Found Alps Touchpad")
                 keys_main["SYNAPTICS_MOD"] = 'Load "synaptics"'
                 keys_main["SYNAPTICS_LAY"] = 'InputDevice "Touchpad" "SendCoreEvents"'
                 keys_main["SEC_SYNAPTICS"] = template_alps
@@ -771,6 +780,7 @@ def queryKeymap():
     if "-" in kmap:
         kmap = kmap.split("-", 1)[0]
 
+    printz("-> Keymap set to %s" % kmap)
     return kmap
 
 def findMonitors(cards):
@@ -846,14 +856,17 @@ def isVirtual():
     # Xen detection
     if os.path.exists("/proc/xen/capabilities"):
         # We are in dom0, act like normal system
+        printz("-> We are in Xen dom0")
         if loadFile("/proc/xen/capabilities") == []:
             # We are in domU, configure X to use fbdev if exists
+            printz("   and in Xen domU")
             return True
     return False
 
 def getJail():
     if not "nojail" in getKernelOpt("xorg"):
         if "thin" in getKernelOpt("mudur") or "jail" in getKernelOpt("xorg"):
+            printz("-> Jail is enabled")
             return template_jail
     return ""
 
@@ -865,7 +878,7 @@ def autoConfigure():
 
     # if could not find driver from driverlist try X -configure
     if not cards[0].Driver:
-        printz("Could not find the video card. Trying to probe with X.")
+        printz("-> Could not find the video card. Trying to probe with X.")
         a = run("/usr/bin/X", "-configure", "-logfile", "/var/log/xlog")
         if a != 0:
             printz("X -configure failed!", 1)
@@ -875,6 +888,7 @@ def autoConfigure():
         f.close()
         unlink(home + "/xorg.conf.new")
         cards[0].Driver = grepini(conf, 'Section "Device"', "\tDriver")
+        printz("   found %s" % cards[0].Driver)
 
     # Use nvidia if nv is found
     available_drivers = listAvailableDrivers()
@@ -964,7 +978,7 @@ def checkActiveCard():
         activeCards = file(activeCard,'r').readlines()
         for i in range(len(activeCards)):
             if not cards[i].DeviceInfo == activeCards[i].strip("\n"):
-                printz("Videocards changed, Zorg is reconfiguring X")
+                printz("-> Videocards changed, Zorg is reconfiguring X")
                 backup(xorg_conf)
     else:
         # For the first time
@@ -979,7 +993,7 @@ def startNormal():
         if not os.path.exists(xorg_conf):
             autoConfigure()
         else:
-            printz("%s exits, doing nothing" % xorg_conf)
+            printz("%s exists, doing nothing" % xorg_conf)
     else:
         if not os.path.exists(xorg_conf):
             if os.path.exists("/dev/fb/0"):
@@ -1004,8 +1018,6 @@ def boot():
         startNormal()
 
 if __name__ == "__main__":
-    if len(sys.argv) == 1:
-        startNormal()
     if "--debug" in sys.argv:
         debug = True
 
@@ -1030,4 +1042,6 @@ if __name__ == "__main__":
     elif "--intellist" in sys.argv:
         # List available BIOS modes for intel cards
         intel("list")
+    else:
+        startNormal()
 

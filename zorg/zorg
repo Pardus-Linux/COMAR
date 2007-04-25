@@ -24,6 +24,7 @@ xorg_lock = "/tmp/.X0-lock"
 xdriverlist = "/usr/lib/X11/xdriverlist"
 MonitorsDB = "/usr/lib/X11/MonitorsDB"
 truecolorCards = ["i810", "intel", "nv", "nvidia", "radeon", "fglrx"]
+debug = False
 
 ### templates ###
 template_videocard = """
@@ -991,18 +992,25 @@ def boot():
 if __name__ == "__main__":
     if len(sys.argv) == 1:
         startNormal()
-    elif sys.argv[1] == "--boot":
-            boot()
-    elif sys.argv[1] == "--safe":
+    if "--debug" in sys.argv:
+        debug = True
+
+    if "--boot" in sys.argv:
+        # Normal boot sequence
+        boot()
+    elif "--safe" in sys.argv:
+        # Force 800x600 vesa configuration
         if backup(xorg_conf):
             safeConfigure()
         else:
             sys.exit(1)
-    elif sys.argv[1] == "--probe":
+    elif "--probe" in sys.argv:
+        # Force probing devices
         if backup(xorg_conf):
             startNormal()
         else:
             sys.exit(1)
-    elif sys.argv[1] == "--intelfix":
-            intelFix()
+    elif "--intelfix" in sys.argv:
+        # Just run intel workaround and exit
+        intelFix()
 

@@ -316,7 +316,7 @@ def loadFile(_file):
         f.close()
         return d
     except:
-        return None
+        return ""
 
 
 ### modeline calc ###
@@ -515,8 +515,7 @@ class intelWorkaround:
 
     def _readconfig(self):
         dict = {}
-        f = loadFile("/etc/conf.d/915resolution")
-        for line in f:
+        for line in loadFile("/etc/conf.d/915resolution"):
             if "=" in line:
                 k, v = line.split("=", 1)
                 k = k.strip()
@@ -579,14 +578,11 @@ def listAvailableDrivers(d = driver_path):
 
 def queryDriver(vendor, device):
     available_drivers = listAvailableDrivers()
-    f = loadFile(xdriverlist)
-    if f is not None:
-        for line in f:
-            if line.startswith(vendor + device):
-                drv = line.rstrip("\n").split(" ")[1]
-                return drv
-    else:
-        return None
+    for line in loadFile(xdriverlist):
+        if line.startswith(vendor + device):
+            drv = line.rstrip("\n").split(" ")[1]
+            return drv
+    return None
 
 def queryPCI(vendor, device):
     f = file("/usr/share/misc/pci.ids")
@@ -704,8 +700,7 @@ def queryDDC():
             mon.vref_max = atoi(line[line.find("vfreq=") + 6:])
 
     if mon.eisaid != "":
-        f = loadFile(MonitorsDB)
-        for line in f:
+        for line in loadFile(MonitorsDB):
             l = line.split(";")
             if mon.eisaid == string.upper(l[2]).strip():
                 mon.vendorname = l[0].lstrip()

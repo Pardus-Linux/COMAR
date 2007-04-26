@@ -25,7 +25,7 @@ xdriverlist = "/usr/lib/X11/xdriverlist"
 MonitorsDB = "/usr/lib/X11/MonitorsDB"
 truecolorCards = ["i810", "intel", "nv", "nvidia", "radeon", "fglrx"]
 debug = False
-
+colorout = True
 
 ### Templates ###
 template_videocard = """
@@ -232,13 +232,6 @@ EndSection
 
 
 ### API ###
-def printz(_str, _error=False):
-    if _error:
-        print "ERROR: %s" % _str
-        sys.exit(1)
-    if debug:
-        print _str
-
 def unlink(path):
     try:
         os.unlink(path)
@@ -256,10 +249,10 @@ def backup(_file):
     try:
         if os.path.exists(_file):
             os.rename(_file, "%s-backup" % _file)
-        printz("-> Wrote backup %s-backup" % _file)
+        out.sect("Wrote backup %s-backup" % _file)
         return True
     except:
-        printz("-> Could not backup %s" % _file)
+        out.warn("Could not backup %s" % _file)
         return False
 
 def saveActiveCard(cards):
@@ -302,7 +295,7 @@ def atoi(s):
     return ret
 
 def write_tmpl(tmpl, keys, fname):
-    printz("-> Writing template to %s" % fname)
+    out.sect("Writing template to %s" % fname)
     f = file(fname, "w")
     f.write(tmpl % keys)
     f.close()
@@ -327,6 +320,39 @@ def loadFile(_file):
         return d
     except:
         return ""
+
+class OUT:
+    def __init__(self):
+        if colorout:
+            self.NORMAL = '\x1b[0m'
+            self.BOLD = '\x1b[37;01m'
+            self.MARK = '\x1b[36;01m'
+            self.WARN = '\x1b[34;01m'
+            self.ERROR = '\x1b[31;01m'
+        else:
+            self.NORMAL = ''
+            self.BOLD = ''
+            self.MARK = ''
+            self.WARN = ''
+            self.ERROR = ''
+
+    def _write(self, msg, type):
+        print "%s%s %s" % (type, self.NORMAL, msg)
+
+    def sect(self, msg):
+        if debug:
+            self._write("%s%s" % (self.BOLD,msg), "%s-> " % self.MARK)
+
+    def info(self, msg):
+        if debug:
+            self._write(msg, "%s   " % self.NORMAL)
+
+    def warn(self, msg):
+        self._write(msg, "%sWW " % self.WARN)
+
+    def error(self, msg):
+        self._write(msg, "%sEE " % self.ERROR)
+        sys.exit(1)
 
 
 ### Modeline Calculation ###
@@ -551,10 +577,11 @@ class intelWorkaround:
         return self.biosmodes
 
     def replacemodes(self):
+        out.sect("Setting Intel BIOS modes")
         self.cfgmodes = self._readconfig()
         for k in self.cfgmodes:
             cmd = ["/usr/sbin/915resolution", k]
-            printz("-> Setting Intel BIOS mode %s as %s" % (k, self.cfgmodes[k]))
+            out.info("%s as %s" % (k, self.cfgmodes[k]))
             cmd.extend(self.cfgmodes[k].split())
             run(*cmd)
 
@@ -621,7 +648,7 @@ def queryPCI(vendor, device):
 
 def findPciCards():
     cards = []
-    printz("-> Probing PCI bus for video cards")
+    out.sect("Probing PCI bus for video cards")
 
     # read only PCI for now, follow sysfs changes
     for bus in ["pci"]:
@@ -641,11 +668,11 @@ def findPciCards():
                         a.DeviceInfo = "%s:%s" % (vendorId,deviceId)
                         cards.append(a)
 
-                        printz("   found on %s" % _dev)
-                        printz("   PCI ID   = %s" % a.DeviceInfo)
-                        printz("   Vendor   = %s" % a.VendorName)
-                        printz("   Device   = %s" % a.BoardName)
-                        printz("   Driver   = %s" % a.Driver)
+                        out.info("found on %s" % _dev)
+                        out.info("PCI ID   = %s" % a.DeviceInfo)
+                        out.info("Vendor   = %s" % a.VendorName)
+                        out.info("Device   = %s" % a.BoardName)
+                        out.info("Driver   = %s" % a.Driver)
 
                 except:
                     pass
@@ -659,7 +686,7 @@ def findPciCards():
 
 def queryPanel(mon):
     if xisrunning():
-        printz("-> Not querying panel, X is running")
+        out.sect("Not querying panel, X is running")
         return None
     else:
         patterns = [
@@ -674,10 +701,10 @@ def queryPanel(mon):
         "Detected LCD/plasma panel ("
         ]
 
-        printz("-> Querying panel with X")
+        out.sect("Querying panel with X")
         a = run("/usr/bin/X", "-probeonly", "-allowMouseOpenFail", "-logfile", "/var/log/xlog")
         if a != 0:
-            printz("X -probeonly failed!")
+            out.warn("X -probeonly failed!")
             return
 
         f = file("/var/log/xlog")
@@ -688,7 +715,7 @@ def queryPanel(mon):
                     mon.panel_w = atoi(b)
                     b = b[b.find("x")+1:]
                     mon.panel_h = atoi(b)
-                    printz("   found %s x %s" % (mon.panel_w, mon.panel_h))
+                    out.info("found %s x %s" % (mon.panel_w, mon.panel_h))
                     break
         f.close()
         return None
@@ -696,10 +723,10 @@ def queryPanel(mon):
 def queryDDC():
     mon = Monitor()
 
-    printz("-> Probing DDC")
+    out.sect("Probing DDC")
     ddc = capture("/usr/sbin/ddcxinfos")
     if ddc[1] != '':
-        printz("   ddcxinfos failed!")
+        out.warn("ddcxinfos failed!")
         return mon
 
     for line in ddc[0].split("\n"):
@@ -745,11 +772,11 @@ def queryDDC():
         if t not in mon.res:
             mon.res = t + " " + mon.res
 
-    printz("   EISAID     = %s" % mon.eisaid)
-    printz("   Monitor    = %s - %s" % (mon.vendorname, mon.modelname))
-    printz("   Horizontal = %s - %s kHz" % (mon.hsync_min, mon.hsync_max))
-    printz("   Vertical   = %s - %s Hz" % (mon.vref_min, mon.vref_max))
-    printz("   Resolution = %s" % mon.res)
+    out.info("EISAID     = %s" % mon.eisaid)
+    out.info("Monitor    = %s - %s" % (mon.vendorname, mon.modelname))
+    out.info("Horizontal = %s - %s kHz" % (mon.hsync_min, mon.hsync_max))
+    out.info("Vertical   = %s - %s Hz" % (mon.vref_min, mon.vref_max))
+    out.info("Resolution = %s" % mon.res)
 
     if mon.res == "":
         mon.res = '"800x600" "640x480"'
@@ -765,12 +792,12 @@ def querySynaptics(keys_main):
         for line in a.readlines():
             # Frequently check if kernel does not break anything
             if "SynPS/2" in line:
-                printz("-> Found Synaptics Touchpad")
+                out.sect("Found Synaptics Touchpad")
                 keys_main["SYNAPTICS_MOD"] = 'Load "synaptics"'
                 keys_main["SYNAPTICS_LAY"] = 'InputDevice "Touchpad" "SendCoreEvents"'
                 keys_main["SEC_SYNAPTICS"] = template_synaptics
             elif "AlpsPS/2" in line:
-                printz("-> Found Alps Touchpad")
+                out.sect("Found Alps Touchpad")
                 keys_main["SYNAPTICS_MOD"] = 'Load "synaptics"'
                 keys_main["SYNAPTICS_LAY"] = 'InputDevice "Touchpad" "SendCoreEvents"'
                 keys_main["SEC_SYNAPTICS"] = template_alps
@@ -792,7 +819,7 @@ def queryKeymap():
     if "-" in kmap:
         kmap = kmap.split("-", 1)[0]
 
-    printz("-> Keymap set to %s" % kmap)
+    out.sect("Keymap set to %s" % kmap)
     return kmap
 
 def findMonitors(cards):
@@ -868,39 +895,40 @@ def isVirtual():
     # Xen detection
     if os.path.exists("/proc/xen/capabilities"):
         # we are in dom0, act like normal system
-        printz("-> We are in Xen dom0")
+        out.sect("We are in Xen dom0")
         if loadFile("/proc/xen/capabilities") == []:
             # and in domU, configure X to use fbdev if exists
-            printz("   and in Xen domU")
+            out.info("and in Xen domU")
             return True
     return False
 
 def getJail():
     if not "nojail" in getKernelOpt("xorg"):
         if "thin" in getKernelOpt("mudur") or "jail" in getKernelOpt("xorg"):
-            printz("-> Jail is enabled")
+            out.sect("Jail is enabled")
             return template_jail
     return ""
 
 # om call
 
 def autoConfigure():
+    out.sect("Autodetecting devices")
     # detect graphic card and find monitor of first card
     cards = findPciCards()
 
     # if could not find driver from driverlist try X -configure
     if not cards[0].Driver:
-        printz("-> Could not find the video card. Trying to probe with X.")
+        out.warn("Could not find the video card. Trying to probe with X.")
         a = run("/usr/bin/X", "-configure", "-logfile", "/var/log/xlog")
         if a != 0:
-            printz("X -configure failed!", 1)
+            out.error("X -configure failed!")
         home = os.getenv("HOME", "")
         f = file(home + "/xorg.conf.new")
         conf = f.readlines()
         f.close()
         unlink(home + "/xorg.conf.new")
         cards[0].Driver = grepini(conf, 'Section "Device"', "\tDriver")
-        printz("   found %s" % cards[0].Driver)
+        out.info("found %s" % cards[0].Driver)
 
     # use nvidia if nv is found
     available_drivers = listAvailableDrivers()
@@ -935,6 +963,7 @@ def autoConfigure():
 
 def safeConfigure(_driver = "vesa"):
     # set failsafe graphics card
+    out.sect("Setting up %s 800x600 config" % _driver.toupper())
     cards = []
 
     a = Device()
@@ -979,7 +1008,7 @@ def safeConfigure(_driver = "vesa"):
     write_tmpl(template_main, keys_main, xorg_conf)
 
 def checkActiveCard():
-    printz("-> Checking if video cards have changed")
+    out.sect("Checking if video cards have changed")
     cards = findPciCards()
 
     # if there are no pci cards on the machine, we write an empty state file, hence we can start
@@ -991,12 +1020,12 @@ def checkActiveCard():
         activeCards = file(activeCard,'r').readlines()
         for i in range(len(activeCards)):
             if not cards[i].DeviceInfo == activeCards[i].strip("\n"):
-                printz("-> Videocards changed, reconfiguring X")
+                out.sect("Videocards changed, reconfiguring X")
                 backup(xorg_conf)
                 return
     else:
         # For the first time
-        printz("-> Saving active PCI card ids for the first time")
+        out.sect("Saving active PCI card ids for the first time")
         saveActiveCard(cards)
 
 def startNormal():
@@ -1004,11 +1033,11 @@ def startNormal():
     if not isVirtual():
         checkActiveCard()
         if xisrunning():
-            printz("Xorg is running, please stop it first", 1)
+            out.error("Xorg is running, please stop it first")
         if not os.path.exists(xorg_conf):
             autoConfigure()
         else:
-            printz("%s exists, doing nothing" % xorg_conf)
+            out.warn("%s exists, doing nothing" % xorg_conf)
     else:
         if not os.path.exists(xorg_conf):
             if os.path.exists("/dev/fb/0"):
@@ -1035,6 +1064,11 @@ def boot():
 if __name__ == "__main__":
     if "--debug" in sys.argv:
         debug = True
+
+    if "--no-color" in sys.argv:
+        colorout = False
+
+    out = OUT()
 
     if "--boot" in sys.argv:
         # normal boot sequence

@@ -641,10 +641,11 @@ def findPciCards():
                         a.DeviceInfo = "%s:%s" % (vendorId,deviceId)
                         cards.append(a)
 
-                        printz("   found video card on %s" % _dev)
-                        printz("   pci id = %s" % a.DeviceInfo)
-                        printz("   name   = %s - %s" % (a.VendorName, a.BoardName))
-                        printz("   driver = %s" % a.Driver)
+                        printz("   found on %s" % _dev)
+                        printz("   PCI ID   = %s" % a.DeviceInfo)
+                        printz("   Vendor   = %s" % a.VendorName)
+                        printz("   Device   = %s" % a.BoardName)
+                        printz("   Driver   = %s" % a.Driver)
 
                 except:
                     pass
@@ -978,6 +979,7 @@ def safeConfigure(_driver = "vesa"):
     write_tmpl(template_main, keys_main, xorg_conf)
 
 def checkActiveCard():
+    printz("-> Checking if video cards have changed")
     cards = findPciCards()
 
     # if there are no pci cards on the machine, we write an empty state file, hence we can start
@@ -989,10 +991,12 @@ def checkActiveCard():
         activeCards = file(activeCard,'r').readlines()
         for i in range(len(activeCards)):
             if not cards[i].DeviceInfo == activeCards[i].strip("\n"):
-                printz("-> Videocards changed, Zorg is reconfiguring X")
+                printz("-> Videocards changed, reconfiguring X")
                 backup(xorg_conf)
+                return
     else:
         # For the first time
+        printz("-> Saving active PCI card ids for the first time")
         saveActiveCard(cards)
 
 def startNormal():

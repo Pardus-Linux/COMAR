@@ -681,7 +681,7 @@ def queryPanel(mon):
                     mon.panel_w = atoi(b)
                     b = b[b.find("x")+1:]
                     mon.panel_h = atoi(b)
-                    printz("   found %sx%s" % (mon.panel_w, mon.panel_h))
+                    printz("   found %s x %s" % (mon.panel_w, mon.panel_h))
                     break
         f.close()
         return None
@@ -737,6 +737,12 @@ def queryDDC():
         t = m[m.find("ModeLine"):].split()[1]
         if t not in mon.res:
             mon.res = t + " " + mon.res
+
+    printz("   EISAID     = %s" % mon.eisaid)
+    printz("   Monitor    = %s - %s" % (mon.vendorname, mon.modelname))
+    printz("   Horizontal = %s - %s kHz" % (mon.hsync_min, mon.hsync_max))
+    printz("   Vertical   = %s - %s Hz" % (mon.vref_min, mon.vref_max))
+    printz("   Resolution = %s" % mon.res)
 
     if mon.res == "":
         mon.res = '"800x600" "640x480"'

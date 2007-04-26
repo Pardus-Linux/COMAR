@@ -76,6 +76,7 @@
 
 <group name="Boot">
 	<class name="Loader">
+		<method name="listSystems" access="guest"/>
 		<method name="listOptions" access="guest"/>
 		<method name="getOption" access="guest">
 			<argument>key</argument>

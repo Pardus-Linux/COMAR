@@ -26,7 +26,8 @@ MonitorsDB = "/usr/lib/X11/MonitorsDB"
 truecolorCards = ["i810", "intel", "nv", "nvidia", "radeon", "fglrx"]
 debug = False
 
-### templates ###
+
+### Templates ###
 template_videocard = """
 Section "Device"
     Screen %(N)s
@@ -230,7 +231,7 @@ EndSection
 """
 
 
-### api ###
+### API ###
 def printz(_str, _error=False):
     if _error:
         print "ERROR: %s" % _str
@@ -287,8 +288,7 @@ def grepini(lines, sect, key):
     return None
 
 def atoi(s):
-    # python'da bunu yapacak fonksiyon bulamadım
-    # int() sayı olmayan karaktere rastladığında pörtlüyor
+    # python's int() borks when given non integer characters
     t = ""
     for c in s.lstrip():
         if c in "0123456789":
@@ -328,8 +328,8 @@ def loadFile(_file):
     except:
         return ""
 
-### modeline calc ###
 
+### Modeline Calculation ###
 def GetInt(name, dict, default=0):
     str = dict.get(name , default)
     try:
@@ -458,7 +458,7 @@ def ModeLine(dict={}):
     hTim3 = hTim2 + ((int((hBase * hRatio3)+8.0) / 8) * 8)
 
     dotClock = (hTim3 * vTim3 * vFreq) / 1000000.0
-    
+
     hFreqKHz = hFreq / 1000.0
 
     results = {}
@@ -492,8 +492,8 @@ def calcModeLine(w, h, vfreq):
     m = ModeLine(vals)
     return m["entry"]
 
-### Asıl betik aşağıda ###
 
+### Mambo jambo starts here ###
 class Device:
     def __init__(self):
         self.Driver = None
@@ -621,9 +621,9 @@ def queryPCI(vendor, device):
 
 def findPciCards():
     cards = []
-    # read only PCI for now, see if it borks
-    # for bus in ["pci", "pci_express"]:
     printz("-> Probing PCI bus for video cards")
+
+    # read only PCI for now, follow sysfs changes
     for bus in ["pci"]:
         sysDir = os.path.join("/sys/bus", bus, "devices")
         if os.path.isdir(sysDir):
@@ -633,8 +633,8 @@ def findPciCards():
                         a = Device()
                         vendorId = lremove(sysValue(sysDir, _dev, "vendor"), "0x")
                         deviceId = lremove(sysValue(sysDir, _dev, "device"), "0x")
-                        #FIXME: BusID magic to support multiple heads, but breaking pci-e support ?
                         busId = tuple(int(x, 16) for x in _dev.replace(".",":").split(":")[1:4])
+
                         a.BusId = '# BusID      "PCI:%d:%d:%d"' % busId
                         a.BoardName, a.VendorName =  queryPCI(vendorId, deviceId)
                         a.Driver = queryDriver(vendorId, deviceId)
@@ -648,11 +648,12 @@ def findPciCards():
 
                 except:
                     pass
+
     if len(cards):
         return cards
     else:
-        # FIXME: this machine might be a server with no cards, but I am not sure if we could let kdm start
-        # Since kdm might be on a terminal server, we start it and leave the decision to the user 
+        # This machine might be a terminal server with no video cards.
+        # We start X and leave the decision to the user.
         sys.exit(0)
 
 def queryPanel(mon):
@@ -761,8 +762,7 @@ def querySynaptics(keys_main):
     try:
         a = file("/proc/bus/input/devices")
         for line in a.readlines():
-            # FIXME: check if kernel does not break anything
-            # if "SynPS/2" in line or "AlpsPS/2" in line:
+            # Frequently check if kernel does not break anything
             if "SynPS/2" in line:
                 printz("-> Found Synaptics Touchpad")
                 keys_main["SYNAPTICS_MOD"] = 'Load "synaptics"'
@@ -852,7 +852,7 @@ def keysMonitors(monitors, cards):
                 keys_mon["MODELINES"] = "".join(monitors[i].modelines)
             keys_mon["MODES"] = monitors[i].res
 
-        # FIXME: check for the driver and set depth due to it
+        # check for the driver name and set depth due
         if cards[i].Driver in truecolorCards:
             keys_mon["DEPTH"] = "24"
         else:
@@ -866,10 +866,10 @@ def keysMonitors(monitors, cards):
 def isVirtual():
     # Xen detection
     if os.path.exists("/proc/xen/capabilities"):
-        # We are in dom0, act like normal system
+        # we are in dom0, act like normal system
         printz("-> We are in Xen dom0")
         if loadFile("/proc/xen/capabilities") == []:
-            # We are in domU, configure X to use fbdev if exists
+            # and in domU, configure X to use fbdev if exists
             printz("   and in Xen domU")
             return True
     return False
@@ -884,7 +884,7 @@ def getJail():
 # om call
 
 def autoConfigure():
-    # detect graphic card and find monitor of first card, yet
+    # detect graphic card and find monitor of first card
     cards = findPciCards()
 
     # if could not find driver from driverlist try X -configure
@@ -901,17 +901,17 @@ def autoConfigure():
         cards[0].Driver = grepini(conf, 'Section "Device"', "\tDriver")
         printz("   found %s" % cards[0].Driver)
 
-    # Use nvidia if nv is found
+    # use nvidia if nv is found
     available_drivers = listAvailableDrivers()
     if "nvidia" in available_drivers:
         for i in range(len(cards)):
             if cards[i].Driver == "nv":
                 cards[i].Driver = "nvidia"
 
-    # Save active cards for checking next boots.
+    # save active cards for checking next boots.
     saveActiveCard(cards)
 
-    # We need card data to check for lcd displays
+    # we need card data to check for lcd displays
     monitors = findMonitors(cards)
 
     # start over and begin to fill the templates
@@ -982,7 +982,7 @@ def checkActiveCard():
 
     # if there are no pci cards on the machine, we write an empty state file, hence we can start
     # kdm and cards will be probed again in the next boot. This is not nice, but may be useful
-    # in hardware error cases.
+    # in hardware error cases or autoprobing device changes.
     if not len(cards):
         saveActiveCard(cards)
     elif os.path.exists(activeCard):
@@ -1033,26 +1033,27 @@ if __name__ == "__main__":
         debug = True
 
     if "--boot" in sys.argv:
-        # Normal boot sequence
+        # normal boot sequence
         boot()
     elif "--safe" in sys.argv:
-        # Force 800x600 vesa configuration
+        # force 800x600 vesa configuration
         if backup(xorg_conf):
             safeConfigure()
         else:
             sys.exit(1)
     elif "--probe" in sys.argv:
-        # Force probing devices
+        # force probing devices
         if backup(xorg_conf):
             startNormal()
         else:
             sys.exit(1)
     elif "--intelfix" in sys.argv:
-        # Just run intel workaround and exit
+        # run intel workaround only
         intel("fix")
     elif "--intellist" in sys.argv:
-        # List available BIOS modes for intel cards
+        # list available BIOS modes for Intel cards
         intel("list")
     else:
         startNormal()
+
 

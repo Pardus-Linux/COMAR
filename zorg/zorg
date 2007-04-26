@@ -599,7 +599,6 @@ def queryDriver(vendor, device):
         if line.startswith(vendor + device):
             drv = line.rstrip("\n").split(" ")[1]
             if drv in available_drivers:
-                printz("%s:%s driver is %s" % (vendor, device, drv))
                 return drv
     return None
 
@@ -615,7 +614,6 @@ def queryPCI(vendor, device):
         else:
             if line.startswith("\t"):
                 if line.startswith("\t" + device):
-                    printz("%s:%s is %s - %s" % (vendor, device, company, line[6:].strip()))
                     return line[6:].strip(), company
             elif not line.startswith("#"):
                 flag = 0
@@ -625,6 +623,7 @@ def findPciCards():
     cards = []
     # read only PCI for now, see if it borks
     # for bus in ["pci", "pci_express"]:
+    printz("-> Probing PCI bus for video cards")
     for bus in ["pci"]:
         sysDir = os.path.join("/sys/bus", bus, "devices")
         if os.path.isdir(sysDir):
@@ -641,6 +640,12 @@ def findPciCards():
                         a.Driver = queryDriver(vendorId, deviceId)
                         a.DeviceInfo = "%s:%s" % (vendorId,deviceId)
                         cards.append(a)
+
+                        printz("   found video card on %s" % _dev)
+                        printz("   pci id = %s" % a.DeviceInfo)
+                        printz("   name   = %s - %s" % (a.VendorName, a.BoardName))
+                        printz("   driver = %s" % a.Driver)
+
                 except:
                     pass
     if len(cards):

@@ -110,6 +110,7 @@
 			<argument>options</argument>
 		</method>
 		<method name="updateKernelEntry">
+			<argument>root</argument>
 			<argument>version</argument>
 		</method>
 		<notify name="changed" access="guest"/>

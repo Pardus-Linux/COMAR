@@ -1033,8 +1033,8 @@ def checkActiveCard():
         saveActiveCard(cards)
 
 def startNormal():
-    intel("fix")
     if not isVirtual():
+        intel("fix")
         checkActiveCard()
         if xisrunning():
             out.error("Xorg is running, please stop it first")

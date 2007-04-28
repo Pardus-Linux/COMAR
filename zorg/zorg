@@ -1022,10 +1022,16 @@ def checkActiveCard():
         saveActiveCard(cards)
     elif os.path.exists(activeCard):
         activeCards = file(activeCard,'r').readlines()
+        if len(activeCards) != len(cards):
+            out.sect("Videocards changed, reconfiguring X")
+            backup(xorg_conf)
+            saveActiveCard(cards)
+            return
         for i in range(len(activeCards)):
             if not cards[i].DeviceInfo == activeCards[i].strip("\n"):
                 out.sect("Videocards changed, reconfiguring X")
                 backup(xorg_conf)
+                saveActiveCard(cards)
                 return
     else:
         # For the first time

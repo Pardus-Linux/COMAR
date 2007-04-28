@@ -327,14 +327,18 @@ class OUT:
             self.NORMAL = '\x1b[0m'
             self.BOLD = '\x1b[37;01m'
             self.MARK = '\x1b[36;01m'
-            self.WARN = '\x1b[34;01m'
-            self.ERROR = '\x1b[31;01m'
+            self.WARN = '\x1b[34m'
+            self.WARNMSG = '\x1b[34;01m'
+            self.ERROR = '\x1b[31m'
+            self.ERRORMSG = '\x1b[31;01m'
         else:
             self.NORMAL = ''
             self.BOLD = ''
             self.MARK = ''
             self.WARN = ''
+            self.WARNMSG = ''
             self.ERROR = ''
+            self.ERRORMSG = ''
 
     def _write(self, msg, type):
         print "%s%s %s" % (type, self.NORMAL, msg)
@@ -348,10 +352,10 @@ class OUT:
             self._write(msg, "%s   " % self.NORMAL)
 
     def warn(self, msg):
-        self._write(msg, "%sWW " % self.WARN)
+        self._write("%s%s" % (self.WARNMSG, msg), "%sWW " % self.WARN)
 
     def error(self, msg):
-        self._write(msg, "%sEE " % self.ERROR)
+        self._write("%s%s" %(self.ERRORMSG, msg), "%sEE " % self.ERROR)
         sys.exit(1)
 
 

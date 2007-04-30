@@ -9,13 +9,14 @@
 # any later version.
 #
 # Please read the COPYING file.
-#
+
 
 import os
 import subprocess
 import string
 import sys
 from optparse import OptionParser
+
 
 ### Some defaults ###
 xorg_conf = "/etc/X11/xorg.conf"
@@ -26,9 +27,9 @@ xorg_lock = "/tmp/.X0-lock"
 xdriverlist = "/usr/lib/X11/xdriverlist"
 MonitorsDB = "/usr/lib/X11/MonitorsDB"
 truecolorCards = ["i810", "intel", "nv", "nvidia", "radeon", "fglrx"]
+description = " Xorg AutoConfiguration tool"
 
-description = """ Xorg autoconfiguration tool.
-"""
+
 ### Templates ###
 template_videocard = """
 Section "Device"
@@ -146,6 +147,7 @@ template_jail = """    # Prevent virtual terminal switching
     # Prevent killing X
     Option     "DontZap" "true"
 """
+
 template_main = """
 Section "Module"
     Load "dbe"      # Double buffer extension
@@ -269,7 +271,7 @@ def capture(*cmd):
 
 def run(*cmd):
     f = file("/dev/null", "w")
-    return subprocess.call(cmd, stdout=f)
+    return subprocess.call(cmd, stdout=f, stderr=f)
 
 def grepini(lines, sect, key):
     flag = 0
@@ -329,8 +331,8 @@ class OUT:
             self.NORMAL = '\x1b[0m'
             self.BOLD = '\x1b[37;01m'
             self.MARK = '\x1b[36;01m'
-            self.WARN = '\x1b[34m'
-            self.WARNMSG = '\x1b[34;01m'
+            self.WARN = '\x1b[35m'
+            self.WARNMSG = '\x1b[35;01m'
             self.ERROR = '\x1b[31m'
             self.ERRORMSG = '\x1b[31;01m'
         else:
@@ -529,8 +531,8 @@ def calcModeLine(w, h, vfreq):
 class Device:
     def __init__(self):
         self.Driver = None
-        self.VendorName = "unknown"
-        self.BoardName = "unknown"
+        self.VendorName = "Unknown"
+        self.BoardName = "Unknown"
         self.BusId = ""
 
 class Monitor:
@@ -674,11 +676,11 @@ def findPciCards():
                         a.DeviceInfo = "%s:%s" % (vendorId,deviceId)
                         cards.append(a)
 
-                        out.info("found on %s" % _dev)
-                        out.info("PCI ID   = %s" % a.DeviceInfo)
-                        out.info("Vendor   = %s" % a.VendorName)
-                        out.info("Device   = %s" % a.BoardName)
-                        out.info("Driver   = %s" % a.Driver)
+                        out.info("PCI BUS = %s" % _dev)
+                        out.info("PCI ID  = %s" % a.DeviceInfo)
+                        out.info("Vendor  = %s" % a.VendorName)
+                        out.info("Device  = %s" % a.BoardName)
+                        out.info("Driver  = %s" % a.Driver)
 
                 except:
                     pass
@@ -710,7 +712,7 @@ def queryPanel(mon):
         out.sect("Querying panel with X")
         a = run("/usr/bin/X", "-probeonly", "-allowMouseOpenFail", "-logfile", "/var/log/xlog")
         if a != 0:
-            out.warn("X -probeonly failed!")
+            out.warn("X -probeonly failed")
             return
 
         f = file("/var/log/xlog")
@@ -732,7 +734,7 @@ def queryDDC():
     out.sect("Probing DDC")
     ddc = capture("/usr/sbin/ddcxinfos")
     if ddc[1] != '':
-        out.warn("ddcxinfos failed!")
+        out.warn("Could not probe DDC info")
         return mon
 
     for line in ddc[0].split("\n"):
@@ -924,7 +926,7 @@ def autoConfigure():
 
     # if could not find driver from driverlist try X -configure
     if not cards[0].Driver:
-        out.warn("Could not find the video card. Trying to probe with X.")
+        out.warn("Videocard driver unknown, trying to probe with X")
         a = run("/usr/bin/X", "-configure", "-logfile", "/var/log/xlog")
         if a != 0:
             out.error("X -configure failed!")
@@ -941,6 +943,7 @@ def autoConfigure():
     if "nvidia" in available_drivers:
         for i in range(len(cards)):
             if cards[i].Driver == "nv":
+                out.info("changing card[%i] nv driver to nvidia" % i)
                 cards[i].Driver = "nvidia"
 
     # save active cards for checking next boots.
@@ -969,12 +972,13 @@ def autoConfigure():
 
 def safeConfigure(_driver = "vesa"):
     # set failsafe graphics card
-    out.sect("Setting up %s 800x600 config" % _driver.toupper())
+    safedrv = _driver.toupper()
+    out.sect("Setting up %s 800x600 config" % safedrv)
     cards = []
 
     a = Device()
-    a.BoardName = "VESA configured board"
-    a.VendorName = "VESA configured vendor"
+    a.BoardName = "%s configured board" % safedrv
+    a.VendorName = "%s configured vendor" % safedrv
     a.Driver = _driver
     cards.append(a)
 
@@ -982,8 +986,8 @@ def safeConfigure(_driver = "vesa"):
     monitors = []
     mon = Monitor()
 
-    mon.vendorname = "VESA configured vendor"
-    mon.modelname = "VESA configured model"
+    mon.vendorname = "%s configured vendor" % safedrv
+    mon.modelname = "%s configured model" % safedrv
 
     mon.hsync_min = 31.5
     mon.hsync_max = 50
@@ -1038,7 +1042,7 @@ def checkActiveCard():
                 return
     else:
         # For the first time
-        out.sect("Saving active PCI card ids for the first time")
+        out.sect("Saving active PCI card IDs for the first time")
         saveActiveCard(cards)
 
 def startNormal():
@@ -1055,6 +1059,12 @@ def startNormal():
         if not os.path.exists(xorg_conf):
             if os.path.exists("/dev/fb/0"):
                 safeConfigure("fbdev")
+
+def info():
+    if xisrunning():
+        out.warn("Xorg is running, info might not be accurate")
+    findPciCards()
+    queryDDC()
 
 def boot():
     cmds = getKernelOpt("xorg")
@@ -1086,6 +1096,8 @@ if __name__ == "__main__":
                       default=False, help="setup VESA 800x600 config without probing hardware")
     parser.add_option("-p", "--probe", action="store_true", dest="probe",
                       default=False, help="force probing all devices, even if %s exists" % xorg_conf)
+    parser.add_option("-i", "--info", action="store_true", dest="info",
+                      default=False, help="print PCI and DDC info, no advanced probing is done")
     parser.add_option("--boot", action="store_true", dest="boot",
                       default=False, help="used when called from a service on system boot")
     parser.add_option("--intelfix", action="store_true", dest="intelfix",
@@ -1110,6 +1122,9 @@ if __name__ == "__main__":
             startNormal()
         else:
             sys.exit(1)
+    elif opts.info:
+        debug = True
+        info()
     elif opts.intelfix:
         intel("fix")
     elif opts.intellist:

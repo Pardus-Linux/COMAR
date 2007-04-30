@@ -15,7 +15,9 @@ import os
 import subprocess
 import string
 import sys
+from optparse import OptionParser
 
+### Some defaults ###
 xorg_conf = "/etc/X11/xorg.conf"
 activeCard = "/etc/X11/activeCard"
 driver_path = "/usr/lib/xorg/modules/drivers"
@@ -24,9 +26,9 @@ xorg_lock = "/tmp/.X0-lock"
 xdriverlist = "/usr/lib/X11/xdriverlist"
 MonitorsDB = "/usr/lib/X11/MonitorsDB"
 truecolorCards = ["i810", "intel", "nv", "nvidia", "radeon", "fglrx"]
-debug = False
-colorout = True
 
+description = """ Xorg autoconfiguration tool.
+"""
 ### Templates ###
 template_videocard = """
 Section "Device"
@@ -1072,35 +1074,45 @@ def boot():
     else:
         startNormal()
 
+
 if __name__ == "__main__":
-    if "--debug" in sys.argv:
-        debug = True
+    # running from command line
+    parser = OptionParser(description = description)
+    parser.add_option("-d", "--debug", action="store_true", dest="debug",
+                      default=False, help="print extra debug info")
+    parser.add_option("-n", "--no-color", action="store_false", dest="colorout",
+                      default=True, help="do not print colorized output")
+    parser.add_option("-s", "--safe", action="store_true", dest="safe",
+                      default=False, help="setup VESA 800x600 config without probing hardware")
+    parser.add_option("-p", "--probe", action="store_true", dest="probe",
+                      default=False, help="force probing all devices, even if %s exists" % xorg_conf)
+    parser.add_option("--boot", action="store_true", dest="boot",
+                      default=False, help="used when called from a service on system boot")
+    parser.add_option("--intelfix", action="store_true", dest="intelfix",
+                      default=False, help="run Intel BIOS bug workaround")
+    parser.add_option("--intellist", action="store_true", dest="intellist",
+                      default=False, help="list available BIOS modes for Intel cards")
 
-    if "--no-color" in sys.argv:
-        colorout = False
-
+    opts, args = parser.parse_args()
+    debug = opts.debug
+    colorout = opts.colorout
     out = OUT()
 
-    if "--boot" in sys.argv:
-        # normal boot sequence
+    if opts.boot:
         boot()
-    elif "--safe" in sys.argv:
-        # force 800x600 vesa configuration
+    elif opts.safe:
         if backup(xorg_conf):
             safeConfigure()
         else:
             sys.exit(1)
-    elif "--probe" in sys.argv:
-        # force probing devices
+    elif opts.probe:
         if backup(xorg_conf):
             startNormal()
         else:
             sys.exit(1)
-    elif "--intelfix" in sys.argv:
-        # run intel workaround only
+    elif opts.intelfix:
         intel("fix")
-    elif "--intellist" in sys.argv:
-        # list available BIOS modes for Intel cards
+    elif opts.intellist:
         intel("list")
     else:
         startNormal()

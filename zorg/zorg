@@ -972,13 +972,13 @@ def autoConfigure():
 
 def safeConfigure(_driver = "vesa"):
     # set failsafe graphics card
-    safedrv = _driver.toupper()
+    safedrv = _driver.upper()
     out.sect("Setting up %s 800x600 config" % safedrv)
     cards = []
 
     a = Device()
-    a.BoardName = "%s configured board" % safedrv
-    a.VendorName = "%s configured vendor" % safedrv
+    a.BoardName = "%s Configured Board" % safedrv
+    a.VendorName = "%s Configured Vendor" % safedrv
     a.Driver = _driver
     cards.append(a)
 
@@ -986,8 +986,8 @@ def safeConfigure(_driver = "vesa"):
     monitors = []
     mon = Monitor()
 
-    mon.vendorname = "%s configured vendor" % safedrv
-    mon.modelname = "%s configured model" % safedrv
+    mon.vendorname = "%s Configured Vendor" % safedrv
+    mon.modelname = "%s Configured Model" % safedrv
 
     mon.hsync_min = 31.5
     mon.hsync_max = 50

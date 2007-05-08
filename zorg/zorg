@@ -21,13 +21,17 @@ from optparse import OptionParser
 ### Some defaults ###
 xorg_conf = "/etc/X11/xorg.conf"
 activeCard = "/etc/X11/activeCard"
-driver_path = "/usr/lib/xorg/modules/drivers"
 xorg_off = "/var/run/xorg_off"
 xorg_lock = "/tmp/.X0-lock"
 xdriverlist = "/usr/lib/X11/xdriverlist"
 MonitorsDB = "/usr/lib/X11/MonitorsDB"
-truecolorCards = ["i810", "intel", "nv", "nvidia", "radeon", "fglrx"]
+
+driver_path = "/usr/lib/xorg/modules/drivers"
+xkb_path = "/usr/share/X11/xkb/symbols/pc"
+
 description = " Xorg AutoConfiguration tool"
+truecolorCards = ["i810", "intel", "nv", "nvidia", "radeon", "fglrx"]
+default_kmap = "trq"
 
 
 ### Templates ###
@@ -813,9 +817,12 @@ def querySynaptics(keys_main):
     except:
         pass
 
+def getKeymapList():
+    return os.listdir(xkb_path)
+
 def queryKeymap():
     # Fallback is trq
-    kmap = "trq"
+    kmap = default_kmap
     keymap_file = "/etc/mudur/keymap"
     try:
         if os.path.exists(keymap_file):
@@ -826,6 +833,9 @@ def queryKeymap():
     # workaround for pt_BR and some latin1 variants
     if "-" in kmap:
         kmap = kmap.split("-", 1)[0]
+
+    if not kmap in getKeymapList():
+        kmap = default_kmap
 
     out.sect("Keymap set to %s" % kmap)
     return kmap

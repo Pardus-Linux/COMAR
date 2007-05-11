@@ -28,7 +28,7 @@ attributetype ( 1.1.2.8
 
 attributetype ( 1.1.2.4 
 	NAME 'pisiAutoUpdateZone' 
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.40 
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 
 	SINGLE-VALUE 
  )
 

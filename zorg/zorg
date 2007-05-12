@@ -333,7 +333,7 @@ def loadFile(_file):
 class OUT:
     def __init__(self):
         if colorout:
-            self.NORMAL = '\x1b[0m'
+            self.NORMAL = '\x1b[37;0m'
             self.BOLD = '\x1b[37;01m'
             self.MARK = '\x1b[36;01m'
             self.WARN = '\x1b[35m'
@@ -349,22 +349,27 @@ class OUT:
             self.ERROR = ''
             self.ERRORMSG = ''
 
-    def _write(self, msg, type):
-        print "%s%s %s" % (type, self.NORMAL, msg)
+        self.type_sect = "%s-> " % self.MARK
+        self.type_info = "%s   " % self.NORMAL
+        self.type_warn = "%sWW " % self.WARN
+        self.type_err  = "%sEE " % self.ERROR
+
+    def _write(self, type, msg):
+        print "%s %s%s" % (type, msg, self.NORMAL)
 
     def sect(self, msg):
         if debug:
-            self._write("%s%s" % (self.BOLD,msg), "%s-> " % self.MARK)
+            self._write(self.type_sect, "%s%s" % (self.BOLD, msg))
 
     def info(self, msg):
         if debug:
-            self._write(msg, "%s   " % self.NORMAL)
+            self._write(self.type_info, msg)
 
     def warn(self, msg):
-        self._write("%s%s" % (self.WARNMSG, msg), "%sWW " % self.WARN)
+        self._write(self.type_warn, "%s%s" % (self.WARNMSG, msg))
 
     def error(self, msg):
-        self._write("%s%s" %(self.ERRORMSG, msg), "%sEE " % self.ERROR)
+        self._write(self.type_err, "%s%s" % (self.ERRORMSG, msg))
         sys.exit(1)
 
 

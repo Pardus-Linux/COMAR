@@ -962,13 +962,13 @@ def autoConfigure():
     # we need card data to check for lcd displays
     monitors = findMonitors(cards)
 
-    # start over and begin to fill the templates
+    # start over and begin to fill the templates for final xorg.conf
     keys_main = {}
 
     # with gfx first, we write all cards
     keys_main["SEC_VIDEOCARD"] = keysVideoCards(cards)
 
-    # and then the monitor
+    # and then the monitor and screen settings
     keys_main["SEC_MONITOR"], keys_main["SEC_SCREEN"] = keysMonitors(monitors, cards)
 
     # input devices

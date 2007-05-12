@@ -808,11 +808,10 @@ def queryTouchpad():
             elif "AlpsPS/2" in line:
                 out.info("Found Alps Touchpad")
                 return "alps"
-            else:
-                return ""
         a.close()
     except:
-        return ""
+        pass
+    return ""
 
 def getKeymapList():
     return os.listdir(xkb_path)

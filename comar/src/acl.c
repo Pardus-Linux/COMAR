@@ -178,7 +178,7 @@ check_acl(int node, struct Creds *cred)
 	int level;
 	int i, j;
 
-	model_acl_get(model_parent(node), acptr, &level);
+	model_acl_get(node, acptr, &level);
 	if (!ac) return 0;
 
 	pw = getpwuid(cred->uid);

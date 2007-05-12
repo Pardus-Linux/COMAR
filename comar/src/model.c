@@ -432,8 +432,13 @@ model_acl_get(int node_no, void **acldatap, unsigned int *levelp)
 	struct node *n;
 
 	n = &nodes[node_no];
+	if (n->type != N_CLASS) {
+		*levelp = n->level;
+		n = &nodes[n->parent_no];
+	} else {
+		*levelp = ACL_GUEST;
+	}
 	*acldatap = n->acldata;
-	*levelp = ACL_ADMIN;
 }
 
 int

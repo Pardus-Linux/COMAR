@@ -30,7 +30,8 @@ driver_path = "/usr/lib/xorg/modules/drivers"
 xkb_path = "/usr/share/X11/xkb/symbols/pc"
 
 description = " Xorg AutoConfiguration tool"
-truecolorCards = ["i810", "intel", "nv", "nvidia", "radeon", "fglrx"]
+truecolor_cards = ["i810", "intel", "nv", "nvidia", "radeon", "fglrx"]
+touchpad_devices = ["synaptics", "alps"]
 default_kmap = "trq"
 
 
@@ -899,7 +900,7 @@ def keysMonitors(monitors, cards):
             keys_mon["MODES"] = monitors[i].res
 
         # check for the driver name and set depth due
-        if cards[i].Driver in truecolorCards:
+        if cards[i].Driver in truecolor_cards:
             keys_mon["DEPTH"] = "24"
         else:
             keys_mon["DEPTH"] = "16"

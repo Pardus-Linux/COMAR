@@ -797,15 +797,16 @@ def queryDDC():
     return mon
 
 def queryTouchpad():
+    out.sect("Querying Touchpad devices")
     try:
         a = file("/proc/bus/input/devices")
         for line in a.readlines():
             # Frequently check if kernel does not break anything
             if "SynPS/2" in line:
-                out.sect("Found Synaptics Touchpad")
+                out.info("Found Synaptics Touchpad")
                 return "synaptics"
             elif "AlpsPS/2" in line:
-                out.sect("Found Alps Touchpad")
+                out.info("Found Alps Touchpad")
                 return "alps"
             else:
                 return ""

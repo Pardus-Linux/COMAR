@@ -796,27 +796,22 @@ def queryDDC():
 
     return mon
 
-def queryTouchpad(keys_main):
-    keys_main["SYNAPTICS_MOD"] = ""
-    keys_main["SEC_SYNAPTICS"] = ""
-    keys_main["SYNAPTICS_LAY"] = ""
+def queryTouchpad():
     try:
         a = file("/proc/bus/input/devices")
         for line in a.readlines():
             # Frequently check if kernel does not break anything
             if "SynPS/2" in line:
                 out.sect("Found Synaptics Touchpad")
-                keys_main["SYNAPTICS_MOD"] = 'Load "synaptics"'
-                keys_main["SYNAPTICS_LAY"] = 'InputDevice "Touchpad" "SendCoreEvents"'
-                keys_main["SEC_SYNAPTICS"] = template_synaptics
+                return "synaptics"
             elif "AlpsPS/2" in line:
                 out.sect("Found Alps Touchpad")
-                keys_main["SYNAPTICS_MOD"] = 'Load "synaptics"'
-                keys_main["SYNAPTICS_LAY"] = 'InputDevice "Touchpad" "SendCoreEvents"'
-                keys_main["SEC_SYNAPTICS"] = template_alps
+                return "alps"
+            else:
+                return ""
         a.close()
     except:
-        pass
+        return ""
 
 def getKeymapList():
     return os.listdir(xkb_path)
@@ -910,6 +905,20 @@ def keysMonitors(monitors, cards):
 
     return sec_monitor, sec_screen
 
+def keysTouchpad(keys_main):
+    tp = queryTouchpad()
+    if tp in touchpad_devices:
+        keys_main["SYNAPTICS_MOD"] = 'Load "synaptics"'
+        keys_main["SYNAPTICS_LAY"] = 'InputDevice "Touchpad" "SendCoreEvents"'
+        if tp == "synaptics":
+            keys_main["SEC_SYNAPTICS"] = template_synaptics
+        elif tp == "alps":
+            keys_main["SEC_SYNAPTICS"] = template_alps
+    else:
+        keys_main["SYNAPTICS_MOD"] = ""
+        keys_main["SEC_SYNAPTICS"] = ""
+        keys_main["SYNAPTICS_LAY"] = ""
+
 def isVirtual():
     # Xen detection
     if os.path.exists("/proc/xen/capabilities"):
@@ -972,8 +981,8 @@ def autoConfigure():
     # and then the monitor and screen settings
     keys_main["SEC_MONITOR"], keys_main["SEC_SCREEN"] = keysMonitors(monitors, cards)
 
-    # input devices
-    queryTouchpad(keys_main)
+    # input devices, we have to use mainkeys for touchpad as it changes all over the config
+    keysTouchpad(keys_main)
     keys_main["KEYMAP"] = queryKeymap()
 
     # check if we are in jail
@@ -1074,6 +1083,7 @@ def startNormal():
 def info():
     if xisrunning():
         out.warn("Xorg is running, info might not be accurate")
+    queryTouchpad()
     findPciCards()
     queryDDC()
 

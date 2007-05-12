@@ -1072,14 +1072,15 @@ def checkActiveCard():
 
 def startNormal():
     if not isVirtual():
-        intel("fix")
-        checkActiveCard()
         if xisrunning():
             out.error("Xorg is running, please stop it first")
-        if not os.path.exists(xorg_conf):
-            autoConfigure()
         else:
-            out.warn("%s exists, doing nothing" % xorg_conf)
+            intel("fix")
+            checkActiveCard()
+            if not os.path.exists(xorg_conf):
+                autoConfigure()
+            else:
+                out.warn("%s exists, doing nothing" % xorg_conf)
     else:
         if not os.path.exists(xorg_conf):
             if os.path.exists("/dev/fb/0"):

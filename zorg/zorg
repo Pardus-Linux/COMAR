@@ -352,7 +352,7 @@ class OUT:
         self.type_sect = "%s-> " % self.MARK
         self.type_info = "%s   " % self.NORMAL
         self.type_warn = "%sWW " % self.WARN
-        self.type_err  = "%sEE " % self.ERROR
+        self.type_error  = "%sEE " % self.ERROR
 
     def _write(self, type, msg):
         print "%s %s%s" % (type, msg, self.NORMAL)
@@ -369,7 +369,7 @@ class OUT:
         self._write(self.type_warn, "%s%s" % (self.WARNMSG, msg))
 
     def error(self, msg):
-        self._write(self.type_err, "%s%s" % (self.ERRORMSG, msg))
+        self._write(self.type_error, "%s%s" % (self.ERRORMSG, msg))
         sys.exit(1)
 
 

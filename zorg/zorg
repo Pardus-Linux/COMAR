@@ -1123,7 +1123,7 @@ if __name__ == "__main__":
     parser.add_option("-p", "--probe", action="store_true", dest="probe",
                       default=False, help="force probing all devices, even if %s exists" % xorg_conf)
     parser.add_option("-i", "--info", action="store_true", dest="info",
-                      default=False, help="print PCI and DDC info, no advanced probing is done")
+                      default=False, help="print video, monitor and input info, no advanced probing is done")
     parser.add_option("--boot", action="store_true", dest="boot",
                       default=False, help="used when called from a service on system boot")
     parser.add_option("--intelfix", action="store_true", dest="intelfix",

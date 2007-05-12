@@ -795,7 +795,7 @@ def queryDDC():
 
     return mon
 
-def querySynaptics(keys_main):
+def queryTouchpad(keys_main):
     keys_main["SYNAPTICS_MOD"] = ""
     keys_main["SEC_SYNAPTICS"] = ""
     keys_main["SYNAPTICS_LAY"] = ""
@@ -972,7 +972,7 @@ def autoConfigure():
     keys_main["SEC_MONITOR"], keys_main["SEC_SCREEN"] = keysMonitors(monitors, cards)
 
     # input devices
-    querySynaptics(keys_main)
+    queryTouchpad(keys_main)
     keys_main["KEYMAP"] = queryKeymap()
 
     # check if we are in jail

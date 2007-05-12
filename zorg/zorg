@@ -1104,7 +1104,6 @@ def boot():
     elif "safe" in cmds:
         if backup(xorg_conf):
             safeConfigure()
-            startNormal()
         else:
             sys.exit(1)
     else:

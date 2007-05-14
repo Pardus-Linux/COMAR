@@ -544,6 +544,7 @@ class Device:
         self.VendorName = "Unknown"
         self.BoardName = "Unknown"
         self.BusId = ""
+        self.DeviceInfo = ""
 
 class Monitor:
     def __init__(self):

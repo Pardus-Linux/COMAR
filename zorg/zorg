@@ -567,7 +567,7 @@ class intelWorkaround:
         self.cfgmodes = {}
 
     def _readconfig(self):
-        dict = {}
+        _dict = {}
         for line in loadFile("/etc/conf.d/915resolution"):
             if "=" in line:
                 k, v = line.split("=", 1)
@@ -576,19 +576,19 @@ class intelWorkaround:
                 if v.startswith('"') or v.startswith("'"):
                     v = v[1:-1]
                 if " " in v:
-                    dict[k] = v
+                    _dict[k] = v
 
-        return dict
+        return _dict
 
     def _getbiosmodes(self):
-        dict = {}
+        _dict = {}
         f = capture("/usr/sbin/915resolution", "-l")[0]
         for line in f.split("\n"):
             if line.startswith("Mode") and not line.startswith("Mode Table"):
                 g1, m, g2, res, depth, g3 = line.split(" ", 5)
-                dict[m] = "%s %s" % (res.replace("x", " ")[:-1], depth)
+                _dict[m] = "%s %s" % (res.replace("x", " ")[:-1], depth)
 
-        return dict
+        return _dict
 
     def listbiosmodes(self):
         self.biosmodes = self._getbiosmodes()

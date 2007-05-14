@@ -29,7 +29,7 @@ MonitorsDB = "/usr/lib/X11/MonitorsDB"
 driver_path = "/usr/lib/xorg/modules/drivers"
 xkb_path = "/usr/share/X11/xkb/symbols/pc"
 
-description = " Xorg AutoConfiguration tool"
+zorg_info = " Xorg AutoConfiguration tool"
 truecolor_cards = ["i810", "intel", "nv", "nvidia", "radeon", "fglrx"]
 touchpad_devices = ["synaptics", "alps"]
 default_kmap = "trq"
@@ -1114,7 +1114,7 @@ def boot():
 
 if __name__ == "__main__":
     # running from command line
-    parser = OptionParser(description = description)
+    parser = OptionParser(description = zorg_info)
     parser.add_option("-d", "--debug", action="store_true", dest="debug",
                       default=False, help="print extra debug info")
     parser.add_option("-n", "--no-color", action="store_false", dest="colorout",

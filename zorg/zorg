@@ -267,7 +267,7 @@ def backup(_file):
 def saveActiveCard(cards):
     f = file(activeCard, "w")
     for card in cards:
-        f.write("%s\n" % card.DeviceInfo)
+        f.write("%s\n" % card.PciId)
     f.close()
 
 def capture(*cmd):
@@ -544,7 +544,7 @@ class Device:
         self.VendorName = "Unknown"
         self.BoardName = "Unknown"
         self.BusId = ""
-        self.DeviceInfo = ""
+        self.PciId = ""
 
 class Monitor:
     def __init__(self):
@@ -684,11 +684,11 @@ def findPciCards():
                         a.BusId = '# BusID      "PCI:%d:%d:%d"' % busId
                         a.BoardName, a.VendorName =  queryPCI(vendorId, deviceId)
                         a.Driver = queryDriver(vendorId, deviceId)
-                        a.DeviceInfo = "%s:%s" % (vendorId,deviceId)
+                        a.PciId = "%s:%s" % (vendorId,deviceId)
                         cards.append(a)
 
                         out.info("PCI BUS = %s" % _dev)
-                        out.info("PCI ID  = %s" % a.DeviceInfo)
+                        out.info("PCI ID  = %s" % a.PciId)
                         out.info("Vendor  = %s" % a.VendorName)
                         out.info("Device  = %s" % a.BoardName)
                         out.info("Driver  = %s" % a.Driver)
@@ -1063,7 +1063,7 @@ def checkActiveCard():
             activeCardChanged(cards)
             return
         for i in range(len(activeCards)):
-            if not cards[i].DeviceInfo == activeCards[i].strip("\n"):
+            if not cards[i].PciId == activeCards[i].strip("\n"):
                 activeCardChanged(cards)
                 return
     else:

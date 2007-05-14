@@ -375,17 +375,17 @@ class OUT:
 
 ### Modeline Calculation ###
 def GetInt(name, dict, default=0):
-    str = dict.get(name , default)
+    _str = dict.get(name , default)
     try:
-        return int(str)
+        return int(_str)
     except:
         return default
 
 # _ GetFloat ___________________________________________________________
 def GetFloat(name, dict, default=0.0):
-    str = dict.get(name , default)
+    _str = dict.get(name , default)
     try:
-        return float(str)
+        return float(_str)
     except:
         return default
 

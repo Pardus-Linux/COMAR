@@ -309,8 +309,8 @@ def write_tmpl(tmpl, keys, fname):
     f.write(tmpl % keys)
     f.close()
 
-def sysValue(path, dir, file_):
-    f = file(os.path.join(path, dir, file_))
+def sysValue(path, dir, _file):
+    f = file(os.path.join(path, dir, _file))
     data = f.read().rstrip('\n')
     f.close()
     return data

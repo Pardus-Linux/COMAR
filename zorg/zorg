@@ -679,7 +679,7 @@ def findPciCards():
                         a = Device()
                         vendorId = lremove(sysValue(sysDir, _dev, "vendor"), "0x")
                         deviceId = lremove(sysValue(sysDir, _dev, "device"), "0x")
-                        busId = tuple(int(x, 16) for x in _dev.replace(".",":").split(":")[1:4])
+                        busId = tuple(int(x, 16) for x in _dev.replace(".",":").split(":"))[1:4]
 
                         a.BusId = '# BusID      "PCI:%d:%d:%d"' % busId
                         a.BoardName, a.VendorName =  queryPCI(vendorId, deviceId)

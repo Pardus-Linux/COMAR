@@ -77,39 +77,26 @@
 <group name="Boot">
 	<class name="Loader">
 		<method name="listSystems" access="guest"/>
-		<method name="listOptions" access="guest"/>
-		<method name="getOption" access="guest">
-			<argument>key</argument>
+		<method name="setOptions">
+			<argument>default</argument>
+			<argument>timeout</argument>
+			<argument>password</argument>
 		</method>
-		<method name="setOption">
-			<argument>key</argument>
-			<argument>value</argument>
-		</method>
+		<method name="getOptions" access="guest"/>
 		<method name="listEntries" access="guest"/>
-		<method name="getEntry" access="guest">
+		<method name="setEntry">
 			<argument>index</argument>
-		</method>
-		<method name="addEntry">
 			<argument>title</argument>
 			<argument>root</argument>
 			<argument>os_type</argument>
 			<argument>kernel</argument>
-			<argument>initrd</argument>
 			<argument>options</argument>
+			<argument>initrd</argument>
 			<argument>default</argument>
 		</method>
 		<method name="removeEntry">
 			<argument>index</argument>
-		</method>
-		<method name="updateEntry">
-			<argument>index</argument>
 			<argument>title</argument>
-			<argument>root</argument>
-			<argument>os_type</argument>
-			<argument>kernel</argument>
-			<argument>initrd</argument>
-			<argument>options</argument>
-			<argument>default</argument>
 		</method>
 		<method name="updateKernelEntry">
 			<argument>root</argument>
@@ -117,6 +104,40 @@
 		</method>
 		<notify name="changed" access="guest"/>
 	</class>
+	<class name="Modules">
+		<method name="listAvailable"/>
+		<method name="listLoaded"/>
+		<method name="setOptions">
+			<argument>module</argument>
+			<argument>options</argument>
+		</method>
+		<method name="load">
+			<argument>module</argument>
+			<argument>options</argument>
+		</method>
+		<method name="unload">
+			<argument>module</argument>
+		</method>
+		<method name="listAutoload"/>
+		<method name="addAutoload">
+			<argument>module</argument>
+			<argument>kernel_version</argument>
+		</method>
+		<method name="removeAutoload">
+			<argument>module</argument>
+			<argument>kernel_version</argument>
+		</method>
+		<method name="listBlacklist"/>
+		<method name="addBlacklist">
+			<argument>module</argument>
+		</method>
+		<method name="removeBlacklist">
+			<argument>module</argument>
+		</method>
+		<method name="updateModules"/>
+	</class>
+	<!-- <class name="Mudur">
+	</class> -->
 </group>
 
 

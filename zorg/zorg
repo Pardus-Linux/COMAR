@@ -328,7 +328,7 @@ def loadFile(_file):
         f.close()
         return d
     except:
-        return ""
+        return []
 
 class OUT:
     def __init__(self):

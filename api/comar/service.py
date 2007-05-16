@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2006, TUBITAK/UEKAE
+# Copyright (C) 2006-2007, TUBITAK/UEKAE
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -116,7 +116,9 @@ def _checkPid(pid, user_uid=None, command=None):
         if st.st_uid != user_uid:
             return False
     # Check that process is an instance of the correct binary
-    # FIXME: how to do that without restart problems???
+    cmdline = file("%s/cmdline" % path).read()
+    if cmdline.split("\0")[0] != command:
+        return False
     return True
 
 def _findProcesses(command=None, pidfile=None, user=None):
@@ -129,7 +131,7 @@ def _findProcesses(command=None, pidfile=None, user=None):
     for entry in os.listdir("/proc"):
         if entry[0] in "0123456789":
             pid = int(entry)
-            if _checkPid(pid, user_uid=user_uid):
+            if _checkPid(pid, user_uid=user_uid, command=command):
                 pids.append(pid)
     if len(pids) > 0:
         return pids

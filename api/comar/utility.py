@@ -38,67 +38,6 @@ def run(*cmd):
     reply.stdout, reply.stderr = proc.communicate()
     return reply
 
-def startService(exe=None, command=None, args=None, pid=None, background=False, makepid=False, chuid=None, nice=None, nofail=False):
-    if command:
-        cmd = [command]
-    else:
-        if not exe:
-            raise RuntimeError("You should specify an executable for startService()")
-        cmd = [ "/sbin/start-stop-daemon", "--quiet", "--start", "--startas", exe ]
-        if pid:
-            cmd.append("--pidfile")
-            cmd.append(pid)
-        if background:
-            cmd.append("--background")
-        if makepid:
-            cmd.append("--make-pidfile")
-        if chuid:
-            cmd.append("--chuid")
-            cmd.append(chuid)
-        if nice is not None:
-            cmd.append("--nicelevel")
-            cmd.append(str(nice))
-        if args:
-            cmd.append("--")
-    if args:
-        if isinstance(args, basestring):
-            args = args.split()
-        cmd.extend(args)
-    ret = run(cmd)
-    if not nofail:
-        if ret == 0:
-            notify("System.Service.changed", "started")
-        else:
-            err = "Unable to start service"
-            if ret.stderr:
-                err = str(ret.stderr)
-                fail(err)
-    return ret
-
-def stopService(exe=None, pid=None, name=None, signal=None, nofail=False):
-    cmd = [ "/sbin/start-stop-daemon", "--quiet", "--stop" ]
-    if pid:
-        cmd.append("--pidfile")
-        cmd.append(pid)
-    if exe:
-        cmd.append(exe)
-    if name:
-        cmd.append("--name")
-        cmd.append(name)
-    if signal is not None:
-        cmd.append("--signal")
-        cmd.append(str(signal))
-    ret = run(cmd)
-    if not nofail:
-        if ret == 0:
-            notify("System.Service.changed", "stopped")
-        else:
-            err = "Unable to stop service"
-            if ret.stderr:
-                err = str(ret.stderr)
-            fail(err)
-    return ret
-
 def checkDaemon(pidfile):
     if not os.path.exists(pidfile):
         return False
@@ -108,8 +47,6 @@ def checkDaemon(pidfile):
     if not os.path.exists("/proc/%s" % pid):
         return False
     return True
-
-checkService = checkDaemon
 
 def waitBus(unix_name, timeout=5, wait=0.1, stream=True):
     if stream:

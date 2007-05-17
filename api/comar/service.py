@@ -107,6 +107,8 @@ def _getPid(pidfile):
 
 def _checkPid(pid, user_uid=None, command=None):
     """Check that given process ID matches our criteria."""
+    if not pid:
+        return False
     path = "/proc/%d" % pid
     # Check that process is running
     if not os.path.exists(path):
@@ -140,7 +142,7 @@ def _findProcesses(command=None, user=None):
 
 # Service control API
 
-def startService(command, args=None, pidfile=None, makepid=False, nice=None, detach=False):
+def startService(command, args=None, pidfile=None, makepid=False, nice=None, detach=False, donotify=False):
     """Start given service.
     
     command:  Path to the service executable.
@@ -152,6 +154,8 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
               and run it in the background.
     makepid:  Write the pid file if service does not create on its own. Mostly useful
               with the detach option.
+    donotify: If True, automatically make Comar notification when service is run.
+              Also automatically fail() if something goes wrong.
     """
     cmd = [ command ]
     if args:
@@ -159,7 +163,11 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
             args = args.split()
         cmd.extend(args)
     
-    # FIXME: check if service is already running
+    if pidfile:
+        pid = _getPid(pidfile)
+        if _checkPid(pidfile, command=command):
+            # Already running, no need to send notification, just return OK
+            return None
     
     def fork_handler():
         if nice is not None:
@@ -184,20 +192,38 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
         # FIXME: support chuid
     
     popen = subprocess.Popen(cmd, close_fds=True, preexec_fn=fork_handler)
-    if not detach:
-        print popen.wait()
+    if detach:
+        ret = execReply(popen.wait())
+        ret.stdout, ret.stderr = popen.communicate()
+        if donotify:
+            if ret == 0:
+                notify("System.Service.changed", "started")
+            else:
+                err = "Unable to start service."
+                if ret.stderr != "":
+                    err = "Unable to start: " + str(ret.stderr)
+                fail(err)
+        return ret
+    else:
+        if donotify:
+            # We blindly send this, cause there is no way to track detached
+            # process' return code.
+            notify("System.Service.changed", "started")
+            return execReply(0)
 
-def stopService(pidfile=None, command=None, user=None, signal_no=None):
+def stopService(pidfile=None, command=None, user=None, signalno=None, donotify=False):
     """Stop given service.
     
-    pidfile:    Process ID of the service is kept in this file when running.
-    command:    Stop processes running this executable.
-    user:       Stop processes belonging to this user name.
-    signal_no:  Specify the signal to send to processes being stopped.
-                Default is SIGTERM.
+    pidfile:   Process ID of the service is kept in this file when running.
+    command:   Stop processes running this executable.
+    user:      Stop processes belonging to this user name.
+    signalno:  Specify the signal to send to processes being stopped.
+               Default is SIGTERM.
+    donotify: If True, automatically make Comar notification when service is stopped.
+              Also automatically fail() if something goes wrong.
     """
-    if signal_no is None:
-        signal_no = signal.SIGTERM
+    if signalno is None:
+        signalno = signal.SIGTERM
     
     if pidfile:
         user_uid = None
@@ -206,13 +232,21 @@ def stopService(pidfile=None, command=None, user=None, signal_no=None):
             user_uid = pw.pw_uid
         pid = _getPid(pidfile)
         if _checkPid(pid, user_uid=user_uid, command=command):
-            os.kill(pid, signal_no)
+            os.kill(pid, signalno)
+            if donotify:
+                notify("System.Service.changed", "stopped")
+        else:
+            # Already stopped, no need to send notification.
+            return None
     else:
         if not command and not user:
             raise TypeError("You should give a criteria to select service processes!")
         pids = _findProcesses(user=user, command=command)
-        for pid in pids:
-            os.kill(pid, signal_no)
+        if len(pids) > 0:
+            for pid in pids:
+                os.kill(pid, signalno)
+            notify("System.Service.changed", "stopped")
+    return None
 
 def isServiceRunning(pidfile):
     """Return if given service is currently running."""

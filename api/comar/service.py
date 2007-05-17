@@ -14,6 +14,7 @@ import subprocess
 import fcntl
 import termios
 import pwd
+import signal
 
 from comar.utility import *
 
@@ -121,7 +122,7 @@ def _checkPid(pid, user_uid=None, command=None):
         return False
     return True
 
-def _findProcesses(command=None, pidfile=None, user=None):
+def _findProcesses(command=None, user=None):
     """Return the list of process IDs matching our criteria."""
     pids = []
     user_uid = None
@@ -186,10 +187,32 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
     if not detach:
         print popen.wait()
 
-def stopService():
-    """Stop given service."""
-    pass
-    # FIXME: implement this
+def stopService(pidfile=None, command=None, user=None, signal_no=None):
+    """Stop given service.
+    
+    pidfile:    Process ID of the service is kept in this file when running.
+    command:    Stop processes running this executable.
+    user:       Stop processes belonging to this user name.
+    signal_no:  Specify the signal to send to processes being stopped.
+                Default is SIGTERM.
+    """
+    if signal_no is None:
+        signal_no = signal.SIGTERM
+    
+    if pidfile:
+        user_uid = None
+        if user:
+            pw = pwd.getpwnam(user)
+            user_uid = pw.pw_uid
+        pid = _getPid(pidfile)
+        if _checkPid(pid, user_uid=user_uid, command=command):
+            os.kill(pid, signal_no)
+    else:
+        if not command and not user:
+            raise TypeError("You should give a criteria to select service processes!")
+        pids = _findProcesses(user=user, command=command)
+        for pid in pids:
+            os.kill(pid, signal_no)
 
 def isServiceRunning(pidfile):
     """Return if given service is currently running."""

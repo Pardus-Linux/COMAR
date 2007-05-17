@@ -119,9 +119,10 @@ def _checkPid(pid, user_uid=None, command=None):
         if st.st_uid != user_uid:
             return False
     # Check that process is an instance of the correct binary
-    cmdline = file("%s/cmdline" % path).read()
-    if cmdline.split("\0")[0] != command:
-        return False
+    if command:
+        cmdline = file("%s/cmdline" % path).read()
+        if cmdline.split("\0")[0] != command:
+            return False
     return True
 
 def _findProcesses(command=None, user=None):
@@ -165,10 +166,9 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
     
     if pidfile:
         pid = _getPid(pidfile)
-        if _checkPid(pidfile, command=command):
+        if _checkPid(pid, command=command):
             # Already running, no need to send notification, just return OK
             return None
-    
     def fork_handler():
         if nice is not None:
             os.nice(nice)
@@ -193,6 +193,12 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
     
     popen = subprocess.Popen(cmd, close_fds=True, preexec_fn=fork_handler)
     if detach:
+        if donotify:
+            # We blindly send this, cause there is no way to track detached
+            # process' return code.
+            notify("System.Service.changed", "started")
+            return execReply(0)
+    else:
         ret = execReply(popen.wait())
         ret.stdout, ret.stderr = popen.communicate()
         if donotify:
@@ -204,12 +210,6 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
                     err = "Unable to start: " + str(ret.stderr)
                 fail(err)
         return ret
-    else:
-        if donotify:
-            # We blindly send this, cause there is no way to track detached
-            # process' return code.
-            notify("System.Service.changed", "started")
-            return execReply(0)
 
 def stopService(pidfile=None, command=None, user=None, signalno=None, donotify=False):
     """Stop given service.

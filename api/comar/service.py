@@ -192,7 +192,7 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
             file(pidfile, "w").write("%d\n" % os.getpid())
         # FIXME: support chuid
     
-    popen = subprocess.Popen(cmd, close_fds=True, preexec_fn=fork_handler)
+    popen = subprocess.Popen(cmd, close_fds=True, preexec_fn=fork_handler, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if detach:
         if donotify:
             # We blindly send this, cause there is no way to track detached

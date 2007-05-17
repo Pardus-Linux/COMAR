@@ -39,6 +39,7 @@ def run(*cmd):
     return reply
 
 def checkDaemon(pidfile):
+    """Deprecated, do not use in new code. Use isServiceRunning from comar.service"""
     if not os.path.exists(pidfile):
         return False
     pid = file(pidfile).read().split("\n")[0]

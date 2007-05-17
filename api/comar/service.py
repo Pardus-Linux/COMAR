@@ -198,7 +198,7 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
             # We blindly send this, cause there is no way to track detached
             # process' return code.
             notify("System.Service.changed", "started")
-            return execReply(0)
+        return execReply(0)
     else:
         ret = execReply(popen.wait())
         ret.stdout, ret.stderr = popen.communicate()

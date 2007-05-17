@@ -169,6 +169,7 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
         if _checkPid(pid, command=command):
             # Already running, no need to send notification, just return OK
             return None
+    
     def fork_handler():
         if nice is not None:
             os.nice(nice)

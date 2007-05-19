@@ -226,9 +226,9 @@ model_init(void)
 				if (iks_strcmp(iks_name(obj), "class") == 0) {
 					obj_no = add_node(grp_no, build_path(grp, obj, NULL), N_CLASS);
 					for (met = iks_first_tag(obj); met; met = iks_next_tag(met)) {
+						int no;
 						if (iks_strcmp(iks_name(met), "method") == 0) {
 							iks *arg;
-							int no;
 							char *prof;
 							no = add_node(obj_no, build_path(grp, obj, met), N_METHOD);
 							prof = iks_find_attrib(met, "access");
@@ -266,13 +266,12 @@ model_init(void)
 									} else {
 										log_error("Argument name needed in <argument> tag of model.xml\n");
 									}
-
-
 								}
 							}
 						} else if (iks_strcmp(iks_name(met), "notify") == 0) {
-							add_node(obj_no, build_path(grp, obj, met), N_NOTIFY);
-							++model_max_notifications;
+							no = add_node(obj_no, build_path(grp, obj, met), N_NOTIFY);
+							if (no >= model_max_notifications)
+								model_max_notifications = no + 1;
 						}
 					}
 				}

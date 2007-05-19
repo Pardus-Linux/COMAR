@@ -166,7 +166,7 @@ Section "Module"
     Load "dbe"      # Double buffer extension
     Load "extmod"
     SubSection "extmod"
-        Option "omit xfree86-dga"   # don't initialise the DGA extension
+        Option "omit xfree86-dga" # don't initialise the DGA extension
     EndSubSection
     Load "type1"
     Load "freetype"

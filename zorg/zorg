@@ -15,10 +15,14 @@ import os
 import subprocess
 import string
 import sys
+import time
 from optparse import OptionParser
 
 
 ### Some defaults ###
+zorg_info = " Xorg AutoConfiguration tool"
+zorg_version = "0.5"
+
 xorg_conf = "/etc/X11/xorg.conf"
 activeCard = "/etc/X11/activeCard"
 xorg_off = "/var/run/xorg_off"
@@ -29,7 +33,6 @@ MonitorsDB = "/usr/lib/X11/MonitorsDB"
 driver_path = "/usr/lib/xorg/modules/drivers"
 xkb_path = "/usr/share/X11/xkb/symbols/pc"
 
-zorg_info = " Xorg AutoConfiguration tool"
 truecolor_cards = ["i810", "intel", "nv", "nvidia", "radeon", "fglrx"]
 touchpad_devices = ["synaptics", "alps"]
 default_kmap = "trq"
@@ -153,7 +156,13 @@ template_jail = """    # Prevent virtual terminal switching
     Option     "DontZap" "true"
 """
 
-template_main = """
+template_main = """################################################################
+#
+#  Autoconfigured config file for Xorg
+#  Created by Zorg %(ZORG_VERSION)s on %(DATE)s
+#
+#
+
 Section "Module"
     Load "dbe"      # Double buffer extension
     Load "extmod"
@@ -263,6 +272,9 @@ def backup(_file):
     except:
         out.warn("Could not backup %s" % _file)
         return False
+
+def getDate():
+    return time.ctime()
 
 def saveActiveCard(cards):
     f = file(activeCard, "w")
@@ -994,6 +1006,10 @@ def autoConfigure():
     # check if we are in jail
     keys_main["SEC_JAIL"] = getJail()
 
+    # Add zorg info
+    keys_main["ZORG_VERSION"] = zorg_version
+    keys_main["DATE"] = getDate()
+
     write_tmpl(template_main, keys_main, xorg_conf)
 
 def safeConfigure(_driver = "vesa"):
@@ -1040,6 +1056,10 @@ def safeConfigure(_driver = "vesa"):
 
     # check if we are in jail
     keys_main["SEC_JAIL"] = getJail()
+
+    # Add zorg info
+    keys_main["ZORG_VERSION"] = zorg_version
+    keys_main["DATE"] = getDate()
 
     write_tmpl(template_main, keys_main, xorg_conf)
 
@@ -1114,7 +1134,7 @@ def boot():
 
 if __name__ == "__main__":
     # running from command line
-    parser = OptionParser(description = zorg_info)
+    parser = OptionParser(description = "%s version %s" % (zorg_info, zorg_version))
     parser.add_option("-d", "--debug", action="store_true", dest="debug",
                       default=False, help="print extra debug info")
     parser.add_option("-n", "--no-color", action="store_false", dest="colorout",

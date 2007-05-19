@@ -15,6 +15,7 @@ import os
 import subprocess
 import sys
 import time
+import sha
 from optparse import OptionParser
 
 
@@ -274,6 +275,9 @@ def backup(_file):
 
 def getDate():
     return time.ctime()
+
+def getChecksum(_data):
+    return sha.sha(_data).hexdigest()
 
 def saveActiveCard(cards):
     f = file(activeCard, "w")

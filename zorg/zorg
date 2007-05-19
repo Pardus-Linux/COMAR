@@ -13,7 +13,6 @@
 
 import os
 import subprocess
-import string
 import sys
 import time
 from optparse import OptionParser
@@ -792,7 +791,7 @@ def queryDDC():
     if mon.eisaid != "":
         for line in loadFile(MonitorsDB):
             l = line.split(";")
-            if mon.eisaid == string.upper(l[2]).strip():
+            if mon.eisaid == l[2].strip().upper():
                 mon.vendorname = l[0].lstrip()
                 mon.modelname = l[1].lstrip()
                 mon.hsync_min, mon.hsync_max = l[3].strip().split("-")

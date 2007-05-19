@@ -11,7 +11,7 @@ SCons.Warnings.warningAsException(1)
 
 # Parameters
 
-version = ARGUMENTS.get('version', '1.11')
+version = ARGUMENTS.get('version', '1.12')
 prefix = ARGUMENTS.get('prefix', 'install')
 pyprefix = ARGUMENTS.get('pythondir', 'auto')
 

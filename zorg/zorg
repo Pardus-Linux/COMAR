@@ -318,10 +318,10 @@ def atoi(s):
         ret = 0
     return ret
 
-def write_tmpl(tmpl, keys, fname):
-    out.sect("Writing template to %s" % fname)
+def write_file(fname, _data):
+    out.sect("Writing data to %s" % fname)
     f = file(fname, "w")
-    f.write(tmpl % keys)
+    f.write(_data)
     f.close()
 
 def sysValue(path, dir, _file):
@@ -873,7 +873,7 @@ def findMonitors(cards):
     # check lcd panel
     lcd_drivers = [ "nv", "nvidia", "ati", "via", "i810", "sis" ]
     if cards[0].Driver in lcd_drivers:
-        write_tmpl(template_probe_display, { "PROBE_DRIVER": cards[0].Driver }, xorg_conf)
+        write_tmpl({ "PROBE_DRIVER": cards[0].Driver }, _type = "probe")
         queryPanel(mon)
 
     monitors.append(mon)
@@ -958,8 +958,22 @@ def getJail():
             return template_jail
     return ""
 
-# om call
+def write_tmpl(_keys, _type = "normal"):
+    if _type == "probe":
+        # temporary template for probing with Xorg
+        tmpl = template_probe_display
+    else:
+        # check if we are in jail
+        _keys["SEC_JAIL"] = getJail()
+        # Add zorg info
+        _keys["ZORG_VERSION"] = zorg_version
+        _keys["DATE"] = getDate()
 
+        tmpl = template_main
+
+    write_file(xorg_conf, tmpl % _keys)
+
+# om call
 def autoConfigure():
     out.sect("Autodetecting devices")
     # detect graphic card and find monitor of first card
@@ -1006,14 +1020,7 @@ def autoConfigure():
     keysTouchpad(keys_main)
     keys_main["KEYMAP"] = queryKeymap()
 
-    # check if we are in jail
-    keys_main["SEC_JAIL"] = getJail()
-
-    # Add zorg info
-    keys_main["ZORG_VERSION"] = zorg_version
-    keys_main["DATE"] = getDate()
-
-    write_tmpl(template_main, keys_main, xorg_conf)
+    write_tmpl(keys_main)
 
 def safeConfigure(_driver = "vesa"):
     # set failsafe graphics card
@@ -1057,14 +1064,7 @@ def safeConfigure(_driver = "vesa"):
     keys_main["SEC_SYNAPTICS"] = ""
     keys_main["SYNAPTICS_LAY"] = ""
 
-    # check if we are in jail
-    keys_main["SEC_JAIL"] = getJail()
-
-    # Add zorg info
-    keys_main["ZORG_VERSION"] = zorg_version
-    keys_main["DATE"] = getDate()
-
-    write_tmpl(template_main, keys_main, xorg_conf)
+    write_tmpl(keys_main)
 
 def activeCardChanged(cards):
     out.sect("Videocards changed, reconfiguring X")

@@ -156,13 +156,15 @@ template_jail = """    # Prevent virtual terminal switching
     Option     "DontZap" "true"
 """
 
-template_main = """################################################################
+template_header = """################################################################
 #
 #  Autoconfigured config file for Xorg
 #  Created by Zorg %(ZORG_VERSION)s on %(DATE)s
 #
+#  ESSENTIAL: %(SUM)s
 #
-
+"""
+template_main = """
 Section "Module"
     Load "dbe"      # Double buffer extension
     Load "extmod"
@@ -965,11 +967,13 @@ def write_tmpl(_keys, _type = "normal"):
     else:
         # check if we are in jail
         _keys["SEC_JAIL"] = getJail()
-        # Add zorg info
+        # add zorg info
         _keys["ZORG_VERSION"] = zorg_version
         _keys["DATE"] = getDate()
+        # paranoia mode
+        _keys["SUM"] = getChecksum(template_main % _keys)
 
-        tmpl = template_main
+        tmpl = template_header + template_main
 
     write_file(xorg_conf, tmpl % _keys)
 

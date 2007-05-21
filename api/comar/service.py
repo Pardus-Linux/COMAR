@@ -141,6 +141,8 @@ def _findProcesses(command=None, user=None):
         return pids
     return None
 
+def _Popen()
+
 # Service control API
 
 def startService(command, args=None, pidfile=None, makepid=False, nice=None, detach=False, donotify=False):
@@ -212,11 +214,12 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
                 fail(err)
         return ret
 
-def stopService(pidfile=None, command=None, user=None, signalno=None, donotify=False):
+def stopService(pidfile=None, command=None, args=None, user=None, signalno=None, donotify=False):
     """Stop given service.
     
     pidfile:   Process ID of the service is kept in this file when running.
     command:   Stop processes running this executable.
+    args:      Execute command with these args instead of killing with [signalno]
     user:      Stop processes belonging to this user name.
     signalno:  Specify the signal to send to processes being stopped.
                Default is SIGTERM.
@@ -225,6 +228,26 @@ def stopService(pidfile=None, command=None, user=None, signalno=None, donotify=F
     """
     if signalno is None:
         signalno = signal.SIGTERM
+    
+    if command and args:
+        cmd = [ command ]
+        if args:
+            if isinstance(args, basestring):
+                args = args.split()
+            cmd.extend(args)
+        
+        popen = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        ret = execReply(popen.wait())
+        ret.stdout, ret.stderr = popen.communicate()
+        if donotify:
+            if ret == 0:
+                notify("System.Service.changed", "stopped")
+            else:
+                err = "Unable to stop service."
+                if ret.stderr != "":
+                    err = "Unable to stop: " + str(ret.stderr)
+                fail(err)
+        return ret
     
     if pidfile:
         user_uid = None

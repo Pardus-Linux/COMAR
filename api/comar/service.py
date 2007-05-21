@@ -264,7 +264,7 @@ def stopService(pidfile=None, command=None, args=None, user=None, signalno=None,
         if not command and not user:
             raise TypeError("You should give a criteria to select service processes!")
         pids = _findProcesses(user=user, command=command)
-        if len(pids) > 0:
+        if pids is not None:
             for pid in pids:
                 os.kill(pid, signalno)
             notify("System.Service.changed", "stopped")
@@ -284,7 +284,7 @@ def isServiceRunning(pidfile=None, command=None):
             return False
     else:
         pids = _findProcesses(command=command)
-        if len(pids) == 0:
+        if pids is None:
             return False
     return True
 

@@ -15,7 +15,7 @@ import time
 import socket
 import subprocess
 
-def syncronized(func):
+def synchronized(func):
     """Syncronize method call with a per method lock.
     
     This decorator makes sure that only one instance of the script's

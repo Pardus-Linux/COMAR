@@ -186,9 +186,12 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
             # (other and group has no write permission by default)
             os.umask(022)
             # Detach from controlling terminal
-            tty_fd = os.open("/dev/tty", os.O_RDWR)
-            fcntl.ioctl(tty_fd, termios.TIOCNOTTY)
-            os.close(tty_fd)
+            try:
+                tty_fd = os.open("/dev/tty", os.O_RDWR)
+                fcntl.ioctl(tty_fd, termios.TIOCNOTTY)
+                os.close(tty_fd)
+            except OSError:
+                pass
             # Close IO channels
             devnull_fd = os.open("/dev/null", os.O_RDWR)
             os.dup2(devnull_fd, 0)

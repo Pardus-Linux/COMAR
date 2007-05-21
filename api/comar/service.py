@@ -270,13 +270,22 @@ def stopService(pidfile=None, command=None, args=None, user=None, signalno=None,
             notify("System.Service.changed", "stopped")
     return None
 
-def isServiceRunning(pidfile):
-    """Return if given service is currently running."""
-    pid = _getPid(pidfile)
-    if pid is None:
-        return False
-    if not _checkPid(pid):
-        return False
+def isServiceRunning(pidfile=None, command=None):
+    """Return if given service is currently running.
+    
+    pidfile:   Process ID of the service is kept in this file when running.
+    command:   Check processes running this executable.
+    """
+    if pidfile:
+        pid = _getPid(pidfile)
+        if pid is None:
+            return False
+        if not _checkPid(pid, command=command):
+            return False
+    else:
+        pids = _findProcesses(command=command)
+        if len(pids) == 0:
+            return False
     return True
 
 # Default Comar class methods

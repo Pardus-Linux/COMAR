@@ -160,5 +160,11 @@
 			<comment xml:lang="fr">Les membres peuvent utiliser les modems et les fax pour communiquer via les lignes téléphoniques.</comment>
 			<comment xml:lang="it">I membri possono utilizzare i modem e i fax per comunicare attraverso le linee telefoniche.</comment>
 		</group>
+		<group name="video">
+			<purpose>Video hardware access</purpose>
+			<purpose xml:lang="tr">Görüntü aygıtı erişim</purpose>
+			<comment>Members can do low level access to graphics hardware.</comment>
+			<comment xml:lang="tr">Grafik aygıtlarına düşük seviyeli erişebilirler.</comment>
+		</group>
 	</groups>
 </comarSecurityComments>

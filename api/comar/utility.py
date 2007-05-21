@@ -15,6 +15,22 @@ import time
 import socket
 import subprocess
 
+def syncronized(func):
+    """Syncronize method call with a per method lock.
+    
+    This decorator makes sure that only one instance of the script's
+    method run in any given time.
+    """
+    class Handler:
+        def handler(self, *args, **kwargs):
+            lock = FileLock("/var/run/comar-%s-%s.lock" % (script()[0], self.myfunc.__name__))
+            lock.lock()
+            self.myfunc(*args, **kwargs)
+            lock.unlock()
+    h = Handler()
+    h.myfunc = func
+    return h.handler
+
 
 class execReply(int):
     def __init__(self, value):

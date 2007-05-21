@@ -88,6 +88,14 @@ class Config(dict):
 
 config = Config()
 
+def startDependencies(*services):
+    """Start other needed services.
+    
+    Arguments are service names.
+    """
+    for service in services:
+        call("System.Service.start", service)
+
 # Service control utilities
 
 def _getPid(pidfile):

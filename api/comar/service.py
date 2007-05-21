@@ -141,8 +141,6 @@ def _findProcesses(command=None, user=None):
         return pids
     return None
 
-def _Popen()
-
 # Service control API
 
 def startService(command, args=None, pidfile=None, makepid=False, nice=None, detach=False, donotify=False):

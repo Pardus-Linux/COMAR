@@ -14,6 +14,7 @@ import subprocess
 import fcntl
 import termios
 import pwd
+import grp
 import signal
 
 from comar.utility import *
@@ -151,7 +152,7 @@ def _findProcesses(command=None, user=None):
 
 # Service control API
 
-def startService(command, args=None, pidfile=None, makepid=False, nice=None, detach=False, donotify=False):
+def startService(command, args=None, pidfile=None, makepid=False, nice=None, detach=False, chuid=None, donotify=False):
     """Start given service.
     
     command:  Path to the service executable.
@@ -159,6 +160,7 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
     pidfile:  Process ID of the service is kept in this file when running.
     nice:     This value is added to the service process' niceness value, which
               decreases its scheduling priority.
+    chuid:    Change to this user:group before starting the service.
     detach:   If the service doesn't detach on its own, this option will fork
               and run it in the background.
     makepid:  Write the pid file if service does not create on its own. Mostly useful
@@ -179,8 +181,6 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
             return None
     
     def fork_handler():
-        if nice is not None:
-            os.nice(nice)
         if detach:
             # Set umask to a sane value
             # (other and group has no write permission by default)
@@ -199,9 +199,34 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
             os.dup2(devnull_fd, 2)
             # Detach from process group
             os.setsid()
+        if nice is not None:
+            os.nice(nice)
         if makepid and pidfile:
             file(pidfile, "w").write("%d\n" % os.getpid())
-        # FIXME: support chuid
+        if chuid:
+            c_user = chuid
+            c_group = None
+            if ":" in c_user:
+                c_user, c_group = c_user.split(":", 1)
+            cpw = pwd.getpwnam(c_user)
+            c_uid = cpw.pw_uid
+            if c_group:
+                cgr = grp.getgrnam(c_group)
+                c_gid = cgr.gr_gid
+            else:
+                c_gid = cpw.pw_gid
+                c_group = grp.getgrgid(cpw.pw_gid).gr_name
+            
+            c_groups = []
+            for item in grp.getgrall():
+                if c_user in item.gr_mem:
+                    c_groups.append(item.gr_gid)
+            if c_gid not in c_groups:
+                c_groups.append(c_gid)
+            
+            os.setgid(chuid_gid)
+            os.setgroups(c_groups)
+            os.setuid(chuid_uid)
     
     popen = subprocess.Popen(cmd, close_fds=True, preexec_fn=fork_handler, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if detach:

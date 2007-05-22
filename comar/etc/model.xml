@@ -123,7 +123,7 @@
 		<method name="unload">
 			<argument>module</argument>
 		</method>
-		<method name="listAutoload"/>
+		<method name="listAutoload">
 			<argument>kernel_version</argument>
 		</method>
 		<method name="addAutoload">

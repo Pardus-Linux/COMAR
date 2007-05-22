@@ -124,6 +124,8 @@
 			<argument>module</argument>
 		</method>
 		<method name="listAutoload"/>
+			<argument>kernel_version</argument>
+		</method>
 		<method name="addAutoload">
 			<argument>module</argument>
 			<argument>kernel_version</argument>

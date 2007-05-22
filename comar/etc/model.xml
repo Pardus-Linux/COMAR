@@ -59,7 +59,12 @@
 <method name="setRepositories">
     <argument>repos</argument>
 </method>
+<method name="setCache">
+    <argument>enabled</argument>
+    <argument>limit</argument>
+</method>
 <method name="clearCache">
+    <!-- arguments are obsolete, will be removed in next release -->
     <argument>cacheDir</argument>
     <argument>limit</argument>
 </method>

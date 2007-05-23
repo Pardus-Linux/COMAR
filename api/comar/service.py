@@ -224,9 +224,9 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
             if c_gid not in c_groups:
                 c_groups.append(c_gid)
             
-            os.setgid(chuid_gid)
+            os.setgid(c_gid)
             os.setgroups(c_groups)
-            os.setuid(chuid_uid)
+            os.setuid(c_uid)
     
     popen = subprocess.Popen(cmd, close_fds=True, preexec_fn=fork_handler, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if detach:

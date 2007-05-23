@@ -269,7 +269,7 @@ def stopService(pidfile=None, command=None, args=None, chuid=None, user=None, si
     if signalno is None:
         signalno = signal.SIGTERM
     
-    if command and args:
+    if command and args is not None:
         cmd = [ command ]
         if args:
             if isinstance(args, basestring):

@@ -234,7 +234,7 @@
 <method name="setState" profile="package">
     <argument>state</argument>
 </method>
-<method name="getState"/>
+<method name="getState" access="guest"/>
 <method name="setProfile" profile="package">
     <argument>profile</argument>
     <argument>save_filter</argument>

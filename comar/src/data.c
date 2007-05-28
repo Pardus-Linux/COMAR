@@ -39,7 +39,7 @@ check_db_format(void)
 
 	fmt = load_file(fmt_name, NULL);
 	if (fmt) {
-		if (atoi(fmt) != 1) {
+		if (atoi(fmt) != 1 && atoi(fmt) != 2) {
 			log_error("Unsupported database format '%s'\n", fmt);
 			return 1;
 		}

@@ -313,9 +313,6 @@ static void
 do_event(char *argv[])
 {
 	comar_t *com;
-	int cmd;
-	unsigned int id;
-	char *ret;
 
 	if (!argv[optind] || !argv[optind+1] || !argv[optind+2] || !argv[optind+3]) {
 		print_usage();

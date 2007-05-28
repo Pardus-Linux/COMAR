@@ -109,7 +109,8 @@ main(int argc, char *argv[])
 				proc_put(proc_get_rpc(), CMD_SHUTDOWN, NULL, NULL);
 				shut_rpc_flag = 1;
 			}
-			if (my_proc.nr_children <= 2)
+			// Only RPC process is left
+			if (my_proc.nr_children <= 1)
 				proc_finish();
 		}
 		if (1 == proc_listen(&p, &cmd, &size, -1)) {

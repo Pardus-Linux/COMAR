@@ -50,7 +50,7 @@ check_db_format(void)
 			log_error("Cannot write to '%s'\n", fmt_name);
 			return 1;
 		}
-		fwrite("1", 1, 1, f);
+		fwrite("2", 1, 1, f);
 		fclose(f);
 	}
 

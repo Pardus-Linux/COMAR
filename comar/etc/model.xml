@@ -86,6 +86,8 @@
 			<argument>default</argument>
 			<argument>timeout</argument>
 			<argument>password</argument>
+			<argument>background</argument>
+			<argument>splash</argument>
 		</method>
 		<method name="getOptions" access="guest"/>
 		<method name="listEntries" access="guest"/>

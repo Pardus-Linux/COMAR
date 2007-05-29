@@ -16,6 +16,7 @@ import termios
 import pwd
 import grp
 import signal
+import time
 
 from comar.utility import *
 
@@ -124,12 +125,22 @@ def _checkPid(pid, user_uid=None, command=None):
         return False
     # Check that process belongs to correct user
     if user_uid:
-        st = os.stat(path)
+        try:
+            st = os.stat(path)
+        except OSError, e:
+            if e.errno != 2:
+                raise
+            return False
         if st.st_uid != user_uid:
             return False
     # Check that process is an instance of the correct binary
     if command:
-        cmdline = file("%s/cmdline" % path).read()
+        try:
+            cmdline = file("%s/cmdline" % path).read()
+        except IOError, e:
+            if e.errno != 2:
+                raise
+            return False
         if cmdline.split("\0")[0] != command:
             return False
     return True
@@ -300,6 +311,14 @@ def stopService(pidfile=None, command=None, args=None, chuid=None, user=None, si
         pid = _getPid(pidfile)
         if _checkPid(pid, user_uid=user_uid, command=command):
             os.kill(pid, signalno)
+            timeout = 5
+            while True:
+                if not _checkPid(pid, user_uid=user_uid, command=command):
+                    break
+                timeout -= 0.3
+                time.sleep(0.3)
+                if timeout <= 0:
+                    fail("Unable to stop")
             if donotify:
                 notify("System.Service.changed", "stopped")
         else:

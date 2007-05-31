@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2005-2006, TUBITAK/UEKAE
+** Copyright (c) 2005-2007, TUBITAK/UEKAE
 **
 ** This program is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU General Public License as published by the
@@ -398,6 +398,8 @@ csl_execute(char *code, size_t size, const char *func_name, struct pack *pak, ch
 	PyObject *pArgs, *pkArgs;
 	PyMethodDef *meth;
 	node *n;
+	int arg_count;
+	PyObject *argNames;
 
 	pModule = PyImport_AddModule("__builtin__");
 	pDict = PyModule_GetDict(pModule);
@@ -444,9 +446,17 @@ csl_execute(char *code, size_t size, const char *func_name, struct pack *pak, ch
 		return CSL_NOFUNC;
 	}
 
+	{
+		PyObject *tempCode, *temp;
+		tempCode = PyObject_GetAttrString(pFunc, "func_code");
+		temp = PyObject_GetAttrString(tempCode, "co_argcount");
+		arg_count = PyInt_AsLong(temp);
+		argNames = PyObject_GetAttrString(tempCode, "co_varnames");
+	}
+
 	pArgs = NULL;
 	pkArgs = PyDict_New();
-	while (pak) {
+	while (arg_count && pak) {
 		PyObject *p;
 		char *t, *t2;
 		size_t sz;
@@ -457,8 +467,11 @@ csl_execute(char *code, size_t size, const char *func_name, struct pack *pak, ch
 			Py_DECREF(pkArgs);
 			break;
 		}
-		p = PyString_FromStringAndSize(t2, sz);
-		PyDict_SetItemString(pkArgs, t, p);
+		p = PyString_FromString(t);
+		if (PySequence_Contains(argNames, p) == 1) {
+			p = PyString_FromStringAndSize(t2, sz);
+			PyDict_SetItemString(pkArgs, t, p);
+		}
 	}
 	if (!pArgs) pArgs = PyTuple_New(0);
 

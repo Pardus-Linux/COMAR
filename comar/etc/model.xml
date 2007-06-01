@@ -3,7 +3,12 @@
 
 <group name="System">
 <class name="Package">
-<method name="postInstall"/>
+<method name="postInstall">
+    <argument>fromVersion</argument>
+    <argument>toVersion</argument>
+    <argument>fromRelease</argument>
+    <argument>toRelease</argument>
+</method>
 <method name="preRemove"/>
 </class>
 

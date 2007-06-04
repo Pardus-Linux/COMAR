@@ -16,7 +16,17 @@ import ajan.ldaputil
 
 def fetch_policy():
     conn = ajan.ldaputil.Connection()
-    print "fetching"
+    
+    # This computer
+    ret = conn.search_computer()[0]
+    assert(ret[0] == ajan.config.computer_dn)
+    attributes = ret[1]
+    
+    for oc in attributes["objectClass"]:
+        mod = ajan.config.modules.get(oc, None)
+        if mod:
+            mod.parse_policy(None, attributes)
+    
     conn.close()
 
 
@@ -26,7 +36,5 @@ class Fetcher(threading.Thread):
         self.queue = queue
     
     def run(self):
-        print "connecting to ldap"
         fetch_policy()
-        print "got info"
         self.queue.put("result")

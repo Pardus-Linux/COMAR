@@ -17,9 +17,7 @@ import ajan.policy
 
 
 def start():
-    print "lala"
     ajan.config.load()
-    print ajan.config.ldap.uri
     
     queue = Queue.Queue(0)
     

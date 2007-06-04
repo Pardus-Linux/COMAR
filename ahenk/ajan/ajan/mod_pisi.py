@@ -9,3 +9,9 @@
 # option) any later version. Please read the COPYING file.
 #
 
+import threading
+
+import ajan.ldaputil
+
+def parse_policy(policy, attributes):
+    print "pisi", attributes

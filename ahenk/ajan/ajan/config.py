@@ -11,22 +11,20 @@
 
 import piksemel
 
+import mod_pisi
+
 # Constants
 default_configfile = "/etc/ahenk/ajan.xml"
 
 # Config variables
 class LdapDomain:
     def __init__(self):
-        self.reset()
-    
-    def reset(self):
         self.uri = None
         self.base_dn = None
         self.bind_dn = None
         self.bind_password = None
     
     def fromXML(self, doc):
-        self.reset()
         if doc:
             self.uri = doc.getTagData("URI")
             self.base_dn = doc.getTagData("BaseDN")
@@ -37,8 +35,16 @@ class LdapDomain:
 
 ldap = LdapDomain()
 
+computer_dn = None
+
+modules = {
+    "pisiPolicy": mod_pisi,
+}
+
 # Operations
 def load():
     global ldap
+    global computer_dn
     doc = piksemel.parse(default_configfile)
     ldap.fromXML(doc.getTag("Domain"))
+    computer_dn = doc.getTagData("ComputerDN")

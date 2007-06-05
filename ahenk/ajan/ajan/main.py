@@ -25,4 +25,4 @@ def start():
     t.start()
     t.join()
     
-    print queue.get()
+    print queue.get(False)

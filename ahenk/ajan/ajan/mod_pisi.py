@@ -13,5 +13,28 @@ import threading
 
 import ajan.ldaputil
 
-def parse_policy(policy, attributes):
-    print "pisi", attributes
+
+class Policy(ajan.ldaputil.LdapClass):
+    entries = (
+        ("mode", "pisiAutoUpdateMode", str, "off"),
+        ("interval", "pisiAutoUpdateInterval", int, 3600),
+        ("repos", "pisiRepositories", str, None),
+        ("zone", "pisiAutoUpdateZone", str, None),
+        ("wanted", "pisiWantedPackage", list, []),
+        ("unwanted", "pisiUnwantedPackage", list, []),
+    )
+    
+    def __init__(self):
+        self.fromEntry({})
+    
+    def parse(self, attributes):
+        self.fromEntry(attributes)
+    
+    def parse_ou(self, attributes):
+        p = Policy()
+        p.fromEntry(attributes)
+        self.wanted = set(self.wanted) + set(p.wanted)
+        # FIXME: override
+    
+    def apply(self):
+        pass

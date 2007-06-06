@@ -21,8 +21,25 @@ def start():
     
     queue = Queue.Queue(0)
     
+    current_policy = None
+    timeout = None
+    
     t = ajan.policy.Fetcher(queue)
     t.start()
-    t.join()
     
-    print queue.get(False)
+    while True:
+        try:
+            job, data = queue.get(True, timeout)
+        except Queue.Empty:
+            job , data = None, None
+        
+        if job is None:
+            print current_policy.events()
+        
+        elif job == "new_policy":
+            current_policy = data
+        
+        else:
+            break
+        
+        timeout = current_policy.next_event_in_secs()

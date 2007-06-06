@@ -9,17 +9,47 @@
 # option) any later version. Please read the COPYING file.
 #
 
+import time
 import threading
 
 import ajan.config
 import ajan.ldaputil
 
 
+class Schedule:
+    def __init__(self, interval, callable):
+        self.callable = callable
+        self.interval = interval
+        self.last = time.time()
+    
+    def remaining(self, cur):
+        return self.interval - (cur - self.last)
+    
+    def is_ready(self, cur):
+        if (cur - self.last) > self.interval:
+            self.last = cur
+            return True
+        return False
+
+
 class Policy:
     def __init__(self):
-        self.modules = {}
+        self.schedules = []
+        self.policies = {}
         for oclass, mod in ajan.config.modules.iteritems():
-            self.modules[oclass] = mod.Policy()
+            self.policies[oclass] = mod.Policy()
+    
+    def next_event_in_secs(self):
+        if len(self.schedules) == 0:
+            return None
+        cur = time.time()
+        next = min(map(lambda x: x.remaining(cur), self.schedules))
+        return next
+    
+    def events(self):
+        cur = time.time()
+        active = filter(lambda x: x.is_ready(cur), self.schedules)
+        return active
 
 
 def fetch_policy():
@@ -33,7 +63,7 @@ def fetch_policy():
     attributes = ret[1]
     
     for oc in attributes["objectClass"]:
-        mod = policy.modules.get(oc, None)
+        mod = policy.policies.get(oc, None)
         if mod:
             mod.parse(attributes)
     
@@ -45,7 +75,7 @@ def fetch_policy():
             if len(ret) > 0:
                 attributes = ret[0][1]
                 for oc in attributes["objectClass"]:
-                    mod = policy.modules.get(oc, None)
+                    mod = policy.policies.get(oc, None)
                     if mod:
                         mod.parse_ou(attributes)
     
@@ -62,6 +92,6 @@ class Fetcher(threading.Thread):
     def run(self):
         try:
             policy = fetch_policy()
+            self.queue.put(("new_policy", policy))
         except Exception, e:
             self.queue.put(("fetch_error", str(e)))
-        self.queue.put(("new_policy", policy))

@@ -730,6 +730,7 @@ def queryPanel(mon):
         "Panel Size is",
         "Panel Size from BIOS:",
         "Panel size: ",
+        "Panel Native Resolution is ",
         "Detected panel size via",
         "Size of device LFP (local flat panel) is",
         "Size of device LFP",
@@ -874,7 +875,7 @@ def findMonitors(cards):
         mon.vref_max = 70
 
     # check lcd panel
-    lcd_drivers = [ "nv", "nvidia", "ati", "via", "i810", "sis" ]
+    lcd_drivers = [ "nv", "nvidia", "ati", "via", "i810", "sis", "via"]
     if cards[0].Driver in lcd_drivers:
         write_tmpl({ "PROBE_DRIVER": cards[0].Driver }, _type = "probe")
         queryPanel(mon)

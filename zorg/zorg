@@ -729,6 +729,7 @@ def queryPanel(mon):
         "Panel size is",
         "Panel Size is",
         "Panel Size from BIOS:",
+        "Panel size: ",
         "Detected panel size via",
         "Size of device LFP (local flat panel) is",
         "Size of device LFP",

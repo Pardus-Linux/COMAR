@@ -9,7 +9,6 @@
 # option) any later version. Please read the COPYING file.
 #
 
-import threading
 import Queue
 
 import ajan.config
@@ -21,25 +20,24 @@ def start():
     
     queue = Queue.Queue(0)
     
-    current_policy = None
-    timeout = None
-    
-    t = ajan.policy.Fetcher(queue)
-    t.start()
+    policies = ajan.policy.Policies(queue)
+    policies.start()
     
     while True:
         try:
-            job, data = queue.get(True, timeout)
+            job, data = queue.get(True, policies.next_event_in_secs())
         except Queue.Empty:
             job , data = None, None
         
         if job is None:
-            print current_policy.events()
+            print "timeout"
+            policies.start_events()
         
         elif job == "new_policy":
-            current_policy = data
+            print "new_policy"
+            print data
+            policies.update_from(data)
         
         else:
+            print "error", data
             break
-        
-        timeout = current_policy.next_event_in_secs()

@@ -23,7 +23,7 @@ class Schedule:
         self.last = time.time()
     
     def remaining(self, cur):
-        return self.interval - (cur - self.last)
+        return max(0, self.interval - (cur - self.last))
     
     def is_ready(self, cur):
         if (cur - self.last) > self.interval:
@@ -32,12 +32,19 @@ class Schedule:
         return False
 
 
-class Policy:
-    def __init__(self):
+class Policies:
+    def __init__(self, queue):
+        self.queue = queue
+        self.policies = map(lambda x: x.LocalPolicy(), ajan.config.modules)
         self.schedules = []
-        self.policies = {}
-        for oclass, mod in ajan.config.modules.iteritems():
-            self.policies[oclass] = mod.Policy()
+        self.schedules.append(Schedule(ajan.config.policy_check_interval, self.start))
+    
+    def start(self):
+        t = Fetcher(self.queue)
+        t.start()
+    
+    def update_from(self, new_policies):
+        pass
     
     def next_event_in_secs(self):
         if len(self.schedules) == 0:
@@ -46,52 +53,62 @@ class Policy:
         next = min(map(lambda x: x.remaining(cur), self.schedules))
         return next
     
-    def events(self):
+    def start_events(self):
         cur = time.time()
         active = filter(lambda x: x.is_ready(cur), self.schedules)
+        for event in active:
+            t = threading.Thread(target=event.callable)
+            t.start()
         return active
-
-
-def fetch_policy():
-    conn = ajan.ldaputil.Connection()
-    
-    policy = Policy()
-    
-    # Policies of this computer
-    ret = conn.search_computer()[0]
-    assert(ret[0] == ajan.config.computer_dn)
-    attributes = ret[1]
-    
-    for oc in attributes["objectClass"]:
-        mod = policy.policies.get(oc, None)
-        if mod:
-            mod.parse(attributes)
-    
-    # Organizational unit policies
-    ou_list = attributes.get("ou", None)
-    if ou_list:
-        for unit in ou_unit:
-            ret = conn.search_ou(unit)
-            if len(ret) > 0:
-                attributes = ret[0][1]
-                for oc in attributes["objectClass"]:
-                    mod = policy.policies.get(oc, None)
-                    if mod:
-                        mod.parse_ou(attributes)
-    
-    conn.close()
-    
-    return policy
 
 
 class Fetcher(threading.Thread):
     def __init__(self, queue):
         threading.Thread.__init__(self)
         self.queue = queue
+        self.new_policies = {}
+    
+    def set_policy(self, oc, attributes, is_ou=False):
+        for module in ajan.config.modules:
+            if oc == module.RemotePolicy.objectClass:
+                policy = self.new_policies.get(module.__name__, None)
+                if not policy:
+                    policy = module.RemotePolicy()
+                    self.new_policies[module.__name__] = policy
+                if is_ou:
+                    policy.parse_ou(attributes)
+                else:
+                    policy.parse_computer(attributes)
+    
+    def fetch(self):
+        conn = ajan.ldaputil.Connection()
+        
+        # Get this computer's entry
+        ret = conn.search_computer()[0]
+        assert(ret[0] == ajan.config.computer_dn)
+        attributes = ret[1]
+        
+        # Organizational unit policies
+        ou_list = attributes.get("ou", None)
+        if ou_list:
+            for unit in ou_unit:
+                ret = conn.search_ou(unit)
+                if len(ret) > 0:
+                    attributes = ret[0][1]
+                    for oc in attributes["objectClass"]:
+                        self.set_policy(oc, attributes, is_ou=True)
+        
+        # Computer policies override OU group policies
+        for oc in attributes["objectClass"]:
+            self.set_policy(oc, attributes)
+        
+        conn.close()
+        
+        return self.new_policies
     
     def run(self):
         try:
-            policy = fetch_policy()
+            policy = self.fetch()
             self.queue.put(("new_policy", policy))
         except Exception, e:
             self.queue.put(("fetch_error", str(e)))

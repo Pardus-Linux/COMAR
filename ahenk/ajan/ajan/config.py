@@ -37,9 +37,11 @@ ldap = LdapDomain()
 
 computer_dn = None
 
-modules = {
-    "pisiPolicy": mod_pisi,
-}
+policy_check_interval = 5
+
+modules = (
+    mod_pisi,
+)
 
 # Operations
 def load():

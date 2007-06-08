@@ -14,7 +14,23 @@ import threading
 import ajan.ldaputil
 
 
-class Policy(ajan.ldaputil.LdapClass):
+class LocalPolicy:
+    def __init__(self):
+        pass
+    
+    def apply(self):
+        pass
+    
+    def update_from(self, remote):
+        pass
+    
+    def schedules(self):
+        return []
+
+
+class RemotePolicy(ajan.ldaputil.LdapClass):
+    objectClass = "pisiPolicy"
+    
     entries = (
         ("mode", "pisiAutoUpdateMode", str, "off"),
         ("interval", "pisiAutoUpdateInterval", int, 3600),
@@ -27,14 +43,11 @@ class Policy(ajan.ldaputil.LdapClass):
     def __init__(self):
         self.fromEntry({})
     
-    def parse(self, attributes):
-        self.fromEntry(attributes)
-    
     def parse_ou(self, attributes):
         p = Policy()
         p.fromEntry(attributes)
         self.wanted = set(self.wanted) + set(p.wanted)
         # FIXME: override
     
-    def apply(self):
-        pass
+    def parse_computer(self, attributes):
+        self.fromEntry(attributes)

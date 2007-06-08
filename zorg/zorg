@@ -34,7 +34,7 @@ driver_path = "/usr/lib/xorg/modules/drivers"
 xkb_path = "/usr/share/X11/xkb/symbols/pc"
 
 truecolor_cards = ["i810", "intel", "nv", "nvidia", "radeon", "fglrx"]
-lcd_drivers = [ "nv", "nvidia", "ati", "via", "i810", "sis", "via"]
+lcd_drivers = [ "nv", "nvidia", "ati", "via", "i810", "sis"]
 touchpad_devices = ["synaptics", "alps"]
 default_kmap = "trq"
 

@@ -35,7 +35,9 @@ class Schedule:
 class Policies:
     def __init__(self, queue):
         self.queue = queue
-        self.policies = map(lambda x: x.LocalPolicy(), ajan.config.modules)
+        self.policies = {}
+        for module in ajan.config.modules:
+            self.policies[module.__name__] = module.LocalPolicy()
         self.schedules = []
         self.schedules.append(Schedule(ajan.config.policy_check_interval, self.start))
     
@@ -44,7 +46,10 @@ class Policies:
         t.start()
     
     def update_from(self, new_policies):
-        pass
+        for name, data in new_policies.iteritems():
+            mod = self.policies.get(name, None)
+            if mod:
+                mod.update_from(data)
     
     def next_event_in_secs(self):
         if len(self.schedules) == 0:

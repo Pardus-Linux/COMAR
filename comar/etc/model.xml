@@ -148,7 +148,9 @@
 		<method name="removeBlacklist">
 			<argument>module</argument>
 		</method>
-		<method name="updateModules"/>
+		<method name="updateModules">
+			<argument>kernel_version</argument>
+		</method>
 	</class>
 	<!-- <class name="Mudur">
 	</class> -->

@@ -9,45 +9,35 @@
 # option) any later version. Please read the COPYING file.
 #
 
-import threading
-
 import ajan.ldaputil
 
 
-class LocalPolicy:
-    def __init__(self):
-        pass
-    
-    def apply(self):
-        pass
-    
-    def update_from(self, remote):
-        pass
-    
-    def schedules(self):
-        return []
-
-
-class RemotePolicy(ajan.ldaputil.LdapClass):
-    objectClass = "pisiPolicy"
-    
+class PisiPolicy(ajan.ldaputil.LdapClass):
     entries = (
-        ("mode", "pisiAutoUpdateMode", str, "off"),
-        ("interval", "pisiAutoUpdateInterval", int, 3600),
+        ("mode", "pisiAutoUpdateMode", str, None),
+        ("interval", "pisiAutoUpdateInterval", int, None),
         ("repos", "pisiRepositories", str, None),
         ("zone", "pisiAutoUpdateZone", str, None),
-        ("wanted", "pisiWantedPackage", list, []),
-        ("unwanted", "pisiUnwantedPackage", list, []),
+        ("wanted", "pisiWantedPackage", list, None),
+        ("unwanted", "pisiUnwantedPackage", list, None),
     )
-    
+
+
+class Policy:
     def __init__(self):
-        self.fromEntry({})
+        self.policy = PisiPolicy()
     
-    def parse_ou(self, attributes):
-        p = Policy()
-        p.fromEntry(attributes)
-        self.wanted = set(self.wanted) + set(p.wanted)
-        # FIXME: override
+    def update(self, computer, units):
+        print "updating pisi policy"
+        self.policy.fromEntry(computer)
     
-    def parse_computer(self, attributes):
-        self.fromEntry(attributes)
+    def apply(self):
+        print "appliying pisi policy"
+    
+    def timers(self):
+        return {
+            self.autoUpdate: self.policy.interval,
+        }
+    
+    def autoUpdate(self):
+        print "auto update in progress"

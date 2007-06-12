@@ -15,6 +15,9 @@ import ajan.config
 
 
 class LdapClass:
+    def __init__(self, attr={}):
+        self.fromEntry(attr)
+    
     def fromEntry(self, attr):
         for varname, attrname, valuetype, default in self.entries:
             value = attr.get(attrname, None)

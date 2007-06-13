@@ -18,6 +18,7 @@ class UserPolicy(ajan.ldaputil.LdapClass):
         ("ldap_mode", "comarUserLdapSearchMode", str, None),
         ("ldap_base", "comarUserLdapBase", str, None),
         ("ldap_filter", "comarUserLdapFilter", str, None),
+        ("ldap_uri", "comarUserLdapURI", str, None),
     )
 
 

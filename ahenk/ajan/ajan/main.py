@@ -21,7 +21,8 @@ def start():
     queue = Queue.Queue(0)
     
     policies = ajan.policy.Policies(queue)
-    policies.start_fetching()
+    policies.load_default()
+    #policies.start_fetching()
     
     while True:
         try:

@@ -9,6 +9,7 @@
 # option) any later version. Please read the COPYING file.
 #
 
+import os
 import time
 import threading
 import ldif
@@ -33,6 +34,14 @@ class Timer:
         return False
 
 
+class Loader(ldif.LDIFParser):
+    def handle(self, dn, attr):
+        if self.comp:
+            self.ou.append(attr)
+        else:
+            self.comp = attr
+
+
 class Policies:
     def __init__(self, queue):
         self.queue = queue
@@ -40,6 +49,17 @@ class Policies:
         self.timers = {}
         self.timers[self.start_fetching] = \
             Timer(ajan.config.policy_check_interval, self.start_fetching)
+    
+    def load_default(self):
+        if not os.path.exists(ajan.config.default_policyfile):
+            return
+        
+        loader = Loader(file(ajan.config.default_policyfile))
+        loader.comp = None
+        loader.ou = []
+        loader.parse()
+        
+        self.update(loader.comp, loader.ou)
     
     def update(self, computer, units):
         for policy in self.policies:

@@ -12,6 +12,7 @@
 import piksemel
 
 import mod_pisi
+import mod_user
 
 # Constants
 default_configfile = "/etc/ahenk/ajan.xml"
@@ -43,6 +44,7 @@ policy_check_interval = 30
 
 modules = (
     mod_pisi,
+    mod_user,
 )
 
 # Operations

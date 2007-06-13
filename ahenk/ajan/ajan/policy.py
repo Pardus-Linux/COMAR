@@ -11,6 +11,7 @@
 
 import time
 import threading
+import ldif
 
 import ajan.config
 import ajan.ldaputil
@@ -84,10 +85,14 @@ class Fetcher(threading.Thread):
     def fetch(self):
         conn = ajan.ldaputil.Connection()
         
+        policy_file = file(ajan.config.default_policyfile, "w")
+        output = ldif.LDIFWriter(policy_file)
+        
         # Get this computer's entry
         ret = conn.search_computer()[0]
         assert(ret[0] == ajan.config.computer_dn)
         comp_attr = ret[1]
+        output.unparse(ret[0], ret[1])
         
         # Organizational unit policies
         ou_attrs = []
@@ -96,7 +101,10 @@ class Fetcher(threading.Thread):
             for unit in ou_unit:
                 ret = conn.search_ou(unit)
                 if len(ret) > 0:
+                    output.unparse(ret[0], ret[1])
                     ou_attrs.append(ret[0][1])
+        
+        policy_file.close()
         
         conn.close()
         

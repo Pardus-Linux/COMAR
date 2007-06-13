@@ -15,6 +15,8 @@ import mod_pisi
 
 # Constants
 default_configfile = "/etc/ahenk/ajan.xml"
+#default_policyfile = "/etc/ahenk/current-policy.ldif"
+default_policyfile = "current-policy.ldif"
 
 # Config variables
 class LdapDomain:
@@ -37,7 +39,7 @@ ldap = LdapDomain()
 
 computer_dn = None
 
-policy_check_interval = 5
+policy_check_interval = 30
 
 modules = (
     mod_pisi,

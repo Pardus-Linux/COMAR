@@ -79,8 +79,8 @@ attributetype ( pardusBase:2.9
  )
 
 attributetype ( pardusBase:2.10 
-	NAME 'comarUserLdapSearchMode' 
-	DESC 'Search mode of posixAccount entries in LDAP directory. Enumaration: base, onelevel, subtree.' 
+	NAME 'comarUserLdapSearchScope' 
+	DESC 'Search scope of posixAccount entries in LDAP directory. Enumaration: base, onelevel, subtree.' 
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 
  )
 
@@ -100,7 +100,7 @@ objectclass ( pardusBase:1.3
 	NAME 'comarUserPolicy' 
 	SUP top 
 	AUXILIARY 
-	MAY ( comarUserSourceMode $ comarUserLdapBase $ comarUserLdapSearchMode $ comarUserLdapFilter ) 
+	MAY ( comarUserSourceMode $ comarUserLdapBase $ comarUserLdapSearchScope $ comarUserLdapFilter ) 
  )
 
 #

@@ -32,7 +32,7 @@ class Policy:
         self.policy.fromEntry(computer)
     
     def apply(self):
-        print "appliying pisi policy"
+        print "applying pisi policy"
     
     def timers(self):
         return {

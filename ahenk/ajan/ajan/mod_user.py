@@ -36,7 +36,7 @@ class Policy:
         print "updating user policy"
         self.policy.fromEntry(computer)
     
-    def set_pam_ldap(self):
+    def set_padl_config(self, filename):
         conf = header
         conf += "uri %s\n" % self.policy.ldap_uri
         conf += "base %s\n" % self.policy.ldap_base
@@ -49,15 +49,16 @@ class Policy:
         if self.policy.ldap_filter:
             conf += "pam_filter %s\n" % self.policy.ldap_filter
         
-        f = file("/etc/security/pam_ldap.conf", "w")
+        f = file(filename, "w")
         f.write(conf)
         f.close()
     
     def apply(self):
         print "applying user policy", self.policy.mode
         if self.policy.mode == "ldap":
-            print "pam"
-            self.set_pam_ldap()
+            print "pam+nss ldap conf"
+            self.set_padl_config("/etc/security/pam_ldap.conf")
+            self.set_padl_config("/etc/security/nss_ldap.conf")
     
     def timers(self):
         return {}

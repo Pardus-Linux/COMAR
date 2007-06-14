@@ -100,7 +100,7 @@ objectclass ( pardusBase:1.3
 	NAME 'comarUserPolicy' 
 	SUP top 
 	AUXILIARY 
-	MAY ( comarUserSourceMode $ comarUserLdapBase $ comarUserLdapSearchScope $ comarUserLdapFilter ) 
+	MAY ( comarUserSourceMode $ comarUserLdapURI $ comarUserLdapBase $ comarUserLdapSearchScope $ comarUserLdapFilter ) 
  )
 
 #

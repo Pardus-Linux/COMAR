@@ -16,8 +16,7 @@ import mod_user
 
 # Constants
 default_configfile = "/etc/ahenk/ajan.xml"
-#default_policyfile = "/etc/ahenk/current-policy.ldif"
-default_policyfile = "current-policy.ldif"
+default_policyfile = "/etc/ahenk/current-policy.ldif"
 
 # Config variables
 class LdapDomain:

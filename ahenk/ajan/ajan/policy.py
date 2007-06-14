@@ -74,7 +74,10 @@ class Policies:
             else:
                 if self.timers[callable]:
                     del self.timers[callable]
-        # FIXME: start applying
+        # FIXME: one thread per job
+        for policy in self.policies:
+            t = threading.Thread(target=policy.apply)
+            t.start()
     
     def next_timeout(self):
         if len(self.timers) == 0:

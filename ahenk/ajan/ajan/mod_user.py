@@ -59,7 +59,13 @@ class Policy:
         p.load()
         service = p.services["system-auth"]
         rule = ajan.pam.PamRule("auth sufficient pam_ldap.so")
-        service.auth.insert(1, rule)
+        if self.policy_mode == "ldap":
+            service.auth.insert(1, rule)
+        else:
+            for rule in service.auth:
+                if rule.module == "pam_ldap.so":
+                    service.auth.remove(rule)
+                    break
         service.save("lala")
     
     def apply(self):

@@ -56,6 +56,12 @@ class PamService:
                 temp += "%s\t%s\n" % (rulename, str(rule))
             temp += "\n"
         return temp
+    
+    def save(self, filename):
+        f = file(filename, "w")
+        f.write(header)
+        f.write(str(self))
+        f.close()
 
 
 class Pam:
@@ -70,13 +76,5 @@ class Pam:
     
     def save(self):
         for name, service in self.services.iteritems():
-            #f = file(os.path.join(self.pam_d, name), "w")
-            f = file(name, "w")
-            f.write(header)
-            f.write(str(service))
-            f.close()
-
-
-p = Pam()
-p.load()
-p.save()
+            service.save(os.path.join(self.pam_d, name))
+            service.save(name)

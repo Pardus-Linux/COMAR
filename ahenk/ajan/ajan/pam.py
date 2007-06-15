@@ -32,6 +32,8 @@ class PamService:
     rulesets = ("auth", "account", "password", "session")
     
     def __init__(self, filename=None):
+        self.filename = filename
+        
         map(lambda x: setattr(self, x, []), self.rulesets)
         
         if filename:
@@ -57,8 +59,8 @@ class PamService:
             temp += "\n"
         return temp
     
-    def save(self, filename):
-        f = file(filename, "w")
+    def save(self):
+        f = file(self.filename, "w")
         f.write(header)
         f.write(str(self))
         f.close()
@@ -77,4 +79,4 @@ class Pam:
     def save(self):
         for name, service in self.services.iteritems():
             service.save(os.path.join(self.pam_d, name))
-            service.save(name)
+            service.save()

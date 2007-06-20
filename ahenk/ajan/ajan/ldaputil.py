@@ -48,7 +48,8 @@ class Connection:
     def __init__(self):
         conf = ajan.config.ldap
         conn = ldap.open(conf.uri)
-        conn.simple_bind_s(conf.bind_dn, conf.bind_password)
+        if conf.bind_dn:
+            conn.simple_bind_s(conf.bind_dn, conf.bind_password)
         self.conn = conn
     
     def close(self):

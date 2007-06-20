@@ -31,8 +31,9 @@ class LdapDomain:
             self.uri = doc.getTagData("URI")
             self.base_dn = doc.getTagData("BaseDN")
             bind = doc.getTag("Bind")
-            self.bind_dn = bind.getTagData("DN")
-            self.bind_password = bind.getTagData("Password")
+            if bind:
+                self.bind_dn = bind.getTagData("DN")
+                self.bind_password = bind.getTagData("Password")
 
 
 ldap = LdapDomain()

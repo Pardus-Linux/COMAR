@@ -60,18 +60,10 @@ class Policy:
         p.load()
         service = p.services["system-auth"]
         if self.policy.mode == "ldap":
-            new_auth = []
-            for rule in service.auth:
-                if rule.module != "pam_ldap.so":
-                    new_auth.append(rule)
-            service.auth = new_auth
-            rule = ajan.pam.PamRule("auth sufficient pam_ldap.so")
-            service.auth.insert(1, rule)
+            service.auth.set_module("pam_ldap.so", "sufficient", before="pam_unix.so")
+            service.account.set_module("pam_ldap.so", "sufficient", before="pam_unix.so")
         else:
-            for rule in service.auth:
-                if rule.module == "pam_ldap.so":
-                    service.auth.remove(rule)
-                    break
+            service.remove_module("pam_ldap.so")
         service.save()
     
     def set_nss(self):

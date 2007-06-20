@@ -16,6 +16,8 @@ header = "#%PAM-1.0\n\n"
 
 class PamRule:
     def __init__(self, line=None):
+        if not line:
+            return
         parts = line.split()[1:]
         # FIXME: multiple control values [...]
         self.control = parts[0]
@@ -28,13 +30,36 @@ class PamRule:
         return "%s\t%s\t%s" % (self.control, self.module, self.args)
 
 
+class PamChain(list):
+    def set_module(self, name, control, args="", before=None):
+        self.remove_module(name)
+        new_rule = PamRule()
+        new_rule.module = name
+        new_rule.control = control
+        new_rule.args = args
+        if before:
+            for i, rule in enumerate(self):
+                if rule.module == before:
+                    self.insert(i, new_rule)
+                    return
+        self.insert(0, new_rule)
+    
+    def remove_module(self, name):
+        rules =[]
+        for rule in self:
+            if rule.module == name:
+                rules.append(rule)
+        for rule in rules:
+            self.remove(rule)
+
+
 class PamService:
     rulesets = ("auth", "account", "password", "session")
     
     def __init__(self, filename=None):
         self.filename = filename
         
-        map(lambda x: setattr(self, x, []), self.rulesets)
+        map(lambda x: setattr(self, x, PamChain()), self.rulesets)
         
         if filename:
             part = ""
@@ -58,6 +83,11 @@ class PamService:
                 temp += "%s\t%s\n" % (rulename, str(rule))
             temp += "\n"
         return temp
+    
+    def remove_module(self, name):
+        for rulename in self.rulesets:
+            chain = getattr(self, rulename)
+            chain.remove_module(name)
     
     def save(self):
         f = file(self.filename, "w")

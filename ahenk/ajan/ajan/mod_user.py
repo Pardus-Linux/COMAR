@@ -70,7 +70,7 @@ class Policy:
         nss = ajan.nsswitch.NameServiceSwitch()
         sources = ["files"]
         if self.policy.mode == "ldap":
-            sources = ["ldap", "files"]
+            sources = ["files", "ldap"]
         nss["shadow"].sources = sources
         nss["passwd"].sources = sources
         nss["group"].sources = sources

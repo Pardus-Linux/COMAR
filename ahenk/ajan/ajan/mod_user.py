@@ -41,6 +41,7 @@ class Policy:
     def set_padl_config(self):
         conf = header
         conf += "uri %s\n" % self.policy.ldap_uri
+        
         conf += "base %s\n" % self.policy.ldap_base
         scope = {
             "base": "base",
@@ -48,8 +49,11 @@ class Policy:
             "subtree": "sub",
         }.get(self.policy.ldap_scope, "sub")
         conf += "scope %s\n" % scope
+        
         if self.policy.ldap_filter:
             conf += "pam_filter %s\n" % self.policy.ldap_filter
+        
+        conf += "nss_schema rfc2307bis\n"
         
         f = file("/etc/security/ldap.conf", "w")
         f.write(conf)

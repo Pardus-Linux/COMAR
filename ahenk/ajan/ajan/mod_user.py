@@ -54,6 +54,7 @@ class Policy:
             conf += "pam_filter %s\n" % self.policy.ldap_filter
         
         conf += "nss_schema rfc2307bis\n"
+        conf += "pam_password exop\n"
         
         f = file("/etc/security/ldap.conf", "w")
         f.write(conf)

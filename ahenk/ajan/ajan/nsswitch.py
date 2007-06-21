@@ -46,5 +46,5 @@ class NameServiceSwitch:
     
     def save(self):
         f = file(self.conf_file, "w")
-        f.write(header + "\n".join(map(str, self.db)))
+        f.write(header + "\n".join(map(str, self.db)) + "\n")
         f.close()

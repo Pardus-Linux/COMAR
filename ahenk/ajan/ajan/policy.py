@@ -59,7 +59,8 @@ class Policies:
         loader.ou = []
         loader.parse()
         
-        self.update(loader.comp, loader.ou)
+        if loader.comp:
+            self.update(loader.comp, loader.ou)
     
     def update(self, computer, units):
         for policy in self.policies:

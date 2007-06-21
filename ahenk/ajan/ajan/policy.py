@@ -12,6 +12,7 @@
 import os
 import time
 import threading
+import StringIO
 import ldif
 
 import ajan.config
@@ -45,6 +46,7 @@ class Loader(ldif.LDIFParser):
 class Policies:
     def __init__(self, queue):
         self.queue = queue
+        self.old_hash = None
         self.policies = map(lambda x: x.Policy(), ajan.config.modules)
         self.timers = {}
         self.timers[self.start_fetching] = \
@@ -60,9 +62,15 @@ class Policies:
         loader.parse()
         
         if loader.comp:
-            self.update(loader.comp, loader.ou)
+            self.update((loader.comp, loader.ou, None))
     
-    def update(self, computer, units):
+    def update(self, data):
+        computer, units, ldif_hash = data
+        if ldif_hash is not None:
+            if ldif_hash == self.old_hash:
+                print "policy hasnt changed"
+                return
+        self.old_hash = ldif_hash
         for policy in self.policies:
             policy.update(computer, units)
         for callable, interval in policy.timers().iteritems():
@@ -109,8 +117,8 @@ class Fetcher(threading.Thread):
     def fetch(self):
         conn = ajan.ldaputil.Connection()
         
-        policy_file = file(ajan.config.default_policyfile, "w")
-        output = ldif.LDIFWriter(policy_file)
+        policy_output = StringIO.StringIO()
+        output = ldif.LDIFWriter(policy_output)
         
         # Get this computer's entry
         ret = conn.search_computer()[0]
@@ -128,11 +136,16 @@ class Fetcher(threading.Thread):
                     output.unparse(ret[0], ret[1])
                     ou_attrs.append(ret[0][1])
         
-        policy_file.close()
-        
         conn.close()
         
-        return comp_attr, ou_attrs
+        policy_ldif = policy_output.getvalue()
+        policy_output.close()
+        
+        f = file(ajan.config.default_policyfile, "w")
+        f.write(policy_ldif)
+        f.close()
+        
+        return comp_attr, ou_attrs, hash(policy_ldif)
     
     def run(self):
         try:

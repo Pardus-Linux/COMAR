@@ -37,7 +37,7 @@ def start():
         elif job == "new_policy":
             print "new_policy"
             print data
-            policies.update(data[0], data[1])
+            policies.update(data)
         
         else:
             print "error", data

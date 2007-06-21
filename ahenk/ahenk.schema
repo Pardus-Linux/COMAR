@@ -87,7 +87,7 @@ attributetype ( pardusBase:2.10
 attributetype ( pardusBase:2.11 
 	NAME 'comarUserLdapFilter' 
 	DESC 'Extra search filters for posixAccount entries in LDAP directory.' 
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 
  )
 
 attributetype ( pardusBase:2.12 

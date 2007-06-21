@@ -118,6 +118,5 @@ objectclass ( pardusBase:1.1
 	NAME 'pardusComputer' 
 	DESC 'A computer with Pardus operation system running.' 
 	SUP (top $ device) 
-	AUXILIARY 
 	MAY pardusMemoryCapacity 
  )

@@ -14,6 +14,7 @@ import time
 import threading
 import StringIO
 import ldif
+import sha
 
 import ajan.config
 import ajan.ldaputil
@@ -145,7 +146,7 @@ class Fetcher(threading.Thread):
         f.write(policy_ldif)
         f.close()
         
-        return comp_attr, ou_attrs, hash(policy_ldif)
+        return comp_attr, ou_attrs, sha.sha(policy_ldif).digest()
     
     def run(self):
         try:

@@ -52,4 +52,13 @@ class Policy:
                 break
             print reply
         
+        print "ur finito", reply
+        
+        link.System.Manager["pisi"].updatePackage()
+        while True:
+            reply = link.read_cmd()
+            if reply.command != "notify":
+                break
+            print reply
+        
         print "finito", reply

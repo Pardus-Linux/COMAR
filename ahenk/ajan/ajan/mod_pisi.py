@@ -9,6 +9,8 @@
 # option) any later version. Please read the COPYING file.
 #
 
+import comar
+
 import ajan.ldaputil
 
 
@@ -41,3 +43,13 @@ class Policy:
     
     def autoUpdate(self):
         print "auto update in progress"
+        link = comar.Link()
+        
+        link.System.Manager["pisi"].updateAllRepositories()
+        while True:
+            reply = link.read_cmd()
+            if reply.command != "notify":
+                break
+            print reply
+        
+        print "finito", reply

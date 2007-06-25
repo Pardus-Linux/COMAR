@@ -72,9 +72,11 @@ class Policies:
                 print "policy hasnt changed"
                 return
         self.old_hash = ldif_hash
+        timers = {}
         for policy in self.policies:
             policy.update(computer, units)
-        for callable, interval in policy.timers().iteritems():
+            timers.update(policy.timers())
+        for callable, interval in timers.iteritems():
             if interval and interval != 0:
                 old = self.timers.get(callable, None)
                 if old:

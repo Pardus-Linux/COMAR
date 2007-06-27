@@ -11,6 +11,7 @@
 
 import os
 import time
+import Queue
 import threading
 import StringIO
 import ldif
@@ -36,60 +37,13 @@ class Timer:
         return False
 
 
-class Loader(ldif.LDIFParser):
-    def handle(self, dn, attr):
-        if self.comp:
-            self.ou.append(attr)
-        else:
-            self.comp = attr
-
-
-class Policies:
-    def __init__(self, queue):
-        self.queue = queue
-        self.old_hash = None
+class Applier(threading.Thread):
+    def __init__(self, apply_queue, result_queue):
+        threading.Thread.__init__(self)
+        self.apply_queue = apply_queue
+        self.result_queue = result_queue
         self.policies = map(lambda x: x.Policy(), ajan.config.modules)
         self.timers = {}
-        self.timers[self.start_fetching] = \
-            Timer(ajan.config.policy_check_interval, self.start_fetching)
-    
-    def load_default(self):
-        if not os.path.exists(ajan.config.default_policyfile):
-            return
-        
-        loader = Loader(file(ajan.config.default_policyfile))
-        loader.comp = None
-        loader.ou = []
-        loader.parse()
-        
-        if loader.comp:
-            self.update((loader.comp, loader.ou, None))
-    
-    def update(self, data):
-        computer, units, ldif_hash = data
-        if ldif_hash is not None:
-            if ldif_hash == self.old_hash:
-                print "policy hasnt changed"
-                return
-        self.old_hash = ldif_hash
-        timers = {}
-        for policy in self.policies:
-            policy.update(computer, units)
-            timers.update(policy.timers())
-        for callable, interval in timers.iteritems():
-            if interval and interval != 0:
-                old = self.timers.get(callable, None)
-                if old:
-                    old.interval = interval
-                else:
-                    self.timers[callable] = Timer(interval, callable)
-            else:
-                if self.timers[callable]:
-                    del self.timers[callable]
-        # FIXME: one thread per job
-        for policy in self.policies:
-            t = threading.Thread(target=policy.apply)
-            t.start()
     
     def next_timeout(self):
         if len(self.timers) == 0:
@@ -99,23 +53,59 @@ class Policies:
         next = max(0.5, next)
         return next
     
-    def start_events(self):
-        cur = time.time()
-        active = filter(lambda x: x.is_ready(cur), self.timers.values())
-        for event in active:
-            t = threading.Thread(target=event.callable)
-            t.start()
+    def update_policy(self, policy, computer, units):
+        policy.update(computer, units)
+        policy.apply()
+        
+        func = getattr(policy, "timers")
+        if func:
+            for callable, interval in func().iteritems():
+                if interval and interval != 0:
+                    old = self.timers.get(callable, None)
+                    if old:
+                        old.interval = interval
+                    else:
+                        self.timers[callable] = Timer(interval, callable)
+                else:
+                    if self.timers[callable]:
+                        del self.timers[callable]
     
-    def start_fetching(self):
-        print "fetching new policy..."
-        t = Fetcher(self.queue)
-        t.start()
+    def run(self):
+        while True:
+            try:
+                new_policy = self.apply_queue.get(True, self.next_timeout())
+            except Queue.Empty:
+                new_policy = None
+            
+            if new_policy:
+                computer, units = new_policy
+                for policy in self.policies:
+                    policy.update(computer, units)
+                    policy.apply()
+            else:
+                cur = time.time()
+                active = filter(lambda x: x.is_ready(cur), self.timers.values())
+                for event in active:
+                    event.callable()
+
+
+#
+#
+#
+
+
+class Loader(ldif.LDIFParser):
+    def handle(self, dn, attr):
+        if self.comp:
+            self.ou.append(attr)
+        else:
+            self.comp = attr
 
 
 class Fetcher(threading.Thread):
-    def __init__(self, queue):
+    def __init__(self, result_queue):
         threading.Thread.__init__(self)
-        self.queue = queue
+        self.result_queue = result_queue
     
     def fetch(self):
         conn = ajan.ldaputil.Connection()
@@ -144,15 +134,37 @@ class Fetcher(threading.Thread):
         policy_ldif = policy_output.getvalue()
         policy_output.close()
         
+        # Save a copy of fetched policy
         f = file(ajan.config.default_policyfile, "w")
         f.write(policy_ldif)
         f.close()
         
-        return comp_attr, ou_attrs, sha.sha(policy_ldif).digest()
+        return comp_attr, ou_attrs, sha.sha(policy_ldif).hexdigest()
     
     def run(self):
-        try:
-            policy = self.fetch()
-            self.queue.put(("new_policy", policy))
-        except Exception, e:
-            self.queue.put(("fetch_error", str(e)))
+        old_hash = None
+        
+        # Load latest fetched policy if available
+        if os.path.exists(ajan.config.default_policyfile):
+            old_hash = sha.sha(file(ajan.config.default_policyfile).read()).hexdigest()
+            
+            loader = Loader(file(ajan.config.default_policyfile))
+            loader.comp = None
+            loader.ou = []
+            loader.parse()
+            
+            if loader.comp:
+                message = "policy", (loader.comp, loader.ou)
+                self.result_queue.put(message)
+        
+        # Periodically fetch latest policy
+        while True:
+            try:
+                computer, units, ldif_hash = self.fetch()
+                if ldif_hash != old_hash:
+                    message = "policy", (computer, units)
+                    self.result_queue.put(message)
+            except Exception, e:
+                self.result_queue.put(("error", "Fetch error: %s" % str(e)))
+            
+            time.sleep(ajan.config.policy_check_interval)

@@ -14,30 +14,24 @@ import Queue
 import ajan.config
 import ajan.policy
 
-
 def start():
     ajan.config.load()
     
-    queue = Queue.Queue(0)
+    result_queue = Queue.Queue(0)
+    apply_queue = Queue.Queue(0)
     
-    policies = ajan.policy.Policies(queue)
-    policies.load_default()
-    policies.start_fetching()
+    # This thread modifies the system according to current policy
+    applier = ajan.policy.Applier(apply_queue, result_queue)
+    applier.start()
     
+    # This thread periodically checks central policy changes
+    fetcher = ajan.policy.Fetcher(result_queue)
+    fetcher.start()
+    
+    # Server forever
     while True:
-        try:
-            job, data = queue.get(True, policies.next_timeout())
-        except Queue.Empty:
-            job , data = None, None
+        op, data = result_queue.get()
         
-        if job is None:
-            print "timeout"
-            policies.start_events()
-        
-        elif job == "new_policy":
-            print "new_policy"
-            policies.update(data)
-        
-        else:
-            print "error", data
-            break
+        print "MAIN", op, data
+        if op == "policy":
+            apply_queue.put(data)

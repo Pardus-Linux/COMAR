@@ -55,6 +55,7 @@ class Policy:
         
         conf += "nss_schema rfc2307bis\n"
         conf += "pam_password exop\n"
+        conf += "bind_policy soft\n"
         
         f = file("/etc/security/ldap.conf", "w")
         f.write(conf)

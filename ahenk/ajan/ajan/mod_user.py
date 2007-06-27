@@ -87,6 +87,3 @@ class Policy:
             self.set_padl_config()
         self.set_nss()
         self.set_pam()
-    
-    def timers(self):
-        return {}

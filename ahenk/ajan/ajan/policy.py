@@ -80,8 +80,7 @@ class Applier(threading.Thread):
             if new_policy:
                 computer, units = new_policy
                 for policy in self.policies:
-                    policy.update(computer, units)
-                    policy.apply()
+                    self.update_policy(policy, computer, units)
             else:
                 cur = time.time()
                 active = filter(lambda x: x.is_ready(cur), self.timers.values())
@@ -164,6 +163,7 @@ class Fetcher(threading.Thread):
                 if ldif_hash != old_hash:
                     message = "policy", (computer, units)
                     self.result_queue.put(message)
+                    old_hash = ldif_hash
             except Exception, e:
                 self.result_queue.put(("error", "Fetch error: %s" % str(e)))
             

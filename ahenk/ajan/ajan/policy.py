@@ -57,7 +57,7 @@ class Applier(threading.Thread):
         policy.update(computer, units)
         policy.apply()
         
-        func = getattr(policy, "timers")
+        func = getattr(policy, "timers", None)
         if func:
             for callable, interval in func().iteritems():
                 if interval and interval != 0:

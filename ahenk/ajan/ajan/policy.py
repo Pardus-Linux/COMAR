@@ -114,7 +114,6 @@ class Fetcher(threading.Thread):
         
         # Get this computer's entry
         ret = conn.search_computer()[0]
-        assert(ret[0] == ajan.config.computer_dn)
         comp_attr = ret[1]
         output.unparse(ret[0], ret[1])
         

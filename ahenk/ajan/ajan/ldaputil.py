@@ -9,6 +9,7 @@
 # option) any later version. Please read the COPYING file.
 #
 
+import os
 import ldap
 
 import ajan.config
@@ -57,12 +58,21 @@ class Connection:
         self.conn = None
     
     def search_computer(self):
-        return self.conn.search_s(
-            ajan.config.computer_dn,
-            ldap.SCOPE_BASE,
-            "objectClass=pardusComputer"
-        )
-        return ret
+        name= ajan.config.computer_dn
+        if name:
+            return self.conn.search_s(
+                name,
+                ldap.SCOPE_BASE,
+                "objectClass=pardusComputer"
+            )
+        else:
+            # If computer DN is not specified, search with hostname
+            name = os.uname()[1]
+            return self.conn.search_s(
+                ajan.config.ldap.base_dn,
+                ldap.SCOPE_SUBTREE,
+                "(&(objectClass=pardusComputer)(cn=%s))" % name
+            )
     
     def search_ou(self, unit):
         return self.conn.search_s(

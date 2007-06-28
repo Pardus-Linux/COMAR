@@ -50,12 +50,16 @@ class Applier(threading.Thread):
             return None
         cur = time.time()
         next = min(map(lambda x: x.remaining(cur), self.timers.values()))
-        next = max(0.5, next)
+        next = max(1, next)
         return next
     
     def update_policy(self, policy, computer, units):
-        policy.update(computer, units)
-        policy.apply()
+        try:
+            policy.update(computer, units)
+            policy.apply()
+        except Exception, e:
+            self.result_queue.put(("error", str(e)))
+            return
         
         func = getattr(policy, "timers", None)
         if func:
@@ -85,7 +89,10 @@ class Applier(threading.Thread):
                 cur = time.time()
                 active = filter(lambda x: x.is_ready(cur), self.timers.values())
                 for event in active:
-                    event.callable()
+                    try:
+                        event.callable()
+                    except Exception, e:
+                        self.result_queue.put(("error", str(e)))
 
 
 #

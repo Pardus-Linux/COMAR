@@ -67,7 +67,7 @@ class Applier(threading.Thread):
                     else:
                         self.timers[callable] = Timer(interval, callable)
                 else:
-                    if self.timers[callable]:
+                    if self.timers.get(callable, None):
                         del self.timers[callable]
     
     def run(self):

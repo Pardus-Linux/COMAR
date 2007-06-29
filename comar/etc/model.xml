@@ -109,11 +109,16 @@
 		<method name="removeEntry">
 			<argument>index</argument>
 			<argument>title</argument>
+			<argument>uninstall</argument>
 		</method>
 		<method name="updateKernelEntry">
 			<argument>root</argument>
 			<argument>version</argument>
 		</method>
+        <method name="listUnused"/>
+        <method name="removeUnused">
+            <argument>version</argument>
+        </method>
 		<notify name="changed" access="guest"/>
 	</class>
 	<class name="Modules">

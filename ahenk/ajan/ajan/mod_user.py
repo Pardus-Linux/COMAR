@@ -9,6 +9,7 @@
 # option) any later version. Please read the COPYING file.
 #
 
+import ajan.config
 import ajan.ldaputil
 import ajan.pam
 import ajan.nsswitch
@@ -40,7 +41,10 @@ class Policy:
     
     def set_padl_config(self):
         conf = header
-        conf += "uri %s\n" % self.policy.ldap_uri
+        ldap_uri = self.policy.ldap_uri
+        if not ldap_uri:
+            ldap_uri = ajan.config.ldap.uri
+        conf += "uri %s\n" % ldap_uri
         
         conf += "base %s\n" % self.policy.ldap_base
         scope = {

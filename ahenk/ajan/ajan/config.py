@@ -51,6 +51,10 @@ modules = (
 def load():
     global ldap
     global computer_dn
+    global policy_check_interval
     doc = piksemel.parse(default_configfile)
     ldap.fromXML(doc.getTag("Domain"))
     computer_dn = doc.getTagData("ComputerDN")
+    interval = doc.getTagData("PolicyCheckInterval")
+    if interval:
+        policy_check_interval = int(interval)

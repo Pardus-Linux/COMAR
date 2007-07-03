@@ -41,12 +41,16 @@ class Policy:
     
     def set_padl_config(self):
         conf = header
+        
         ldap_uri = self.policy.ldap_uri
         if not ldap_uri:
             ldap_uri = ajan.config.ldap.uri
         conf += "uri %s\n" % ldap_uri
         
-        conf += "base %s\n" % self.policy.ldap_base
+        ldap_base = self.policy.ldap_base
+        if not ldap_base:
+            ldap_base = ajan.config.ldap.base_dn
+        conf += "base %s\n" % ldap_base
         scope = {
             "base": "base",
             "onelevel": "one",

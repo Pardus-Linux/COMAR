@@ -127,12 +127,12 @@ class Fetcher(threading.Thread):
         # Organizational unit policies
         ou_attrs = []
         ou_list = comp_attr.get("ou", None)
-        if ou_list:
-            for unit in ou_unit:
-                ret = conn.search_ou(unit)
-                if len(ret) > 0:
-                    output.unparse(ret[0], ret[1])
-                    ou_attrs.append(ret[0][1])
+        for unit in ou_list:
+            ret = conn.search_ou(unit)
+            if len(ret) > 0:
+                ret = ret[0]
+                output.unparse(ret[0], ret[1])
+                ou_attrs.append(ret[1])
         
         conn.close()
         

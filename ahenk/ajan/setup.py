@@ -10,7 +10,7 @@ import os
 import shutil
 import sys
 
-version = "0.1"
+version = "0.2"
 
 distfiles = """
     setup.py

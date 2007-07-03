@@ -82,8 +82,16 @@ class Connection:
             )
     
     def search_ou(self, unit):
-        return self.conn.search_s(
-            unit,
-            ldap.SCOPE_BASE,
-            "objectClass=organizationalUnit"
-        )
+        if unit.startswith("ou="):
+            ret = self.conn.search_s(
+                unit,
+                ldap.SCOPE_BASE,
+                "objectClass=organizationalUnit"
+            )
+        else:
+            ret = self.conn.search_s(
+                ajan.config.ldap.base_dn,
+                ldap.SCOPE_SUBTREE,
+                "(&(objectClass=organizationalUnit)(ou=%s))" % unit
+            )
+        return ret

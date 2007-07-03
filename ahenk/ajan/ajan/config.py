@@ -40,7 +40,7 @@ ldap = LdapDomain()
 
 computer_dn = None
 
-policy_check_interval = 30
+policy_check_interval = 4 * 60
 
 modules = (
     mod_pisi,

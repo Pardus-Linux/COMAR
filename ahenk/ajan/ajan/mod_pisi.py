@@ -29,9 +29,30 @@ class Policy:
     def __init__(self):
         self.policy = PisiPolicy()
     
+    def override(self, attr, is_ou=False):
+        temp = PisiPolicy(attr)
+        if is_ou:
+            modes = { "off": 1, "security": 2, "full": 3 }
+            if modes.get(temp.mode, 0) > modes.get(self.policy.mode, 0):
+                self.policy.mode = temp.mode
+            if self.policy.interval:
+                if temp.interval < self.policy.interval:
+                    self.policy.interval = temp.interval
+            else:
+                if temp.interval:
+                    self.policy.interval = temp.interval
+        else:
+            if temp.mode:
+                self.policy.mode = temp.mode
+            if temp.interval:
+                self.policy.interval = temp.interval
+    
     def update(self, computer, units):
         print "updating pisi policy"
-        self.policy.fromEntry(computer)
+        self.policy = PisiPolicy()
+        for unit in units:
+            self.override(unit, True)
+        self.override(computer)
     
     def apply(self):
         print "applying pisi policy"

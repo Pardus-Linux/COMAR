@@ -35,9 +35,25 @@ class Policy:
     def __init__(self):
         self.policy = UserPolicy()
     
+    def override(self, attr, is_ou=False):
+        temp = UserPolicy(attr)
+        if temp.mode == "ldap":
+            self.policy.mode = "ldap"
+            self.policy.ldap_scope = temp.ldap_scope
+            self.policy.ldap_filter = temp.ldap_filter
+            self.policy.ldap_base = temp.ldap_base
+            self.policy.ldap_uri = temp.ldap_uri
+        else:
+            if temp.mode and not is_ou:
+                self.policy.mode = "local"
+    
     def update(self, computer, units):
         print "updating user policy"
-        self.policy.fromEntry(computer)
+        self.policy = UserPolicy()
+        for unit in units:
+            self.override(unit, True)
+        self.override(computer)
+        print self.policy
     
     def set_padl_config(self):
         conf = header

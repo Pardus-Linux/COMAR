@@ -43,6 +43,13 @@ class LdapClass:
                 val = [val]
             attr[item[1]] = val
         return attr
+    
+    def __str__(self):
+        text = []
+        for varname, attrname, valuetype, default in self.entries:
+            value = getattr(self, varname, "")
+            text.append("%s: %s" % (attrname, value))
+        return "\n".join(text)
 
 
 class Connection:

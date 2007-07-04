@@ -126,7 +126,7 @@ class Fetcher(threading.Thread):
         
         # Organizational unit policies
         ou_attrs = []
-        ou_list = comp_attr.get("ou", None)
+        ou_list = comp_attr.get("ou", [])
         for unit in ou_list:
             ret = conn.search_ou(unit)
             if len(ret) > 0:

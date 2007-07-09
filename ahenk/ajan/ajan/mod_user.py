@@ -9,6 +9,10 @@
 # option) any later version. Please read the COPYING file.
 #
 
+import comar
+import time
+import subprocess
+
 import ajan.config
 import ajan.ldaputil
 import ajan.pam
@@ -34,6 +38,7 @@ class UserPolicy(ajan.ldaputil.LdapClass):
 class Policy:
     def __init__(self):
         self.policy = UserPolicy()
+        self.old_mode = None
     
     def override(self, attr, is_ou=False):
         temp = UserPolicy(attr)
@@ -44,7 +49,7 @@ class Policy:
             self.policy.ldap_base = temp.ldap_base
             self.policy.ldap_uri = temp.ldap_uri
         else:
-            if temp.mode and not is_ou:
+            if temp.mode and (not self.policy.mode or not is_ou):
                 self.policy.mode = "local"
     
     def update(self, computer, units):
@@ -110,9 +115,35 @@ class Policy:
         nss["group"].sources = sources
         nss.save()
     
+    def restart_services(self):
+        # /etc/nsswitch.conf is changed and this services need to load it again
+        link = comar.Link()
+        link.System.Service["PolicyKit"].stop()
+        link.read_cmd()
+        link.System.Service["dbus"].stop()
+        link.read_cmd()
+        link.System.Service["dbus"].start()
+        link.read_cmd()
+        link.System.Service["PolicyKit"].start()
+        link.read_cmd()
+        # Comar needs special treatment
+        subprocess.call(["/bin/service", "comar", "restart"])
+        timeout = 5
+        while timeout > 0:
+            try:
+                link = comar.Link()
+                break
+            except comar.CannotConnect:
+                pass
+            timeout -= 0.2
+            time.sleep(0.2)
+    
     def apply(self):
         print "applying user policy", self.policy.mode
         if self.policy.mode == "ldap":
             self.set_padl_config()
         self.set_nss()
         self.set_pam()
+        if self.policy.mode != self.old_mode:
+            self.restart_services()
+            self.old_mode = self.policy.mode

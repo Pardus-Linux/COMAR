@@ -10,8 +10,27 @@
 #
 
 import sys
+import getopt
 
 import ajan.main
 
+def usage():
+    print "usage: ahenk-ajan [--debug]"
+
+def main(args):
+    debug = False
+    
+    try:
+        opts, args = getopt.getopt(args, "d", ["debug"])
+    except getopt.GetoptError:
+        usage()
+        sys.exit(2)
+    
+    for opt, val in opts:
+        if opt in ("-d", "--debug"):
+            debug = True
+    
+    ajan.main.start(debug=debug)
+
 if __name__ == "__main__":
-    ajan.main.start()
+    main(sys.argv[1:])

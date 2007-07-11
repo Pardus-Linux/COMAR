@@ -14,6 +14,7 @@ import time
 import Queue
 import threading
 import StringIO
+import logging
 import ldif
 import sha
 
@@ -40,6 +41,7 @@ class Timer:
 class Applier(threading.Thread):
     def __init__(self, apply_queue, result_queue):
         threading.Thread.__init__(self)
+        self.log = logging.getLogger("Applier")
         self.apply_queue = apply_queue
         self.result_queue = result_queue
         self.policies = map(lambda x: x.Policy(), ajan.config.modules)
@@ -54,6 +56,8 @@ class Applier(threading.Thread):
         return next
     
     def update_policy(self, policy, computer, units):
+        self.log.debug("Updating %s", policy.__module__)
+        
         try:
             policy.update(computer, units)
             policy.apply()
@@ -75,6 +79,8 @@ class Applier(threading.Thread):
                         del self.timers[callable]
     
     def run(self):
+        self.log.debug("started")
+        
         while True:
             try:
                 new_policy = self.apply_queue.get(True, self.next_timeout())
@@ -112,8 +118,11 @@ class Fetcher(threading.Thread):
     def __init__(self, result_queue):
         threading.Thread.__init__(self)
         self.result_queue = result_queue
+        self.log = logging.getLogger("Fetcher")
     
     def fetch(self):
+        self.log.debug("Fetching new policy...")
+        
         conn = ajan.ldaputil.Connection()
         
         policy_output = StringIO.StringIO()
@@ -147,10 +156,13 @@ class Fetcher(threading.Thread):
         return comp_attr, ou_attrs, sha.sha(policy_ldif).hexdigest()
     
     def run(self):
+        self.log.debug("started")
+        
         old_hash = None
         
         # Load latest fetched policy if available
         if os.path.exists(ajan.config.default_policyfile):
+            self.log.debug("Loading old policy...")
             old_hash = sha.sha(file(ajan.config.default_policyfile).read()).hexdigest()
             
             loader = Loader(file(ajan.config.default_policyfile))
@@ -167,9 +179,12 @@ class Fetcher(threading.Thread):
             try:
                 computer, units, ldif_hash = self.fetch()
                 if ldif_hash != old_hash:
+                    self.log.debug("Policy has changed")
                     message = "policy", (computer, units)
                     self.result_queue.put(message)
                     old_hash = ldif_hash
+                else:
+                    self.log.debug("Policy is still same")
             except Exception, e:
                 self.result_queue.put(("error", "Fetch error: %s" % str(e)))
             

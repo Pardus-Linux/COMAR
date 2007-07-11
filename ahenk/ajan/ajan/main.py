@@ -10,11 +10,16 @@
 #
 
 import Queue
+import logging
 
 import ajan.config
 import ajan.policy
 
-def start():
+def start(debug=False):
+    if debug:
+        logging.basicConfig(level=logging.DEBUG)
+    
+    logging.debug("Ajan started")
     ajan.config.load()
     
     result_queue = Queue.Queue(0)
@@ -28,7 +33,8 @@ def start():
     fetcher = ajan.policy.Fetcher(result_queue)
     fetcher.start()
     
-    # Server forever
+    # Serve forever
+    logging.debug("Entering main loop")
     while True:
         op, data = result_queue.get()
         

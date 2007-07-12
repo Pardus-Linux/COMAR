@@ -38,6 +38,6 @@ def start(debug=False):
     while True:
         op, data = result_queue.get()
         
-        print "MAIN", op, data
+        logging.debug("CMD %s" % str(data))
         if op == "policy":
             apply_queue.put(data)

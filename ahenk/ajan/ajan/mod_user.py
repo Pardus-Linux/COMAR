@@ -63,6 +63,7 @@ class Policy:
         for unit in units:
             self.override(unit, True)
         self.override(computer)
+        self.log.debug("User policy is now:\n%s" % str(self.policy))
     
     def set_padl_config(self):
         conf = header

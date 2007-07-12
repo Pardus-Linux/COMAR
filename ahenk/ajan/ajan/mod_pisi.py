@@ -48,6 +48,8 @@ class Policy:
                 self.policy.mode = temp.mode
             if temp.interval:
                 self.policy.interval = temp.interval
+        if temp.zone:
+            self.policy.zone = temp.zone
     
     def update(self, computer, units):
         self.log.debug("Updating pisi policy")
@@ -55,6 +57,7 @@ class Policy:
         for unit in units:
             self.override(unit, True)
         self.override(computer)
+        self.log.debug("Pisi policy is now:\n%s" % str(self.policy))
     
     def apply(self):
         self.log.debug("Applying pisi policy")

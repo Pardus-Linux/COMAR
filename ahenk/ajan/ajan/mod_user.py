@@ -51,6 +51,9 @@ class Policy:
         else:
             if temp.mode and (not self.policy.mode or not is_ou):
                 self.policy.mode = "local"
+            if not is_ou:
+                if temp.ldap_filter:
+                    self.policy.ldap_filter = temp.ldap_filter
     
     def update(self, computer, units):
         print "updating user policy"

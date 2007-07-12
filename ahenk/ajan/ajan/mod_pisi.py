@@ -11,6 +11,7 @@
 
 import comar
 import logging
+import time
 
 import ajan.ldaputil
 
@@ -68,6 +69,16 @@ class Policy:
         }
     
     def autoUpdate(self):
+        if self.policy.zone:
+            if "-" in self.policy.zone:
+                # Start-End in seconds
+                start, end = map(int, self.policy.zone.split("-", 1))
+                temp = time.localtime()
+                secs = temp.tm_hour * 60 * 60 + temp.tm_min * 60 + temp.tm_sec
+                if secs < start or secs > end:
+                    self.log.debug("Not in auto update zone")
+                    return
+        
         self.log.debug("Auto update in progress...")
         link = comar.Link()
         

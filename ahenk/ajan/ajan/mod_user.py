@@ -12,6 +12,7 @@
 import comar
 import time
 import subprocess
+import logging
 
 import ajan.config
 import ajan.ldaputil
@@ -39,6 +40,7 @@ class Policy:
     def __init__(self):
         self.policy = UserPolicy()
         self.old_mode = None
+        self.log = logging.getLogger("Mod.User")
     
     def override(self, attr, is_ou=False):
         temp = UserPolicy(attr)
@@ -56,7 +58,7 @@ class Policy:
                     self.policy.ldap_filter = temp.ldap_filter
     
     def update(self, computer, units):
-        print "updating user policy"
+        self.log.debug("Updating user policy")
         self.policy = UserPolicy()
         for unit in units:
             self.override(unit, True)
@@ -142,7 +144,7 @@ class Policy:
             time.sleep(0.2)
     
     def apply(self):
-        print "applying user policy", self.policy.mode
+        self.log.debug("Applying %s user policy" % self.policy.mode)
         if self.policy.mode == "ldap":
             self.set_padl_config()
         self.set_nss()

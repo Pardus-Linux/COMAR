@@ -10,6 +10,7 @@
 #
 
 import comar
+import logging
 
 import ajan.ldaputil
 
@@ -28,6 +29,7 @@ class PisiPolicy(ajan.ldaputil.LdapClass):
 class Policy:
     def __init__(self):
         self.policy = PisiPolicy()
+        self.log = logging.getLogger("Mod.Pisi")
     
     def override(self, attr, is_ou=False):
         temp = PisiPolicy(attr)
@@ -48,14 +50,14 @@ class Policy:
                 self.policy.interval = temp.interval
     
     def update(self, computer, units):
-        print "updating pisi policy"
+        self.log.debug("Updating pisi policy")
         self.policy = PisiPolicy()
         for unit in units:
             self.override(unit, True)
         self.override(computer)
     
     def apply(self):
-        print "applying pisi policy"
+        self.log.debug("Applying pisi policy")
     
     def timers(self):
         return {
@@ -63,7 +65,7 @@ class Policy:
         }
     
     def autoUpdate(self):
-        print "auto update in progress"
+        self.log.debug("Auto update in progress...")
         link = comar.Link()
         
         link.System.Manager["pisi"].updateAllRepositories()
@@ -71,15 +73,11 @@ class Policy:
             reply = link.read_cmd()
             if reply.command != "notify":
                 break
-            print reply
-        
-        print "ur finito", reply
+        self.log.debug("Repo update result %s" % str(reply))
         
         link.System.Manager["pisi"].updatePackage()
         while True:
             reply = link.read_cmd()
             if reply.command != "notify":
                 break
-            print reply
-        
-        print "finito", reply
+        self.log.debug("Package update result %s" % str(reply))

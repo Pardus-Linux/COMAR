@@ -75,6 +75,9 @@ class Policy:
                 break
         self.log.debug("Repo update result %s" % str(reply))
         
+        if reply.command != "result":
+            return
+        
         link.System.Manager["pisi"].updatePackage()
         while True:
             reply = link.read_cmd()

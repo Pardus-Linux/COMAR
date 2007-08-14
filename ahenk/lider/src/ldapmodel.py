@@ -76,7 +76,7 @@ class Domain:
     def __init__(self):
         self.name = None
         self.host = None
-        self.base_dn = "dc=example,dc=com"
+        self.base_dn = None
         self.bind_dn = None
         self.bind_password = None
         

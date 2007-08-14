@@ -44,15 +44,20 @@ class DomainProperties(KDialog):
         self.w_host = QLineEdit(self)
         grid.addWidget(self.w_host, 1, 1)
         
-        lab = QLabel(i18n("Bind DN:"), self)
+        lab = QLabel(i18n("Base DN:"), self)
         grid.addWidget(lab, 2, 0, Qt.AlignRight)
+        self.w_base_dn = QLineEdit(self)
+        grid.addWidget(self.w_base_dn, 2, 1)
+        
+        lab = QLabel(i18n("Bind DN:"), self)
+        grid.addWidget(lab, 3, 0, Qt.AlignRight)
         self.w_bind_dn = QLineEdit(self)
-        grid.addWidget(self.w_bind_dn, 2, 1)
+        grid.addWidget(self.w_bind_dn, 3, 1)
         
         lab = QLabel(i18n("Bind Password:"), self)
-        grid.addWidget(lab, 3, 0, Qt.AlignRight)
+        grid.addWidget(lab, 4, 0, Qt.AlignRight)
         self.w_bind_pass = QLineEdit(self)
-        grid.addWidget(self.w_bind_pass, 3, 1)
+        grid.addWidget(self.w_bind_pass, 4, 1)
         
         lay = QHBoxLayout()
         vb.addLayout(lay)
@@ -73,12 +78,14 @@ class DomainProperties(KDialog):
     def useValues(self, dom):
         self.w_name.setText(unicode(dom.name))
         self.w_host.setText(dom.host)
+        self.w_base_dn.setText(dom.base_dn)
         self.w_bind_dn.setText(dom.bind_dn)
         self.w_bind_pass.setText(dom.bind_password)
     
     def setValues(self):
         self.dom.name = unicode(self.w_name.text())
         self.dom.host = unicode(self.w_host.text())
+        self.dom.base_dn = unicode(self.w_base_dn.text())
         self.dom.bind_dn = unicode(self.w_bind_dn.text())
         self.dom.bind_password = unicode(self.w_bind_pass.text())
     

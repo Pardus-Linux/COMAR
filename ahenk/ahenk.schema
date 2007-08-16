@@ -119,7 +119,7 @@ attributetype ( pardusBase:2.14
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 
  )
 
-objectclass ( pardusBase:1.3 
+objectclass ( pardusBase:1.4 
 	NAME 'comarServicePolicy' 
 	SUP top 
 	AUXILIARY 

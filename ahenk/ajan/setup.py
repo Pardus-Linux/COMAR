@@ -19,12 +19,16 @@ distfiles = """
 """
 
 def make_dist():
+    """         """
+    	
     distdir = "ahenk-ajan-%s" % version
+    #'list' will contain path names of distfiles #
     list = []
     for t in distfiles.split():
         list.extend(glob.glob(t))
     if os.path.exists(distdir):
-        shutil.rmtree(distdir)
+        
+	shutil.rmtree(distdir)
     os.mkdir(distdir)
     for file_ in list:
         cum = distdir[:]
@@ -42,6 +46,7 @@ if "dist" in sys.argv:
     sys.exit(0)
 
 class Install(install):
+    
     def finalize_options(self):
         # NOTE: for Pardus distribution
         if os.path.exists("/etc/pardus-release"):

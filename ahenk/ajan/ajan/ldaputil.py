@@ -16,10 +16,17 @@ import ajan.config
 
 
 class LdapClass:
+	
+    """ Designed for Ldap format for entries of modules of ajan """
+    	
     def __init__(self, attr={}):
         self.fromEntry(attr)
     
     def fromEntry(self, attr):
+	    
+	""" 'entries' is a tuple of tuples in format varname, attrname, valuetype and  default values respectively
+	    fromEntry  reads attribute names , makes necessary format casts and stores in LDapClass' 'varname' attribute 
+	"""
         for varname, attrname, valuetype, default in self.entries:
             value = attr.get(attrname, None)
             if value:
@@ -31,9 +38,15 @@ class LdapClass:
                     val = value
             else:
                 val = default
+		
+	    # self.varname=val :
             setattr(self, varname, val)
     
     def toEntry(self):
+	    
+	"""  Reads attributes from entries to a list'attr' 
+	     If the attribute type is int type conversion is made to str    
+	"""
         attr = {}
         for item in self.entries:
             val = getattr(self, item[0])
@@ -45,6 +58,8 @@ class LdapClass:
         return attr
     
     def __str__(self):
+	
+	""" overrides method -str() cast- for 'entries's tuples to become a string in wanted format"""
         text = []
         for varname, attrname, valuetype, default in self.entries:
             value = getattr(self, varname, "")
@@ -53,7 +68,12 @@ class LdapClass:
 
 
 class Connection:
+	
     def __init__(self):
+	
+	""" opens ldap connection, connection attribute : 'conn' 
+	    'ldap' is the LdapDomain object defined in config.py
+	"""
         conf = ajan.config.ldap
         conn = ldap.open(conf.uri)
         if conf.bind_dn:
@@ -61,10 +81,12 @@ class Connection:
         self.conn = conn
     
     def close(self):
+	""" Closes connection"""
         self.conn.unbind_s()
         self.conn = None
     
     def search_computer(self):
+	"""Searcehs computer by computer_dn or withhostname"""    
         name= ajan.config.computer_dn
         if name:
             return self.conn.search_s(
@@ -82,6 +104,8 @@ class Connection:
             )
     
     def search_ou(self, unit):
+	    
+	""" Searches for 'organizational unit' members """
         if unit.startswith("ou="):
             ret = self.conn.search_s(
                 unit,

@@ -23,6 +23,9 @@ import ajan.ldaputil
 
 
 class Timer:
+    
+    """ Timer class : attribute 'last' refreshes its value to system time in a period of 'interval' attribute's value """	
+
     def __init__(self, interval, callable):
         self.interval = interval
         self.callable = callable
@@ -39,15 +42,25 @@ class Timer:
 
 
 class Applier(threading.Thread):
+
+    """      """
+    
     def __init__(self, apply_queue, result_queue):
+	    
+	"""  """
         threading.Thread.__init__(self)
         self.log = logging.getLogger("Applier")
         self.apply_queue = apply_queue
         self.result_queue = result_queue
+	
+	#Create all modules' -module names are stored in a tuple in config.py file- Policy objects and stores them in 'policies' list 
         self.policies = map(lambda x: x.Policy(), ajan.config.modules)
         self.timers = {}
     
     def next_timeout(self):
+	
+	""" Returns nearest next_timeout of the timers """
+	
         if len(self.timers) == 0:
             return None
         cur = time.time()
@@ -56,15 +69,22 @@ class Applier(threading.Thread):
         return next
     
     def update_policy(self, policy, computer, units):
+	
+	""" Updates policy in the modules : calls 'update' and 'apply' functions of each policy   """
+	
         self.log.debug("Updating %s", policy.__module__)
         
         try:
+	    # 'update' function updates policy attributes, 'apply' functions does the related actions
+	    	
             policy.update(computer, units)
             policy.apply()
+	    
         except Exception, e:
             self.result_queue.put(("error", str(e)))
             return
-        
+	
+        #If there exists timers attribute in the policy : ???????????????????
         func = getattr(policy, "timers", None)
         if func:
             for callable, interval in func().iteritems():
@@ -79,7 +99,9 @@ class Applier(threading.Thread):
                         del self.timers[callable]
     
     def run(self):
-        self.log.debug("started")
+        """ ?????????????????????????????????????"""
+	
+	self.log.debug("started")
         
         while True:
             try:
@@ -115,6 +137,9 @@ class Loader(ldif.LDIFParser):
 
 
 class Fetcher(threading.Thread):
+    
+    """   """
+    
     def __init__(self, result_queue):
         threading.Thread.__init__(self)
         self.result_queue = result_queue

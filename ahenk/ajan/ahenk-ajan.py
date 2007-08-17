@@ -10,18 +10,24 @@
 #
 
 import sys
+#parser for commandline options 
 import getopt
 
 import ajan.main
 
 def usage():
+    """ahenk-ajan usage descriptor"""
     print "usage: ahenk-ajan [--debug]"
 
 def main(args):
+    
+    """ Read commandline parameters and starts 'ajan' with proper parameter"""
+    
     debug = False
     
     try:
         opts, args = getopt.getopt(args, "d", ["debug"])
+    
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -29,7 +35,6 @@ def main(args):
     for opt, val in opts:
         if opt in ("-d", "--debug"):
             debug = True
-    
     ajan.main.start(debug=debug)
 
 if __name__ == "__main__":

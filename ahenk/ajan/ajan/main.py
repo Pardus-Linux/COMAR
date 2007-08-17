@@ -20,8 +20,9 @@ def start(debug=False):
         logging.basicConfig(level=logging.DEBUG)
     
     logging.debug("Ajan started")
+      
     ajan.config.load()
-    
+   
     result_queue = Queue.Queue(0)
     apply_queue = Queue.Queue(0)
     

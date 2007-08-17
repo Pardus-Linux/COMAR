@@ -1,3 +1,4 @@
+#G.Selda Kuruoglu
 
 import comar
 import logging
@@ -6,8 +7,10 @@ import logging
 import ajan.ldaputil
 
 
-
 class ServicePolicy(ajan.ldaputil.LdapClass):
+	
+    """ Service policy class has attributes : service names to start, service names to stop """
+    
     entries = (
         ("service_to_start", "comarServiceStart", list, None),
         ("service_to_stop", "comarServiceStop", list, None),
@@ -26,6 +29,9 @@ class Policy:
 	self.policy.service_to_stop = temp.service_to_stop 
     
     def update(self, computer, units ):
+	    
+	""" Updates """
+	
         self.log.debug("Updating Service Policy")             
         self.policy = ServicePolicy()
         for unit in units:
@@ -35,11 +41,17 @@ class Policy:
     
     
     def start_service ( self ):
+	    
+	""" starts sevices in 'service_to_start' list by connecting comar """
+	
 	link = comar.Link()
 	for service in self.policy.service_to_start:
         	link.System.Service[ service ].start()
         
     def stop_service ( self ):
+	    
+	""" stops sevices in 'service_to_start' list by connecting comar """
+	
     	link = comar.Link()
         for service in self.policy.service_to_stop:
 		link.System.Service[service].stop()

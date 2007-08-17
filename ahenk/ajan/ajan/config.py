@@ -25,16 +25,16 @@ class LdapDomain:
     def __init__(self):
 	    
         """ Default vaues for 'uri', 'base_dn', 'bind_dn' and 'bind_password' attributes """
-	self.uri = None
+        self.uri = None
         self.base_dn = None
         self.bind_dn = None
         self.bind_password = None
     
     def fromXML(self, doc):
-	    
         """ Retrieves LdapDomain object's attributes' values from an XML partion """
-	if doc:
-	    self.uri = doc.getTagData("URI")
+        
+        if doc:
+            self.uri = doc.getTagData("URI")
             self.base_dn = doc.getTagData("BaseDN")
             bind = doc.getTag("Bind")
             if bind:
@@ -56,11 +56,9 @@ modules = (
 
 # Operations
 def load():
-	
     """ parses default configuration file -/etc/ahenk/ajan.xml- 
     	Reads "Domain" tagged part and retrieves values for 'ldap's attrıbutes, 'computer_dn' and 'policy_check_interval' variables
     """
-	
     global ldap
     global computer_dn
     global policy_check_interval

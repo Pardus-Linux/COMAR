@@ -45,12 +45,14 @@ attributetype ( pardusBase:2.4
 attributetype ( pardusBase:2.5 
 	NAME 'pisiWantedPackage' 
 	DESC 'This package must be installed on the system.' 
+	EQUALITY caseExactIA5Match 
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 
  )
 
 attributetype ( pardusBase:2.6 
 	NAME 'pisiUnwantedPackage' 
 	DESC 'This package must not be installed on the system.' 
+	EQUALITY caseExactIA5Match 
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 
  )
 
@@ -70,6 +72,7 @@ attributetype ( pardusBase:2.8
 	NAME 'comarUserSourceMode' 
 	DESC 'Source of user db enumaration: local, ldap.' 
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 
+	SINGLE-VALUE 
  )
 
 attributetype ( pardusBase:2.9 
@@ -110,12 +113,14 @@ objectclass ( pardusBase:1.3
 attributetype ( pardusBase:2.13 
 	NAME 'comarServiceStart' 
 	DESC 'Service name to start.' 
+	EQUALITY caseExactIA5Match 
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 
  )
 
 attributetype ( pardusBase:2.14 
 	NAME 'comarServiceStop' 
 	DESC 'Service name to stop.' 
+	EQUALITY caseExactIA5Match 
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 
  )
 

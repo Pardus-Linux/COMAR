@@ -34,6 +34,8 @@ class LdapClass:
                     val = int(value[0])
                 elif valuetype == str:
                     val = unicode(value[0])
+                elif valuetype == set:
+                    val = set(value)
                 else:
                     val = value
             else:
@@ -54,6 +56,8 @@ class LdapClass:
                 val = [str(val)]
             elif item[2] == str:
                 val = [val]
+            elif item[2] == set:
+                val = list(val)
             attr[item[1]] = val
         return attr
     

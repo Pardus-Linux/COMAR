@@ -213,15 +213,15 @@ class IF:
         return True
     
     def autoNameServers(self):
-        info_file = "/var/lib/dhcpc/dhcpcd-" + self.name + ".info"
+        info_file = "/var/lib/dhcpcd/dhcpcd-" + self.name + ".info"
         try:
             f = file(info_file)
         except IOError:
             return None
         for line in f:
             line = line.strip()
-            if line.startswith("DNS="):
-                return line[4:].rstrip('\n').split(',')
+            if line.startswith("DNSSERVERS='"):
+                return line[12:].rstrip('\n').rstrip("'").split(',')
 
 
 def interfaces():

@@ -224,7 +224,7 @@ class IF:
         for line in f:
             line = line.strip()
             if line.startswith("DNSSERVERS='"):
-                return line[12:].rstrip('\n').rstrip("'").split(',')
+                return line[12:].rstrip('\n').rstrip("'").split(' ')
 
 
 def interfaces():

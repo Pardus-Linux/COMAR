@@ -212,8 +212,11 @@ class IF:
             return False
         return True
     
+    def autoInfoFile(self):
+        return "/var/lib/dhcpcd/dhcpcd-" + self.name + ".info"
+    
     def autoNameServers(self):
-        info_file = "/var/lib/dhcpcd/dhcpcd-" + self.name + ".info"
+        info_file = self.autoInfoFile()
         try:
             f = file(info_file)
         except IOError:

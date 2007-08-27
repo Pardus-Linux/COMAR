@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2006, TUBITAK/UEKAE
+# Copyright (C) 2006-2007, TUBITAK/UEKAE
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -215,16 +215,31 @@ class IF:
     def autoInfoFile(self):
         return "/var/lib/dhcpcd/dhcpcd-" + self.name + ".info"
     
-    def autoNameServers(self):
+    def autoInfo(self):
+        class AutoInfo:
+            pass
+        
         info_file = self.autoInfoFile()
         try:
             f = file(info_file)
         except IOError:
             return None
+        
+        info = AutoInfo()
         for line in f:
             line = line.strip()
             if line.startswith("DNSSERVERS='"):
-                return line[12:].rstrip('\n').rstrip("'").split(' ')
+                info.servers = line[12:].rstrip('\n').rstrip("'").split(' ')
+            elif line.startswith("DNSSEARCH='"):
+                info.search = line[11:].rstrip('\n').rstrip("'").split(' ')
+            elif line.startswith("DNSDOMAIN='"):
+                info.search = line[11:].rstrip('\n').rstrip("'").split(' ')
+        return info
+    
+    def autoNameServers(self):
+        info = self.autoInfo()
+        if info:
+            return info.servers
 
 
 def interfaces():

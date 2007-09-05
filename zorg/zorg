@@ -183,7 +183,7 @@ Section "Module"
 EndSection
 
 Section "Extensions"
-#    Option "Composite" "enable"
+#    Option "Composite" "Enable"
 EndSection
 
 Section "dri"

@@ -252,12 +252,12 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
         return execReply(0)
     else:
         ret = execReply(popen.wait())
-        ret.stdout, ret.stderr = popen.communicate()
         if donotify:
             if ret == 0:
                 notify("System.Service.changed", "started")
             else:
                 err = "Unable to start service."
+                ret.stdout, ret.stderr = popen.communicate()
                 if ret.stderr != "":
                     err = "Unable to start: " + str(ret.stderr)
                 fail(err)

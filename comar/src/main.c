@@ -29,19 +29,21 @@
 void rpc_unix_start(void);
 void event_start(void);
 
-
+//! Stop running comar
 static void
 stop_running_comar(void)
 {
 	const char check[] = { 42, 0, 0, 0, 0, 0, 0, 0 };
 	char buf[100];
-	struct sockaddr_un name;
+	struct sockaddr_un name; /*!< local namespace socket address */
 	size_t size;
 	int sock;
 
+    // create socket
 	sock = socket(PF_LOCAL, SOCK_STREAM, 0);
 	if (sock == -1) return;
 
+    // a local socket
 	name.sun_family = AF_LOCAL;
 	strncpy(name.sun_path, cfg_socket_name, sizeof (name.sun_path));
 	size = (offsetof (struct sockaddr_un, sun_path) + strlen (name.sun_path) + 1);

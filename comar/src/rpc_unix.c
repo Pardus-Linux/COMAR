@@ -23,7 +23,7 @@
 #include "cfg.h"
 #include "notify.h"
 
-/* rpc commands, keep in sync with bindings */
+//! rpc commands, keep in sync with bindings
 enum {
 	// outgoing
 	RPC_RESULT = 0,
@@ -72,45 +72,57 @@ static struct pack *rpc_pak;
 
 // unpack utilities
 // rpc uses network byte order (big endian)
+//! Get command field from buf
 static inline unsigned int
 get_cmd(const unsigned char *buf)
 {
 	return buf[0];
 }
 
+//! Returns data size of buf
 static inline unsigned int
 get_data_size(const unsigned char *buf)
 {
 	return buf[3] + (buf[2] << 8) + (buf[1] << 16);
 }
 
+//! Gets id field from buf
 static inline unsigned int
 get_id(const unsigned char *buf)
 {
 	return buf[3] + (buf[2] << 8) + (buf[1] << 16) + (buf[0] << 24);
 }
 
+//! Get size of buf
 static inline unsigned int
 get_size(const unsigned char *buf)
 {
 	return buf[1] + (buf[0] << 8);
 }
 
-
+//! Create a pipe
 static int
 create_pipe(const char *pipe_name)
 {
+·   /*!
+·   Creates a pipe, with listen. length of the queue is 5
+·   @return Returns -2 if can't assign address to socket \n
+·   Returns -3 if can't listen requests
+·   */
+
 	struct sockaddr_un name;
 	size_t size;
 
 	pipe_fd = socket(PF_LOCAL, SOCK_STREAM, 0);
 	if (pipe_fd < 0) return -1;
 
+    // delete cfg_socket_name
 	unlink(pipe_name);
 
 	name.sun_family = AF_LOCAL;
 	strncpy(name.sun_path, pipe_name, sizeof(name.sun_path));
 	size = (offsetof(struct sockaddr_un, sun_path) + strlen(name.sun_path) + 1);
+    // assign address to socket
 	if (0 != bind(pipe_fd, (struct sockaddr *) &name, size)) {
 		close(pipe_fd);
 		return -2;
@@ -118,6 +130,7 @@ create_pipe(const char *pipe_name)
 
 	chmod(pipe_name, 0666);
 
+    // to enable connection requests on the socket ( a server socket )
 	if (0 != listen(pipe_fd, 5)) {
 		close(pipe_fd);
 		return -3;
@@ -126,9 +139,14 @@ create_pipe(const char *pipe_name)
 	return 0;
 }
 
+//! get peer
 static int
 get_peer(int sock, struct Creds *cred)
 {
+·   /*!
+·   Gets options of sock, and fills cred according to these options
+·   @return Returns 0. Returns -1 on error.
+·   */
 	// NOTE: this implementation requires a linux kernel
 	struct {
 		pid_t pid;
@@ -144,6 +162,7 @@ get_peer(int sock, struct Creds *cred)
 	return 0;
 }
 
+//! Adds a new connection to connections chain
 static void
 add_conn(int sock)
 {
@@ -185,6 +204,7 @@ add_conn(int sock)
 	conns = c;
 }
 
+//! Removes a connection from connections chain
 static void
 rem_conn(struct connection *c)
 {
@@ -206,6 +226,7 @@ struct arg_s {
 	int pos;
 };
 
+//! Gets size and arguments from args. Checks for utf8 validation
 int
 get_arg(struct arg_s *args, char **argp, size_t *sizep)
 {
@@ -231,9 +252,14 @@ get_arg(struct arg_s *args, char **argp, size_t *sizep)
 	return 1;
 }
 
+//! write_rpc
 static int
 write_rpc(struct connection *c, unsigned int cmd, int id, const char *buffer, size_t size)
 {
+·   /*!
+·   Checks the command cmd, and sends c's socket the answer
+·   */
+
 	unsigned char head[8];
 
 	head[4] = (id >> 24) & 0xFF;
@@ -270,9 +296,16 @@ write_rpc(struct connection *c, unsigned int cmd, int id, const char *buffer, si
 	return 0;
 }
 
+//! rpc parse
 static int
 parse_rpc(struct connection *c)
 {
+·   /*!
+    This is parser function for RPC
+·   According to command in c's buffer, checks for permissions
+·   and executes, denies etc. the command
+·   */
+
 	struct ipc_struct ipc;
 	struct arg_s args;
 	int cmd, no;
@@ -446,6 +479,7 @@ parse_rpc(struct connection *c)
 	}
 }
 
+//! Read from rpc from c's socket to c's buffer
 static int
 read_rpc(struct connection *c)
 {
@@ -474,6 +508,7 @@ read_rpc(struct connection *c)
 	return 0;
 }
 
+//! set sockets for all connections
 static int
 add_rpc_fds(fd_set *fds, int max)
 {
@@ -492,6 +527,7 @@ add_rpc_fds(fd_set *fds, int max)
 	return max;
 }
 
+//! This is handler function for custom rpc commands
 void
 handle_rpc_fds(fd_set *fds)
 {
@@ -522,6 +558,7 @@ handle_rpc_fds(fd_set *fds)
 	}
 }
 
+//! This function gets the reply and sends it to connection with cmd command
 void
 forward_reply(struct ProcChild *p, size_t size, int cmd)
 {
@@ -540,6 +577,7 @@ forward_reply(struct ProcChild *p, size_t size, int cmd)
 	}
 }
 
+//! Main RPC process
 static void
 rpc_proc(void)
 {
@@ -610,9 +648,15 @@ rpc_proc(void)
 	}
 }
 
+//! rpc start
 void
 rpc_unix_start(void)
 {
+·   /*!
+·   Fork RPC process
+·   @return Returns -1 on error
+·   */
+
 	struct ProcChild *p;
 
 	p = proc_fork(rpc_proc, "ComarRPC");

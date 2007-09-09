@@ -24,13 +24,14 @@ int shutdown_activated = 0;
 static char *name_addr;
 static size_t name_size;
 
-
+//! Activate shutdown_activated flag \sa shutdow_activated
 static void
 handle_sigterm(int signum)
 {
 	shutdown_activated = 1;
 }
 
+//! signal handler
 static void
 handle_signals(void)
 {
@@ -39,14 +40,15 @@ handle_signals(void)
 	struct sigaction dfl;
 
 	act.sa_handler = handle_sigterm;
+    /*! initialize and empty a signal set. Signals are to be blocked while executing handle_sigterm */
 	sigemptyset(&act.sa_mask);
-	act.sa_flags = 0;
+	act.sa_flags = 0; /*!< special flags */
 
 	ign.sa_handler = SIG_IGN;
 	sigemptyset(&ign.sa_mask);
 	ign.sa_flags = 0;
 
-	dfl.sa_handler = SIG_DFL;
+	dfl.sa_handler = SIG_DFL; /*!< default signal handling. */
 	sigemptyset(&dfl.sa_mask);
 	dfl.sa_flags = 0;
 
@@ -55,6 +57,7 @@ handle_signals(void)
 	sigaction(SIGINT, &dfl, NULL);
 }
 
+//! Allocates a global name address for name
 static void
 set_my_name(const char *name)
 {
@@ -64,6 +67,7 @@ set_my_name(const char *name)
 	}
 }
 
+//! init process of comar
 void
 proc_init(int argc, char *argv[])
 {
@@ -85,15 +89,22 @@ proc_init(int argc, char *argv[])
 	set_my_name(my_proc.desc);
 }
 
+//! Returns mainprocesses child number 0, rpc
 struct ProcChild *
 proc_get_rpc(void)
 {
 	return &my_proc.children[0];
 }
 
+//! Add a child
 static struct ProcChild *
 add_child(pid_t pid, int to, int from, const char *desc)
 {
+·   /*!
+·   Adds a child process with given arguments to process
+·   @return Returns added child process
+·   */
+
 	int i;
 
 	i = my_proc.nr_children;
@@ -116,6 +127,7 @@ add_child(pid_t pid, int to, int from, const char *desc)
 	return &my_proc.children[i];
 }
 
+//! Remove nr numbered child
 static void
 rem_child(int nr)
 {
@@ -132,9 +144,15 @@ rem_child(int nr)
 	(my_proc.children)[nr] = (my_proc.children)[my_proc.nr_children];
 }
 
+//! stop children
 static void
 stop_children(void)
 {
+·   /*!
+·   Send SIGTERM to all child processes, wait for 3 seconds
+·   if they resist, kill'em all
+·   */
+
 	struct timeval start;
 	struct timeval cur;
 	struct timeval tv;
@@ -188,6 +206,7 @@ stop_children(void)
 	}
 }
 
+//! If shutdown is activated check for child processes
 void
 proc_check_shutdown(void)
 {
@@ -197,6 +216,7 @@ proc_check_shutdown(void)
 	}
 }
 
+//! If there are child processes, stop them, write log and exit
 void
 proc_finish(void)
 {
@@ -205,9 +225,16 @@ proc_finish(void)
 	exit(0);
 }
 
+//! Fork function
 struct ProcChild *
 proc_fork(void (*child_func)(void), const char *desc)
 {
+·   /*!
+·   Child process fork function, child process continues from child_func
+·   \param desc is description, process name
+·   @return Returns Null on error
+·   */
+
 	pid_t pid;
 	int fdr[2], fdw[2];
 	int i;
@@ -252,6 +279,7 @@ proc_fork(void (*child_func)(void), const char *desc)
 	}
 }
 
+//! Setup connection ports (bits) of parent or children of fds
 int
 proc_setup_fds(fd_set *fds)
 {
@@ -278,9 +306,16 @@ proc_setup_fds(fd_set *fds)
 	return ++max;
 }
 
+//! select
 int
 proc_select_fds(fd_set *fds, int max, struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout)
 {
+·   /*!
+·   Listen incoming requests with 'select()'
+·   Sets command, data size and returns 1 if there's something to listen
+·   Returns 0 otherwise
+·   */
+
 	unsigned int ipc;
 	struct timeval tv, *tvptr;
 	int sock;
@@ -332,6 +367,7 @@ proc_select_fds(fd_set *fds, int max, struct ProcChild **senderp, int *cmdp, siz
 	return 0;
 }
 
+//! Listen socket with given arguments \sa proc_setup_fds proc_select_fds
 int
 proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout)
 {
@@ -343,6 +379,7 @@ proc_listen(struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout)
 	return proc_select_fds(&fds, max, senderp, cmdp, sizep, timeout);
 }
 
+//! This function processes the command, sends it to socket
 int
 proc_put(struct ProcChild *p, int cmd, struct ipc_struct *ipc, struct pack *pak)
 {
@@ -370,6 +407,7 @@ proc_put(struct ProcChild *p, int cmd, struct ipc_struct *ipc, struct pack *pak)
 	return 0;
 }
 
+//! Read header to 'ipc', data to 'pak' and return 0
 int
 proc_get(struct ProcChild *p, struct ipc_struct *ipc, struct pack *pak, size_t size)
 {

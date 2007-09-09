@@ -17,6 +17,7 @@
 #include "log.h"
 #include "model.h"
 
+//! enum for model
 enum {
 	N_GROUP,
 	N_CLASS,
@@ -47,6 +48,7 @@ static struct node **node_table;
 static struct node *nodes;
 static char *paths;
 
+//! hash string elements and return hash number
 static unsigned int
 hash_string(const unsigned char *str, int len)
 {
@@ -58,9 +60,15 @@ hash_string(const unsigned char *str, int len)
 	return h;
 }
 
+//! Create table
 static int
 prepare_tables(int max_nodes, size_t str_size)
 {
+·   /*!
+·   @return Returns 0 if successfully allocates memory for nodes, node table and paths,
+·   -1 otherwise
+·   */
+
 	nodes = calloc(max_nodes, sizeof(struct node));
 	node_table = calloc(TABLE_SIZE, sizeof(struct node *));
 	paths = malloc(str_size);
@@ -68,9 +76,15 @@ prepare_tables(int max_nodes, size_t str_size)
 	return 0;
 }
 
+//! Add a node to table
 static int
 add_node(int parent_no, const char *path, int type)
 {
+·   /*!
+·   parent_no is depth of node. adds node with path and type (method)
+·   to node table
+·   */
+
 	struct node *n;
 	int val;
 	int len = strlen(path);
@@ -97,9 +111,16 @@ add_node(int parent_no, const char *path, int type)
 
 static char *path_ptr = NULL;
 
+//!
 static char *
 build_path(iks *g, iks *o, iks *m)
 {
+·   /*!
+·   Returns the 'name' attr of 'g' iks node (group)
+·   if 'm' is given, returns it as group.object.method (names)
+·   if 'o' is given, returns group.object (names)
+·   */
+
 	if (path_ptr) {
 		path_ptr += strlen(path_ptr) + 1;
 	} else {
@@ -145,9 +166,17 @@ build_arg(int no, int is_instance, const char *name)
 	return path_ptr;
 }
 
+//! Model initialize
 int
 model_init(void)
 {
+·   /*!
+·   This function parses model.xml file (cfg_model_file)
+·   Converts model.xml's access levels and flags to ACL levels and
+·   flags, and loads into memory before deleting dom tree
+·   \sa cfg.c
+·   */
+
 	iks *model;
 	iks *grp, *obj, *met;
 	int count = 0;
@@ -215,6 +244,7 @@ model_init(void)
 		}
 	}
 
+    // size is counted to alloc mem for paths
 	// prepare data structures
 	if (prepare_tables(count, size)) return -1;
 
@@ -285,6 +315,7 @@ model_init(void)
 	return 0;
 }
 
+//! Look for a class in node table @return Returns the matcing node number or -1 otherwise
 int
 model_lookup_class(const char *path)
 {
@@ -300,9 +331,15 @@ model_lookup_class(const char *path)
 	return -1;
 }
 
+//! Look for a method in node table
 int
 model_lookup_method(const char *path)
 {
+·   /*!
+    Lookup a method in node table.
+·   @return If found, returns its number in table, returns -1 otherwise·
+·   */
+
 	struct node *n;
 	int val;
 
@@ -315,9 +352,15 @@ model_lookup_method(const char *path)
 	return -1;
 }
 
+//! Look for a notify in node table
 int
 model_lookup_notify(const char *path)
 {
+·   /*!
+·   If specified path's record in node table has a type of 'notify'
+·   returns its number in table, returns -1 otherwise
+·   */
+
 	struct node *n;
 	int val;
 
@@ -330,9 +373,15 @@ model_lookup_notify(const char *path)
 	return -1;
 }
 
+//! Get parent of node_no
 int
 model_parent(int node_no)
 {
+·   /*!
+    if node_no numbered record in node table is a method, returns its parent number
+·   else returns node_no
+·   */
+
 	struct node *n;
 
 	n = &nodes[node_no];
@@ -341,6 +390,7 @@ model_parent(int node_no)
 	return node_no;
 }
 
+//! Return the method of node numbered 'node_no'
 const char *
 model_get_method(int node_no)
 {
@@ -350,6 +400,7 @@ model_get_method(int node_no)
 	return n->method;
 }
 
+//! Return path of a node from node table
 const char *
 model_get_path(int node_no)
 {
@@ -359,9 +410,14 @@ model_get_path(int node_no)
 	return n->path;
 }
 
+//! Find argument
 int
 model_has_argument(int node_no, const char *argname)
 {
+·   /*!
+·   @return Returns 1 if argname is found in node table, 0 otherwise
+·   */
+
 	struct node *n;
 	int max, i;
 	const char *t;
@@ -379,12 +435,15 @@ model_has_argument(int node_no, const char *argname)
 	return 0;
 }
 
+//! return flags of 'node_no' from node table
 int
 model_flags(int node_no)
 {
 	return nodes[node_no].flags;
 }
 
+//! Looks for number of instances of node_no.
+//! @return Returns 1 if has an instance, 0 otherwise
 int
 model_has_instances(int node_no)
 {
@@ -392,6 +451,7 @@ model_has_instances(int node_no)
 	return 0;
 }
 
+//! If argname is an instance of node_no, returns 1, 0 otherwise
 int
 model_is_instance(int node_no, const char *argname)
 {
@@ -410,12 +470,14 @@ model_is_instance(int node_no, const char *argname)
 	return 0;
 }
 
+//! Return args of node_no from node table
 const char *
 model_instance_key(int node_no)
 {
 	return nodes[node_no].args;
 }
 
+//! Given acldata with node_no is set in node table \sa acl.c
 void
 model_acl_set(int node_no, void *acldata)
 {
@@ -425,9 +487,16 @@ model_acl_set(int node_no, void *acldata)
 	n->acldata = acldata;
 }
 
+//! Get acl from node table
 void
 model_acl_get(int node_no, void **acldatap, unsigned int *levelp)
 {
+·   /*!
+·   This function gets 'acldata' and 'level' from node table, from record numbered 'node_no'
+·   \param acldatap is pointer to acldata
+·   \param levelp is pointer to level
+·   */
+
 	struct node *n;
 
 	n = &nodes[node_no];
@@ -440,9 +509,16 @@ model_acl_get(int node_no, void **acldatap, unsigned int *levelp)
 	*acldatap = n->acldata;
 }
 
+//! Find next class
 int
 model_next_class(int *class_nop)
 {
+·   /*!
+·   Scans node table for class tags
+·   @return If found, returns 1 and sets the node number to given argument (class_nop) \n
+·   Returns 0 if no classes found
+·   */
+
 	int no;
 	struct node *n;
 

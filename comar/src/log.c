@@ -19,6 +19,7 @@
 #include "log.h"
 #include "process.h"
 
+//! Puts time into f
 static void
 timestamp(FILE *f)
 {
@@ -32,6 +33,7 @@ timestamp(FILE *f)
 	fputs(buf, f);
 }
 
+//! Prints comar version info and process id to stdout
 static void
 pidstamp(FILE *f)
 {
@@ -41,9 +43,16 @@ pidstamp(FILE *f)
 		fprintf(f, "(%s-%d) ", my_proc.desc + 5, getpid());
 }
 
+//! Print log
 static void
 log_print(const char *fmt, va_list ap, int error)
 {
+·   /*!
+    Writes log to file (cfg_log_file_name) or stdout according to cfg_log_* options
+·   comar version, process id, timestamp and errors(if any) are written
+·   \sa cfg.c
+·   */
+
 	if (cfg_log_console) {
 		pidstamp(stdout);
 		vprintf(fmt, ap);
@@ -65,6 +74,7 @@ log_print(const char *fmt, va_list ap, int error)
 	// FIXME: syslog?
 }
 
+//! Log starter. Permissions of log file are set here
 void
 log_start(void)
 {
@@ -75,9 +85,15 @@ log_start(void)
 	}
 }
 
+//! Error logging
 void
 log_error(const char *fmt, ...)
 {
+·   /*!
+·   Same as log_info, if this function is called instead, writes
+·   information as an 'error' to log file
+·   */
+
 	va_list ap;
 
 	va_start(ap, fmt);
@@ -85,9 +101,16 @@ log_error(const char *fmt, ...)
 	va_end(ap);
 }
 
+//! Print log info
 void
 log_info(const char *fmt, ...)
 {
+·   /*!
+·   Prints log info of variable arguments with log_print function.
+·   Console or file usage depends on cfg_log_* options
+·   \sa log_print cfg.c
+·   */
+
 	va_list ap;
 
 	va_start(ap, fmt);
@@ -95,6 +118,7 @@ log_info(const char *fmt, ...)
 	va_end(ap);
 }
 
+//! Log messages from sub processes for debugging
 void
 log_debug(int subsys, const char *fmt, ...)
 {

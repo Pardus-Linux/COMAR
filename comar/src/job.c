@@ -23,6 +23,7 @@ struct ipc_source bk_channel;
 int bk_node;
 char *bk_app;
 
+//! Pack the result and send it to parent
 static int
 send_result(int cmd, const char *data, size_t size)
 {
@@ -54,9 +55,15 @@ job_send_result(int cmd, const char *data, size_t size)
 	return send_result(cmd, data, size);
 }
 
+//! Register the model
 static int
 do_register(int node, const char *app, const char *fname)
 {
+·   /*!
+    Register script by first testing it by compiling.
+·   If it compiles well, put script. \sa db_put_script csl_compile
+    */
+
 	char *buf;
 	char *code;
 	size_t codelen;
@@ -87,6 +94,7 @@ do_register(int node, const char *app, const char *fname)
 	return 0;
 }
 
+//! Remove application \sa db_del_app
 static int
 do_remove(const char *app)
 {
@@ -99,6 +107,7 @@ do_remove(const char *app)
 	return 0;
 }
 
+//! This function acts like do_execute, only executs commands for events. @see do_execute
 static int
 do_event(const char *event, int node, const char *app, struct pack *p)
 {
@@ -137,9 +146,17 @@ do_event(const char *event, int node, const char *app, struct pack *p)
 	return e;
 }
 
+//! Load the app code and execute it through csl
 static int
 do_execute(int node, const char *app, struct pack *pak)
 {
+·   /*!
+    Load the app code and execute it with python/c api @see csl.c
+·   If execution lasts more than 6 seconds, logs this information @see log_info
+·   Returns 0 on a successfull call, returns error returned by csl execute function otherwise
+·   \sa csl.c
+·   */
+
 	struct timeval start, end;
 	unsigned long msec;
 	struct pack *p = NULL;
@@ -206,15 +223,22 @@ do_execute(int node, const char *app, struct pack *pak)
 
 static struct pack *bk_pak;
 
+//! This function calls do_execute with global bk_node, bk_app and bk_pak
 static void
 exec_proc(void)
 {
 	do_execute(bk_node, bk_app, bk_pak);
 }
 
+//! If a call command is triggered, make needed call.
 static int
 do_call(int node, struct pack *pak)
 {
+·   /*!
+    Get scripts and run them, send results and return
+·   @return Returns 0
+    */
+
 	struct pack *p = NULL;
 	char *apps;
 	int ok = 0;
@@ -286,6 +310,7 @@ do_call(int node, struct pack *pak)
 	return 0;
 }
 
+//! This function logs the job and calls execute function @see do_execute
 static int
 do_call_package(int node, const char *app, struct pack *p)
 {
@@ -296,6 +321,7 @@ do_call_package(int node, const char *app, struct pack *p)
 	return 0;
 }
 
+//! Gets a list of applications from database
 static int
 do_getlist(int node)
 {
@@ -315,6 +341,7 @@ do_getlist(int node)
 	return 0;
 }
 
+//! This function calls db_dump_profile and sends the result. @see db_dump_profile
 static int
 do_dump_profile(void)
 {
@@ -331,9 +358,14 @@ do_dump_profile(void)
 	return 0;
 }
 
+//! child job process code
 static void
 job_proc(void)
 {
+·   /*!
+·   Listen for incoming requests and process the commands.
+·   */
+
 	struct ipc_struct ipc;
 	struct pack *p;
 	struct ProcChild *sender;
@@ -342,6 +374,7 @@ job_proc(void)
 	size_t size;
 
 	p = pack_new(256);
+    // wait untill theres something to listen
 	while (1) {
 		if (1 == proc_listen(&sender, &cmd, &size, 1)) break;
 	}
@@ -380,6 +413,7 @@ job_proc(void)
 	}
 }
 
+//! Start a Comar job @see job_proc
 int
 job_start(int cmd, struct ipc_struct *ipc, struct pack *pak)
 {

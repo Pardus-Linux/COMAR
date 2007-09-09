@@ -55,6 +55,7 @@ static struct option longopts[] = {
 
 static char *shortopts = "m:d:s:g:phv";
 
+//! Print usage
 static void
 print_usage(void)
 {
@@ -73,6 +74,7 @@ print_usage(void)
 	);
 }
 
+//! Print version
 static void
 print_version(void)
 {
@@ -87,6 +89,7 @@ print_version(void)
 	);
 }
 
+//! Parse command line options
 void
 cfg_init(int argc, char *argv[])
 {

@@ -64,6 +64,7 @@ trig_instance(char *str, size_t size)
 	pack_delete(p);
 }
 
+//! Start the startup methods at every comar start
 static void
 trigger_startup_methods(void)
 {
@@ -107,6 +108,7 @@ trigger_startup_methods(void)
 	}
 }
 
+//! event process code
 static void
 event_proc(void)
 {
@@ -118,6 +120,7 @@ event_proc(void)
 	// no more event for now, kernel device events are handled by udev
 }
 
+//! Start the event process
 void
 event_start(void)
 {

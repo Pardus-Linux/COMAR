@@ -16,15 +16,22 @@
 #include "process.h"
 #include "utility.h"
 
+//! allocate memory for notifies
 void *
 notify_alloc(void)
 {
+·   /*!
+·   Allocates memory for notifies and returns pointer to allocated memory
+·   Returns Null on error.
+·   */
+
 	int size;
 
 	size = (model_max_notifications + 7)/ 8;
 	return calloc(1, size);
 }
 
+//! Sets a mark if 'name' is a notify \sa model_lookup_notify
 int
 notify_mark(void *mask, const char *name)
 {
@@ -39,6 +46,7 @@ notify_mark(void *mask, const char *name)
 	return 0;
 }
 
+//! Checks if notify is marked in mask
 int
 notify_is_marked(void *mask, int no)
 {

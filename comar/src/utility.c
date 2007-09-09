@@ -15,9 +15,16 @@
 
 #include "utility.h"
 
+//! Loads file 'fname' and returns the content
 unsigned char *
 load_file(const char *fname, int *sizeptr)
 {
+·   /*!
+·   Gets file size from stat and allocates enough memory to save file content. \n
+·   sizeptr was used while loading compiled form of these scripts to python
+·   @return Returns data loaded, or NULL on error
+·   */
+
 	FILE *f;
 	struct stat fs;
 	size_t size;
@@ -45,9 +52,16 @@ load_file(const char *fname, int *sizeptr)
 	return data;
 }
 
+//! Writes 'buffer' to file 'fname' with size 'size'
 int
 save_file(const char *fname, const char *buffer, size_t size)
 {
+·   /*!
+·   @return Returns -1 if file could not be opened for binary writing \n
+·   Returns -2 if file could not be written to disc or buffer is empty \n
+·   Returns 0 on success
+·   */
+
 	FILE *f;
 
 	f = fopen(fname, "wb");
@@ -60,9 +74,16 @@ save_file(const char *fname, const char *buffer, size_t size)
 	return 0;
 }
 
+//! This function checks string str with size 'size' for valid utf8.
 int
 utf8_is_valid(const char *str, size_t size)
 {
+·   /*!
+·   Because not all byte strings are valid, checks every character in string for security reasons
+·   i.e for invalid utf8 string 0xC0 0x80 ..
+·   @return Returns 1 if is valid, 0 otherwise
+·   */
+
 	int i;
 	int len = 0;
 	int max = 0;
@@ -74,6 +95,7 @@ utf8_is_valid(const char *str, size_t size)
 
 		// those are not allowed at any point
 		if (0 == c || 0xFE == c || 0xFF == c) return 0;
+
 
 		if (max) {
 			// we are in a multi byte char
@@ -117,7 +139,7 @@ utf8_is_valid(const char *str, size_t size)
 	return 1;
 }
 
-/* returns in miliseconds (1/1000 second) */
+//! Returns difference between end and start timeval in miliseconds (1/1000 second)
 unsigned long
 time_diff(struct timeval *start, struct timeval *end)
 {
@@ -128,9 +150,17 @@ time_diff(struct timeval *start, struct timeval *end)
 	return msec;
 }
 
+//! Create a pack
 struct pack *
 pack_new(size_t min_size)
 {
+·   /*!
+·   This function creates a pack struct ( described in utility.h )
+·   which has a buffer of minimum size of 256 ( or min_size, if is bigger than 256 )
+·   @return Returns created pack
+·   \sa utility.h
+·   */
+
 	struct pack *p;
 
 	p = calloc(sizeof(struct pack), 1);
@@ -145,9 +175,15 @@ pack_new(size_t min_size)
 	return p;
 }
 
+//! data wrapper
 struct pack *
 pack_wrap(char *buffer, size_t size)
 {
+·   /*!
+·   puts buffer in a pack and returns a pointer to pack,
+·   @return Returns Null on error, pointer to pack otherwise
+·   */
+
 	struct pack *p;
 
 	p = calloc(sizeof(struct pack), 1);
@@ -158,9 +194,12 @@ pack_wrap(char *buffer, size_t size)
 	return p;
 }
 
+//! duplicate a pack
 struct pack *
 pack_dup(struct pack *oldpak)
 {
+    /*! @return Returns newly created pack */
+
 	struct pack *p;
 
 	p = calloc(sizeof(struct pack), 1);
@@ -177,6 +216,7 @@ pack_dup(struct pack *oldpak)
 	return p;
 }
 
+//! deletes pack by freeing its buffer and itself
 void
 pack_delete(struct pack *p)
 {
@@ -184,6 +224,7 @@ pack_delete(struct pack *p)
 	free(p);
 }
 
+//! resets pack by setting its used and pos flags to 0
 void
 pack_reset(struct pack *p)
 {
@@ -191,6 +232,7 @@ pack_reset(struct pack *p)
 	p->pos = 0;
 }
 
+//! Adds an extra 'need' size to buffer
 void
 pack_ensure_size(struct pack *p, size_t need)
 {
@@ -200,6 +242,7 @@ pack_ensure_size(struct pack *p, size_t need)
 	}
 }
 
+//! Puts arg to pack p
 void
 pack_put(struct pack *p, const char *arg, size_t size)
 {
@@ -219,9 +262,16 @@ pack_put(struct pack *p, const char *arg, size_t size)
 	p->used += size + 3;
 }
 
+//! Get data
 int
 pack_get(struct pack *p, char **argp, size_t *sizep)
 {
+·   /*!
+·   Writes p's size to sizep, if p is empty argp is set to NULL, else it is set to next data
+·   p's position is set to the end of data
+·   @return Returns 0 on error, 1 otherwise
+·   */
+
 	unsigned char *ptr;
 	size_t size;
 
@@ -240,9 +290,15 @@ pack_get(struct pack *p, char **argp, size_t *sizep)
 	return 1;
 }
 
+//! Replace a package
 void
 pack_replace(struct pack *p, const char *arg, const char *value, size_t size)
 {
+·   /*!
+    Replaces a package with arg and value if it matches.
+·   If it doesn't match, appends it as a new value
+    */
+
 	unsigned char *ptr;
 	char *t;
 	size_t ts;

@@ -1,0 +1,192 @@
+# Lider.
+# Copyright (C) 2007, TÜBİTAK/UEKAE
+# This file is distributed under the same license as the Lider package.
+# Bahadır Kandemir <bahadir@pardus.org.tr>, 2007.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-09-12 11:08+0300\n"
+"PO-Revision-Date: 2007-09-12 11:08+0300\n"
+"Last-Translator: Bahadır Kandemir <bahadir@pardus.org.tr>\n"
+"Language-Team: Bahadır Kandemir <bahadir@pardus.org.tr>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/browser.py:32 src/browser.py:39
+msgid "&New Directory"
+msgstr "&Yeni Dizin"
+
+#: src/browser.py:36 src/browser.py:399
+msgid "&Configuration"
+msgstr "&Seçenekler"
+
+#: src/browser.py:43
+msgid "&Refresh"
+msgstr "&Yenile"
+
+#: src/browser.py:45
+msgid "&Properties"
+msgstr "&Özellikler"
+
+#: src/browser.py:131
+msgid "Remove directory?"
+msgstr "Dizin silinsin mi?"
+
+#: src/browser.py:131 src/browser.py:146 src/browser.py:418
+msgid "Are you sure you want to remove '%1' ?"
+msgstr "'%1' nesnesini silmek istediğinizden emin misiniz?"
+
+#: src/browser.py:131 src/browser.py:418 src/browser.py:422 src/browser.py:425
+msgid "This is not undoable. Are you sure you want to continue?"
+msgstr "Bu işlem geri alınamaz. Devam etmek istediğinize emin misiniz?"
+
+#: src/browser.py:146
+msgid "Remove domain?"
+msgstr "Alanadı silinsin mi?"
+
+#: src/browser.py:184
+msgid "Computers (%1)"
+msgstr "Bilgisayarlar (%1)"
+
+#: src/browser.py:204
+msgid "Units (%1)"
+msgstr "Birimler (%1)"
+
+#: src/browser.py:224
+msgid "Users (%1)"
+msgstr "Kullanıcılar (%1)"
+
+#: src/browser.py:244
+msgid "Groups (%1)"
+msgstr "Gruplar (%1)"
+
+#: src/browser.py:388
+msgid "Name"
+msgstr "İsim"
+
+#: src/browser.py:389
+msgid "Description"
+msgstr "Açıklama"
+
+#: src/browser.py:418
+msgid "Remove object?"
+msgstr "Nesne silinsin mi?"
+
+#: src/browser.py:422 src/browser.py:425
+msgid "Remove objects?"
+msgstr "Nesneler silinsin mi?"
+
+#: src/browser.py:422
+msgid ""
+"Are you sure you want to remove these objects?\n"
+"%1"
+msgstr ""
+"Bu nesneleri silmek istediğinizden emin misiniz?\n"
+"%1"
+
+#: src/browser.py:425
+msgid "Are you sure you want to remove %1 objects?"
+msgstr "%1 nesneyi silmek istediğinizden emin misiniz?"
+
+#: src/browser.py:441
+msgid ""
+"Unable to delete these objects:\n"
+"%1"
+msgstr ""
+"Bu nesneler silinemedi:\n"
+"%1"
+
+#: src/browser.py:444
+msgid "Removed %1 objects."
+msgstr "%1 nesne silindi."
+
+#: src/dialogs.py:26 src/dialogs.py:121
+msgid "%1 Properties"
+msgstr "%1 Özellikleri"
+
+#: src/dialogs.py:28
+msgid "Add New Domain"
+msgstr "Yeni Alanadı Ekle"
+
+#: src/dialogs.py:38 src/dialogs.py:144
+msgid "Label:"
+msgstr "Etiket:"
+
+#: src/dialogs.py:43
+msgid "Directory server:"
+msgstr "Dizin Sunucusu:"
+
+#: src/dialogs.py:48
+msgid "Base DN:"
+msgstr "Ana DN:"
+
+#: src/dialogs.py:53
+msgid "Bind DN:"
+msgstr "Kullanıcı:"
+
+#: src/dialogs.py:58
+msgid "Bind Password:"
+msgstr "Parola:"
+
+#: src/dialogs.py:123
+msgid "New Directory"
+msgstr "Yeni Dizin"
+
+#: src/dialogs.py:133
+msgid "DN:"
+msgstr "DN:"
+
+#: src/dialogs.py:139
+msgid "Name:"
+msgstr "İsim:"
+
+#: src/domain.py:122
+msgid "Not a valid Connection instance."
+msgstr ""
+
+#: src/domain.py:158
+msgid "Domain configuration file is missing."
+msgstr ""
+
+#: src/domain.py:162
+msgid "Domain configuration file has syntax errors."
+msgstr ""
+
+#: src/lider.py:25
+msgid "Pardus Management Console"
+msgstr "Pardus Yönetim Konsolu"
+
+#: src/mainwindow.py:29
+msgid "New Domain"
+msgstr "Yeni Alanadı"
+
+#: src/mainwindow.py:34
+msgid "&Domain"
+msgstr "&Alanadı"
+
+#: src/mainwindow.py:56
+msgid "Computers"
+msgstr "Bilgisayarlar"
+
+#: src/mainwindow.py:59
+msgid "Units"
+msgstr "Birimler"
+
+#: src/mainwindow.py:62
+msgid "Users"
+msgstr "Kullanıcılar"
+
+#: src/mainwindow.py:65
+msgid "Groups"
+msgstr "Gruplar"
+
+#: src/mainwindow.py:76
+msgid "Critical Error"
+msgstr "Kritik Hata"
+
+#: src/mainwindow.py:82
+msgid "Unable to complete operation:"
+msgstr "İşlem tamamlanamadı:"

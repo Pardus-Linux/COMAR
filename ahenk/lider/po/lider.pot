@@ -1,0 +1,189 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-09-12 11:08+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/browser.py:32 src/browser.py:39
+msgid "&New Directory"
+msgstr ""
+
+#: src/browser.py:36 src/browser.py:399
+msgid "&Configuration"
+msgstr ""
+
+#: src/browser.py:43
+msgid "&Refresh"
+msgstr ""
+
+#: src/browser.py:45
+msgid "&Properties"
+msgstr ""
+
+#: src/browser.py:131
+msgid "Remove directory?"
+msgstr ""
+
+#: src/browser.py:131 src/browser.py:146 src/browser.py:418
+msgid "Are you sure you want to remove '%1' ?"
+msgstr ""
+
+#: src/browser.py:131 src/browser.py:418 src/browser.py:422 src/browser.py:425
+msgid "This is not undoable. Are you sure you want to continue?"
+msgstr ""
+
+#: src/browser.py:146
+msgid "Remove domain?"
+msgstr ""
+
+#: src/browser.py:184
+msgid "Computers (%1)"
+msgstr ""
+
+#: src/browser.py:204
+msgid "Units (%1)"
+msgstr ""
+
+#: src/browser.py:224
+msgid "Users (%1)"
+msgstr ""
+
+#: src/browser.py:244
+msgid "Groups (%1)"
+msgstr ""
+
+#: src/browser.py:388
+msgid "Name"
+msgstr ""
+
+#: src/browser.py:389
+msgid "Description"
+msgstr ""
+
+#: src/browser.py:418
+msgid "Remove object?"
+msgstr ""
+
+#: src/browser.py:422 src/browser.py:425
+msgid "Remove objects?"
+msgstr ""
+
+#: src/browser.py:422
+msgid ""
+"Are you sure you want to remove these objects?\n"
+"%1"
+msgstr ""
+
+#: src/browser.py:425
+msgid "Are you sure you want to remove %1 objects?"
+msgstr ""
+
+#: src/browser.py:441
+msgid ""
+"Unable to delete these objects:\n"
+"%1"
+msgstr ""
+
+#: src/browser.py:444
+msgid "Removed %1 objects."
+msgstr ""
+
+#: src/dialogs.py:26 src/dialogs.py:121
+msgid "%1 Properties"
+msgstr ""
+
+#: src/dialogs.py:28
+msgid "Add New Domain"
+msgstr ""
+
+#: src/dialogs.py:38 src/dialogs.py:144
+msgid "Label:"
+msgstr ""
+
+#: src/dialogs.py:43
+msgid "Directory server:"
+msgstr ""
+
+#: src/dialogs.py:48
+msgid "Base DN:"
+msgstr ""
+
+#: src/dialogs.py:53
+msgid "Bind DN:"
+msgstr ""
+
+#: src/dialogs.py:58
+msgid "Bind Password:"
+msgstr ""
+
+#: src/dialogs.py:123
+msgid "New Directory"
+msgstr ""
+
+#: src/dialogs.py:133
+msgid "DN:"
+msgstr ""
+
+#: src/dialogs.py:139
+msgid "Name:"
+msgstr ""
+
+#: src/domain.py:122
+msgid "Not a valid Connection instance."
+msgstr ""
+
+#: src/domain.py:158
+msgid "Domain configuration file is missing."
+msgstr ""
+
+#: src/domain.py:162
+msgid "Domain configuration file has syntax errors."
+msgstr ""
+
+#: src/lider.py:25
+msgid "Pardus Management Console"
+msgstr ""
+
+#: src/mainwindow.py:29
+msgid "New Domain"
+msgstr ""
+
+#: src/mainwindow.py:34
+msgid "&Domain"
+msgstr ""
+
+#: src/mainwindow.py:56
+msgid "Computers"
+msgstr ""
+
+#: src/mainwindow.py:59
+msgid "Units"
+msgstr ""
+
+#: src/mainwindow.py:62
+msgid "Users"
+msgstr ""
+
+#: src/mainwindow.py:65
+msgid "Groups"
+msgstr ""
+
+#: src/mainwindow.py:76
+msgid "Critical Error"
+msgstr ""
+
+#: src/mainwindow.py:82
+msgid "Unable to complete operation:"
+msgstr ""

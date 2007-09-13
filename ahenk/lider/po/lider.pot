@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-09-12 11:08+0300\n"
+"POT-Creation-Date: 2007-09-13 22:59+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,91 +16,91 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/browser.py:32 src/browser.py:39
+#: src/browser.py:34 src/browser.py:41
 msgid "&New Directory"
 msgstr ""
 
-#: src/browser.py:36 src/browser.py:399
-msgid "&Configuration"
-msgstr ""
-
-#: src/browser.py:43
+#: src/browser.py:45
 msgid "&Refresh"
 msgstr ""
 
-#: src/browser.py:45
+#: src/browser.py:47
 msgid "&Properties"
 msgstr ""
 
-#: src/browser.py:131
+#: src/browser.py:104
 msgid "Remove directory?"
 msgstr ""
 
-#: src/browser.py:131 src/browser.py:146 src/browser.py:418
+#: src/browser.py:104 src/browser.py:119 src/browser.py:428
 msgid "Are you sure you want to remove '%1' ?"
 msgstr ""
 
-#: src/browser.py:131 src/browser.py:418 src/browser.py:422 src/browser.py:425
+#: src/browser.py:104 src/browser.py:428 src/browser.py:432 src/browser.py:435
 msgid "This is not undoable. Are you sure you want to continue?"
 msgstr ""
 
-#: src/browser.py:146
+#: src/browser.py:119
 msgid "Remove domain?"
 msgstr ""
 
-#: src/browser.py:184
+#: src/browser.py:157
 msgid "Computers (%1)"
 msgstr ""
 
-#: src/browser.py:204
+#: src/browser.py:177
 msgid "Units (%1)"
 msgstr ""
 
-#: src/browser.py:224
+#: src/browser.py:197
 msgid "Users (%1)"
 msgstr ""
 
-#: src/browser.py:244
-msgid "Groups (%1)"
-msgstr ""
-
-#: src/browser.py:388
+#: src/browser.py:365
 msgid "Name"
 msgstr ""
 
-#: src/browser.py:389
+#: src/browser.py:366
 msgid "Description"
 msgstr ""
 
-#: src/browser.py:418
+#: src/browser.py:377
+msgid "&Configuration"
+msgstr ""
+
+#: src/browser.py:380
+msgid "&New"
+msgstr ""
+
+#: src/browser.py:428
 msgid "Remove object?"
 msgstr ""
 
-#: src/browser.py:422 src/browser.py:425
+#: src/browser.py:432 src/browser.py:435
 msgid "Remove objects?"
 msgstr ""
 
-#: src/browser.py:422
+#: src/browser.py:432
 msgid ""
 "Are you sure you want to remove these objects?\n"
 "%1"
 msgstr ""
 
-#: src/browser.py:425
+#: src/browser.py:435
 msgid "Are you sure you want to remove %1 objects?"
 msgstr ""
 
-#: src/browser.py:441
+#: src/browser.py:451
 msgid ""
 "Unable to delete these objects:\n"
 "%1"
 msgstr ""
 
-#: src/browser.py:444
+#: src/browser.py:454
 msgid "Removed %1 objects."
 msgstr ""
 
-#: src/dialogs.py:26 src/dialogs.py:121
+#: src/dialogs.py:26 src/dialogs.py:120
 msgid "%1 Properties"
 msgstr ""
 
@@ -108,7 +108,7 @@ msgstr ""
 msgid "Add New Domain"
 msgstr ""
 
-#: src/dialogs.py:38 src/dialogs.py:144
+#: src/dialogs.py:38 src/dialogs.py:148
 msgid "Label:"
 msgstr ""
 
@@ -128,27 +128,47 @@ msgstr ""
 msgid "Bind Password:"
 msgstr ""
 
-#: src/dialogs.py:123
-msgid "New Directory"
+#: src/dialogs.py:122
+msgid "New %1"
 msgstr ""
 
 #: src/dialogs.py:133
 msgid "DN:"
 msgstr ""
 
-#: src/dialogs.py:139
+#: src/dialogs.py:135
+msgid "Parent DN:"
+msgstr ""
+
+#: src/dialogs.py:142
 msgid "Name:"
 msgstr ""
 
-#: src/domain.py:122
+#: src/dialogs.py:177
+msgid "Computer"
+msgstr ""
+
+#: src/dialogs.py:179
+msgid "Unit"
+msgstr ""
+
+#: src/dialogs.py:181
+msgid "Directory"
+msgstr ""
+
+#: src/dialogs.py:183
+msgid "Account"
+msgstr ""
+
+#: src/domain.py:127
 msgid "Not a valid Connection instance."
 msgstr ""
 
-#: src/domain.py:158
+#: src/domain.py:163
 msgid "Domain configuration file is missing."
 msgstr ""
 
-#: src/domain.py:162
+#: src/domain.py:167
 msgid "Domain configuration file has syntax errors."
 msgstr ""
 

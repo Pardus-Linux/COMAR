@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-09-12 11:08+0300\n"
+"POT-Creation-Date: 2007-09-13 22:59+0300\n"
 "PO-Revision-Date: 2007-09-12 11:08+0300\n"
 "Last-Translator: Bahadır Kandemir <bahadir@pardus.org.tr>\n"
 "Language-Team: Bahadır Kandemir <bahadir@pardus.org.tr>\n"
@@ -15,71 +15,71 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/browser.py:32 src/browser.py:39
+#: src/browser.py:34 src/browser.py:41
 msgid "&New Directory"
 msgstr "&Yeni Dizin"
 
-#: src/browser.py:36 src/browser.py:399
-msgid "&Configuration"
-msgstr "&Seçenekler"
-
-#: src/browser.py:43
+#: src/browser.py:45
 msgid "&Refresh"
 msgstr "&Yenile"
 
-#: src/browser.py:45
+#: src/browser.py:47
 msgid "&Properties"
 msgstr "&Özellikler"
 
-#: src/browser.py:131
+#: src/browser.py:104
 msgid "Remove directory?"
 msgstr "Dizin silinsin mi?"
 
-#: src/browser.py:131 src/browser.py:146 src/browser.py:418
+#: src/browser.py:104 src/browser.py:119 src/browser.py:428
 msgid "Are you sure you want to remove '%1' ?"
 msgstr "'%1' nesnesini silmek istediğinizden emin misiniz?"
 
-#: src/browser.py:131 src/browser.py:418 src/browser.py:422 src/browser.py:425
+#: src/browser.py:104 src/browser.py:428 src/browser.py:432 src/browser.py:435
 msgid "This is not undoable. Are you sure you want to continue?"
 msgstr "Bu işlem geri alınamaz. Devam etmek istediğinize emin misiniz?"
 
-#: src/browser.py:146
+#: src/browser.py:119
 msgid "Remove domain?"
 msgstr "Alanadı silinsin mi?"
 
-#: src/browser.py:184
+#: src/browser.py:157
 msgid "Computers (%1)"
 msgstr "Bilgisayarlar (%1)"
 
-#: src/browser.py:204
+#: src/browser.py:177
 msgid "Units (%1)"
 msgstr "Birimler (%1)"
 
-#: src/browser.py:224
+#: src/browser.py:197
 msgid "Users (%1)"
 msgstr "Kullanıcılar (%1)"
 
-#: src/browser.py:244
-msgid "Groups (%1)"
-msgstr "Gruplar (%1)"
-
-#: src/browser.py:388
+#: src/browser.py:365
 msgid "Name"
 msgstr "İsim"
 
-#: src/browser.py:389
+#: src/browser.py:366
 msgid "Description"
 msgstr "Açıklama"
 
-#: src/browser.py:418
+#: src/browser.py:377
+msgid "&Configuration"
+msgstr "&Seçenekler"
+
+#: src/browser.py:380
+msgid "&New"
+msgstr "&Yeni"
+
+#: src/browser.py:428
 msgid "Remove object?"
 msgstr "Nesne silinsin mi?"
 
-#: src/browser.py:422 src/browser.py:425
+#: src/browser.py:432 src/browser.py:435
 msgid "Remove objects?"
 msgstr "Nesneler silinsin mi?"
 
-#: src/browser.py:422
+#: src/browser.py:432
 msgid ""
 "Are you sure you want to remove these objects?\n"
 "%1"
@@ -87,11 +87,11 @@ msgstr ""
 "Bu nesneleri silmek istediğinizden emin misiniz?\n"
 "%1"
 
-#: src/browser.py:425
+#: src/browser.py:435
 msgid "Are you sure you want to remove %1 objects?"
 msgstr "%1 nesneyi silmek istediğinizden emin misiniz?"
 
-#: src/browser.py:441
+#: src/browser.py:451
 msgid ""
 "Unable to delete these objects:\n"
 "%1"
@@ -99,11 +99,11 @@ msgstr ""
 "Bu nesneler silinemedi:\n"
 "%1"
 
-#: src/browser.py:444
+#: src/browser.py:454
 msgid "Removed %1 objects."
 msgstr "%1 nesne silindi."
 
-#: src/dialogs.py:26 src/dialogs.py:121
+#: src/dialogs.py:26 src/dialogs.py:120
 msgid "%1 Properties"
 msgstr "%1 Özellikleri"
 
@@ -111,7 +111,7 @@ msgstr "%1 Özellikleri"
 msgid "Add New Domain"
 msgstr "Yeni Alanadı Ekle"
 
-#: src/dialogs.py:38 src/dialogs.py:144
+#: src/dialogs.py:38 src/dialogs.py:148
 msgid "Label:"
 msgstr "Etiket:"
 
@@ -131,29 +131,49 @@ msgstr "Kullanıcı:"
 msgid "Bind Password:"
 msgstr "Parola:"
 
-#: src/dialogs.py:123
-msgid "New Directory"
-msgstr "Yeni Dizin"
+#: src/dialogs.py:122
+msgid "New %1"
+msgstr ""
 
 #: src/dialogs.py:133
 msgid "DN:"
 msgstr "DN:"
 
-#: src/dialogs.py:139
+#: src/dialogs.py:135
+msgid "Parent DN:"
+msgstr "Ana DN:"
+
+#: src/dialogs.py:142
 msgid "Name:"
 msgstr "İsim:"
 
-#: src/domain.py:122
+#: src/dialogs.py:177
+msgid "Computer"
+msgstr "Bilgisayar"
+
+#: src/dialogs.py:179
+msgid "Unit"
+msgstr "Birim"
+
+#: src/dialogs.py:181
+msgid "Directory"
+msgstr "Dizin"
+
+#: src/dialogs.py:183
+msgid "Account"
+msgstr "Hesap"
+
+#: src/domain.py:127
 msgid "Not a valid Connection instance."
-msgstr ""
+msgstr "Geçerli bir bağlantı değil."
 
-#: src/domain.py:158
+#: src/domain.py:163
 msgid "Domain configuration file is missing."
-msgstr ""
+msgstr "Alanadı ayar dosyası kayıp."
 
-#: src/domain.py:162
+#: src/domain.py:167
 msgid "Domain configuration file has syntax errors."
-msgstr ""
+msgstr "Alanadı ayar dosyasında sözdizimi hatası var."
 
 #: src/lider.py:25
 msgid "Pardus Management Console"

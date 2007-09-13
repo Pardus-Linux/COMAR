@@ -52,16 +52,16 @@ class MainWindow(KMainWindow):
         self.tab = QTabWidget(splitter)
         self.tab.setMinimumSize(150, 100)
         
-        self.computers = browser.ObjectList(self.tab, self)
+        self.computers = browser.ObjectList(self.tab, self, "computer")
         self.tab.addTab(self.computers, i18n("Computers"))
         
-        self.units = browser.ObjectList(self.tab, self)
+        self.units = browser.ObjectList(self.tab, self, "unit")
         self.tab.addTab(self.units, i18n("Units"))
         
-        self.users = browser.ObjectList(self.tab, self)
+        self.users = browser.ObjectList(self.tab, self, "user")
         self.tab.addTab(self.users, i18n("Users"))
         
-        self.groups = browser.ObjectList(self.tab, self)
+        self.groups = browser.ObjectList(self.tab, self, "group")
         self.tab.addTab(self.groups, i18n("Groups"))
         
         splitter.setSizes([200, 400])

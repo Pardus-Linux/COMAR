@@ -16,6 +16,8 @@ import piksemel
 import ldap
 import ldap.modlist
 
+import ldapmodel
+
 
 LDAPCritical = (
     ldap.ADMINLIMIT_EXCEEDED,
@@ -96,6 +98,9 @@ class Connection:
     
     def modify(self, dn, old, new):
         self.ldap.modify_s(dn, ldap.modlist.modifyModlist(old, new))
+    
+    def rename(self, old, new):
+        self.ldap.modrdn_s(old, new)
 
 
 class DomainXMLParseError(Exception):
@@ -176,3 +181,12 @@ class DomainConfig:
                     bind_password = ""
                 connection = Connection(label, host, base_dn, bind_dn, bind_password)
                 self.connections.append(connection)
+
+
+class ComputerModel(ldapmodel.LdapClass):
+    entries = (
+        ("name", "cn", str, None),
+        ("type", "objectClass", list, []),
+    )
+
+

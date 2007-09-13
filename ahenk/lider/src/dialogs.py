@@ -182,3 +182,79 @@ class DirectoryDialog(KDialog):
     
     def reject(self):
         KDialog.reject(self)
+
+
+class ComputerDialog(KDialog):
+    """Computer attributes dialog."""
+    
+    def __init__(self, parent, dn, model=None):
+        KDialog.__init__(self, parent)
+        self.dn = dn
+        self.model = model
+        
+        if model:
+            self.setCaption(i18n("%1 Properties").arg(model.name))
+        else:
+            self.setCaption(i18n("New Computer"))
+        
+        self.resize(320, 120)
+        
+        vb = QVBoxLayout(self, 6)
+        vb.setMargin(12)
+        
+        grid = QGridLayout(1, 2, 6)
+        vb.addLayout(grid)
+        
+        # DN
+        lab = QLabel(i18n("DN:"), self)
+        if not self.model:
+            lab.setText(i18n("Parent DN:"))
+        grid.addWidget(lab, 0, 0, Qt.AlignRight)
+        self.w_dn = QLineEdit(self)
+        self.w_dn.setEnabled(False)
+        grid.addWidget(self.w_dn, 0, 1)
+        
+        # CN
+        lab = QLabel(i18n("Name:"), self)
+        grid.addWidget(lab, 1, 0, Qt.AlignRight)
+        self.w_cn = QLineEdit(self)
+        grid.addWidget(self.w_cn, 1, 1)
+        
+        lay = QHBoxLayout()
+        vb.addLayout(lay)
+        lay.setMargin(3)
+        lay.setSpacing(12)
+        
+        but = QPushButton(getIconSet("apply", KIcon.Small), i18n("Apply"), self)
+        lay.addWidget(but)
+        self.connect(but, SIGNAL("clicked()"), self.accept)
+        
+        but = QPushButton(getIconSet("cancel", KIcon.Small), i18n("Cancel"), self)
+        lay.addWidget(but)
+        self.connect(but, SIGNAL("clicked()"), self.reject)
+        
+        self.useValues(dn, model)
+    
+    def isModified(self):
+        return self.w_cn.isModified()
+    
+    def useValues(self, dn, model):
+        self.w_dn.setText(dn)
+        if model and dn.startswith("cn"):
+            self.w_cn.setText(model.name)
+    
+    def setValues(self):
+        self.dn = str(self.w_dn.text())
+        if not self.model:
+            self.model = domain.ComputerModel()
+            self.model.type.append("pardusComputer")
+            self.model.type.append("device")
+            self.model.type.append("top")
+        self.model.name = str(self.w_cn.text())
+    
+    def accept(self):
+        self.setValues()
+        KDialog.accept(self)
+    
+    def reject(self):
+        KDialog.reject(self)

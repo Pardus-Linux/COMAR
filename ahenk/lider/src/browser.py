@@ -178,14 +178,15 @@ class Browser(KListView):
                     self.window.showError(e.args[0]["desc"])
             else:
                 for computer in result:
-                    dn = computer[0]
-                    label = unicode(computer[1]["cn"][0])
-                    self.window.computers.addUnit(dn, label, "computer")
+                    dn, attrs = computer
+                    model = domain.ComputerModel(attrs)
+                    ComputerItem(self.window.computers, self.window, dn, model)
                 self.window.tab.setTabLabel(self.window.computers, i18n("Computers (%1)").arg(len(result)))
                 
                 show_tab = self.window.computers
                 object_len = len(result)
         
+        """
         self.window.units.clear()
         item = self.selectedItem()
         if item and isinstance(item.parent(), BrowserItem):
@@ -200,7 +201,7 @@ class Browser(KListView):
                 for computer in result:
                     dn = computer[0]
                     label = unicode(computer[1]["ou"][0])
-                    self.window.units.addUnit(dn, label, "unit")
+                    self.window.units.addUnit(dn, label)
                 self.window.tab.setTabLabel(self.window.units, i18n("Units (%1)").arg(len(result)))
                 if len(result) > object_len:
                     show_tab = self.window.units
@@ -220,7 +221,7 @@ class Browser(KListView):
                 for computer in result:
                     dn = computer[0]
                     label = unicode(computer[1]["cn"][0])
-                    self.window.users.addUnit(dn, label, "user")
+                    self.window.users.addUnit(dn, label)
                 self.window.tab.setTabLabel(self.window.users, i18n("Users (%1)").arg(len(result)))
                 if len(result) > object_len:
                     show_tab = self.window.users
@@ -240,11 +241,12 @@ class Browser(KListView):
                 for computer in result:
                     dn = computer[0]
                     label = unicode(computer[1]["cn"][0])
-                    self.window.groups.addUnit(dn, label, "group")
+                    self.window.groups.addUnit(dn, label)
                 self.window.tab.setTabLabel(self.window.groups, i18n("Groups (%1)").arg(len(result)))
                 if len(result) > object_len:
                     show_tab = self.window.groups
                     object_len = len(result)
+        """
         
         self.window.tab.showPage(show_tab)
 
@@ -383,7 +385,7 @@ class BrowserItem(QListViewItem):
 
 
 class ObjectList(KListView):
-    def __init__(self, parent, window):
+    def __init__(self, parent, window, object_type):
         KListView.__init__(self, parent)
         self.addColumn(i18n("Name"))
         self.addColumn(i18n("Description"))
@@ -392,23 +394,49 @@ class ObjectList(KListView):
         self.setRootIsDecorated(False)
         self.setSelectionMode(QListView.Extended)
         self.window = window
+        self.type = object_type
         
-        self.menu = QPopupMenu(self)
-        self.menu.insertItem(getIconSet("remove", KIcon.Small), i18n("&Remove"), self.slotRemove)
-        self.menu.insertSeparator()
-        self.menu.insertItem(getIconSet("configure", KIcon.Small), i18n("&Configuration"), self.slotProperties)
+        self.menu_item = QPopupMenu(self)
+        self.menu_item.insertItem(getIconSet("remove", KIcon.Small), i18n("&Remove"), self.slotRemove)
+        self.menu_item.insertSeparator()
+        self.menu_item.insertItem(getIconSet("configure", KIcon.Small), i18n("&Configuration"), self.slotProperties)
+        
+        self.menu_blank = QPopupMenu(self)
+        self.menu_blank.insertItem(getIconSet("file_new", KIcon.Small), i18n("&New"), self.slotNewItem)
         
         self.connect(self, SIGNAL("contextMenuRequested(QListViewItem*, const QPoint&, int)"), self.slotPopup)
     
-    def addUnit(self, dn, label, type):
-        ObjectListItem(self, self.window, dn, label, type)
-    
     def slotPopup(self, item, point, col):
+        browser = self.window.browser
+        selected = browser.selectedItem()
+        if not selected or not isinstance(selected.parent(), BrowserItem):
+            return
         if item:
-            self.menu.exec_loop(point)
+            self.menu_item.exec_loop(point)
+        else:
+            self.menu_blank.exec_loop(point)
+    
+    def slotNewItem(self):
+        browser = self.window.browser
+        connection = browser.selectedItem().connection
+        dn = browser.selectedItem().dn
+        if self.type == "computer":
+            cd = ComputerDialog(self.window, dn)
+            if cd.exec_loop():
+                attrs = cd.model.toEntry()
+                dn = "cn=%s, %s" % (cd.model.name, cd.dn)
+                connection.add(dn, attrs)
+                browser.showObjects()
     
     def slotProperties(self):
-        pass
+        browser = self.window.browser
+        connection = browser.selectedItem().connection
+        item = self.selectedItems()[0]
+        if self.type == "computer":
+            cd = ComputerDialog(self.window, item.dn, item.model)
+            if cd.exec_loop():
+                connection.rename(cd.dn, "cn=%s" % cd.model.name)
+                browser.showObjects()
     
     def slotRemove(self):
         browser = self.window.browser
@@ -446,15 +474,24 @@ class ObjectList(KListView):
 
 
 class ObjectListItem(KListViewItem):
-    def __init__(self, parent, window, dn, label, type):
+    def __init__(self, parent, window, dn, label, item_type):
         KListViewItem.__init__(self, parent, label)
         self.dn = dn
         self.label = label
-        if type == "computer":
+        if item_type == "computer":
             self.setPixmap(0, getIcon("krdc", KIcon.Small))
-        elif type == "user":
+        elif item_type == "user":
             self.setPixmap(0, getIcon("user", KIcon.Small))
-        elif type == "group":
+        elif item_type == "group":
             self.setPixmap(0, getIcon("kontact_contacts", KIcon.Small))
-        elif type == "unit":
+        elif item_type == "unit":
             self.setPixmap(0, getIcon("server", KIcon.Small))
+
+class ComputerItem(KListViewItem):
+    def __init__(self, parent, window, dn, model):
+        KListViewItem.__init__(self, parent)
+        self.setPixmap(0, getIcon("krdc", KIcon.Small))
+        self.window = window
+        self.dn = dn
+        self.model = model
+        self.setText(0, model.name)

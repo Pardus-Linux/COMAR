@@ -23,7 +23,7 @@ class LdapClass:
                 if valuetype == int:
                     val = int(value[0])
                 elif valuetype == str:
-                    val = unicode(value[0])
+                    val = str(value[0])
                 elif valuetype == set:
                     val = set(value)
                 else:
@@ -32,12 +32,14 @@ class LdapClass:
                 val = default
             setattr(self, varname, val)
     
-    def toEntry(self):
+    def toEntry(self, exclude=[]):
         """  Reads attributes from entries to a list'attr' 
              If the attribute type is int type conversion is made to str    
         """
         attr = {}
         for item in self.entries:
+            if item[0] in exclude:
+                continue
             val = getattr(self, item[0])
             if item[2] == int:
                 val = [str(val)]

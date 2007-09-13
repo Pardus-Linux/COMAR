@@ -108,94 +108,18 @@ class DomainDialog(KDialog):
         KDialog.reject(self)
 
 
-class DirectoryDialog(KDialog):
-    """Directory attributes dialog."""
+class ObjectDialog(KDialog):
+    """Directory object attributes dialog."""
     
-    def __init__(self, parent, dn, dc="", o=""):
-        KDialog.__init__(self, parent)
-        self.dn = dn
-        self.dc = dc
-        self.o = o
-        
-        if dc:
-            self.setCaption(i18n("%1 Properties").arg(dc))
-        else:
-            self.setCaption(i18n("New Directory"))
-        
-        self.resize(320, 120)
-        
-        vb = QVBoxLayout(self, 6)
-        vb.setMargin(12)
-        
-        grid = QGridLayout(1, 2, 6)
-        vb.addLayout(grid)
-        
-        lab = QLabel(i18n("DN:"), self)
-        grid.addWidget(lab, 0, 0, Qt.AlignRight)
-        self.w_dn = QLineEdit(self)
-        self.w_dn.setEnabled(False)
-        grid.addWidget(self.w_dn, 0, 1)
-        
-        lab = QLabel(i18n("Name:"), self)
-        grid.addWidget(lab, 1, 0, Qt.AlignRight)
-        self.w_dc = QLineEdit(self)
-        grid.addWidget(self.w_dc, 1, 1)
-        
-        lab = QLabel(i18n("Label:"), self)
-        grid.addWidget(lab, 2, 0, Qt.AlignRight)
-        self.w_o = QLineEdit(self)
-        grid.addWidget(self.w_o, 2, 1)
-        
-        lay = QHBoxLayout()
-        vb.addLayout(lay)
-        lay.setMargin(3)
-        lay.setSpacing(12)
-        
-        but = QPushButton(getIconSet("apply", KIcon.Small), i18n("Apply"), self)
-        lay.addWidget(but)
-        self.connect(but, SIGNAL("clicked()"), self.accept)
-        
-        but = QPushButton(getIconSet("cancel", KIcon.Small), i18n("Cancel"), self)
-        lay.addWidget(but)
-        self.connect(but, SIGNAL("clicked()"), self.reject)
-        
-        if dc:
-            self.w_dc.setEnabled(False)
-        self.useValues(dn, dc, o)
-    
-    def isModified(self):
-        return self.w_dc.isModified()
-    
-    def useValues(self, dn, dc, o):
-        self.w_dn.setText(dn)
-        self.w_dc.setText(dc)
-        self.w_o.setText(unicode(o))
-    
-    def setValues(self):
-        self.dn = self.w_dn.text()
-        self.dc = self.w_dc.text()
-        self.o = unicode(self.w_o.text())
-    
-    def accept(self):
-        self.setValues()
-        KDialog.accept(self)
-    
-    def reject(self):
-        KDialog.reject(self)
-
-
-class ComputerDialog(KDialog):
-    """Computer attributes dialog."""
-    
-    def __init__(self, parent, dn, model=None):
+    def __init__(self, parent, dn, model):
         KDialog.__init__(self, parent)
         self.dn = dn
         self.model = model
         
-        if model:
-            self.setCaption(i18n("%1 Properties").arg(model.name))
+        if model.name:
+            self.setCaption(i18n("%1 Properties").arg(self.objectLabel()))
         else:
-            self.setCaption(i18n("New Computer"))
+            self.setCaption(i18n("New %1").arg(self.objectLabel()))
         
         self.resize(320, 120)
         
@@ -207,18 +131,28 @@ class ComputerDialog(KDialog):
         
         # DN
         lab = QLabel(i18n("DN:"), self)
-        if not self.model:
+        if not self.model.name:
             lab.setText(i18n("Parent DN:"))
         grid.addWidget(lab, 0, 0, Qt.AlignRight)
         self.w_dn = QLineEdit(self)
         self.w_dn.setEnabled(False)
         grid.addWidget(self.w_dn, 0, 1)
         
-        # CN
+        # Name
         lab = QLabel(i18n("Name:"), self)
         grid.addWidget(lab, 1, 0, Qt.AlignRight)
-        self.w_cn = QLineEdit(self)
-        grid.addWidget(self.w_cn, 1, 1)
+        self.w_name = QLineEdit(self)
+        grid.addWidget(self.w_name, 1, 1)
+        
+        # Label
+        lab = QLabel(i18n("Label:"), self)
+        grid.addWidget(lab, 2, 0, Qt.AlignRight)
+        self.w_label = QLineEdit(self)
+        grid.addWidget(self.w_label, 2, 1)
+        
+        if "label" not in self.model.__dict__:
+            lab.hide()
+            self.w_label.hide()
         
         lay = QHBoxLayout()
         vb.addLayout(lay)
@@ -233,24 +167,54 @@ class ComputerDialog(KDialog):
         lay.addWidget(but)
         self.connect(but, SIGNAL("clicked()"), self.reject)
         
+        if "organization" in self.model.type and self.model.name:
+            self.w_name.setEnabled(False)
+        
         self.useValues(dn, model)
     
+    def objectLabel(self):
+        if "pardusComputer" in self.model.type:
+            return i18n("Computer")
+        elif "organizationalUnit" in self.model.type:
+            return i18n("Unit")
+        elif "organization" in self.model.type:
+            return i18n("Directory")
+        elif "posixAccount" in self.model.type:
+            return i18n("Account")
+    
+    def objectName(self, name=None):
+        if not name:
+            name = self.model.name
+        if "pardusComputer" in self.model.type:
+            return "cn=%s" % name
+        elif "organizationalUnit" in self.model.type:
+            return "ou=%s" % name
+        elif "organization" in self.model.type:
+            return "dc=%s" % name
+        elif "posixAccount" in self.model.type:
+            return "uid=%s" % name
+    
+    def objectDN(self, name=None):
+        if not name:
+            name = self.model.name
+        return "%s,%s" % (self.objectName(name), self.dn)
+    
     def isModified(self):
-        return self.w_cn.isModified()
+        return True
     
     def useValues(self, dn, model):
         self.w_dn.setText(dn)
-        if model and dn.startswith("cn"):
-            self.w_cn.setText(model.name)
+        if model:
+            self.w_name.setText(model.name)
+            if "label" in self.model.__dict__:
+                self.w_label.setText(unicode(model.label))
     
     def setValues(self):
-        self.dn = str(self.w_dn.text())
-        if not self.model:
-            self.model = domain.ComputerModel()
-            self.model.type.append("pardusComputer")
-            self.model.type.append("device")
-            self.model.type.append("top")
-        self.model.name = str(self.w_cn.text())
+        if not self.model.name:
+            self.dn = self.objectDN(self.w_name.text())
+        self.model.name = str(self.w_name.text())
+        if "label" in self.model.__dict__:
+            self.model.label = str(self.w_label.text())
     
     def accept(self):
         self.setValues()

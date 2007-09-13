@@ -7,6 +7,8 @@
 # option) any later version. Please read the COPYING file.
 #
 
+import copy
+
 from qt import *
 from kdeui import *
 from kdecore import *
@@ -33,7 +35,7 @@ class Browser(KListView):
         self.menu_domain.insertSeparator()
         self.menu_domain.insertItem(getIconSet("remove", KIcon.Small), i18n("&Remove"), self.slotRemove)
         self.menu_domain.insertSeparator()
-        self.menu_domain.insertItem(getIconSet("configure", KIcon.Small), i18n("&Configuration"), self.slotProperties)
+        self.menu_domain.insertItem(getIconSet("configure", KIcon.Small), i18n("&Configure"), self.slotConfigure)
         
         self.menu_directory = QPopupMenu(self)
         self.menu_directory.insertItem(getIconSet("folder", KIcon.Small), i18n("&New Directory"), self.slotNewDirectory)
@@ -56,7 +58,7 @@ class Browser(KListView):
         for connection in dc.connections:
             label = connection.label
             dn = connection.base_dn
-            BrowserItem(self, self.window, dn, label, None, connection)
+            BrowserItem(self, self.window, dn, None, connection)
     
     def slotPopup(self, item, point, button):
         if item:
@@ -65,7 +67,7 @@ class Browser(KListView):
             else:
                 self.menu_domain.exec_loop(point)
     
-    def slotProperties(self):
+    def slotConfigure(self):
         item = self.selectedItem()
         dd = DomainDialog(self, item.connection)
         if dd.exec_loop():
@@ -78,53 +80,24 @@ class Browser(KListView):
     
     def slotDirectoryProperties(self):
         item = self.selectedItem()
-        dd = DirectoryDialog(self, item.dn, item.dc, item.label)
-        old_attrs = {
-            "o": item.label
-        }
-        if dd.exec_loop():
-            dn = str(dd.dn)
-            dc = str(dd.dc)
-            o = str(dd.o)
-            new_attrs = {
-                "o": [o],
-            }
-            connection = item.connection
-            try:
-                connection.modify(dn, old_attrs, new_attrs)
-            except ldap.LDAPError, e:
-                if e.__class__ in domain.LDAPCritical:
-                    item.disableDomain()
-                else:
-                    self.window.showError(e.args[0]["desc"])
-            else:
-                item.parent().collapseNodes()
-                item.parent().expandNodes()
+        connection = item.connection
+        model_old = copy.deepcopy(item.model)
+        od = ObjectDialog(self.window, item.dn, item.model)
+        if od.exec_loop():
+            model_new = od.model
+            connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"]))
+            item.parent().collapseNodes()
+            item.parent().expandNodes()
     
     def slotNewDirectory(self):
         item = self.selectedItem()
-        dd = DirectoryDialog(self, item.dn, "", "")
-        if dd.exec_loop():
-            dn = str(dd.dn)
-            dc = str(dd.dc)
-            o = str(dd.o)
-            attrs = {
-                "objectclass": ["dcObject", "organization"],
-                "dc": [dc],
-                "o": [o],
-            }
-            connection = item.connection
-            try:
-                connection.add("dc=%s,%s" % (dc, dn), attrs)
-            except ldap.LDAPError, e:
-                if e.__class__ in domain.LDAPCritical:
-                    item.disableDomain()
-                else:
-                    self.window.showError(e.args[0]["desc"])
-            else:
-                if item.isOpen():
-                    item.collapseNodes()
-                item.expandNodes()
+        connection = item.connection
+        od = ObjectDialog(self.window, item.dn, domain.DirectoryModel())
+        if od.exec_loop():
+            connection.add(od.dn, od.model.toEntry())
+            if item.isOpen():
+                item.collapseNodes()
+            item.expandNodes()
     
     def slotRemoveDirectory(self):
         item = self.selectedItem()
@@ -186,7 +159,6 @@ class Browser(KListView):
                 show_tab = self.window.computers
                 object_len = len(result)
         
-        """
         self.window.units.clear()
         item = self.selectedItem()
         if item and isinstance(item.parent(), BrowserItem):
@@ -199,9 +171,9 @@ class Browser(KListView):
                     self.window.showError(e.args[0]["desc"])
             else:
                 for computer in result:
-                    dn = computer[0]
-                    label = unicode(computer[1]["ou"][0])
-                    self.window.units.addUnit(dn, label)
+                    dn, attrs = computer
+                    model = domain.UnitModel(attrs)
+                    ComputerItem(self.window.units, self.window, dn, model)
                 self.window.tab.setTabLabel(self.window.units, i18n("Units (%1)").arg(len(result)))
                 if len(result) > object_len:
                     show_tab = self.window.units
@@ -219,14 +191,15 @@ class Browser(KListView):
                     self.window.showError(e.args[0]["desc"])
             else:
                 for computer in result:
-                    dn = computer[0]
-                    label = unicode(computer[1]["cn"][0])
-                    self.window.users.addUnit(dn, label)
+                    dn, attrs = computer
+                    model = domain.UserModel(attrs)
+                    ComputerItem(self.window.users, self.window, dn, model)
                 self.window.tab.setTabLabel(self.window.users, i18n("Users (%1)").arg(len(result)))
                 if len(result) > object_len:
                     show_tab = self.window.users
                     object_len = len(result)
         
+        """
         self.window.groups.clear()
         item = self.selectedItem()
         if item and isinstance(item.parent(), BrowserItem):
@@ -256,15 +229,17 @@ class BrowserItem(QListViewItem):
        Requires a parent node object, window object and DN for the node.
        Non-root nodes require a label, root nodes require a connection object."""
     
-    def __init__(self, parent, window, dn, label=None, dc=None, connection=None):
+    def __init__(self, parent, window, dn, model, connection=None):
         self.window = window
         self.dn = dn
-        self.dc = dc
+        self.model = model
         if connection:
             self.connection = connection
         else:
             self.connection = parent.connection
-        self.label = unicode(label)
+        self.label = ""
+        if self.model:
+            self.label = unicode(model.label)
         QListViewItem.__init__(self, parent, self.label)
         self.setExpandable(True)
         self.initObject()
@@ -366,8 +341,8 @@ class BrowserItem(QListViewItem):
             self.clearNodes()
             for organization in organizations:
                 dn, attrs = organization
-                label = unicode(attrs["o"][0])
-                BrowserItem(self, self.window, dn, label, attrs["dc"][0])
+                model = domain.DirectoryModel(attrs)
+                BrowserItem(self, self.window, dn, model)
             
             if not len(organizations):
                 self.setOpen(False)
@@ -421,22 +396,29 @@ class ObjectList(KListView):
         connection = browser.selectedItem().connection
         dn = browser.selectedItem().dn
         if self.type == "computer":
-            cd = ComputerDialog(self.window, dn)
-            if cd.exec_loop():
-                attrs = cd.model.toEntry()
-                dn = "cn=%s, %s" % (cd.model.name, cd.dn)
-                connection.add(dn, attrs)
-                browser.showObjects()
+            model = domain.ComputerModel()
+        elif self.type == "unit":
+            model = domain.UnitModel()
+        elif self.type == "user":
+            model = domain.UserModel()
+        od = ObjectDialog(self.window, dn, model)
+        if od.exec_loop():
+            connection.add(od.dn, od.model.toEntry())
+            browser.showObjects()
     
     def slotProperties(self):
         browser = self.window.browser
         connection = browser.selectedItem().connection
         item = self.selectedItems()[0]
-        if self.type == "computer":
-            cd = ComputerDialog(self.window, item.dn, item.model)
-            if cd.exec_loop():
-                connection.rename(cd.dn, "cn=%s" % cd.model.name)
-                browser.showObjects()
+        model_old = copy.deepcopy(item.model)
+        od = ObjectDialog(self.window, item.dn, item.model)
+        if od.exec_loop():
+            model_new = od.model
+            connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"]))
+            if model_new.name != model_old.name:
+                new_name = od.objectName()
+                connection.rename(item.dn, new_name)
+            browser.showObjects()
     
     def slotRemove(self):
         browser = self.window.browser

@@ -183,10 +183,28 @@ class DomainConfig:
                 self.connections.append(connection)
 
 
-class ComputerModel(ldapmodel.LdapClass):
+class DirectoryModel(ldapmodel.LdapClass):
     entries = (
-        ("name", "cn", str, None),
-        ("type", "objectClass", list, []),
+        ("name", "dc", str, ""),
+        ("label", "o", str, ""),
+        ("type", "objectClass", list, ["dcObject", "organization"]),
     )
 
+class ComputerModel(ldapmodel.LdapClass):
+    entries = (
+        ("name", "cn", str, ""),
+        ("type", "objectClass", list, ["top", "device", "pardusComputer"]),
+    )
 
+class UnitModel(ldapmodel.LdapClass):
+    entries = (
+        ("name", "ou", str, ""),
+        ("type", "objectClass", list, ["top", "organizationalUnit"]),
+    )
+
+class UserModel(ldapmodel.LdapClass):
+    entries = (
+        ("name", "uid", str, ""),
+        ("label", "cn", str, ""),
+        ("type", "objectClass", list, ["top", "account", "posixAccount"]),
+    )

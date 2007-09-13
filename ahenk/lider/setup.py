@@ -57,7 +57,7 @@ kdedistutils.setup(
     min_qt_version = "3.3.5",
     license = "GPL",
     application_data = ["src/browser.py", "src/dialogs.py", "src/domain.py", "src/lider.py",
-                        "src/mainwindow.py", "src/utility.py", "ldapmodel.py"],
+                        "src/mainwindow.py", "src/utility.py", "src/ldapmodel.py"],
     executable_links = [("lider", "lider.py")],
     i18n = ("po", ["src/"]),
     )

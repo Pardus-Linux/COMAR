@@ -407,8 +407,9 @@ class ObjectList(KListView):
     
     def slotNewItem(self):
         browser = self.window.browser
-        connection = browser.selectedItem().connection
-        dn = browser.selectedItem().dn
+        item = browser.selectedItem()
+        connection = item.connection
+        dn = item.dn
         if self.type == "computer":
             model = domain.ComputerModel()
         elif self.type == "unit":

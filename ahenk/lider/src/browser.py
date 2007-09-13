@@ -85,19 +85,33 @@ class Browser(KListView):
         od = ObjectDialog(self.window, item.dn, item.model)
         if od.exec_loop():
             model_new = od.model
-            connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"]))
-            item.parent().collapseNodes()
-            item.parent().expandNodes()
+            try:
+                connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"]))
+            except ldap.LDAPError, e:
+                if e.__class__ in domain.LDAPCritical:
+                    item.disableDomain()
+                else:
+                    self.window.showError(e.args[0]["desc"])
+            else:
+                item.parent().collapseNodes()
+                item.parent().expandNodes()
     
     def slotNewDirectory(self):
         item = self.selectedItem()
         connection = item.connection
         od = ObjectDialog(self.window, item.dn, domain.DirectoryModel())
         if od.exec_loop():
-            connection.add(od.dn, od.model.toEntry())
-            if item.isOpen():
-                item.collapseNodes()
-            item.expandNodes()
+            try:
+                connection.add(od.dn, od.model.toEntry())
+            except ldap.LDAPError, e:
+                if e.__class__ in domain.LDAPCritical:
+                    item.disableDomain()
+                else:
+                    self.window.showError(e.args[0]["desc"])
+            else:
+                if item.isOpen():
+                    item.collapseNodes()
+                item.expandNodes()
     
     def slotRemoveDirectory(self):
         item = self.selectedItem()
@@ -403,8 +417,15 @@ class ObjectList(KListView):
             model = domain.UserModel()
         od = ObjectDialog(self.window, dn, model)
         if od.exec_loop():
-            connection.add(od.dn, od.model.toEntry())
-            browser.showObjects()
+            try:
+                connection.add(od.dn, od.model.toEntry())
+            except ldap.LDAPError, e:
+                if e.__class__ in domain.LDAPCritical:
+                    item.disableDomain()
+                else:
+                    self.window.showError(e.args[0]["desc"])
+            else:
+                browser.showObjects()
     
     def slotProperties(self):
         browser = self.window.browser
@@ -414,11 +435,18 @@ class ObjectList(KListView):
         od = ObjectDialog(self.window, item.dn, item.model)
         if od.exec_loop():
             model_new = od.model
-            connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"]))
-            if model_new.name != model_old.name:
-                new_name = od.objectName()
-                connection.rename(item.dn, new_name)
-            browser.showObjects()
+            try:
+                connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"]))
+                if model_new.name != model_old.name:
+                    new_name = od.objectName()
+                    connection.rename(item.dn, new_name)
+            except ldap.LDAPError, e:
+                if e.__class__ in domain.LDAPCritical:
+                    item.disableDomain()
+                else:
+                    self.window.showError(e.args[0]["desc"])
+            else:
+                browser.showObjects()
     
     def slotRemove(self):
         browser = self.window.browser

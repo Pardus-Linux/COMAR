@@ -476,4 +476,7 @@ class ComputerItem(KListViewItem):
         self.window = window
         self.dn = dn
         self.model = model
-        self.setText(0, model.name)
+        if "label" in model.__dict__:
+            self.setText(0, unicode(model.label))
+        else:
+            self.setText(0, model.name)

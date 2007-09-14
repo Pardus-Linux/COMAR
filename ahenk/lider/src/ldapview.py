@@ -41,12 +41,15 @@ class labelWidget(QLineEdit):
 class passwordWidget(QLineEdit):
     def __init__(self, parent, mode):
         QLineEdit.__init__(self, parent)
+        self.setEchoMode(QLineEdit.Password)
         self.mode = mode
+        self.value = ""
     
     def importValue(self, value):
-        self.value = value
-        self.setText("*" * 10)
-        self.clearModified()
+        if value:
+            self.value = value
+            self.setText("*" * 10)
+            self.clearModified()
     
     def exportValue(self):
         if self.isModified():
@@ -62,7 +65,8 @@ class numberWidget(QSpinBox):
         self.mode = mode
     
     def importValue(self, value):
-        self.setValue(int(value))
+        if value:
+            self.setValue(int(value))
     
     def exportValue(self):
         return self.value()

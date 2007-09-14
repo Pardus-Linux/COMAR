@@ -11,13 +11,14 @@ class LdapClass:
     """ Designed for Ldap format for entries of modules of ajan """
     
     def __init__(self, attr={}):
+        self.widgets = []
         self.fromEntry(attr)
     
     def fromEntry(self, attr):
         """ 'entries' is a tuple of tuples in format varname, attrname, valuetype and  default values respectively
             fromEntry  reads attribute names , makes necessary format casts and stores in LDapClass' 'varname' attribute 
         """
-        for varname, attrname, valuetype, default in self.entries:
+        for varname, attrname, valuetype, default, label, widget in self.entries:
             value = attr.get(attrname, None)
             if value:
                 if valuetype == int:
@@ -30,6 +31,7 @@ class LdapClass:
                     val = value
             else:
                 val = default
+            self.widgets.append((varname, label, widget,))
             setattr(self, varname, val)
     
     def toEntry(self, exclude=[]):
@@ -53,7 +55,7 @@ class LdapClass:
     def __str__(self):
         """ overrides method -str() cast- for 'entries's tuples to become a string in wanted format"""
         text = []
-        for varname, attrname, valuetype, default in self.entries:
+        for varname, attrname, valuetype, default, label, widget in self.entries:
             value = getattr(self, varname, "")
             text.append("%s: %s" % (attrname, value))
         return "\n".join(text)

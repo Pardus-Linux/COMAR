@@ -133,26 +133,24 @@ class ObjectDialog(KDialog):
         lab = QLabel(i18n("DN:"), self)
         if not self.model.name:
             lab.setText(i18n("Parent DN:"))
+            self.mode = "new"
+        else:
+            self.mode = "edit"
         grid.addWidget(lab, 0, 0, Qt.AlignRight)
         self.w_dn = QLineEdit(self)
         self.w_dn.setEnabled(False)
         grid.addWidget(self.w_dn, 0, 1)
         
-        # Name
-        lab = QLabel(i18n("Name:"), self)
-        grid.addWidget(lab, 1, 0, Qt.AlignRight)
-        self.w_name = QLineEdit(self)
-        grid.addWidget(self.w_name, 1, 1)
-        
-        # Label
-        lab = QLabel(i18n("Label:"), self)
-        grid.addWidget(lab, 2, 0, Qt.AlignRight)
-        self.w_label = QLineEdit(self)
-        grid.addWidget(self.w_label, 2, 1)
-        
-        if "label" not in self.model.__dict__:
-            lab.hide()
-            self.w_label.hide()
+        row = 0
+        self.widgets = {}
+        for varname, label, widget in self.model.widgets:
+            if not widget:
+                continue
+            lab = QLabel(label, self)
+            grid.addWidget(lab, row + 1, 0, Qt.AlignRight)
+            self.widgets[varname] = widget(self, self.mode)
+            grid.addWidget(self.widgets[varname], row + 1, 1)
+            row += 1
         
         lay = QHBoxLayout()
         vb.addLayout(lay)
@@ -167,20 +165,13 @@ class ObjectDialog(KDialog):
         lay.addWidget(but)
         self.connect(but, SIGNAL("clicked()"), self.reject)
         
-        if "organization" in self.model.type and self.model.name:
-            self.w_name.setEnabled(False)
+        #if "organization" in self.model.type and self.model.name:
+        #    self.w_name.setEnabled(False)
         
-        self.useValues(dn, model)
+        self.setValues()
     
     def objectLabel(self):
-        if "pardusComputer" in self.model.type:
-            return i18n("Computer")
-        elif "organizationalUnit" in self.model.type:
-            return i18n("Unit")
-        elif "organization" in self.model.type:
-            return i18n("Directory")
-        elif "posixAccount" in self.model.type:
-            return i18n("Account")
+        return self.model.object_label
     
     def objectName(self, name=None):
         if not name:
@@ -202,22 +193,20 @@ class ObjectDialog(KDialog):
     def isModified(self):
         return True
     
-    def useValues(self, dn, model):
-        self.w_dn.setText(dn)
-        if model:
-            self.w_name.setText(model.name)
-            if "label" in self.model.__dict__:
-                self.w_label.setText(unicode(model.label))
-    
     def setValues(self):
+        self.w_dn.setText(self.dn)
+        if self.model:
+            for varname, widget in self.widgets.iteritems():
+                widget.importValue(getattr(self.model, varname))
+    
+    def getValues(self):
         if not self.model.name:
             self.dn = self.objectDN(self.w_name.text())
-        self.model.name = str(self.w_name.text())
-        if "label" in self.model.__dict__:
-            self.model.label = str(self.w_label.text())
+        for varname, widget in self.widgets.iteritems():
+            setattr(self.model, varname, widget.exportValue())
     
     def accept(self):
-        self.setValues()
+        self.getValues()
         KDialog.accept(self)
     
     def reject(self):

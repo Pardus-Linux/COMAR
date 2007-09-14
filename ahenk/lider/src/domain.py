@@ -10,8 +10,6 @@
 import os
 import sha
 
-from kdecore import i18n
-
 import piksemel
 import ldap
 import ldap.modlist
@@ -26,6 +24,7 @@ LDAPCritical = (
     ldap.SERVER_DOWN,
 )
 
+i18n = lambda x: x
 
 class Connection:
     """LDAP connection"""

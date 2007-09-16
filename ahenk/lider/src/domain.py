@@ -217,3 +217,12 @@ class UserModel(ldapmodel.LdapClass):
         ("gid", "gidNumber", int, "", i18n("Group ID"), ldapview.numberWidget),
         ("type", "objectClass", list, ["top", "account", "posixAccount"], None, None),
     )
+
+class GroupModel(ldapmodel.LdapClass):
+    object_label = i18n("Group")
+    entries = (
+        ("name", "cn", str, "", i18n("Group Name"), ldapview.labelWidget),
+        ("gid", "gidNumber", int, "", i18n("Group ID"), ldapview.numberWidget),
+        ("members", "memberUid", list, [], i18n("Members"), ldapview.listWidget),
+        ("type", "objectClass", list, ["top", "posixGroup"], None, None),
+    )

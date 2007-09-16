@@ -146,7 +146,7 @@ class ObjectDialog(KDialog):
         for varname, label, widget in self.model.widgets:
             if not widget:
                 continue
-            lab = QLabel(i18n(label), self)
+            lab = QLabel(i18n(label) + ":", self)
             grid.addWidget(lab, row + 1, 0, Qt.AlignRight)
             self.widgets[varname] = widget(self, self.mode)
             grid.addWidget(self.widgets[varname], row + 1, 1)

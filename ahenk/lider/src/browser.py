@@ -213,7 +213,6 @@ class Browser(KListView):
                     show_tab = self.window.users
                     object_len = len(result)
         
-        """
         self.window.groups.clear()
         item = self.selectedItem()
         if item and isinstance(item.parent(), BrowserItem):
@@ -226,14 +225,13 @@ class Browser(KListView):
                     self.window.showError(e.args[0]["desc"])
             else:
                 for computer in result:
-                    dn = computer[0]
-                    label = unicode(computer[1]["cn"][0])
-                    self.window.groups.addUnit(dn, label)
+                    dn, attrs = computer
+                    model = domain.GroupModel(attrs)
+                    ComputerItem(self.window.groups, self.window, dn, model)
                 self.window.tab.setTabLabel(self.window.groups, i18n("Groups (%1)").arg(len(result)))
                 if len(result) > object_len:
                     show_tab = self.window.groups
                     object_len = len(result)
-        """
         
         self.window.tab.showPage(show_tab)
 
@@ -416,6 +414,8 @@ class ObjectList(KListView):
             model = domain.UnitModel()
         elif self.type == "user":
             model = domain.UserModel()
+        elif self.type == "group":
+            model = domain.GroupModel()
         od = ObjectDialog(self.window, dn, model)
         if od.exec_loop():
             try:

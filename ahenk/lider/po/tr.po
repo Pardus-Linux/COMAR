@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-09-15 00:36+0300\n"
+"POT-Creation-Date: 2007-09-16 21:43+0300\n"
 "PO-Revision-Date: 2007-09-12 11:08+0300\n"
 "Last-Translator: Bahadır Kandemir <bahadir@pardus.org.tr>\n"
 "Language-Team: Bahadır Kandemir <bahadir@pardus.org.tr>\n"
@@ -55,19 +55,23 @@ msgstr "Birimler (%1)"
 msgid "Users (%1)"
 msgstr "Kullanıcılar (%1)"
 
-#: src/browser.py:379 src/domain.py:190 src/domain.py:198 src/domain.py:205
+#: src/browser.py:231
+msgid "Groups (%1)"
+msgstr "Gruplar (%1)"
+
+#: src/browser.py:377 src/domain.py:189 src/domain.py:197 src/domain.py:204
 msgid "Name"
 msgstr "İsim"
 
-#: src/browser.py:380
+#: src/browser.py:378
 msgid "Description"
 msgstr "Açıklama"
 
-#: src/browser.py:391
+#: src/browser.py:389
 msgid "&Configuration"
 msgstr "&Seçenekler"
 
-#: src/browser.py:394
+#: src/browser.py:392
 msgid "&New"
 msgstr "&Yeni"
 
@@ -143,65 +147,77 @@ msgstr "DN:"
 msgid "Parent DN:"
 msgstr "Ana DN:"
 
-#: src/domain.py:128
+#: src/domain.py:127
 msgid "Not a valid Connection instance."
 msgstr "Geçerli bir bağlantı değil."
 
-#: src/domain.py:164
+#: src/domain.py:163
 msgid "Domain configuration file is missing."
 msgstr "Alanadı ayar dosyası kayıp."
 
-#: src/domain.py:168
+#: src/domain.py:167
 msgid "Domain configuration file has syntax errors."
 msgstr "Alanadı ayar dosyasında sözdizimi hatası var."
 
-#: src/domain.py:188
+#: src/domain.py:187
 msgid "Directory"
 msgstr "Dizin"
 
-#: src/domain.py:191
+#: src/domain.py:190
 msgid "Label"
 msgstr "Etiket"
 
-#: src/domain.py:196
+#: src/domain.py:195
 msgid "Computer"
 msgstr "Bilgisayar"
 
-#: src/domain.py:203
+#: src/domain.py:202
 msgid "Unit"
 msgstr "Birim"
 
-#: src/domain.py:210
+#: src/domain.py:209
 msgid "User"
 msgstr "Kullanıcı"
 
-#: src/domain.py:212
+#: src/domain.py:211
 msgid "Username"
 msgstr "Kullanıcı Adı"
 
-#: src/domain.py:213
+#: src/domain.py:212
 msgid "Real Name"
 msgstr "Gerçek İsim"
 
-#: src/domain.py:214
+#: src/domain.py:213
 msgid "Password"
 msgstr "Parola"
 
-#: src/domain.py:215
+#: src/domain.py:214
 msgid "Shell"
 msgstr "Kabuk"
 
-#: src/domain.py:216
+#: src/domain.py:215
 msgid "Home"
 msgstr "Ev Dizini"
 
-#: src/domain.py:217
+#: src/domain.py:216
 msgid "User ID"
 msgstr "Kullanıcı No"
 
-#: src/domain.py:218
+#: src/domain.py:217 src/domain.py:225
 msgid "Group ID"
-msgstr "Grupl No"
+msgstr "Grup No"
+
+#: src/domain.py:222
+msgid "Group"
+msgstr "Grup"
+
+#: src/domain.py:224
+msgid "Group Name"
+msgstr "Grup Adı"
+
+#: src/domain.py:226
+msgid "Members"
+msgstr "Üyeler"
 
 #: src/lider.py:25
 msgid "Pardus Management Console"

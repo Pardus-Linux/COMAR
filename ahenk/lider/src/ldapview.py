@@ -15,9 +15,10 @@ from utility import *
 
 
 class nameWidget(QLineEdit):
-    def __init__(self, parent, mode):
+    def __init__(self, parent, mode, options):
         QLineEdit.__init__(self, parent)
         self.mode = mode
+        self.options = options
         if mode == "edit":
             self.setEnabled(False)
     
@@ -29,9 +30,10 @@ class nameWidget(QLineEdit):
 
 
 class labelWidget(QLineEdit):
-    def __init__(self, parent, mode):
+    def __init__(self, parent, mode, options):
         QLineEdit.__init__(self, parent)
         self.mode = mode
+        self.options = options
     
     def importValue(self, value):
         self.setText(unicode(value))
@@ -41,10 +43,11 @@ class labelWidget(QLineEdit):
 
 
 class passwordWidget(QLineEdit):
-    def __init__(self, parent, mode):
+    def __init__(self, parent, mode, options):
         QLineEdit.__init__(self, parent)
         self.setEchoMode(QLineEdit.Password)
         self.mode = mode
+        self.options = options
         self.value = ""
     
     def importValue(self, value):
@@ -56,15 +59,17 @@ class passwordWidget(QLineEdit):
     def exportValue(self):
         if self.isModified():
             self.value = str(self.text())
-        return self.value
+        crypt = self.options["hashMethod"]
+        return crypt(self.value)
 
 
 class numberWidget(QSpinBox):
-    def __init__(self, parent, mode):
+    def __init__(self, parent, mode, options):
         QLineEdit.__init__(self, parent)
         self.setMaxValue(2**16)
         self.setMinValue(0)
         self.mode = mode
+        self.options = options
     
     def importValue(self, value):
         if value:
@@ -110,9 +115,10 @@ class listWidgetEditor(QDialog):
 
 
 class listWidget(QWidget):
-    def __init__(self, parent, mode):
+    def __init__(self, parent, mode, options):
         QWidget.__init__(self, parent)
         self.mode = mode
+        self.options = options
         self.items = []
         
         layout = QHBoxLayout(self, 0)

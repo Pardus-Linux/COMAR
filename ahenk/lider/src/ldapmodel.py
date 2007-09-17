@@ -12,6 +12,7 @@ class LdapClass:
     
     def __init__(self, attr={}):
         self.fields = {}
+        self.options = {}
         self.widgets = []
         self.fromEntry(attr)
     
@@ -19,7 +20,7 @@ class LdapClass:
         """ 'entries' is a tuple of tuples in format varname, attrname, valuetype and  default values respectively
             fromEntry  reads attribute names , makes necessary format casts and stores in LDapClass' 'varname' attribute 
         """
-        for varname, attrname, valuetype, default, label, widget in self.entries:
+        for varname, attrname, valuetype, default, label, widget, options in self.entries:
             value = attr.get(attrname, None)
             if value:
                 if valuetype == int:
@@ -33,6 +34,7 @@ class LdapClass:
             else:
                 val = default
             self.widgets.append((varname, label, widget,))
+            self.options[varname] = options
             self.fields[varname] = val
     
     def toEntry(self, exclude=[]):
@@ -56,7 +58,7 @@ class LdapClass:
     def __str__(self):
         """ overrides method -str() cast- for 'entries's tuples to become a string in wanted format"""
         text = []
-        for varname, attrname, valuetype, default, label, widget in self.entries:
+        for varname, attrname, valuetype, default, label, widget, options in self.entries:
             value = getattr(self, varname, "")
             text.append("%s: %s" % (attrname, value))
         return "\n".join(text)

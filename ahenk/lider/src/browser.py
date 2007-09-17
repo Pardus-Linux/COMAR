@@ -81,7 +81,7 @@ class Browser(KListView):
     def slotDirectoryProperties(self):
         item = self.selectedItem()
         connection = item.connection
-        model_old = copy.deepcopy(item.model)
+        model_old = copy.copy(item.model)
         od = ObjectDialog(self.window, item.dn, item.model)
         if od.exec_loop():
             model_new = od.model
@@ -432,13 +432,13 @@ class ObjectList(KListView):
         browser = self.window.browser
         connection = browser.selectedItem().connection
         item = self.selectedItems()[0]
-        model_old = copy.deepcopy(item.model)
+        model_old = copy.copy(item.model)
         od = ObjectDialog(self.window, item.dn, item.model)
         if od.exec_loop():
             model_new = od.model
             try:
                 connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"]))
-                if model_new.name != model_old.name:
+                if model_new.fields["name"] != model_old.fields["name"]:
                     new_name = od.objectName()
                     connection.rename(item.dn, new_name)
             except ldap.LDAPError, e:

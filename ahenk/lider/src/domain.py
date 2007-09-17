@@ -16,6 +16,7 @@ import ldap.modlist
 
 import ldapmodel
 import ldapview
+import utility
 
 
 LDAPCritical = (
@@ -186,43 +187,43 @@ class DomainConfig:
 class DirectoryModel(ldapmodel.LdapClass):
     object_label = i18n("Directory")
     entries = (
-        ("name", "dc", str, "", i18n("Name"), ldapview.nameWidget),
-        ("label", "o", str, "", i18n("Label"), ldapview.labelWidget),
-        ("type", "objectClass", list, ["dcObject", "organization"], None, None),
+        ("name", "dc", str, "", i18n("Name"), ldapview.nameWidget, {}),
+        ("label", "o", str, "", i18n("Label"), ldapview.labelWidget, {}),
+        ("type", "objectClass", list, ["dcObject", "organization"], None, None, {}),
     )
 
 class ComputerModel(ldapmodel.LdapClass):
     object_label = i18n("Computer")
     entries = (
-        ("name", "cn", str, "", i18n("Name"), ldapview.labelWidget),
-        ("type", "objectClass", list, ["top", "device", "pardusComputer"], None, None),
+        ("name", "cn", str, "", i18n("Name"), ldapview.labelWidget, {}),
+        ("type", "objectClass", list, ["top", "device", "pardusComputer"], None, None, {}),
     )
 
 class UnitModel(ldapmodel.LdapClass):
     object_label = i18n("Unit")
     entries = (
-        ("name", "ou", str, "", i18n("Name"), ldapview.labelWidget),
-        ("type", "objectClass", list, ["top", "organizationalUnit"], None, None),
+        ("name", "ou", str, "", i18n("Name"), ldapview.labelWidget, {}),
+        ("type", "objectClass", list, ["top", "organizationalUnit"], None, None, {}),
     )
 
 class UserModel(ldapmodel.LdapClass):
     object_label = i18n("User")
     entries = (
-        ("name", "uid", str, "", i18n("Username"), ldapview.labelWidget),
-        ("label", "cn", str, "", i18n("Real Name"), ldapview.labelWidget),
-        ("password", "userPassword", str, "", i18n("Password"), ldapview.passwordWidget),
-        ("shell", "loginShell", str, "", i18n("Shell"), ldapview.labelWidget),
-        ("home", "homeDirectory", str, "", i18n("Home"), ldapview.labelWidget),
-        ("uid", "uidNumber", int, "", i18n("User ID"), ldapview.numberWidget),
-        ("gid", "gidNumber", int, "", i18n("Group ID"), ldapview.numberWidget),
-        ("type", "objectClass", list, ["top", "account", "posixAccount"], None, None),
+        ("name", "uid", str, "", i18n("Username"), ldapview.labelWidget, {}),
+        ("label", "cn", str, "", i18n("Real Name"), ldapview.labelWidget, {}),
+        ("password", "userPassword", str, "", i18n("Password"), ldapview.passwordWidget, {"hashMethod": utility.shadowCrypt}),
+        ("shell", "loginShell", str, "", i18n("Shell"), ldapview.labelWidget, {}),
+        ("home", "homeDirectory", str, "", i18n("Home"), ldapview.labelWidget, {}),
+        ("uid", "uidNumber", int, "", i18n("User ID"), ldapview.numberWidget, {}),
+        ("gid", "gidNumber", int, "", i18n("Group ID"), ldapview.numberWidget, {}),
+        ("type", "objectClass", list, ["top", "account", "posixAccount"], None, None, {}),
     )
 
 class GroupModel(ldapmodel.LdapClass):
     object_label = i18n("Group")
     entries = (
-        ("name", "cn", str, "", i18n("Group Name"), ldapview.labelWidget),
-        ("gid", "gidNumber", int, "", i18n("Group ID"), ldapview.numberWidget),
-        ("members", "memberUid", list, [], i18n("Members"), ldapview.listWidget),
-        ("type", "objectClass", list, ["top", "posixGroup"], None, None),
+        ("name", "cn", str, "", i18n("Group Name"), ldapview.labelWidget, {}),
+        ("gid", "gidNumber", int, "", i18n("Group ID"), ldapview.numberWidget, {}),
+        ("members", "memberUid", list, [], i18n("Members"), ldapview.listWidget, {}),
+        ("type", "objectClass", list, ["top", "posixGroup"], None, None, {}),
     )

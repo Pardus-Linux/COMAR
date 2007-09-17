@@ -148,7 +148,7 @@ class ObjectDialog(KDialog):
                 continue
             lab = QLabel(i18n(label) + ":", self)
             grid.addWidget(lab, row + 1, 0, Qt.AlignRight)
-            self.widgets[varname] = widget(self, self.mode)
+            self.widgets[varname] = widget(self, self.mode, self.model.options[varname])
             grid.addWidget(self.widgets[varname], row + 1, 1)
             row += 1
         
@@ -192,7 +192,7 @@ class ObjectDialog(KDialog):
                 widget.importValue(self.model.fields[varname])
     
     def getValues(self):
-        if not self.model.name:
+        if not self.model.fields["name"]:
             self.dn = self.objectDN(self.w_name.text())
         for varname, widget in self.widgets.iteritems():
             self.model.fields[varname] = widget.exportValue()

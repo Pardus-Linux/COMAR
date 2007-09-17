@@ -11,6 +11,7 @@ class LdapClass:
     """ Designed for Ldap format for entries of modules of ajan """
     
     def __init__(self, attr={}):
+        self.fields = {}
         self.widgets = []
         self.fromEntry(attr)
     
@@ -32,7 +33,7 @@ class LdapClass:
             else:
                 val = default
             self.widgets.append((varname, label, widget,))
-            setattr(self, varname, val)
+            self.fields[varname] = val
     
     def toEntry(self, exclude=[]):
         """  Reads attributes from entries to a list'attr' 
@@ -42,7 +43,7 @@ class LdapClass:
         for item in self.entries:
             if item[0] in exclude:
                 continue
-            val = getattr(self, item[0])
+            val = self.fields[item[0]]
             if item[2] == int:
                 val = [str(val)]
             elif item[2] == str:

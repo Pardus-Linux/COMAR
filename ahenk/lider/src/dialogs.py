@@ -116,7 +116,7 @@ class ObjectDialog(KDialog):
         self.dn = dn
         self.model = model
         
-        if model.name:
+        if model.fields["name"]:
             self.setCaption(i18n("%1 Properties").arg(self.objectLabel()))
         else:
             self.setCaption(i18n("New %1").arg(self.objectLabel()))
@@ -131,7 +131,7 @@ class ObjectDialog(KDialog):
         
         # DN
         lab = QLabel(i18n("DN:"), self)
-        if not self.model.name:
+        if not model.fields["name"]:
             lab.setText(i18n("Parent DN:"))
             self.mode = "new"
         else:
@@ -165,9 +165,6 @@ class ObjectDialog(KDialog):
         lay.addWidget(but)
         self.connect(but, SIGNAL("clicked()"), self.reject)
         
-        #if "organization" in self.model.type and self.model.name:
-        #    self.w_name.setEnabled(False)
-        
         self.setValues()
     
     def objectLabel(self):
@@ -175,19 +172,14 @@ class ObjectDialog(KDialog):
     
     def objectName(self, name=None):
         if not name:
-            name = self.model.name
-        if "pardusComputer" in self.model.type:
-            return "cn=%s" % name
-        elif "organizationalUnit" in self.model.type:
-            return "ou=%s" % name
-        elif "organization" in self.model.type:
-            return "dc=%s" % name
-        elif "posixAccount" in self.model.type:
-            return "uid=%s" % name
+            name = self.model.fields["name"]
+        for model_info in self.model.entries:
+            if model_info[0] == "name":
+                return "%s=%s" % (model_info[1], name)
     
     def objectDN(self, name=None):
         if not name:
-            name = self.model.name
+            name = self.model.fields["name"]
         return "%s,%s" % (self.objectName(name), self.dn)
     
     def isModified(self):
@@ -197,13 +189,13 @@ class ObjectDialog(KDialog):
         self.w_dn.setText(self.dn)
         if self.model:
             for varname, widget in self.widgets.iteritems():
-                widget.importValue(getattr(self.model, varname))
+                widget.importValue(self.model.fields[varname])
     
     def getValues(self):
         if not self.model.name:
             self.dn = self.objectDN(self.w_name.text())
         for varname, widget in self.widgets.iteritems():
-            setattr(self.model, varname, widget.exportValue())
+            self.model.fields[varname] = widget.exportValue()
     
     def accept(self):
         self.getValues()

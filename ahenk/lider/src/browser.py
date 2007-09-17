@@ -167,7 +167,7 @@ class Browser(KListView):
                 for computer in result:
                     dn, attrs = computer
                     model = domain.ComputerModel(attrs)
-                    ComputerItem(self.window.computers, self.window, dn, model)
+                    ObjectListItem(self.window.computers, self.window, dn, model, "krdc")
                 self.window.tab.setTabLabel(self.window.computers, i18n("Computers (%1)").arg(len(result)))
                 
                 show_tab = self.window.computers
@@ -187,7 +187,7 @@ class Browser(KListView):
                 for computer in result:
                     dn, attrs = computer
                     model = domain.UnitModel(attrs)
-                    ComputerItem(self.window.units, self.window, dn, model)
+                    ObjectListItem(self.window.units, self.window, dn, model, "server")
                 self.window.tab.setTabLabel(self.window.units, i18n("Units (%1)").arg(len(result)))
                 if len(result) > object_len:
                     show_tab = self.window.units
@@ -207,7 +207,7 @@ class Browser(KListView):
                 for computer in result:
                     dn, attrs = computer
                     model = domain.UserModel(attrs)
-                    ComputerItem(self.window.users, self.window, dn, model)
+                    ObjectListItem(self.window.users, self.window, dn, model, "user")
                 self.window.tab.setTabLabel(self.window.users, i18n("Users (%1)").arg(len(result)))
                 if len(result) > object_len:
                     show_tab = self.window.users
@@ -227,7 +227,7 @@ class Browser(KListView):
                 for computer in result:
                     dn, attrs = computer
                     model = domain.GroupModel(attrs)
-                    ComputerItem(self.window.groups, self.window, dn, model)
+                    ObjectListItem(self.window.groups, self.window, dn, model, "kontact_contacts")
                 self.window.tab.setTabLabel(self.window.groups, i18n("Groups (%1)").arg(len(result)))
                 if len(result) > object_len:
                     show_tab = self.window.groups
@@ -251,7 +251,7 @@ class BrowserItem(QListViewItem):
             self.connection = parent.connection
         self.label = ""
         if self.model:
-            self.label = unicode(model.label)
+            self.label = unicode(model.fields["label"])
         QListViewItem.__init__(self, parent, self.label)
         self.setExpandable(True)
         self.initObject()
@@ -485,27 +485,14 @@ class ObjectList(KListView):
 
 
 class ObjectListItem(KListViewItem):
-    def __init__(self, parent, window, dn, label, item_type):
-        KListViewItem.__init__(self, parent, label)
-        self.dn = dn
-        self.label = label
-        if item_type == "computer":
-            self.setPixmap(0, getIcon("krdc", KIcon.Small))
-        elif item_type == "user":
-            self.setPixmap(0, getIcon("user", KIcon.Small))
-        elif item_type == "group":
-            self.setPixmap(0, getIcon("kontact_contacts", KIcon.Small))
-        elif item_type == "unit":
-            self.setPixmap(0, getIcon("server", KIcon.Small))
-
-class ComputerItem(KListViewItem):
-    def __init__(self, parent, window, dn, model):
-        KListViewItem.__init__(self, parent)
-        self.setPixmap(0, getIcon("krdc", KIcon.Small))
+    def __init__(self, parent, window, dn, model, icon):
         self.window = window
         self.dn = dn
         self.model = model
-        if "label" in model.__dict__:
-            self.setText(0, unicode(model.label))
+        if "label" in model.fields:
+            label = unicode(model.fields["label"])
         else:
-            self.setText(0, model.name)
+            label = model.fields["name"]
+        KListViewItem.__init__(self, parent, label)
+        self.setPixmap(0, getIcon(icon, KIcon.Small))
+        self.setText(0, label)

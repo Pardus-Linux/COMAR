@@ -70,7 +70,7 @@ msgstr "Açıklama"
 
 #: src/browser.py:391
 msgid "&Policy"
-msgstr ""
+msgstr "&Politika"
 
 #: src/browser.py:393
 msgid "&Configuration"
@@ -221,7 +221,7 @@ msgstr "Arama Menzili"
 
 #: src/domain.py:198 src/domain.py:218
 msgid "Base"
-msgstr "Taban DN:"
+msgstr "Taban"
 
 #: src/domain.py:198 src/domain.py:218
 msgid "One Level"

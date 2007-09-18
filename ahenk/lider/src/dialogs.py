@@ -141,16 +141,36 @@ class ObjectDialog(KDialog):
         self.w_dn.setReadOnly(True)
         grid.addWidget(self.w_dn, 0, 1)
         
-        row = 0
+        def genWidgets(_widgets, _grid, _parent, _row=0):
+            for varname, label, widget in _widgets:
+                if not widget:
+                    continue
+                lab = QLabel(i18n(label) + ":", _parent)
+                _grid.addWidget(lab, _row, 0, Qt.AlignRight)
+                self.widgets[varname] = widget(_parent, self.mode, self.model.options[varname])
+                _grid.addWidget(self.widgets[varname], _row, 1)
+                _row += 1
+            _grid.setRowStretch(_row, 1)
+        
         self.widgets = {}
-        for varname, label, widget in self.model.widgets:
-            if not widget:
-                continue
-            lab = QLabel(i18n(label) + ":", self)
-            grid.addWidget(lab, row + 1, 0, Qt.AlignRight)
-            self.widgets[varname] = widget(self, self.mode, self.model.options[varname])
-            grid.addWidget(self.widgets[varname], row + 1, 1)
-            row += 1
+        if len(self.model.groups) > 1:
+            widgets = [(x, y, z) for x, y, z in self.model.widgets if x in self.model.groups["*"]]
+            genWidgets(widgets, grid, self, 1)
+            row = len(self.model.groups["*"])
+            
+            self.tabs = QTabWidget(self)
+            grid.addMultiCellWidget(self.tabs, row + 1, row + 1, 0, 1)
+            
+            for group, varnames in self.model.groups.iteritems():
+                if group == "*":
+                    continue
+                tab = QWidget(self.tabs)
+                self.tabs.insertTab(tab, group)
+                tab_grid = QGridLayout(tab, 1, 2, 6)
+                widgets = [(x, y, z) for x, y, z in self.model.widgets if x in varnames]
+                genWidgets(widgets, tab_grid, tab)
+        else:
+            genWidgets(self.model.widgets, grid, self)
         
         lay = QHBoxLayout()
         vb.addLayout(lay)

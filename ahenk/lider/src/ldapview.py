@@ -75,7 +75,7 @@ class comboWidget(QComboBox):
         self.values = []
         for value, label in options["options"]:
             self.values.append(value)
-            self.insertItem(label)
+            self.insertItem(i18n(label))
         if "default" in options:
             self.importValue(options["default"])
     

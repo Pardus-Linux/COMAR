@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-09-16 21:43+0300\n"
+"POT-Creation-Date: 2007-09-18 14:07+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,11 +32,11 @@ msgstr ""
 msgid "Remove directory?"
 msgstr ""
 
-#: src/browser.py:118 src/browser.py:133 src/browser.py:457
+#: src/browser.py:118 src/browser.py:133 src/browser.py:481
 msgid "Are you sure you want to remove '%1' ?"
 msgstr ""
 
-#: src/browser.py:118 src/browser.py:457 src/browser.py:461 src/browser.py:464
+#: src/browser.py:118 src/browser.py:481 src/browser.py:485 src/browser.py:488
 msgid "This is not undoable. Are you sure you want to continue?"
 msgstr ""
 
@@ -44,63 +44,68 @@ msgstr ""
 msgid "Remove domain?"
 msgstr ""
 
-#: src/browser.py:171
+#: src/browser.py:172
 msgid "Computers (%1)"
 msgstr ""
 
-#: src/browser.py:191
+#: src/browser.py:193
 msgid "Units (%1)"
 msgstr ""
 
-#: src/browser.py:211
+#: src/browser.py:213
 msgid "Users (%1)"
 msgstr ""
 
-#: src/browser.py:231
+#: src/browser.py:233
 msgid "Groups (%1)"
 msgstr ""
 
-#: src/browser.py:377 src/domain.py:189 src/domain.py:197 src/domain.py:204
+#: src/browser.py:379 src/domain.py:189 src/domain.py:209 src/domain.py:228
+#: src/domain.py:236 src/domain.py:243
 msgid "Name"
 msgstr ""
 
-#: src/browser.py:378
+#: src/browser.py:380
 msgid "Description"
 msgstr ""
 
-#: src/browser.py:389
+#: src/browser.py:391
+msgid "&Policy"
+msgstr ""
+
+#: src/browser.py:393
 msgid "&Configuration"
 msgstr ""
 
-#: src/browser.py:392
+#: src/browser.py:396
 msgid "&New"
 msgstr ""
 
-#: src/browser.py:457
+#: src/browser.py:481
 msgid "Remove object?"
 msgstr ""
 
-#: src/browser.py:461 src/browser.py:464
+#: src/browser.py:485 src/browser.py:488
 msgid "Remove objects?"
 msgstr ""
 
-#: src/browser.py:461
+#: src/browser.py:485
 msgid ""
 "Are you sure you want to remove these objects?\n"
 "%1"
 msgstr ""
 
-#: src/browser.py:464
+#: src/browser.py:488
 msgid "Are you sure you want to remove %1 objects?"
 msgstr ""
 
-#: src/browser.py:480
+#: src/browser.py:504
 msgid ""
 "Unable to delete these objects:\n"
 "%1"
 msgstr ""
 
-#: src/browser.py:483
+#: src/browser.py:507
 msgid "Removed %1 objects."
 msgstr ""
 
@@ -156,63 +161,142 @@ msgstr ""
 msgid "Domain configuration file has syntax errors."
 msgstr ""
 
-#: src/domain.py:187
-msgid "Directory"
+#: src/domain.py:187 src/domain.py:207
+msgid "Policy"
 msgstr ""
 
-#: src/domain.py:190
-msgid "Label"
+#: src/domain.py:191 src/domain.py:211
+msgid "Update Mode"
 msgstr ""
 
-#: src/domain.py:195
-msgid "Computer"
+#: src/domain.py:191 src/domain.py:192 src/domain.py:193 src/domain.py:194
+#: src/domain.py:211 src/domain.py:212 src/domain.py:213 src/domain.py:214
+msgid "PISI"
 msgstr ""
 
-#: src/domain.py:202
-msgid "Unit"
+#: src/domain.py:191 src/domain.py:211
+msgid "Security Only"
 msgstr ""
 
-#: src/domain.py:209
-msgid "User"
+#: src/domain.py:191 src/domain.py:211
+msgid "Full"
 msgstr ""
 
-#: src/domain.py:211
-msgid "Username"
+#: src/domain.py:192 src/domain.py:212
+msgid "Interval"
 msgstr ""
 
-#: src/domain.py:212
-msgid "Real Name"
+#: src/domain.py:193 src/domain.py:213
+msgid "Wanted Packages"
 msgstr ""
 
-#: src/domain.py:213
-msgid "Password"
+#: src/domain.py:194 src/domain.py:214
+msgid "Unwanted Packages"
 msgstr ""
 
-#: src/domain.py:214
-msgid "Shell"
+#: src/domain.py:197 src/domain.py:217
+msgid "User Source"
 msgstr ""
 
-#: src/domain.py:215
-msgid "Home"
+#: src/domain.py:197 src/domain.py:198 src/domain.py:199 src/domain.py:200
+#: src/domain.py:201 src/domain.py:217 src/domain.py:218 src/domain.py:219
+#: src/domain.py:220 src/domain.py:221
+msgid "COMAR"
 msgstr ""
 
-#: src/domain.py:216
-msgid "User ID"
+#: src/domain.py:197 src/domain.py:217
+msgid "Local"
 msgstr ""
 
-#: src/domain.py:217 src/domain.py:225
-msgid "Group ID"
+#: src/domain.py:197 src/domain.py:217
+msgid "LDAP"
 msgstr ""
 
-#: src/domain.py:222
-msgid "Group"
+#: src/domain.py:198 src/domain.py:218
+msgid "Search Scope"
 msgstr ""
 
-#: src/domain.py:224
-msgid "Group Name"
+#: src/domain.py:198 src/domain.py:218
+msgid "Base"
+msgstr ""
+
+#: src/domain.py:198 src/domain.py:218
+msgid "One Level"
+msgstr ""
+
+#: src/domain.py:198 src/domain.py:218
+msgid "Subtree"
+msgstr ""
+
+#: src/domain.py:199 src/domain.py:219
+msgid "Database URI"
+msgstr ""
+
+#: src/domain.py:200 src/domain.py:220
+msgid "Base DN"
+msgstr ""
+
+#: src/domain.py:201 src/domain.py:221
+msgid "User Filter"
 msgstr ""
 
 #: src/domain.py:226
+msgid "Directory"
+msgstr ""
+
+#: src/domain.py:229
+msgid "Label"
+msgstr ""
+
+#: src/domain.py:234
+msgid "Computer"
+msgstr ""
+
+#: src/domain.py:241
+msgid "Unit"
+msgstr ""
+
+#: src/domain.py:248
+msgid "User"
+msgstr ""
+
+#: src/domain.py:250
+msgid "Username"
+msgstr ""
+
+#: src/domain.py:251
+msgid "Real Name"
+msgstr ""
+
+#: src/domain.py:252
+msgid "Password"
+msgstr ""
+
+#: src/domain.py:253
+msgid "Shell"
+msgstr ""
+
+#: src/domain.py:254
+msgid "Home"
+msgstr ""
+
+#: src/domain.py:255
+msgid "User ID"
+msgstr ""
+
+#: src/domain.py:256 src/domain.py:264
+msgid "Group ID"
+msgstr ""
+
+#: src/domain.py:261
+msgid "Group"
+msgstr ""
+
+#: src/domain.py:263
+msgid "Group Name"
+msgstr ""
+
+#: src/domain.py:265
 msgid "Members"
 msgstr ""
 
@@ -250,4 +334,8 @@ msgstr ""
 
 #: src/mainwindow.py:82
 msgid "Unable to complete operation:"
+msgstr ""
+
+#: src/ldapview.py:94
+msgid "Edit List"
 msgstr ""

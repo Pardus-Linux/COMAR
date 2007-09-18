@@ -138,7 +138,7 @@ class ObjectDialog(KDialog):
             self.mode = "edit"
         grid.addWidget(lab, 0, 0, Qt.AlignRight)
         self.w_dn = QLineEdit(self)
-        self.w_dn.setEnabled(False)
+        self.w_dn.setReadOnly(True)
         grid.addWidget(self.w_dn, 0, 1)
         
         row = 0
@@ -193,7 +193,7 @@ class ObjectDialog(KDialog):
     
     def getValues(self):
         if not self.model.fields["name"]:
-            self.dn = self.objectDN(self.w_name.text())
+            self.dn = self.objectDN(self.widgets["name"].text())
         for varname, widget in self.widgets.iteritems():
             self.model.fields[varname] = widget.exportValue()
     

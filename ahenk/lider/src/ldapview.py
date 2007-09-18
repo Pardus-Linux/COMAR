@@ -14,26 +14,13 @@ from kdeui import *
 from utility import *
 
 
-class nameWidget(QLineEdit):
+class textWidget(QLineEdit):
     def __init__(self, parent, mode, options):
         QLineEdit.__init__(self, parent)
         self.mode = mode
         self.options = options
-        if mode == "edit":
-            self.setEnabled(False)
-    
-    def importValue(self, value):
-        self.setText(unicode(value))
-    
-    def exportValue(self):
-        return str(self.text())
-
-
-class labelWidget(QLineEdit):
-    def __init__(self, parent, mode, options):
-        QLineEdit.__init__(self, parent)
-        self.mode = mode
-        self.options = options
+        if options.get("no_edit", False) and mode == "edit":
+            self.setReadOnly(True)
     
     def importValue(self, value):
         self.setText(unicode(value))
@@ -59,7 +46,8 @@ class passwordWidget(QLineEdit):
     def exportValue(self):
         if self.isModified():
             self.value = str(self.text())
-        crypt = self.options["hashMethod"]
+        mod, met = self.options["hashMethod"].rsplit(".", 1)
+        crypt = getattr(__import__(mod), met)
         return crypt(self.value)
 
 
@@ -77,6 +65,25 @@ class numberWidget(QSpinBox):
     
     def exportValue(self):
         return self.value()
+
+
+class comboWidget(QComboBox):
+    def __init__(self, parent, mode, options):
+        QComboBox.__init__(self, parent)
+        self.mode = mode
+        self.options = options
+        self.values = []
+        for value, label in options["options"]:
+            self.values.append(value)
+            self.insertItem(label)
+    
+    def importValue(self, value):
+        if value:
+            index = self.values.index(value)
+            self.setCurrentItem(index)
+    
+    def exportValue(self):
+        return str(self.values[self.currentItem()])
 
 
 class listWidgetEditor(QDialog):

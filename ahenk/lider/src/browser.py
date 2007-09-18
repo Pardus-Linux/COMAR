@@ -81,7 +81,7 @@ class Browser(KListView):
     def slotDirectoryProperties(self):
         item = self.selectedItem()
         connection = item.connection
-        model_old = copy.copy(item.model)
+        model_old = copy.deepcopy(item.model)
         od = ObjectDialog(self.window, item.dn, item.model)
         if od.exec_loop():
             model_new = od.model
@@ -167,7 +167,8 @@ class Browser(KListView):
                 for computer in result:
                     dn, attrs = computer
                     model = domain.ComputerModel(attrs)
-                    ObjectListItem(self.window.computers, self.window, dn, model, "krdc")
+                    policy = domain.ComputerPolicyModel(attrs)
+                    ObjectListItem(self.window.computers, self.window, dn, model, policy, "krdc")
                 self.window.tab.setTabLabel(self.window.computers, i18n("Computers (%1)").arg(len(result)))
                 
                 show_tab = self.window.computers
@@ -187,7 +188,8 @@ class Browser(KListView):
                 for computer in result:
                     dn, attrs = computer
                     model = domain.UnitModel(attrs)
-                    ObjectListItem(self.window.units, self.window, dn, model, "server")
+                    policy = domain.UnitPolicyModel(attrs)
+                    ObjectListItem(self.window.units, self.window, dn, model, policy, "server")
                 self.window.tab.setTabLabel(self.window.units, i18n("Units (%1)").arg(len(result)))
                 if len(result) > object_len:
                     show_tab = self.window.units
@@ -207,7 +209,7 @@ class Browser(KListView):
                 for computer in result:
                     dn, attrs = computer
                     model = domain.UserModel(attrs)
-                    ObjectListItem(self.window.users, self.window, dn, model, "user")
+                    ObjectListItem(self.window.users, self.window, dn, model, None, "user")
                 self.window.tab.setTabLabel(self.window.users, i18n("Users (%1)").arg(len(result)))
                 if len(result) > object_len:
                     show_tab = self.window.users
@@ -227,7 +229,7 @@ class Browser(KListView):
                 for computer in result:
                     dn, attrs = computer
                     model = domain.GroupModel(attrs)
-                    ObjectListItem(self.window.groups, self.window, dn, model, "kontact_contacts")
+                    ObjectListItem(self.window.groups, self.window, dn, model, None, "kontact_contacts")
                 self.window.tab.setTabLabel(self.window.groups, i18n("Groups (%1)").arg(len(result)))
                 if len(result) > object_len:
                     show_tab = self.window.groups
@@ -386,6 +388,8 @@ class ObjectList(KListView):
         self.menu_item = QPopupMenu(self)
         self.menu_item.insertItem(getIconSet("remove", KIcon.Small), i18n("&Remove"), self.slotRemove)
         self.menu_item.insertSeparator()
+        self.menu_item.insertItem(getIconSet("services", KIcon.Small), i18n("&Policy"), self.slotPolicy)
+        self.menu_item.insertSeparator()
         self.menu_item.insertItem(getIconSet("configure", KIcon.Small), i18n("&Configuration"), self.slotProperties)
         
         self.menu_blank = QPopupMenu(self)
@@ -419,7 +423,7 @@ class ObjectList(KListView):
         od = ObjectDialog(self.window, dn, model)
         if od.exec_loop():
             try:
-                connection.add(od.dn, od.model.toEntry())
+                connection.add(od.dn, od.model.toEntry(append=True))
             except ldap.LDAPError, e:
                 if e.__class__ in domain.LDAPCritical:
                     item.disableDomain()
@@ -432,12 +436,14 @@ class ObjectList(KListView):
         browser = self.window.browser
         connection = browser.selectedItem().connection
         item = self.selectedItems()[0]
-        model_old = copy.copy(item.model)
+        model_old = copy.deepcopy(item.model)
         od = ObjectDialog(self.window, item.dn, item.model)
         if od.exec_loop():
             model_new = od.model
             try:
-                connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"]))
+                # Modify attributes
+                connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"], append=True))
+                # Rename
                 if model_new.fields["name"] != model_old.fields["name"]:
                     new_name = od.objectName()
                     connection.rename(item.dn, new_name)
@@ -448,6 +454,24 @@ class ObjectList(KListView):
                     self.window.showError(e.args[0]["desc"])
             else:
                 browser.showObjects()
+    
+    def slotPolicy(self):
+        browser = self.window.browser
+        connection = browser.selectedItem().connection
+        item = self.selectedItems()[0]
+        if not item.policy:
+            return
+        model_old = copy.deepcopy(item.policy)
+        od = ObjectDialog(self.window, item.dn, item.policy)
+        if od.exec_loop():
+            model_new = od.model
+            try:
+                connection.modify(od.dn, model_old.toEntry(), model_new.toEntry(append=True))
+            except ldap.LDAPError, e:
+                if e.__class__ in domain.LDAPCritical:
+                    item.disableDomain()
+                else:
+                    self.window.showError(e.args[0]["info"])
     
     def slotRemove(self):
         browser = self.window.browser
@@ -485,10 +509,11 @@ class ObjectList(KListView):
 
 
 class ObjectListItem(KListViewItem):
-    def __init__(self, parent, window, dn, model, icon):
+    def __init__(self, parent, window, dn, model, policy, icon):
         self.window = window
         self.dn = dn
         self.model = model
+        self.policy = policy
         if "label" in model.fields:
             label = unicode(model.fields["label"])
         else:

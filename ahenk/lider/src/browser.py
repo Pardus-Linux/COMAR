@@ -441,6 +441,8 @@ class ObjectList(KListView):
         if od.exec_loop():
             model_new = od.model
             try:
+                attr_old = model_old.toEntry(exclude=["name"])
+                attr_new = model_new.toEntry(exclude=["name"], append=True)
                 # Modify attributes
                 connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"], append=True))
                 # Rename

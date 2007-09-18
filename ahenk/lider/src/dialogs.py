@@ -170,7 +170,7 @@ class ObjectDialog(KDialog):
                 widgets = [(x, y, z) for x, y, z in self.model.widgets if x in varnames]
                 genWidgets(widgets, tab_grid, tab)
         else:
-            genWidgets(self.model.widgets, grid, self)
+            genWidgets(self.model.widgets, grid, self, 1)
         
         lay = QHBoxLayout()
         vb.addLayout(lay)

@@ -28,7 +28,7 @@ class LdapClass:
                 if value:
                     val = int(value[0])
                 else:
-                    val = 0
+                    val = []
             elif valuetype == str:
                 if value:
                     val = str(value[0])
@@ -44,6 +44,8 @@ class LdapClass:
                     val = value
                 else:
                     val = []
+            else:
+                val = []
             self.widgets.append((varname, label, widget,))
             self.options[varname] = options
             self.fields[varname] = val
@@ -65,7 +67,8 @@ class LdapClass:
                 continue
             val = self.fields[item[0]]
             if item[2] == int:
-                val = str(val)
+                if not isinstance(val, list):
+                    val = str(val)
             elif item[2] == set:
                 val = list(val)
             if item[2] in [list, set] and append:

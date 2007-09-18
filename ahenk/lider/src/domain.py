@@ -234,6 +234,7 @@ class ComputerModel(ldapmodel.LdapClass):
     object_label = i18n("Computer")
     entries = (
         ("name", "cn", str, [], i18n("Name"), ldapview.textWidget, "*", {}),
+        ("memory", "pardusMemoryCapacity", int, [], i18n("Memory"), ldapview.numberWidget, "*", {}),
         ("type", "objectClass", list, ["top", "device", "pardusComputer"], None, None, None, {}),
     )
 

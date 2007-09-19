@@ -1,0 +1,2 @@
+LDAP Widgets:
+ * Unique INT ID widget (for uid/gid attributes)

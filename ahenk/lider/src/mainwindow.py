@@ -36,8 +36,8 @@ class MainWindow(KMainWindow):
         menu.insertSeparator()
         menu.insertItem(i18n("&Quit"), self.slotQuit, Qt.CTRL + Qt.Key_Q)
         
-        bar = QToolBar(self)
-        self.act_new_domain.addTo(bar)
+        self.toolbar = QToolBar(self)
+        self.act_new_domain.addTo(self.toolbar)
         
         self.status = QStatusBar(self)
         

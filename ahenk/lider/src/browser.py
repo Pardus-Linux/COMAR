@@ -386,14 +386,15 @@ class ObjectList(KListView):
         self.type = object_type
         
         self.menu_item = QPopupMenu(self)
+        self.menu_item.insertItem(getIconSet("filenew", KIcon.Small), i18n("&New"), self.slotNewItem)
+        self.menu_item.insertSeparator()
         self.menu_item.insertItem(getIconSet("remove", KIcon.Small), i18n("&Remove"), self.slotRemove)
         self.menu_item.insertSeparator()
         self.menu_item.insertItem(getIconSet("services", KIcon.Small), i18n("&Policy"), self.slotPolicy)
-        self.menu_item.insertSeparator()
         self.menu_item.insertItem(getIconSet("configure", KIcon.Small), i18n("&Configuration"), self.slotProperties)
         
         self.menu_blank = QPopupMenu(self)
-        self.menu_blank.insertItem(getIconSet("file_new", KIcon.Small), i18n("&New"), self.slotNewItem)
+        self.menu_blank.insertItem(getIconSet("filenew", KIcon.Small), i18n("&New"), self.slotNewItem)
         
         self.connect(self, SIGNAL("contextMenuRequested(QListViewItem*, const QPoint&, int)"), self.slotPopup)
     

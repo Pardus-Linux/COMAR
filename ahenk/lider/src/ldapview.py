@@ -46,9 +46,11 @@ class passwordWidget(QLineEdit):
     def exportValue(self):
         if self.isModified():
             self.value = str(self.text())
-        mod, met = self.options["hashMethod"].rsplit(".", 1)
-        crypt = getattr(__import__(mod), met)
-        return crypt(self.value)
+        if "hashMethod" in self.options:
+            mod, met = self.options["hashMethod"].rsplit(".", 1)
+            crypt = getattr(__import__(mod), met)
+            return crypt(self.value)
+        return self.value
 
 
 class numberWidget(QSpinBox):

@@ -91,7 +91,7 @@ class Browser(KListView):
                 if e.__class__ in domain.LDAPCritical:
                     item.disableDomain()
                 else:
-                    self.window.showError(e.args[0]["desc"])
+                    self.window.showError(e.args[0]["info"])
             else:
                 item.parent().collapseNodes()
                 item.parent().expandNodes()
@@ -107,7 +107,7 @@ class Browser(KListView):
                 if e.__class__ in domain.LDAPCritical:
                     item.disableDomain()
                 else:
-                    self.window.showError(e.args[0]["desc"])
+                    self.window.showError(e.args[0]["info"])
             else:
                 if item.isOpen():
                     item.collapseNodes()
@@ -123,7 +123,7 @@ class Browser(KListView):
                 if e.__class__ in domain.LDAPCritical:
                     item.disableDomain()
                 else:
-                    self.window.showError(e.args[0]["desc"])
+                    self.window.showError(e.args[0]["info"])
             else:
                 item.parent().collapseNodes()
                 item.parent().expandNodes()
@@ -162,7 +162,7 @@ class Browser(KListView):
                 if e.__class__ in domain.LDAPCritical:
                     self.disableDomain()
                 else:
-                    self.window.showError(e.args[0]["desc"])
+                    self.window.showError(e.args[0]["info"])
             else:
                 for computer in result:
                     dn, attrs = computer
@@ -183,7 +183,7 @@ class Browser(KListView):
                 if e.__class__ in domain.LDAPCritical:
                     self.disableDomain()
                 else:
-                    self.window.showError(e.args[0]["desc"])
+                    self.window.showError(e.args[0]["info"])
             else:
                 for computer in result:
                     dn, attrs = computer
@@ -204,7 +204,7 @@ class Browser(KListView):
                 if e.__class__ in domain.LDAPCritical:
                     self.disableDomain()
                 else:
-                    self.window.showError(e.args[0]["desc"])
+                    self.window.showError(e.args[0]["info"])
             else:
                 for computer in result:
                     dn, attrs = computer
@@ -224,7 +224,7 @@ class Browser(KListView):
                 if e.__class__ in domain.LDAPCritical:
                     self.disableDomain()
                 else:
-                    self.window.showError(e.args[0]["desc"])
+                    self.window.showError(e.args[0]["info"])
             else:
                 for computer in result:
                     dn, attrs = computer
@@ -277,7 +277,7 @@ class BrowserItem(QListViewItem):
                 if e.__class__ in domain.LDAPCritical:
                     self.disableDomain()
                 else:
-                    self.window.showError(e.args[0]["desc"])
+                    self.window.showError(e.args[0]["info"])
             else:
                 self.setState("active")
     
@@ -322,13 +322,13 @@ class BrowserItem(QListViewItem):
         try:
             return self.connection.search(self.dn, ldap.SCOPE_ONELEVEL, "objectClass=organization")
         except ldap.LDAPError, e:
-            desc = e.args[0]["desc"]
+            desc = e.args[0]["info"]
             if not self.firstChild():
                 self.setOpen(False)
             if e.__class__ in domain.LDAPCritical:
                 self.disableDomain()
             else:
-                self.window.showError(e.args[0]["desc"])
+                self.window.showError(e.args[0]["info"])
             return False
     
     def expandNodes(self):
@@ -344,7 +344,7 @@ class BrowserItem(QListViewItem):
                 if e.__class__ in domain.LDAPCritical:
                     self.disableDomain()
                 else:
-                    self.window.showError(e.args[0]["desc"])
+                    self.window.showError(e.args[0]["info"])
                 return
         
         organizations = self.getChildren()
@@ -429,7 +429,7 @@ class ObjectList(KListView):
                 if e.__class__ in domain.LDAPCritical:
                     item.disableDomain()
                 else:
-                    self.window.showError(e.args[0]["desc"])
+                    self.window.showError(e.args[0]["info"])
             else:
                 browser.showObjects()
     
@@ -454,7 +454,7 @@ class ObjectList(KListView):
                 if e.__class__ in domain.LDAPCritical:
                     item.disableDomain()
                 else:
-                    self.window.showError(e.args[0]["desc"])
+                    self.window.showError(e.args[0]["info"])
             else:
                 browser.showObjects()
     
@@ -500,7 +500,7 @@ class ObjectList(KListView):
                         item.disableDomain()
                         return
                     else:
-                        failed.append((item, e.args[0]["desc"]))
+                        failed.append((item, e.args[0]["info"]))
             if len(failed):
                 failed = [" - %s (%s)" % (item.label, message) for item, message in failed]
                 failed = "\n".join(failed)
@@ -521,6 +521,11 @@ class ObjectListItem(KListViewItem):
             label = unicode(model.fields["label"])
         else:
             label = model.fields["name"]
+        if "description" in model.fields:
+            description = unicode(model.fields["description"])
+        else:
+            description = ""
         KListViewItem.__init__(self, parent, label)
         self.setPixmap(0, getIcon(icon, KIcon.Small))
         self.setText(0, label)
+        self.setText(1, description)

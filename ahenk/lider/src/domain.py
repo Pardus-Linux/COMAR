@@ -227,6 +227,7 @@ class DirectoryModel(ldapmodel.LdapClass):
     entries = (
         ("name", "dc", str, [], i18n("Name"), ldapview.textWidget, "*", {"no_edit": True}),
         ("label", "o", str, [], i18n("Label"), ldapview.textWidget, "*", {}),
+        ("description", "description", str, [], i18n("Description"), ldapview.textWidget, "*", {}),
         ("type", "objectClass", list, ["dcObject", "organization"], None, None, None, {}),
     )
 
@@ -234,6 +235,7 @@ class ComputerModel(ldapmodel.LdapClass):
     object_label = i18n("Computer")
     entries = (
         ("name", "cn", str, [], i18n("Name"), ldapview.textWidget, "*", {}),
+        ("description", "description", str, [], i18n("Description"), ldapview.textWidget, "*", {}),
         ("password", "userPassword", str, [], i18n("Password"), ldapview.passwordWidget, "*", {}),
         ("type", "objectClass", list, ["top", "device", "pardusComputer"], None, None, None, {}),
     )
@@ -242,6 +244,7 @@ class UnitModel(ldapmodel.LdapClass):
     object_label = i18n("Unit")
     entries = (
         ("name", "ou", str, [], i18n("Name"), ldapview.textWidget, "*", {}),
+        ("description", "description", str, [], i18n("Description"), ldapview.textWidget, "*", {}),
         ("type", "objectClass", list, ["top", "organizationalUnit"], None, None, None, {}),
     )
 

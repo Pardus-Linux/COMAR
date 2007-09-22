@@ -386,15 +386,14 @@ class ObjectList(KListView):
         self.type = object_type
         
         self.menu_item = QPopupMenu(self)
-        self.menu_item.insertItem(getIconSet("filenew", KIcon.Small), i18n("&New"), self.slotNewItem)
-        self.menu_item.insertSeparator()
-        self.menu_item.insertItem(getIconSet("remove", KIcon.Small), i18n("&Remove"), self.slotRemove)
-        self.menu_item.insertSeparator()
-        self.menu_item.insertItem(getIconSet("services", KIcon.Small), i18n("&Policy"), self.slotPolicy)
-        self.menu_item.insertItem(getIconSet("configure", KIcon.Small), i18n("&Configuration"), self.slotProperties)
-        
-        self.menu_blank = QPopupMenu(self)
-        self.menu_blank.insertItem(getIconSet("filenew", KIcon.Small), i18n("&New"), self.slotNewItem)
+        self.id_menu = [
+            self.menu_item.insertItem(getIconSet("filenew", KIcon.Small), i18n("&New"), self.slotNewItem),
+            self.menu_item.insertSeparator(),
+            self.menu_item.insertItem(getIconSet("remove", KIcon.Small), i18n("&Remove"), self.slotRemove),
+            self.menu_item.insertSeparator(),
+            self.menu_item.insertItem(getIconSet("services", KIcon.Small), i18n("&Policy"), self.slotPolicy),
+            self.menu_item.insertItem(getIconSet("configure", KIcon.Small), i18n("&Configuration"), self.slotProperties),
+        ]
         
         self.connect(self, SIGNAL("contextMenuRequested(QListViewItem*, const QPoint&, int)"), self.slotPopup)
     
@@ -403,10 +402,20 @@ class ObjectList(KListView):
         selected = browser.selectedItem()
         if not selected or not isinstance(selected.parent(), BrowserItem):
             return
-        if item:
-            self.menu_item.exec_loop(point)
+        for i in self.id_menu:
+            self.menu_item.setItemVisible(i, True)
+        items = self.selectedItems()
+        if len(items):
+            if len(items) > 1 and not items[0].model.allow_multiple_edit:
+                for i in self.id_menu[1:]:
+                    self.menu_item.setItemVisible(i, False)
         else:
-            self.menu_blank.exec_loop(point)
+            for i in self.id_menu[1:]:
+                self.menu_item.setItemVisible(i, False)
+        if not items[0].policy:
+            for i in self.id_menu[2:5]:
+                self.menu_item.setItemVisible(i, False)
+        self.menu_item.exec_loop(point)
     
     def slotNewItem(self):
         browser = self.window.browser
@@ -438,7 +447,7 @@ class ObjectList(KListView):
         connection = browser.selectedItem().connection
         items = self.selectedItems()
         item = items[0]
-        if len(items) > 1:
+        if len(items) > 1 and item.model.allow_multiple_edit:
             multiple = True
             od = ObjectDialog(self.window, item.dn, item.model.__class__(), multiple=True)
         else:
@@ -473,7 +482,7 @@ class ObjectList(KListView):
         item = items[0]
         if not item.policy:
             return
-        if len(items) > 1:
+        if len(items) > 1 and item.policy.allow_multiple_edit:
             multiple = True
             od = ObjectDialog(self.window, item.dn, item.policy.__class__(), multiple=True)
         else:

@@ -185,6 +185,7 @@ class DomainConfig:
 
 class ComputerPolicyModel(ldapmodel.LdapClass):
     object_label = i18n("Policy")
+    allow_multiple_edit = True
     entries = (
         ("name", "cn", str, [], i18n("Name"), ldapview.textWidget, "*", {"no_edit": True}),
         # pisiPolicy
@@ -205,6 +206,7 @@ class ComputerPolicyModel(ldapmodel.LdapClass):
 
 class UnitPolicyModel(ldapmodel.LdapClass):
     object_label = i18n("Policy")
+    allow_multiple_edit = True
     entries = (
         ("name", "ou", str, [], i18n("Name"), ldapview.textWidget, "*", {"no_edit": True}),
         # pisiPolicy
@@ -233,6 +235,7 @@ class DirectoryModel(ldapmodel.LdapClass):
 
 class ComputerModel(ldapmodel.LdapClass):
     object_label = i18n("Computer")
+    allow_multiple_edit = True
     entries = (
         ("name", "cn", str, [], i18n("Name"), ldapview.textWidget, "*", {}),
         ("description", "description", str, [], i18n("Description"), ldapview.textWidget, "*", {}),
@@ -242,6 +245,7 @@ class ComputerModel(ldapmodel.LdapClass):
 
 class UnitModel(ldapmodel.LdapClass):
     object_label = i18n("Unit")
+    allow_multiple_edit = True
     entries = (
         ("name", "ou", str, [], i18n("Name"), ldapview.textWidget, "*", {}),
         ("description", "description", str, [], i18n("Description"), ldapview.textWidget, "*", {}),

@@ -10,6 +10,10 @@
 class LdapClass:
     """ Designed for Ldap format for entries of modules of ajan """
     
+    object_label = ""
+    entries = ()
+    allow_multiple_edit = False
+    
     def __init__(self, attr={}):
         self.fields = {}
         self.options = {}

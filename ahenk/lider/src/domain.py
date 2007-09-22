@@ -193,8 +193,10 @@ class ComputerPolicyModel(ldapmodel.LdapClass):
         ("pisi_interval", "pisiAutoUpdateInterval", int, [], i18n("Interval"), ldapview.numberWidget, i18n("PISI"), {}),
         ("pisi_wanted", "pisiWantedPackage", list, [], i18n("Wanted Packages"), ldapview.listWidget, i18n("PISI"), {}),
         ("pisi_unwanted", "pisiUnwantedPackage", list, [], i18n("Unwanted Packages"), ldapview.listWidget, i18n("PISI"), {}),
-        # comarUserPolicy
         # comarServicePolicy
+        ("service_start", "comarServiceStart", list, [], i18n("Start Services"), ldapview.listWidget, i18n("Services"), {}),
+        ("service_stop", "comarServiceStop", list, [], i18n("Stop Services"), ldapview.listWidget, i18n("Services"), {}),
+        # comarUserPolicy
         ("user_source", "comarUserSourceMode", str, [], i18n("User Source"), ldapview.comboWidget, i18n("COMAR"), {"options": [("local", i18n("Local")), ("ldap", i18n("LDAP"))], "default": "local"}),
         ("user_scope", "comarUserLdapSearchScope", str, [], i18n("Search Scope"), ldapview.comboWidget, i18n("COMAR"), {"options": [("base", i18n("Base")), ("onelevel", i18n("One Level")), ("subtree", i18n("Subtree"))], "default": "subtree"}),
         ("user_uri", "comarUserLdapURI", str, [], i18n("Database URI"), ldapview.textWidget, i18n("COMAR"), {}),
@@ -214,8 +216,10 @@ class UnitPolicyModel(ldapmodel.LdapClass):
         ("pisi_interval", "pisiAutoUpdateInterval", int, [], i18n("Interval"), ldapview.numberWidget, i18n("PISI"), {}),
         ("pisi_wanted", "pisiWantedPackage", list, [], i18n("Wanted Packages"), ldapview.listWidget, i18n("PISI"), {}),
         ("pisi_unwanted", "pisiUnwantedPackage", list, [], i18n("Unwanted Packages"), ldapview.listWidget, i18n("PISI"), {}),
-        # comarUserPolicy
         # comarServicePolicy
+        ("service_start", "comarServiceStart", list, [], i18n("Start Services"), ldapview.listWidget, i18n("Services"), {}),
+        ("service_stop", "comarServiceStop", list, [], i18n("Stop Services"), ldapview.listWidget, i18n("Services"), {}),
+        # comarUserPolicy
         ("user_source", "comarUserSourceMode", str, [], i18n("User Source"), ldapview.comboWidget, i18n("COMAR"), {"options": [("local", i18n("Local")), ("ldap", i18n("LDAP"))], "default": "local"}),
         ("user_scope", "comarUserLdapSearchScope", str, [], i18n("Search Scope"), ldapview.comboWidget, i18n("COMAR"), {"options": [("base", i18n("Base")), ("onelevel", i18n("One Level")), ("subtree", i18n("Subtree"))], "default": "subtree"}),
         ("user_uri", "comarUserLdapURI", str, [], i18n("Database URI"), ldapview.textWidget, i18n("COMAR"), {}),

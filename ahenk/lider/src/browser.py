@@ -436,20 +436,28 @@ class ObjectList(KListView):
     def slotProperties(self):
         browser = self.window.browser
         connection = browser.selectedItem().connection
-        item = self.selectedItems()[0]
-        model_old = copy.deepcopy(item.model)
-        od = ObjectDialog(self.window, item.dn, item.model)
+        items = self.selectedItems()
+        item = items[0]
+        if len(items) > 1:
+            multiple = True
+            od = ObjectDialog(self.window, item.dn, item.model.__class__(), multiple=True)
+        else:
+            multiple = False
+            model_old = copy.deepcopy(item.model)
+            od = ObjectDialog(self.window, item.dn, item.model)
         if od.exec_loop():
             model_new = od.model
             try:
-                attr_old = model_old.toEntry(exclude=["name"])
-                attr_new = model_new.toEntry(exclude=["name"], append=True)
                 # Modify attributes
-                connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"], append=True))
-                # Rename
-                if model_new.fields["name"] != model_old.fields["name"]:
-                    new_name = od.objectName()
-                    connection.rename(item.dn, new_name)
+                if multiple:
+                    for item in items:
+                        connection.modify(item.dn, item.model.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"], append=True))
+                else:
+                    connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"], append=True))
+                    # Rename
+                    if model_new.fields["name"] != model_old.fields["name"]:
+                        new_name = od.objectName()
+                        connection.rename(item.dn, new_name)
             except ldap.LDAPError, e:
                 if e.__class__ in domain.LDAPCritical:
                     item.disableDomain()
@@ -461,15 +469,25 @@ class ObjectList(KListView):
     def slotPolicy(self):
         browser = self.window.browser
         connection = browser.selectedItem().connection
-        item = self.selectedItems()[0]
+        items = self.selectedItems()
+        item = items[0]
         if not item.policy:
             return
-        model_old = copy.deepcopy(item.policy)
-        od = ObjectDialog(self.window, item.dn, item.policy)
+        if len(items) > 1:
+            multiple = True
+            od = ObjectDialog(self.window, item.dn, item.policy.__class__(), multiple=True)
+        else:
+            multiple = False
+            model_old = copy.deepcopy(item.policy)
+            od = ObjectDialog(self.window, item.dn, item.policy)
         if od.exec_loop():
             model_new = od.model
             try:
-                connection.modify(od.dn, model_old.toEntry(), model_new.toEntry(append=True))
+                if multiple:
+                    for item in items:
+                        connection.modify(item.dn, item.policy.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"], append=True))
+                else:
+                    connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"], append=True))
             except ldap.LDAPError, e:
                 if e.__class__ in domain.LDAPCritical:
                     item.disableDomain()

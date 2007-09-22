@@ -111,12 +111,13 @@ class DomainDialog(KDialog):
 class ObjectDialog(KDialog):
     """Directory object attributes dialog."""
     
-    def __init__(self, parent, dn, model):
+    def __init__(self, parent, dn, model, multiple=False):
         KDialog.__init__(self, parent)
         self.dn = dn
         self.model = model
-        
-        if model.fields["name"]:
+        self.multiple = multiple
+       
+        if model.fields["name"] or self.multiple:
             self.setCaption(i18n("%1 Properties").arg(self.objectLabel()))
         else:
             self.setCaption(i18n("New %1").arg(self.objectLabel()))
@@ -129,17 +130,22 @@ class ObjectDialog(KDialog):
         grid = QGridLayout(1, 2, 6)
         vb.addLayout(grid)
         
-        # DN
-        lab = QLabel(i18n("DN:"), self)
-        if not model.fields["name"]:
-            lab.setText(i18n("Parent DN:"))
-            self.mode = "new"
+        rows = 0
+        if not multiple:
+            # DN
+            lab = QLabel(i18n("DN:"), self)
+            if not model.fields["name"]:
+                lab.setText(i18n("Parent DN:"))
+                self.mode = "new"
+            else:
+                self.mode = "edit"
+            grid.addWidget(lab, 0, 0, Qt.AlignRight)
+            self.w_dn = QLineEdit(self)
+            self.w_dn.setReadOnly(True)
+            grid.addWidget(self.w_dn, 0, 1)
+            rows += 1
         else:
             self.mode = "edit"
-        grid.addWidget(lab, 0, 0, Qt.AlignRight)
-        self.w_dn = QLineEdit(self)
-        self.w_dn.setReadOnly(True)
-        grid.addWidget(self.w_dn, 0, 1)
         
         def genWidgets(_widgets, _grid, _parent, _row=0):
             for varname, label, widget in _widgets:
@@ -155,11 +161,13 @@ class ObjectDialog(KDialog):
         self.widgets = {}
         if len(self.model.groups) > 1:
             widgets = [(x, y, z) for x, y, z in self.model.widgets if x in self.model.groups["*"]]
-            genWidgets(widgets, grid, self, 1)
-            row = len(self.model.groups["*"])
+            if self.multiple:
+                widgets = [(x, y, z) for x, y, z in widgets if x != "name"]
+            genWidgets(widgets, grid, self, rows)
+            row = len(self.model.groups["*"]) + 1
             
             self.tabs = QTabWidget(self)
-            grid.addMultiCellWidget(self.tabs, row + 1, row + 1, 0, 1)
+            grid.addMultiCellWidget(self.tabs, row, row, 0, 1)
             
             for group, varnames in self.model.groups.iteritems():
                 if group == "*":
@@ -170,7 +178,11 @@ class ObjectDialog(KDialog):
                 widgets = [(x, y, z) for x, y, z in self.model.widgets if x in varnames]
                 genWidgets(widgets, tab_grid, tab)
         else:
-            genWidgets(self.model.widgets, grid, self, 1)
+            if self.multiple:
+                widgets = [(x, y, z) for x, y, z in self.model.widgets if x != "name"]
+            else:
+                widgets = self.model.widgets
+            genWidgets(widgets, grid, self, rows)
         
         lay = QHBoxLayout()
         vb.addLayout(lay)
@@ -206,15 +218,20 @@ class ObjectDialog(KDialog):
         return True
     
     def setValues(self):
-        self.w_dn.setText(self.dn)
+        if not self.multiple:
+            self.w_dn.setText(self.dn)
         if self.model:
             for varname, widget in self.widgets.iteritems():
+                if self.multiple and varname == "name":
+                    continue
                 widget.importValue(self.model.fields[varname])
     
     def getValues(self):
-        if not self.model.fields["name"]:
+        if not self.multiple and not self.model.fields["name"]:
             self.dn = self.objectDN(self.widgets["name"].text())
         for varname, widget in self.widgets.iteritems():
+            if self.multiple and varname == "name":
+                continue
             self.model.fields[varname] = widget.exportValue()
     
     def accept(self):

@@ -199,7 +199,7 @@ class ComputerPolicyModel(ldapmodel.LdapClass):
         ("user_uri", "comarUserLdapURI", str, [], i18n("Database URI"), ldapview.textWidget, i18n("COMAR"), {}),
         ("user_base", "comarUserLdapBase", str, [], i18n("Base DN"), ldapview.textWidget, i18n("COMAR"), {}),
         ("user_filter", "comarUserLdapFilter", str, [], i18n("User Filter"), ldapview.textWidget, i18n("COMAR"), {}),
-        ("type", "objectClass", list, ["pisiPolicy", "comarUserPolicy", "comarServicePolicy"], None, None, None, {}),
+        ("type", "objectClass", list, ["top", "device", "pardusComputer", "pisiPolicy", "comarUserPolicy", "comarServicePolicy"], None, None, None, {}),
     )
 
 
@@ -219,7 +219,7 @@ class UnitPolicyModel(ldapmodel.LdapClass):
         ("user_uri", "comarUserLdapURI", str, [], i18n("Database URI"), ldapview.textWidget, i18n("COMAR"), {}),
         ("user_base", "comarUserLdapBase", str, [], i18n("Base DN"), ldapview.textWidget, i18n("COMAR"), {}),
         ("user_filter", "comarUserLdapFilter", str, [], i18n("User Filter"), ldapview.textWidget, i18n("COMAR"), {}),
-        ("type", "objectClass", list, ["pisiPolicy", "comarUserPolicy", "comarServicePolicy"], None, None, None, {}),
+        ("type", "objectClass", list, ["top", "organizationalUnit", "pisiPolicy", "comarUserPolicy", "comarServicePolicy"], None, None, None, {}),
     )
 
 class DirectoryModel(ldapmodel.LdapClass):

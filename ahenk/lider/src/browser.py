@@ -407,13 +407,13 @@ class ObjectList(KListView):
         items = self.selectedItems()
         if len(items):
             if len(items) > 1 and not items[0].model.allow_multiple_edit:
-                for i in self.id_menu[1:]:
+                for i in self.id_menu[3:]:
                     self.menu_item.setItemVisible(i, False)
         else:
             for i in self.id_menu[1:]:
                 self.menu_item.setItemVisible(i, False)
         if not items[0].policy:
-            for i in self.id_menu[2:5]:
+            for i in self.id_menu[4:5]:
                 self.menu_item.setItemVisible(i, False)
         self.menu_item.exec_loop(point)
     

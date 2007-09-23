@@ -111,13 +111,16 @@ class DomainDialog(KDialog):
 class ObjectDialog(KDialog):
     """Directory object attributes dialog."""
     
-    def __init__(self, parent, dn, model, multiple=False):
+    def __init__(self, parent, dn, model, multiple=False, infowin=False):
         KDialog.__init__(self, parent)
         self.dn = dn
         self.model = model
         self.multiple = multiple
+        self.infowin = infowin
        
-        if model.fields["name"] or self.multiple:
+        if infowin:
+            self.setCaption(i18n("%1 Information").arg(self.objectLabel()))
+        elif model.fields.get("name", "") or self.multiple:
             self.setCaption(i18n("%1 Properties").arg(self.objectLabel()))
         else:
             self.setCaption(i18n("New %1").arg(self.objectLabel()))
@@ -134,7 +137,7 @@ class ObjectDialog(KDialog):
         if not multiple:
             # DN
             lab = QLabel(i18n("DN:"), self)
-            if not model.fields["name"]:
+            if not model.fields.get("name", ""):
                 lab.setText(i18n("Parent DN:"))
                 self.mode = "new"
             else:
@@ -189,13 +192,18 @@ class ObjectDialog(KDialog):
         lay.setMargin(3)
         lay.setSpacing(12)
         
-        but = QPushButton(getIconSet("apply", KIcon.Small), i18n("Apply"), self)
-        lay.addWidget(but)
-        self.connect(but, SIGNAL("clicked()"), self.accept)
-        
-        but = QPushButton(getIconSet("cancel", KIcon.Small), i18n("Cancel"), self)
-        lay.addWidget(but)
-        self.connect(but, SIGNAL("clicked()"), self.reject)
+        if not self.infowin:
+            but = QPushButton(getIconSet("apply", KIcon.Small), i18n("Apply"), self)
+            lay.addWidget(but)
+            self.connect(but, SIGNAL("clicked()"), self.accept)
+            
+            but = QPushButton(getIconSet("cancel", KIcon.Small), i18n("Cancel"), self)
+            lay.addWidget(but)
+            self.connect(but, SIGNAL("clicked()"), self.reject)
+        else:
+            but = QPushButton(getIconSet("ok", KIcon.Small), i18n("OK"), self)
+            lay.addWidget(but)
+            self.connect(but, SIGNAL("clicked()"), self.accept)
         
         self.setValues()
     
@@ -235,7 +243,8 @@ class ObjectDialog(KDialog):
             self.model.fields[varname] = widget.exportValue()
     
     def accept(self):
-        self.getValues()
+        if not self.infowin:
+            self.getValues()
         KDialog.accept(self)
     
     def reject(self):

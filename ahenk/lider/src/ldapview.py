@@ -56,7 +56,7 @@ class passwordWidget(QLineEdit):
 class numberWidget(QSpinBox):
     def __init__(self, parent, mode, options):
         QLineEdit.__init__(self, parent)
-        self.setMaxValue(2**16)
+        self.setMaxValue(2**30)
         self.setMinValue(0)
         self.mode = mode
         self.options = options

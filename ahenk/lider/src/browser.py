@@ -154,13 +154,13 @@ class Browser(KListView):
         show_tab = None
         
         objects = [
-            (self.window.computers, "pardusComputer", domain.ComputerModel, domain.ComputerPolicyModel, "krdc", i18n("Computers (%1)")),
-            (self.window.units, "organizationalUnit", domain.UnitModel, domain.UnitPolicyModel, "server", i18n("Units (%1)")),
-            (self.window.users, "posixAccount", domain.UserModel, None, "user", i18n("Users (%1)")),
-            (self.window.groups, "posixGroup", domain.GroupModel, None, "kontact_contacts", i18n("Groups (%1)")),
+            (self.window.computers, "pardusComputer", domain.ComputerModel, domain.ComputerPolicyModel, domain.ComputerInfoModel, "krdc", i18n("Computers (%1)")),
+            (self.window.units, "organizationalUnit", domain.UnitModel, domain.UnitPolicyModel, None, "server", i18n("Units (%1)")),
+            (self.window.users, "posixAccount", domain.UserModel, None, None, "user", i18n("Users (%1)")),
+            (self.window.groups, "posixGroup", domain.GroupModel, None, None, "kontact_contacts", i18n("Groups (%1)")),
         ]
         
-        for objectWidget, objectClass, objectModel, objectPolicy, icon, label in objects:
+        for objectWidget, objectClass, objectModel, objectPolicy, objectInfo, icon, label in objects:
             objectWidget.clear()
             item = self.selectedItem()
             if item and isinstance(item.parent(), BrowserItem):
@@ -177,7 +177,10 @@ class Browser(KListView):
                         policy = None
                         if objectPolicy:
                             policy = objectPolicy(attrs)
-                        ObjectListItem(objectWidget, self.window, dn, model, policy, icon)
+                        info = None
+                        if objectInfo:
+                            info = objectInfo(attrs)
+                        ObjectListItem(objectWidget, self.window, dn, model, policy, info, icon)
                     self.window.tab.setTabLabel(objectWidget, label.arg(len(result)))
                 if len(result) > object_len:
                     show_tab = objectWidget
@@ -339,6 +342,7 @@ class ObjectList(KListView):
             self.menu_item.insertSeparator(),
             self.menu_item.insertItem(getIconSet("remove", KIcon.Small), i18n("&Remove"), self.slotRemove),
             self.menu_item.insertSeparator(),
+            self.menu_item.insertItem(getIconSet("info", KIcon.Small), i18n("&Information"), self.slotInfo),
             self.menu_item.insertItem(getIconSet("services", KIcon.Small), i18n("&Policy"), self.slotPolicy),
             self.menu_item.insertItem(getIconSet("configure", KIcon.Small), i18n("&Configuration"), self.slotProperties),
         ]
@@ -357,11 +361,12 @@ class ObjectList(KListView):
             if len(items) > 1 and not items[0].model.allow_multiple_edit:
                 for i in self.id_menu[3:]:
                     self.menu_item.setItemVisible(i, False)
+            if not items[0].info:
+                self.menu_item.setItemVisible(self.id_menu[4], False)
+            if not items[0].policy:
+                self.menu_item.setItemVisible(self.id_menu[5], False)
         else:
             for i in self.id_menu[1:]:
-                self.menu_item.setItemVisible(i, False)
-        if not items[0].policy:
-            for i in self.id_menu[4:5]:
                 self.menu_item.setItemVisible(i, False)
         self.menu_item.exec_loop(point)
     
@@ -381,7 +386,7 @@ class ObjectList(KListView):
         od = ObjectDialog(self.window, dn, model)
         if od.exec_loop():
             try:
-                connection.add(od.dn, od.model.toEntry(append=True))
+                connection.add(od.dn, od.model.toEntry())
             except ldap.LDAPError, e:
                 if e.__class__ in domain.LDAPCritical:
                     item.disableDomain()
@@ -408,9 +413,9 @@ class ObjectList(KListView):
                 # Modify attributes
                 if multiple:
                     for item in items:
-                        connection.modify(item.dn, item.model.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"], append=True))
+                        connection.modify(item.dn, item.model.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"]))
                 else:
-                    connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"], append=True))
+                    connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"]))
                     # Rename
                     if model_new.fields["name"] != model_old.fields["name"]:
                         new_name = od.objectName()
@@ -442,14 +447,27 @@ class ObjectList(KListView):
             try:
                 if multiple:
                     for item in items:
-                        connection.modify(item.dn, item.policy.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"], append=True))
+                        connection.modify(item.dn, item.policy.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"]))
                 else:
-                    connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"], append=True))
+                    connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"]))
             except ldap.LDAPError, e:
                 if e.__class__ in domain.LDAPCritical:
                     item.disableDomain()
                 else:
                     self.window.showError(e.args[0]["info"])
+    
+    def slotInfo(self):
+        browser = self.window.browser
+        connection = browser.selectedItem().connection
+        items = self.selectedItems()
+        item = items[0]
+        if not item.info:
+            return
+        if len(items) > 1:
+            pass
+        else:
+            od = ObjectDialog(self.window, item.dn, item.info, infowin=True)
+            od.exec_loop()
     
     def slotRemove(self):
         browser = self.window.browser
@@ -487,11 +505,12 @@ class ObjectList(KListView):
 
 
 class ObjectListItem(KListViewItem):
-    def __init__(self, parent, window, dn, model, policy, icon):
+    def __init__(self, parent, window, dn, model, policy, info, icon):
         self.window = window
         self.dn = dn
         self.model = model
         self.policy = policy
+        self.info = info
         if "label" in model.fields:
             label = unicode(model.fields["label"])
         else:

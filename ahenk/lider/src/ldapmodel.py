@@ -11,6 +11,7 @@ class LdapClass:
     """ Designed for Ldap format for entries of modules of ajan """
     
     object_label = ""
+    objectClass = []
     entries = ()
     allow_multiple_edit = False
     
@@ -18,7 +19,6 @@ class LdapClass:
         self.fields = {}
         self.options = {}
         self.widgets = []
-        self.append = {}
         self.groups = {}
         self.fromEntry(attr)
     
@@ -26,7 +26,7 @@ class LdapClass:
         """ 'entries' is a tuple of tuples in format varname, attrname, valuetype and  append_values values respectively
             fromEntry  reads attribute names , makes necessary format casts and stores in LDapClass' 'varname' attribute 
         """
-        for varname, attrname, valuetype, append_values, label, widget, group, options in self.entries:
+        for varname, attrname, valuetype, label, widget, group, options in self.entries:
             value = attr.get(attrname, None)
             if valuetype == int:
                 if value:
@@ -53,13 +53,12 @@ class LdapClass:
             self.widgets.append((varname, label, widget,))
             self.options[varname] = options
             self.fields[varname] = val
-            self.append[varname] = append_values
             if widget and group:
                 if group not in self.groups:
                     self.groups[group] = []
                 self.groups[group].append(varname)
     
-    def toEntry(self, exclude=[], include=[], append=False):
+    def toEntry(self, exclude=[], include=[]):
         """  Reads attributes from entries to a list'attr' 
              If the attribute type is int type conversion is made to str    
         """
@@ -75,17 +74,14 @@ class LdapClass:
                     val = str(val)
             elif item[2] == set:
                 val = list(val)
-            if item[2] in [list, set] and append:
-                for i in self.append.get(item[0], []):
-                    if i not in val:
-                        val.append(i)
             attr[item[1]] = val
+            attr["objectClass"] = self.objectClass
         return attr
     
     def __str__(self):
         """ overrides method -str() cast- for 'entries's tuples to become a string in wanted format"""
         text = []
-        for varname, attrname, valuetype, append_values, label, widget, group, options in self.entries:
+        for varname, attrname, valuetype, label, widget, group, options in self.entries:
             value = getattr(self, varname, "")
             text.append("%s: %s" % (attrname, value))
         return "\n".join(text)

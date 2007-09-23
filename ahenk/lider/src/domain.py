@@ -97,6 +97,8 @@ class Connection:
         self.ldap.delete_s(dn)
     
     def modify(self, dn, old, new):
+        if "objectClass" in old:
+            old["objectClass"] = ["_"]
         self.ldap.modify_s(dn, ldap.modlist.modifyModlist(old, new))
     
     def rename(self, old, new):
@@ -183,97 +185,105 @@ class DomainConfig:
                 self.connections.append(connection)
 
 
+class ComputerInfoModel(ldapmodel.LdapClass):
+    object_label = i18n("Computer")
+    entries = (
+        ("name", "cn", str, i18n("Name"), ldapview.textWidget, "*", {}),
+        ("memory", "pardusMemoryCapacity", int, i18n("Memory"), ldapview.numberWidget, "*", {}),
+    )
+
+
 class ComputerPolicyModel(ldapmodel.LdapClass):
     object_label = i18n("Policy")
     allow_multiple_edit = True
+    objectClass = ["top", "device", "pardusComputer", "pisiPolicy", "comarUserPolicy", "comarServicePolicy"]
     entries = (
-        ("name", "cn", str, [], i18n("Name"), ldapview.textWidget, "*", {"no_edit": True}),
+        ("name", "cn", str, i18n("Name"), ldapview.textWidget, "*", {"no_edit": True}),
         # pisiPolicy
-        ("pisi_mode", "pisiAutoUpdateMode", str, [], i18n("Update Mode"), ldapview.comboWidget, i18n("PISI"), {"options": [("off", i18n("Off")), ("security", i18n("Security Only")), ("full", i18n("Full"))], "default": "off"}),
-        ("pisi_interval", "pisiAutoUpdateInterval", int, [], i18n("Interval"), ldapview.numberWidget, i18n("PISI"), {}),
-        ("pisi_wanted", "pisiWantedPackage", list, [], i18n("Wanted Packages"), ldapview.listWidget, i18n("PISI"), {}),
-        ("pisi_unwanted", "pisiUnwantedPackage", list, [], i18n("Unwanted Packages"), ldapview.listWidget, i18n("PISI"), {}),
+        ("pisi_mode", "pisiAutoUpdateMode", str, i18n("Update Mode"), ldapview.comboWidget, i18n("PISI"), {"options": [("off", i18n("Off")), ("security", i18n("Security Only")), ("full", i18n("Full"))], "default": "off"}),
+        ("pisi_interval", "pisiAutoUpdateInterval", int, i18n("Interval"), ldapview.numberWidget, i18n("PISI"), {}),
+        ("pisi_wanted", "pisiWantedPackage", list, i18n("Wanted Packages"), ldapview.listWidget, i18n("PISI"), {}),
+        ("pisi_unwanted", "pisiUnwantedPackage", list, i18n("Unwanted Packages"), ldapview.listWidget, i18n("PISI"), {}),
         # comarServicePolicy
-        ("service_start", "comarServiceStart", list, [], i18n("Start Services"), ldapview.listWidget, i18n("Services"), {}),
-        ("service_stop", "comarServiceStop", list, [], i18n("Stop Services"), ldapview.listWidget, i18n("Services"), {}),
+        ("service_start", "comarServiceStart", list, i18n("Start Services"), ldapview.listWidget, i18n("Services"), {}),
+        ("service_stop", "comarServiceStop", list, i18n("Stop Services"), ldapview.listWidget, i18n("Services"), {}),
         # comarUserPolicy
-        ("user_source", "comarUserSourceMode", str, [], i18n("User Source"), ldapview.comboWidget, i18n("COMAR"), {"options": [("local", i18n("Local")), ("ldap", i18n("LDAP"))], "default": "local"}),
-        ("user_scope", "comarUserLdapSearchScope", str, [], i18n("Search Scope"), ldapview.comboWidget, i18n("COMAR"), {"options": [("base", i18n("Base")), ("onelevel", i18n("One Level")), ("subtree", i18n("Subtree"))], "default": "subtree"}),
-        ("user_uri", "comarUserLdapURI", str, [], i18n("Database URI"), ldapview.textWidget, i18n("COMAR"), {}),
-        ("user_base", "comarUserLdapBase", str, [], i18n("Base DN"), ldapview.textWidget, i18n("COMAR"), {}),
-        ("user_filter", "comarUserLdapFilter", str, [], i18n("User Filter"), ldapview.textWidget, i18n("COMAR"), {}),
-        ("type", "objectClass", list, ["top", "device", "pardusComputer", "pisiPolicy", "comarUserPolicy", "comarServicePolicy"], None, None, None, {}),
+        ("user_source", "comarUserSourceMode", str, i18n("User Source"), ldapview.comboWidget, i18n("COMAR"), {"options": [("local", i18n("Local")), ("ldap", i18n("LDAP"))], "default": "local"}),
+        ("user_scope", "comarUserLdapSearchScope", str, i18n("Search Scope"), ldapview.comboWidget, i18n("COMAR"), {"options": [("base", i18n("Base")), ("onelevel", i18n("One Level")), ("subtree", i18n("Subtree"))], "default": "subtree"}),
+        ("user_uri", "comarUserLdapURI", str, i18n("Database URI"), ldapview.textWidget, i18n("COMAR"), {}),
+        ("user_base", "comarUserLdapBase", str, i18n("Base DN"), ldapview.textWidget, i18n("COMAR"), {}),
+        ("user_filter", "comarUserLdapFilter", str, i18n("User Filter"), ldapview.textWidget, i18n("COMAR"), {}),
     )
 
 
 class UnitPolicyModel(ldapmodel.LdapClass):
     object_label = i18n("Policy")
     allow_multiple_edit = True
+    objectClass = ["top", "organizationalUnit", "pisiPolicy", "comarUserPolicy", "comarServicePolicy"]
     entries = (
-        ("name", "ou", str, [], i18n("Name"), ldapview.textWidget, "*", {"no_edit": True}),
+        ("name", "ou", str, i18n("Name"), ldapview.textWidget, "*", {"no_edit": True}),
         # pisiPolicy
-        ("pisi_mode", "pisiAutoUpdateMode", str, [], i18n("Update Mode"), ldapview.comboWidget, i18n("PISI"), {"options": [("off", i18n("Off")), ("security", i18n("Security Only")), ("full", i18n("Full"))], "default": "off"}),
-        ("pisi_interval", "pisiAutoUpdateInterval", int, [], i18n("Interval"), ldapview.numberWidget, i18n("PISI"), {}),
-        ("pisi_wanted", "pisiWantedPackage", list, [], i18n("Wanted Packages"), ldapview.listWidget, i18n("PISI"), {}),
-        ("pisi_unwanted", "pisiUnwantedPackage", list, [], i18n("Unwanted Packages"), ldapview.listWidget, i18n("PISI"), {}),
+        ("pisi_mode", "pisiAutoUpdateMode", str, i18n("Update Mode"), ldapview.comboWidget, i18n("PISI"), {"options": [("off", i18n("Off")), ("security", i18n("Security Only")), ("full", i18n("Full"))], "default": "off"}),
+        ("pisi_interval", "pisiAutoUpdateInterval", int, i18n("Interval"), ldapview.numberWidget, i18n("PISI"), {}),
+        ("pisi_wanted", "pisiWantedPackage", list, i18n("Wanted Packages"), ldapview.listWidget, i18n("PISI"), {}),
+        ("pisi_unwanted", "pisiUnwantedPackage", list, i18n("Unwanted Packages"), ldapview.listWidget, i18n("PISI"), {}),
         # comarServicePolicy
-        ("service_start", "comarServiceStart", list, [], i18n("Start Services"), ldapview.listWidget, i18n("Services"), {}),
-        ("service_stop", "comarServiceStop", list, [], i18n("Stop Services"), ldapview.listWidget, i18n("Services"), {}),
+        ("service_start", "comarServiceStart", list, i18n("Start Services"), ldapview.listWidget, i18n("Services"), {}),
+        ("service_stop", "comarServiceStop", list, i18n("Stop Services"), ldapview.listWidget, i18n("Services"), {}),
         # comarUserPolicy
-        ("user_source", "comarUserSourceMode", str, [], i18n("User Source"), ldapview.comboWidget, i18n("COMAR"), {"options": [("local", i18n("Local")), ("ldap", i18n("LDAP"))], "default": "local"}),
-        ("user_scope", "comarUserLdapSearchScope", str, [], i18n("Search Scope"), ldapview.comboWidget, i18n("COMAR"), {"options": [("base", i18n("Base")), ("onelevel", i18n("One Level")), ("subtree", i18n("Subtree"))], "default": "subtree"}),
-        ("user_uri", "comarUserLdapURI", str, [], i18n("Database URI"), ldapview.textWidget, i18n("COMAR"), {}),
-        ("user_base", "comarUserLdapBase", str, [], i18n("Base DN"), ldapview.textWidget, i18n("COMAR"), {}),
-        ("user_filter", "comarUserLdapFilter", str, [], i18n("User Filter"), ldapview.textWidget, i18n("COMAR"), {}),
-        ("type", "objectClass", list, ["top", "organizationalUnit", "pisiPolicy", "comarUserPolicy", "comarServicePolicy"], None, None, None, {}),
+        ("user_source", "comarUserSourceMode", str, i18n("User Source"), ldapview.comboWidget, i18n("COMAR"), {"options": [("local", i18n("Local")), ("ldap", i18n("LDAP"))], "default": "local"}),
+        ("user_scope", "comarUserLdapSearchScope", str, i18n("Search Scope"), ldapview.comboWidget, i18n("COMAR"), {"options": [("base", i18n("Base")), ("onelevel", i18n("One Level")), ("subtree", i18n("Subtree"))], "default": "subtree"}),
+        ("user_uri", "comarUserLdapURI", str, i18n("Database URI"), ldapview.textWidget, i18n("COMAR"), {}),
+        ("user_base", "comarUserLdapBase", str, i18n("Base DN"), ldapview.textWidget, i18n("COMAR"), {}),
+        ("user_filter", "comarUserLdapFilter", str, i18n("User Filter"), ldapview.textWidget, i18n("COMAR"), {}),
     )
 
 class DirectoryModel(ldapmodel.LdapClass):
     object_label = i18n("Directory")
+    objectClass = ["dcObject", "organization"]
     entries = (
-        ("name", "dc", str, [], i18n("Name"), ldapview.textWidget, "*", {"no_edit": True}),
-        ("label", "o", str, [], i18n("Label"), ldapview.textWidget, "*", {}),
-        ("description", "description", str, [], i18n("Description"), ldapview.textWidget, "*", {}),
-        ("type", "objectClass", list, ["dcObject", "organization"], None, None, None, {}),
+        ("name", "dc", str, i18n("Name"), ldapview.textWidget, "*", {"no_edit": True}),
+        ("label", "o", str, i18n("Label"), ldapview.textWidget, "*", {}),
+        ("description", "description", str, i18n("Description"), ldapview.textWidget, "*", {}),
     )
 
 class ComputerModel(ldapmodel.LdapClass):
     object_label = i18n("Computer")
     allow_multiple_edit = True
+    objectClass = ["top", "device", "pardusComputer"]
     entries = (
-        ("name", "cn", str, [], i18n("Name"), ldapview.textWidget, "*", {}),
-        ("description", "description", str, [], i18n("Description"), ldapview.textWidget, "*", {}),
-        ("password", "userPassword", str, [], i18n("Password"), ldapview.passwordWidget, "*", {}),
-        ("type", "objectClass", list, ["top", "device", "pardusComputer"], None, None, None, {}),
+        ("name", "cn", str, i18n("Name"), ldapview.textWidget, "*", {}),
+        ("description", "description", str, i18n("Description"), ldapview.textWidget, "*", {}),
+        ("password", "userPassword", str, i18n("Password"), ldapview.passwordWidget, "*", {}),
     )
 
 class UnitModel(ldapmodel.LdapClass):
     object_label = i18n("Unit")
     allow_multiple_edit = True
+    objectClass = ["top", "organizationalUnit"]
     entries = (
-        ("name", "ou", str, [], i18n("Name"), ldapview.textWidget, "*", {}),
-        ("description", "description", str, [], i18n("Description"), ldapview.textWidget, "*", {}),
-        ("type", "objectClass", list, ["top", "organizationalUnit"], None, None, None, {}),
+        ("name", "ou", str, i18n("Name"), ldapview.textWidget, "*", {}),
+        ("description", "description", str, i18n("Description"), ldapview.textWidget, "*", {}),
     )
 
 class UserModel(ldapmodel.LdapClass):
     object_label = i18n("User")
+    objectClass = ["top", "account", "posixAccount"]
     entries = (
-        ("name", "uid", str, [], i18n("Username"), ldapview.textWidget, "*", {}),
-        ("label", "cn", str, [], i18n("Real Name"), ldapview.textWidget, "*", {}),
-        ("password", "userPassword", str, [], i18n("Password"), ldapview.passwordWidget, "*", {"hashMethod": 'utility.shadowCrypt'}),
-        ("shell", "loginShell", str, [], i18n("Shell"), ldapview.textWidget, "*", {}),
-        ("home", "homeDirectory", str, [], i18n("Home"), ldapview.textWidget, "*", {}),
-        ("uid", "uidNumber", int, [], i18n("User ID"), ldapview.numberWidget, "*", {}),
-        ("gid", "gidNumber", int, [], i18n("Group ID"), ldapview.numberWidget, "*", {}),
-        ("type", "objectClass", list, ["top", "account", "posixAccount"], None, None, None, {}),
+        ("name", "uid", str, i18n("Username"), ldapview.textWidget, "*", {}),
+        ("label", "cn", str, i18n("Real Name"), ldapview.textWidget, "*", {}),
+        ("password", "userPassword", str, i18n("Password"), ldapview.passwordWidget, "*", {"hashMethod": 'utility.shadowCrypt'}),
+        ("shell", "loginShell", str, i18n("Shell"), ldapview.textWidget, "*", {}),
+        ("home", "homeDirectory", str, i18n("Home"), ldapview.textWidget, "*", {}),
+        ("uid", "uidNumber", int, i18n("User ID"), ldapview.numberWidget, "*", {}),
+        ("gid", "gidNumber", int, i18n("Group ID"), ldapview.numberWidget, "*", {}),
     )
 
 class GroupModel(ldapmodel.LdapClass):
     object_label = i18n("Group")
+    objectClass = ["top", "posixGroup"]
     entries = (
-        ("name", "cn", str, [], i18n("Group Name"), ldapview.textWidget, "*", {}),
-        ("gid", "gidNumber", int, [], i18n("Group ID"), ldapview.numberWidget, "*", {}),
-        ("members", "memberUid", list, [], i18n("Members"), ldapview.listWidget, "*", {}),
-        ("type", "objectClass", list, ["top", "posixGroup"], None, None, None, {}),
+        ("name", "cn", str, i18n("Group Name"), ldapview.textWidget, "*", {}),
+        ("gid", "gidNumber", int, i18n("Group ID"), ldapview.numberWidget, "*", {}),
+        ("members", "memberUid", list, i18n("Members"), ldapview.listWidget, "*", {}),
     )

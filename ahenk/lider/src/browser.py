@@ -153,86 +153,34 @@ class Browser(KListView):
         object_len = 0
         show_tab = None
         
-        self.window.computers.clear()
-        item = self.selectedItem()
-        if item and isinstance(item.parent(), BrowserItem):
-            try:
-                result = item.connection.search(item.dn, ldap.SCOPE_ONELEVEL, "objectClass=pardusComputer")
-            except ldap.LDAPError, e:
-                if e.__class__ in domain.LDAPCritical:
-                    self.disableDomain()
-                else:
-                    self.window.showError(e.args[0]["info"])
-            else:
-                for computer in result:
-                    dn, attrs = computer
-                    model = domain.ComputerModel(attrs)
-                    policy = domain.ComputerPolicyModel(attrs)
-                    ObjectListItem(self.window.computers, self.window, dn, model, policy, "krdc")
-                self.window.tab.setTabLabel(self.window.computers, i18n("Computers (%1)").arg(len(result)))
-                
-                show_tab = self.window.computers
-                object_len = len(result)
+        objects = [
+            (self.window.computers, "pardusComputer", domain.ComputerModel, domain.ComputerPolicyModel, "krdc", i18n("Computers (%1)")),
+            (self.window.units, "organizationalUnit", domain.UnitModel, domain.UnitPolicyModel, "server", i18n("Units (%1)")),
+            (self.window.users, "posixAccount", domain.UserModel, None, "user", i18n("Users (%1)")),
+            (self.window.groups, "posixGroup", domain.GroupModel, None, "kontact_contacts", i18n("Groups (%1)")),
+        ]
         
-        self.window.units.clear()
-        item = self.selectedItem()
-        if item and isinstance(item.parent(), BrowserItem):
-            try:
-                result = item.connection.search(item.dn, ldap.SCOPE_ONELEVEL, "objectClass=organizationalUnit")
-            except ldap.LDAPError, e:
-                if e.__class__ in domain.LDAPCritical:
-                    self.disableDomain()
+        for objectWidget, objectClass, objectModel, objectPolicy, icon, label in objects:
+            objectWidget.clear()
+            item = self.selectedItem()
+            if item and isinstance(item.parent(), BrowserItem):
+                try:
+                    result = item.connection.search(item.dn, ldap.SCOPE_ONELEVEL, "objectClass=%s" % objectClass)
+                except ldap.LDAPError, e:
+                    if e.__class__ in domain.LDAPCritical:
+                        self.disableDomain()
+                    else:
+                        self.window.showError(e.args[0]["info"])
                 else:
-                    self.window.showError(e.args[0]["info"])
-            else:
-                for computer in result:
-                    dn, attrs = computer
-                    model = domain.UnitModel(attrs)
-                    policy = domain.UnitPolicyModel(attrs)
-                    ObjectListItem(self.window.units, self.window, dn, model, policy, "server")
-                self.window.tab.setTabLabel(self.window.units, i18n("Units (%1)").arg(len(result)))
+                    for dn, attrs in result:
+                        model = objectModel(attrs)
+                        policy = None
+                        if objectPolicy:
+                            policy = objectPolicy(attrs)
+                        ObjectListItem(objectWidget, self.window, dn, model, policy, icon)
+                    self.window.tab.setTabLabel(objectWidget, label.arg(len(result)))
                 if len(result) > object_len:
-                    show_tab = self.window.units
-                    object_len = len(result)
-        
-        self.window.users.clear()
-        item = self.selectedItem()
-        if item and isinstance(item.parent(), BrowserItem):
-            try:
-                result = item.connection.search(item.dn, ldap.SCOPE_ONELEVEL, "objectClass=posixAccount")
-            except ldap.LDAPError, e:
-                if e.__class__ in domain.LDAPCritical:
-                    self.disableDomain()
-                else:
-                    self.window.showError(e.args[0]["info"])
-            else:
-                for computer in result:
-                    dn, attrs = computer
-                    model = domain.UserModel(attrs)
-                    ObjectListItem(self.window.users, self.window, dn, model, None, "user")
-                self.window.tab.setTabLabel(self.window.users, i18n("Users (%1)").arg(len(result)))
-                if len(result) > object_len:
-                    show_tab = self.window.users
-                    object_len = len(result)
-        
-        self.window.groups.clear()
-        item = self.selectedItem()
-        if item and isinstance(item.parent(), BrowserItem):
-            try:
-                result = item.connection.search(item.dn, ldap.SCOPE_ONELEVEL, "objectClass=posixGroup")
-            except ldap.LDAPError, e:
-                if e.__class__ in domain.LDAPCritical:
-                    self.disableDomain()
-                else:
-                    self.window.showError(e.args[0]["info"])
-            else:
-                for computer in result:
-                    dn, attrs = computer
-                    model = domain.GroupModel(attrs)
-                    ObjectListItem(self.window.groups, self.window, dn, model, None, "kontact_contacts")
-                self.window.tab.setTabLabel(self.window.groups, i18n("Groups (%1)").arg(len(result)))
-                if len(result) > object_len:
-                    show_tab = self.window.groups
+                    show_tab = objectWidget
                     object_len = len(result)
         
         self.window.tab.showPage(show_tab)

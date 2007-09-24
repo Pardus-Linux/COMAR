@@ -120,7 +120,7 @@ class ObjectDialog(KDialog):
        
         if infowin:
             self.setCaption(i18n("%1 Information").arg(self.objectLabel()))
-        elif model.fields.get("name", "") or self.multiple:
+        elif model.name or self.multiple:
             self.setCaption(i18n("%1 Properties").arg(self.objectLabel()))
         else:
             self.setCaption(i18n("New %1").arg(self.objectLabel()))
@@ -137,7 +137,7 @@ class ObjectDialog(KDialog):
         if not multiple:
             # DN
             lab = QLabel(i18n("DN:"), self)
-            if not model.fields.get("name", ""):
+            if not model.name:
                 lab.setText(i18n("Parent DN:"))
                 self.mode = "new"
             else:
@@ -146,7 +146,14 @@ class ObjectDialog(KDialog):
             self.w_dn = QLineEdit(self)
             self.w_dn.setReadOnly(True)
             grid.addWidget(self.w_dn, 0, 1)
-            rows += 1
+            # Name
+            lab = QLabel(i18n("Name:"), self)
+            grid.addWidget(lab, 1, 0, Qt.AlignRight)
+            self.w_name = QLineEdit(self)
+            if self.mode == "edit":
+                self.w_name.setReadOnly(True)
+            grid.addWidget(self.w_name, 1, 1)
+            rows += 2
         else:
             self.mode = "edit"
         
@@ -163,11 +170,14 @@ class ObjectDialog(KDialog):
         
         self.widgets = {}
         if len(self.model.groups) > 1:
-            widgets = [(x, y, z) for x, y, z in self.model.widgets if x in self.model.groups["*"]]
-            if self.multiple:
-                widgets = [(x, y, z) for x, y, z in widgets if x != "name"]
-            genWidgets(widgets, grid, self, rows)
-            row = len(self.model.groups["*"]) + 1
+            if "*" in self.model.groups:
+                widgets = [(x, y, z) for x, y, z in self.model.widgets if x in self.model.groups["*"]]
+                if self.multiple:
+                    widgets = [(x, y, z) for x, y, z in widgets if x != "name"]
+                genWidgets(widgets, grid, self, rows)
+                row = len(self.model.groups["*"]) + 1
+            else:
+                row = 1
             
             self.tabs = QTabWidget(self)
             grid.addMultiCellWidget(self.tabs, row, row, 0, 1)
@@ -181,11 +191,7 @@ class ObjectDialog(KDialog):
                 widgets = [(x, y, z) for x, y, z in self.model.widgets if x in varnames]
                 genWidgets(widgets, tab_grid, tab)
         else:
-            if self.multiple:
-                widgets = [(x, y, z) for x, y, z in self.model.widgets if x != "name"]
-            else:
-                widgets = self.model.widgets
-            genWidgets(widgets, grid, self, rows)
+            genWidgets(self.model.widgets, grid, self, rows)
         
         lay = QHBoxLayout()
         vb.addLayout(lay)
@@ -210,36 +216,21 @@ class ObjectDialog(KDialog):
     def objectLabel(self):
         return i18n(self.model.object_label)
     
-    def objectName(self, name=None):
-        if not name:
-            name = self.model.fields["name"]
-        for model_info in self.model.entries:
-            if model_info[0] == "name":
-                return "%s=%s" % (model_info[1], name)
-    
-    def objectDN(self, name=None):
-        if not name:
-            name = self.model.fields["name"]
-        return "%s,%s" % (self.objectName(name), self.dn)
-    
     def isModified(self):
         return True
     
     def setValues(self):
         if not self.multiple:
             self.w_dn.setText(self.dn)
-        if self.model:
-            for varname, widget in self.widgets.iteritems():
-                if self.multiple and varname == "name":
-                    continue
-                widget.importValue(self.model.fields[varname])
+            self.w_name.setText(self.model.name)
+        for varname, widget in self.widgets.iteritems():
+            widget.importValue(self.model.fields[varname])
     
     def getValues(self):
-        if not self.multiple and not self.model.fields["name"]:
-            self.dn = self.objectDN(self.widgets["name"].text())
+        if not self.multiple and self.mode == "new":
+            self.dn = "%s=%s,%s" % (self.model.name_field, self.w_name.text(), self.dn)
+            self.model.name = str(self.w_name.text())
         for varname, widget in self.widgets.iteritems():
-            if self.multiple and varname == "name":
-                continue
             self.model.fields[varname] = widget.exportValue()
     
     def accept(self):

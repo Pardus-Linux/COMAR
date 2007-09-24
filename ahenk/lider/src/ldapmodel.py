@@ -10,6 +10,8 @@
 class LdapClass:
     """ Designed for Ldap format for entries of modules of ajan """
     
+    name = ""
+    name_field = ""
     object_label = ""
     objectClass = []
     entries = ()
@@ -50,6 +52,10 @@ class LdapClass:
                     val = []
             else:
                 val = []
+            if self.name_field in attr:
+                self.name = attr[self.name_field][0]
+            else:
+                self.name = ""
             self.widgets.append((varname, label, widget,))
             self.options[varname] = options
             self.fields[varname] = val
@@ -58,7 +64,7 @@ class LdapClass:
                     self.groups[group] = []
                 self.groups[group].append(varname)
     
-    def toEntry(self, exclude=[], include=[]):
+    def toEntry(self, exclude=[], include=[], multiple=False):
         """  Reads attributes from entries to a list'attr' 
              If the attribute type is int type conversion is made to str    
         """
@@ -76,6 +82,8 @@ class LdapClass:
                 val = list(val)
             attr[item[1]] = val
             attr["objectClass"] = self.objectClass
+            if self.name and not multiple:
+                attr[self.name_field] = self.name
         return attr
     
     def __str__(self):

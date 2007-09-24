@@ -86,7 +86,7 @@ class Browser(KListView):
         if od.exec_loop():
             model_new = od.model
             try:
-                connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"]))
+                connection.modify(od.dn, model_old.toEntry(), model_new.toEntry())
             except ldap.LDAPError, e:
                 if e.__class__ in domain.LDAPCritical:
                     item.disableDomain()
@@ -413,13 +413,15 @@ class ObjectList(KListView):
                 # Modify attributes
                 if multiple:
                     for item in items:
-                        connection.modify(item.dn, item.model.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"]))
+                        connection.modify(item.dn, item.model.toEntry(multiple=True), model_new.toEntry(multiple=True))
                 else:
-                    connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"]))
+                    connection.modify(od.dn, model_old.toEntry(), model_new.toEntry())
+                    """
                     # Rename
                     if model_new.fields["name"] != model_old.fields["name"]:
                         new_name = od.objectName()
                         connection.rename(item.dn, new_name)
+                    """
             except ldap.LDAPError, e:
                 if e.__class__ in domain.LDAPCritical:
                     item.disableDomain()
@@ -447,14 +449,16 @@ class ObjectList(KListView):
             try:
                 if multiple:
                     for item in items:
-                        connection.modify(item.dn, item.policy.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"]))
+                        connection.modify(item.dn, item.policy.toEntry(multiple=True), model_new.toEntry(multiple=True))
                 else:
-                    connection.modify(od.dn, model_old.toEntry(exclude=["name"]), model_new.toEntry(exclude=["name"]))
+                    connection.modify(od.dn, model_old.toEntry(multiple=True), model_new.toEntry(multiple=True))
             except ldap.LDAPError, e:
                 if e.__class__ in domain.LDAPCritical:
                     item.disableDomain()
                 else:
                     self.window.showError(e.args[0]["info"])
+            else:
+                browser.showObjects()
     
     def slotInfo(self):
         browser = self.window.browser
@@ -514,7 +518,7 @@ class ObjectListItem(KListViewItem):
         if "label" in model.fields:
             label = unicode(model.fields["label"])
         else:
-            label = model.fields["name"]
+            label = model.name
         if "description" in model.fields:
             description = unicode(model.fields["description"])
         else:

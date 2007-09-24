@@ -102,7 +102,8 @@ class Policy:
         if self.policy.mode == "ldap":
             service.auth.set_module("pam_ldap.so", "sufficient", before="pam_unix.so")
             service.account.set_module("pam_ldap.so", "sufficient", before="pam_unix.so")
-            service.session.set_module("pam_mkhomedir.so", "required")
+            service.password.set_module("pam_ldap.so", "required")
+            service.session.set_module("pam_mkhomedir.so", "required", args="umask=0077")
             for rule in service.auth:
                 if rule.module == "pam_unix.so":
                     if not "try_first_pass" in rule.args:

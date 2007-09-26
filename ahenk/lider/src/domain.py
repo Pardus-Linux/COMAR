@@ -251,7 +251,7 @@ class UnitModel(ldapmodel.LdapClass):
     )
 
 class UserModel(ldapmodel.LdapClass):
-    name_field = "cn"
+    name_field = "uid"
     object_label = i18n("User")
     objectClass = ["top", "account", "posixAccount", "shadowAccount"]
     entries = (

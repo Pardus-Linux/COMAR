@@ -199,9 +199,14 @@ class ObjectDialog(KDialog):
         lay.setSpacing(12)
         
         if not self.infowin:
-            but = QPushButton(getIconSet("apply", KIcon.Small), i18n("Apply"), self)
+            but = QPushButton(getIconSet("apply", KIcon.Small), i18n("Save"), self)
             lay.addWidget(but)
             self.connect(but, SIGNAL("clicked()"), self.accept)
+            
+            if self.mode == "edit":
+                but = QPushButton(getIconSet("editdelete", KIcon.Small), i18n("Unset"), self)
+                lay.addWidget(but)
+                self.connect(but, SIGNAL("clicked()"), self.unset)
             
             but = QPushButton(getIconSet("cancel", KIcon.Small), i18n("Cancel"), self)
             lay.addWidget(but)
@@ -233,9 +238,18 @@ class ObjectDialog(KDialog):
         for varname, widget in self.widgets.iteritems():
             self.model.fields[varname] = widget.exportValue()
     
+    def unsetValues(self):
+        if self.mode == "edit":
+            for varname, widget in self.widgets.iteritems():
+                self.model.fields[varname] = None
+    
     def accept(self):
         if not self.infowin:
             self.getValues()
+        KDialog.accept(self)
+
+    def unset(self):
+        self.unsetValues()
         KDialog.accept(self)
     
     def reject(self):

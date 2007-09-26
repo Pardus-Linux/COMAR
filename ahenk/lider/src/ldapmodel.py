@@ -64,23 +64,22 @@ class LdapClass:
                     self.groups[group] = []
                 self.groups[group].append(varname)
     
-    def toEntry(self, exclude=[], include=[], multiple=False):
+    def toEntry(self, multiple=False):
         """  Reads attributes from entries to a list'attr' 
              If the attribute type is int type conversion is made to str    
         """
         attr = {}
         for item in self.entries:
-            if item[0] in exclude:
-                continue
-            elif include and item[0] not in include:
-                continue
             val = self.fields[item[0]]
-            if item[2] == int:
-                if not isinstance(val, list):
-                    val = str(val)
-            elif item[2] == set:
-                val = list(val)
-            attr[item[1]] = val
+            if val:
+                if item[2] == int:
+                    if not isinstance(val, list):
+                        val = str(val)
+                elif item[2] == set:
+                    val = list(val)
+                attr[item[1]] = val
+            else:
+                attr[item[1]] = []
             attr["objectClass"] = self.objectClass
             if self.name and not multiple:
                 attr[self.name_field] = self.name

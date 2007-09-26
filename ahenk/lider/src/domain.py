@@ -239,6 +239,7 @@ class ComputerModel(ldapmodel.LdapClass):
     entries = (
         ("description", "description", str, i18n("Description"), ldapview.textWidget, "*", {}),
         ("password", "userPassword", str, i18n("Password"), ldapview.passwordWidget, "*", {}),
+        ("unit", "ou", list, i18n("Member of"), ldapview.listWidget, "*", {}),
     )
 
 class UnitModel(ldapmodel.LdapClass):

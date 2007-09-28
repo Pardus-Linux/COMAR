@@ -3,3 +3,13 @@
 
 ? Remote script execution
 ? Remote file uploading
+  better not, those can be solved with automatic update
+
+
+- Documentation
+  OpenLDAP doc (Gürer is working on that)
+  General Ahenk doc (a draft is in internal)
+
+- UI
+  Domain Login Manager (sets /etc/ahenk/ajan.xml, and starts ajan)
+

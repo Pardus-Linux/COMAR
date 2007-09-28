@@ -165,7 +165,8 @@ class Browser(KListView):
             item = self.selectedItem()
             if item and isinstance(item.parent(), BrowserItem):
                 try:
-                    result = item.connection.search(item.dn, ldap.SCOPE_ONELEVEL, "objectClass=%s" % objectClass)
+                    fields = [objectModel.name_field]
+                    result = item.connection.search(item.dn, ldap.SCOPE_ONELEVEL, "objectClass=%s" % objectClass, fields)
                 except ldap.LDAPError, e:
                     if e.__class__ in domain.LDAPCritical:
                         self.disableDomain()
@@ -395,10 +396,19 @@ class ObjectList(KListView):
             else:
                 browser.showObjects()
     
+    def getObjectDetails(self, dn):
+        browser = self.window.browser
+        connection = browser.selectedItem().connection
+        return connection.search(dn, ldap.SCOPE_BASE)[0][1]
+    
     def slotProperties(self):
         browser = self.window.browser
         connection = browser.selectedItem().connection
         items = self.selectedItems()
+        for item in items:
+            attrs = self.getObjectDetails(item.dn)
+            if item.model:
+                item.model = item.model.__class__(attrs)
         item = items[0]
         if len(items) > 1 and item.model.allow_multiple_edit:
             multiple = True
@@ -434,6 +444,10 @@ class ObjectList(KListView):
         browser = self.window.browser
         connection = browser.selectedItem().connection
         items = self.selectedItems()
+        for item in items:
+            attrs = self.getObjectDetails(item.dn)
+            if item.policy:
+                item.policy = item.policy.__class__(attrs)
         item = items[0]
         if not item.policy:
             return
@@ -464,6 +478,10 @@ class ObjectList(KListView):
         browser = self.window.browser
         connection = browser.selectedItem().connection
         items = self.selectedItems()
+        for item in items:
+            attrs = self.getObjectDetails(item.dn)
+            if item.info:
+                item.info = item.info.__class__(attrs)
         item = items[0]
         if not item.info:
             return
@@ -515,11 +533,11 @@ class ObjectListItem(KListViewItem):
         self.model = model
         self.policy = policy
         self.info = info
-        if "label" in model.fields:
+        if model.fields.get("label", ""):
             label = unicode(model.fields["label"])
         else:
             label = model.name
-        if "description" in model.fields:
+        if model.fields.get("description", ""):
             description = unicode(model.fields["description"])
         else:
             description = ""

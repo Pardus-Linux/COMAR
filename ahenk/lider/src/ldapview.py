@@ -75,6 +75,9 @@ class comboWidget(QComboBox):
         self.mode = mode
         self.options = options
         self.values = []
+        if options.get("allow_null", False):
+            self.values.append("")
+            self.insertItem(i18n("Select..."))
         for value, label in options["options"]:
             self.values.append(value)
             self.insertItem(i18n(label))
@@ -82,11 +85,13 @@ class comboWidget(QComboBox):
             self.importValue(options["default"])
     
     def importValue(self, value):
-        if value:
+        if value and value in self.values:
             index = self.values.index(value)
             self.setCurrentItem(index)
     
     def exportValue(self):
+        if not self.values[self.currentItem()]:
+            return []
         return str(self.values[self.currentItem()])
 
 

@@ -87,7 +87,7 @@ class Connection:
         sum = self.getSum(repr(fields))
         return sum != self.sum
     
-    def search(self, dn, scope, filters="", fields=None):
+    def search(self, dn, scope, filters="(objectClass=*)", fields=None):
         return self.ldap.search_s(dn, scope, filters, fields)
     
     def add(self, dn, attrs):
@@ -239,7 +239,7 @@ class ComputerModel(ldapmodel.LdapClass):
     entries = (
         ("description", "description", str, i18n("Description"), ldapview.textWidget, "*", {}),
         ("password", "userPassword", str, i18n("Password"), ldapview.passwordWidget, "*", {}),
-        ("unit", "ou", list, i18n("Member of"), ldapview.listWidget, "*", {}),
+        ("unit", "ou", str, i18n("Member of"), ldapview.textWidget, "*", {}),
     )
 
 class UnitModel(ldapmodel.LdapClass):

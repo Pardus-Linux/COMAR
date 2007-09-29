@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-09-18 14:07+0300\n"
+"POT-Creation-Date: 2007-09-29 20:15+0300\n"
 "PO-Revision-Date: 2007-09-12 11:08+0300\n"
 "Last-Translator: Bahadır Kandemir <bahadir@pardus.org.tr>\n"
 "Language-Team: Bahadır Kandemir <bahadir@pardus.org.tr>\n"
@@ -31,11 +31,11 @@ msgstr "&Özellikler"
 msgid "Remove directory?"
 msgstr "Dizin silinsin mi?"
 
-#: src/browser.py:118 src/browser.py:133 src/browser.py:481
+#: src/browser.py:118 src/browser.py:133 src/browser.py:499
 msgid "Are you sure you want to remove '%1' ?"
 msgstr "'%1' nesnesini silmek istediğinizden emin misiniz?"
 
-#: src/browser.py:118 src/browser.py:481 src/browser.py:485 src/browser.py:488
+#: src/browser.py:118 src/browser.py:499 src/browser.py:503 src/browser.py:506
 msgid "This is not undoable. Are you sure you want to continue?"
 msgstr "Bu işlem geri alınamaz. Devam etmek istediğinize emin misiniz?"
 
@@ -43,52 +43,55 @@ msgstr "Bu işlem geri alınamaz. Devam etmek istediğinize emin misiniz?"
 msgid "Remove domain?"
 msgstr "Alanadı silinsin mi?"
 
-#: src/browser.py:172
+#: src/browser.py:157
 msgid "Computers (%1)"
 msgstr "Bilgisayarlar (%1)"
 
-#: src/browser.py:193
+#: src/browser.py:158
 msgid "Units (%1)"
 msgstr "Birimler (%1)"
 
-#: src/browser.py:213
+#: src/browser.py:159
 msgid "Users (%1)"
 msgstr "Kullanıcılar (%1)"
 
-#: src/browser.py:233
+#: src/browser.py:160
 msgid "Groups (%1)"
 msgstr "Gruplar (%1)"
 
-#: src/browser.py:379 src/domain.py:189 src/domain.py:209 src/domain.py:228
-#: src/domain.py:236 src/domain.py:243
+#: src/browser.py:331
 msgid "Name"
 msgstr "İsim"
 
-#: src/browser.py:380
+#: src/browser.py:332 src/domain.py:231 src/domain.py:240 src/domain.py:251
 msgid "Description"
 msgstr "Açıklama"
 
-#: src/browser.py:391
-msgid "&Policy"
-msgstr "&Politika"
-
-#: src/browser.py:393
-msgid "&Configuration"
-msgstr "&Seçenekler"
-
-#: src/browser.py:396
+#: src/browser.py:342
 msgid "&New"
 msgstr "&Yeni"
 
-#: src/browser.py:481
+#: src/browser.py:346
+msgid "&Information"
+msgstr "&Bilgi"
+
+#: src/browser.py:347
+msgid "&Policy"
+msgstr "&Politika"
+
+#: src/browser.py:348
+msgid "&Configuration"
+msgstr "&Seçenekler"
+
+#: src/browser.py:499
 msgid "Remove object?"
 msgstr "Nesne silinsin mi?"
 
-#: src/browser.py:485 src/browser.py:488
+#: src/browser.py:503 src/browser.py:506
 msgid "Remove objects?"
 msgstr "Nesneler silinsin mi?"
 
-#: src/browser.py:485
+#: src/browser.py:503
 msgid ""
 "Are you sure you want to remove these objects?\n"
 "%1"
@@ -96,11 +99,11 @@ msgstr ""
 "Bu nesneleri silmek istediğinizden emin misiniz?\n"
 "%1"
 
-#: src/browser.py:488
+#: src/browser.py:506
 msgid "Are you sure you want to remove %1 objects?"
 msgstr "%1 nesneyi silmek istediğinizden emin misiniz?"
 
-#: src/browser.py:504
+#: src/browser.py:522
 msgid ""
 "Unable to delete these objects:\n"
 "%1"
@@ -108,11 +111,11 @@ msgstr ""
 "Bu nesneler silinemedi:\n"
 "%1"
 
-#: src/browser.py:507
+#: src/browser.py:525
 msgid "Removed %1 objects."
 msgstr "%1 nesne silindi."
 
-#: src/dialogs.py:26 src/dialogs.py:120
+#: src/dialogs.py:26 src/dialogs.py:125
 msgid "%1 Properties"
 msgstr "%1 Özellikleri"
 
@@ -140,166 +143,188 @@ msgstr "Kullanıcı:"
 msgid "Bind Password:"
 msgstr "Parola:"
 
-#: src/dialogs.py:122
+#: src/dialogs.py:123
+msgid "%1 Information"
+msgstr "%1 Bilgisi"
+
+#: src/dialogs.py:127
 msgid "New %1"
 msgstr "Yeni %1"
 
-#: src/dialogs.py:133
+#: src/dialogs.py:140
+msgid "Enable %1"
+msgstr "%1 Aktif"
+
+#: src/dialogs.py:153
 msgid "DN:"
 msgstr "DN:"
 
-#: src/dialogs.py:135
+#: src/dialogs.py:155
 msgid "Parent DN:"
 msgstr "Ana DN:"
 
-#: src/domain.py:127
+#: src/dialogs.py:164
+msgid "Name:"
+msgstr "İsim:"
+
+#: src/domain.py:129
 msgid "Not a valid Connection instance."
 msgstr "Geçerli bir bağlantı değil."
 
-#: src/domain.py:163
+#: src/domain.py:165
 msgid "Domain configuration file is missing."
 msgstr "Alanadı ayar dosyası kayıp."
 
-#: src/domain.py:167
+#: src/domain.py:169
 msgid "Domain configuration file has syntax errors."
 msgstr "Alanadı ayar dosyasında sözdizimi hatası var."
 
-#: src/domain.py:187 src/domain.py:207
-msgid "Policy"
-msgstr "Politika"
-
-#: src/domain.py:191 src/domain.py:211
-msgid "Update Mode"
-msgstr "Güncelleme Modu"
-
-#: src/domain.py:191 src/domain.py:192 src/domain.py:193 src/domain.py:194
-#: src/domain.py:211 src/domain.py:212 src/domain.py:213 src/domain.py:214
-msgid "PISI"
-msgstr "PISI"
-
-#: src/domain.py:191 src/domain.py:211
-msgid "Security Only"
-msgstr "Güvenlik Güncellemeleri"
-
-#: src/domain.py:191 src/domain.py:211
-msgid "Full"
-msgstr "Tam"
-
-#: src/domain.py:192 src/domain.py:212
-msgid "Interval"
-msgstr "Günceleme Aralığı"
-
-#: src/domain.py:193 src/domain.py:213
-msgid "Wanted Packages"
-msgstr "İstenen Paketler"
-
-#: src/domain.py:194 src/domain.py:214
-msgid "Unwanted Packages"
-msgstr "İstenmeyen Paketler"
-
-#: src/domain.py:197 src/domain.py:217
-msgid "User Source"
-msgstr "Kullanıcı Kaynağı"
-
-#: src/domain.py:197 src/domain.py:198 src/domain.py:199 src/domain.py:200
-#: src/domain.py:201 src/domain.py:217 src/domain.py:218 src/domain.py:219
-#: src/domain.py:220 src/domain.py:221
-msgid "COMAR"
-msgstr "COMAR"
-
-#: src/domain.py:197 src/domain.py:217
-msgid "Local"
-msgstr "Yerel"
-
-#: src/domain.py:197 src/domain.py:217
-msgid "LDAP"
-msgstr "LDAP"
-
-#: src/domain.py:198 src/domain.py:218
-msgid "Search Scope"
-msgstr "Arama Menzili"
-
-#: src/domain.py:198 src/domain.py:218
-msgid "Base"
-msgstr "Taban"
-
-#: src/domain.py:198 src/domain.py:218
-msgid "One Level"
-msgstr "Tek Seviye"
-
-#: src/domain.py:198 src/domain.py:218
-msgid "Subtree"
-msgstr "Alt Dallar"
-
-#: src/domain.py:199 src/domain.py:219
-msgid "Database URI"
-msgstr "Veritabanı Adresi"
-
-#: src/domain.py:200 src/domain.py:220
-msgid "Base DN"
-msgstr "Ana DN"
-
-#: src/domain.py:201 src/domain.py:221
-msgid "User Filter"
-msgstr "Kullanıcı Filtresi"
-
-#: src/domain.py:226
-msgid "Directory"
-msgstr "Dizin"
-
-#: src/domain.py:229
-msgid "Label"
-msgstr "Etiket"
-
-#: src/domain.py:234
+#: src/domain.py:190 src/domain.py:236
 msgid "Computer"
 msgstr "Bilgisayar"
 
-#: src/domain.py:241
-msgid "Unit"
-msgstr "Birim"
+#: src/domain.py:192
+msgid "Memory"
+msgstr "Bellek"
 
-#: src/domain.py:248
-msgid "User"
-msgstr "Kullanıcı"
+#: src/domain.py:198 src/domain.py:221
+msgid "Policy"
+msgstr "Politika"
 
-#: src/domain.py:250
-msgid "Username"
-msgstr "Kullanıcı Adı"
+#: src/domain.py:203
+msgid "Update Mode"
+msgstr "Güncelleme Modu"
 
-#: src/domain.py:251
-msgid "Real Name"
-msgstr "Gerçek İsim"
+#: src/domain.py:203 src/domain.py:204 src/domain.py:205 src/domain.py:206
+msgid "PISI"
+msgstr "PISI"
 
-#: src/domain.py:252
+#: src/domain.py:203
+msgid "Security Only"
+msgstr "Güvenlik Güncellemeleri"
+
+#: src/domain.py:203
+msgid "Full"
+msgstr "Tam"
+
+#: src/domain.py:204
+msgid "Interval"
+msgstr "Günceleme Aralığı"
+
+#: src/domain.py:205
+msgid "Wanted Packages"
+msgstr "İstenen Paketler"
+
+#: src/domain.py:206
+msgid "Unwanted Packages"
+msgstr "İstenmeyen Paketler"
+
+#: src/domain.py:208
+msgid "Wanted Services"
+msgstr "İstenen Servisler"
+
+#: src/domain.py:208 src/domain.py:209
+msgid "Services"
+msgstr "Servisler"
+
+#: src/domain.py:209
+msgid "Unwanted Services"
+msgstr "İstenmeyen Servisler"
+
+#: src/domain.py:211
+msgid "User Source"
+msgstr "Kullanıcı Kaynağı"
+
+#: src/domain.py:211 src/domain.py:212 src/domain.py:213 src/domain.py:214
+#: src/domain.py:215
+msgid "COMAR"
+msgstr "COMAR"
+
+#: src/domain.py:211
+msgid "Local"
+msgstr "Yerel"
+
+#: src/domain.py:211
+msgid "LDAP"
+msgstr "LDAP"
+
+#: src/domain.py:212
+msgid "Search Scope"
+msgstr "Arama Menzili"
+
+#: src/domain.py:212
+msgid "Base"
+msgstr "Taban"
+
+#: src/domain.py:212
+msgid "One Level"
+msgstr "Tek Seviye"
+
+#: src/domain.py:212
+msgid "Subtree"
+msgstr "Alt Dallar"
+
+#: src/domain.py:213
+msgid "Database URI"
+msgstr "Veritabanı Adresi"
+
+#: src/domain.py:214
+msgid "Base DN"
+msgstr "Ana DN"
+
+#: src/domain.py:215
+msgid "User Filter"
+msgstr "Kullanıcı Filtresi"
+
+#: src/domain.py:227
+msgid "Directory"
+msgstr "Dizin"
+
+#: src/domain.py:230
+msgid "Label"
+msgstr "Etiket"
+
+#: src/domain.py:241 src/domain.py:260
 msgid "Password"
 msgstr "Parola"
 
-#: src/domain.py:253
+#: src/domain.py:242
+msgid "Member of"
+msgstr "Üst Birim"
+
+#: src/domain.py:247
+msgid "Unit"
+msgstr "Birim"
+
+#: src/domain.py:256
+msgid "User"
+msgstr "Kullanıcı"
+
+#: src/domain.py:259
+msgid "Real Name"
+msgstr "Gerçek İsim"
+
+#: src/domain.py:261
 msgid "Shell"
 msgstr "Kabuk"
 
-#: src/domain.py:254
+#: src/domain.py:262
 msgid "Home"
 msgstr "Ev Dizini"
 
-#: src/domain.py:255
+#: src/domain.py:263
 msgid "User ID"
 msgstr "Kullanıcı No"
 
-#: src/domain.py:256 src/domain.py:264
+#: src/domain.py:264 src/domain.py:272
 msgid "Group ID"
 msgstr "Grup No"
 
-#: src/domain.py:261
+#: src/domain.py:269
 msgid "Group"
 msgstr "Grup"
 
-#: src/domain.py:263
-msgid "Group Name"
-msgstr "Grup Adı"
-
-#: src/domain.py:265
+#: src/domain.py:273
 msgid "Members"
 msgstr "Üyeler"
 
@@ -339,6 +364,10 @@ msgstr "Kritik Hata"
 msgid "Unable to complete operation:"
 msgstr "İşlem tamamlanamadı:"
 
-#: src/ldapview.py:94
+#: src/ldapview.py:80
+msgid "Select..."
+msgstr "Seçin..."
+
+#: src/ldapview.py:101
 msgid "Edit List"
 msgstr "Listeyi Değiştir"

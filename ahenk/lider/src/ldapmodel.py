@@ -31,30 +31,24 @@ class LdapClass:
         """
         for varname, attrname, valuetype, label, widget, group, options in self.entries:
             value = attr.get(attrname, None)
-            if value:
+            if value is not None:
                 self.new = False
-            if valuetype == int:
-                if value:
+                if valuetype == int:
                     val = int(value[0])
-                else:
-                    val = []
-            elif valuetype == str:
-                if value:
+                elif valuetype == str:
                     val = str(value[0])
-                else:
-                    val = ""
-            elif valuetype == set:
-                if value:
+                elif valuetype == set:
                     val = set(value)
                 else:
-                    val = set()
-            elif valuetype == list:
-                if value:
                     val = value
+            else:
+                if valuetype == str:
+                    val = ""
+                elif valuetype == set:
+                    val = set()
                 else:
                     val = []
-            else:
-                val = []
+            
             if self.name_field in attr:
                 self.name = attr[self.name_field][0]
             else:
@@ -74,7 +68,7 @@ class LdapClass:
         attr = {}
         for item in self.entries:
             val = self.fields[item[0]]
-            if val:
+            if val is not None:
                 if item[2] == int:
                     if not isinstance(val, list):
                         val = str(val)

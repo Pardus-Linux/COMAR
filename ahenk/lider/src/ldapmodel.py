@@ -22,6 +22,7 @@ class LdapClass:
         self.options = {}
         self.widgets = []
         self.groups = {}
+        self.new = True
         self.fromEntry(attr)
     
     def fromEntry(self, attr):
@@ -30,6 +31,8 @@ class LdapClass:
         """
         for varname, attrname, valuetype, label, widget, group, options in self.entries:
             value = attr.get(attrname, None)
+            if value:
+                self.new = False
             if valuetype == int:
                 if value:
                     val = int(value[0])

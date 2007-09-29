@@ -453,11 +453,11 @@ class ObjectList(KListView):
             return
         if len(items) > 1 and item.policy.allow_multiple_edit:
             multiple = True
-            od = ObjectDialog(self.window, item.dn, item.policy.__class__(), multiple=True)
+            od = ObjectDialog(self.window, item.dn, item.policy.__class__(), multiple=True, unset=True)
         else:
             multiple = False
             model_old = copy.deepcopy(item.policy)
-            od = ObjectDialog(self.window, item.dn, item.policy)
+            od = ObjectDialog(self.window, item.dn, item.policy, unset=True)
         if od.exec_loop():
             model_new = od.model
             try:

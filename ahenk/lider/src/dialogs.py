@@ -111,12 +111,13 @@ class DomainDialog(KDialog):
 class ObjectDialog(KDialog):
     """Directory object attributes dialog."""
     
-    def __init__(self, parent, dn, model, multiple=False, infowin=False):
+    def __init__(self, parent, dn, model, multiple=False, infowin=False, unset=False):
         KDialog.__init__(self, parent)
         self.dn = dn
         self.model = model
         self.multiple = multiple
         self.infowin = infowin
+        self.unset = unset
        
         if infowin:
             self.setCaption(i18n("%1 Information").arg(self.objectLabel()))
@@ -130,26 +131,39 @@ class ObjectDialog(KDialog):
         vb = QVBoxLayout(self, 6)
         vb.setMargin(12)
         
-        grid = QGridLayout(1, 2, 6)
-        vb.addLayout(grid)
+        self.grp = QGroupBox(self)
+        self.grp.setColumnLayout(0,Qt.Vertical)
+        self.grp.layout().setSpacing(6)
+        self.grp.layout().setMargin(11)
+        
+        if unset:
+            self.grp.setTitle(i18n("Enable %1").arg(self.objectLabel()))
+            self.grp.setCheckable(True)
+            if self.model.new:
+                self.grp.setChecked(False)
+
+        vb.addWidget(self.grp)
+        
+        grid = QGridLayout(self.grp.layout())
+        grid.setAlignment(Qt.AlignTop)
         
         rows = 0
         if not multiple:
             # DN
-            lab = QLabel(i18n("DN:"), self)
+            lab = QLabel(i18n("DN:"), self.grp)
             if not model.name:
                 lab.setText(i18n("Parent DN:"))
                 self.mode = "new"
             else:
                 self.mode = "edit"
             grid.addWidget(lab, 0, 0, Qt.AlignRight)
-            self.w_dn = QLineEdit(self)
+            self.w_dn = QLineEdit(self.grp)
             self.w_dn.setReadOnly(True)
             grid.addWidget(self.w_dn, 0, 1)
             # Name
-            lab = QLabel(i18n("Name:"), self)
+            lab = QLabel(i18n("Name:"), self.grp)
             grid.addWidget(lab, 1, 0, Qt.AlignRight)
-            self.w_name = QLineEdit(self)
+            self.w_name = QLineEdit(self.grp)
             if self.mode == "edit":
                 self.w_name.setReadOnly(True)
             grid.addWidget(self.w_name, 1, 1)
@@ -174,12 +188,12 @@ class ObjectDialog(KDialog):
                 widgets = [(x, y, z) for x, y, z in self.model.widgets if x in self.model.groups["*"]]
                 if self.multiple:
                     widgets = [(x, y, z) for x, y, z in widgets if x != "name"]
-                genWidgets(widgets, grid, self, rows)
+                genWidgets(widgets, grid, self.grp, rows)
                 row = len(self.model.groups["*"]) + 1
             else:
                 row = 1
             
-            self.tabs = QTabWidget(self)
+            self.tabs = QTabWidget(self.grp)
             grid.addMultiCellWidget(self.tabs, row, row, 0, 1)
             
             for group, varnames in self.model.groups.iteritems():
@@ -191,7 +205,7 @@ class ObjectDialog(KDialog):
                 widgets = [(x, y, z) for x, y, z in self.model.widgets if x in varnames]
                 genWidgets(widgets, tab_grid, tab)
         else:
-            genWidgets(self.model.widgets, grid, self, rows)
+            genWidgets(self.model.widgets, grid, self.grp, rows)
         
         lay = QHBoxLayout()
         vb.addLayout(lay)
@@ -202,11 +216,6 @@ class ObjectDialog(KDialog):
             but = QPushButton(getIconSet("apply", KIcon.Small), i18n("Save"), self)
             lay.addWidget(but)
             self.connect(but, SIGNAL("clicked()"), self.accept)
-            
-            if self.mode == "edit":
-                but = QPushButton(getIconSet("editdelete", KIcon.Small), i18n("Unset"), self)
-                lay.addWidget(but)
-                self.connect(but, SIGNAL("clicked()"), self.unset)
             
             but = QPushButton(getIconSet("cancel", KIcon.Small), i18n("Cancel"), self)
             lay.addWidget(but)
@@ -245,11 +254,11 @@ class ObjectDialog(KDialog):
     
     def accept(self):
         if not self.infowin:
-            self.getValues()
-        KDialog.accept(self)
-
-    def unset(self):
-        self.unsetValues()
+            if self.unset and not self.grp.isChecked():
+                if not self.model.new:
+                    self.unsetValues()
+            else:
+                self.getValues()
         KDialog.accept(self)
     
     def reject(self):

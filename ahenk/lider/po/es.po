@@ -1,0 +1,381 @@
+# translation of es.po to español
+# Lider.
+# Copyright (C) 2007, TÜBİTAK/UEKAE
+# This file is distributed under the same license as the Lider package.
+#
+# Bahadır Kandemir <bahadir@pardus.org.tr>, 2007.
+# Klemens <click3d_at_linuxmail_org>, 2007.
+msgid ""
+msgstr ""
+"Project-Id-Version: es\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-09-29 20:15+0300\n"
+"PO-Revision-Date: 2007-09-30 21:22-0400\n"
+"Last-Translator: Klemens <click3d_at_linuxmail_org>\n"
+"Language-Team: español <es@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.11.4\n"
+
+#: src/browser.py:34 src/browser.py:41
+msgid "&New Directory"
+msgstr "&Nuevo Directorio"
+
+#: src/browser.py:45
+msgid "&Refresh"
+msgstr "&Recargar"
+
+#: src/browser.py:47
+msgid "&Properties"
+msgstr "&Propiedades"
+
+#: src/browser.py:118
+msgid "Remove directory?"
+msgstr "Eliminar directorio ?"
+
+#: src/browser.py:118 src/browser.py:133 src/browser.py:499
+msgid "Are you sure you want to remove '%1' ?"
+msgstr "Está seguro que desea eliminar '%1'?"
+
+#: src/browser.py:118 src/browser.py:499 src/browser.py:503 src/browser.py:506
+msgid "This is not undoable. Are you sure you want to continue?"
+msgstr "Esta operación no se podrá deshacer. Está seguro que desea continuar?"
+
+#: src/browser.py:133
+msgid "Remove domain?"
+msgstr "Eliminar dominio?"
+
+#: src/browser.py:157
+msgid "Computers (%1)"
+msgstr "Computadoras (%1)"
+
+#: src/browser.py:158
+msgid "Units (%1)"
+msgstr "Unidades (%1)"
+
+#: src/browser.py:159
+msgid "Users (%1)"
+msgstr "Usuarios (%1)"
+
+#: src/browser.py:160
+msgid "Groups (%1)"
+msgstr "Grupos (%1)"
+
+#: src/browser.py:331
+msgid "Name"
+msgstr "Nombre"
+
+#: src/browser.py:332 src/domain.py:231 src/domain.py:240 src/domain.py:251
+msgid "Description"
+msgstr "Descripción"
+
+#: src/browser.py:342
+msgid "&New"
+msgstr "&Nuevo"
+
+#: src/browser.py:346
+msgid "&Information"
+msgstr "&Información"
+
+#: src/browser.py:347
+msgid "&Policy"
+msgstr "&Política"
+
+#: src/browser.py:348
+msgid "&Configuration"
+msgstr "&Configuración"
+
+#: src/browser.py:499
+msgid "Remove object?"
+msgstr "Eliminar objeto?"
+
+#: src/browser.py:503 src/browser.py:506
+msgid "Remove objects?"
+msgstr "Eliminar objetos?"
+
+#: src/browser.py:503
+msgid ""
+"Are you sure you want to remove these objects?\n"
+"%1"
+msgstr ""
+"Está seguro que desea eliminar estos objetos?\n"
+"%1"
+
+#: src/browser.py:506
+msgid "Are you sure you want to remove %1 objects?"
+msgstr "Está seguro que desea eliminar %1 objetos?"
+
+#: src/browser.py:522
+msgid ""
+"Unable to delete these objects:\n"
+"%1"
+msgstr ""
+"No posible eliminar los siguientes objetos:\n"
+"%1"
+
+#: src/browser.py:525
+msgid "Removed %1 objects."
+msgstr "%1 objetos eliminados."
+
+#: src/dialogs.py:26 src/dialogs.py:125
+msgid "%1 Properties"
+msgstr "%1 Propiedades"
+
+#: src/dialogs.py:28
+msgid "Add New Domain"
+msgstr "Agregar dominio"
+
+#: src/dialogs.py:38
+msgid "Label:"
+msgstr "Rótulo:"
+
+#: src/dialogs.py:43
+msgid "Directory server:"
+msgstr "Servidor de directorio:"
+
+#: src/dialogs.py:48
+msgid "Base DN:"
+msgstr "DN de base:"
+
+#: src/dialogs.py:53
+msgid "Bind DN:"
+msgstr "Bind DN:"
+
+#: src/dialogs.py:58
+msgid "Bind Password:"
+msgstr "Contraseña Bind:"
+
+#: src/dialogs.py:123
+msgid "%1 Information"
+msgstr "%1 Información"
+
+#: src/dialogs.py:127
+msgid "New %1"
+msgstr "Nuevo %1"
+
+#: src/dialogs.py:140
+msgid "Enable %1"
+msgstr "Enable %1"
+
+#: src/dialogs.py:153
+msgid "DN:"
+msgstr "DN:"
+
+#: src/dialogs.py:155
+msgid "Parent DN:"
+msgstr "DN Padre:"
+
+#: src/dialogs.py:164
+msgid "Name:"
+msgstr "Nombre:"
+
+#: src/domain.py:129
+msgid "Not a valid Connection instance."
+msgstr "No es una instancia válida de conexión."
+
+#: src/domain.py:165
+msgid "Domain configuration file is missing."
+msgstr "Archivo de configuración de dominio no encontrado."
+
+#: src/domain.py:169
+msgid "Domain configuration file has syntax errors."
+msgstr "Archivo de configuración de dominios contiene errores de sintaxis."
+
+#: src/domain.py:190 src/domain.py:236
+msgid "Computer"
+msgstr "Computadora"
+
+#: src/domain.py:192
+msgid "Memory"
+msgstr "Memoria"
+
+#: src/domain.py:198 src/domain.py:221
+msgid "Policy"
+msgstr "Politica"
+
+#: src/domain.py:203
+msgid "Update Mode"
+msgstr "Modo de actualización"
+
+#: src/domain.py:203 src/domain.py:204 src/domain.py:205 src/domain.py:206
+msgid "PISI"
+msgstr "PISI"
+
+#: src/domain.py:203
+msgid "Security Only"
+msgstr "Solamente seguridad"
+
+#: src/domain.py:203
+msgid "Full"
+msgstr "Completo"
+
+#: src/domain.py:204
+msgid "Interval"
+msgstr "Intervalo"
+
+#: src/domain.py:205
+# i should see the context, maybe the translation could be more explicit
+msgid "Wanted Packages"
+msgstr "Paquetes deseados"
+
+#: src/domain.py:206
+msgid "Unwanted Packages"
+msgstr "Paquetes no deseados"
+
+#: src/domain.py:208
+msgid "Wanted Services"
+msgstr "Servicios deseados"
+
+#: src/domain.py:208 src/domain.py:209
+msgid "Services"
+msgstr "Servicios"
+
+#: src/domain.py:209
+msgid "Unwanted Services"
+msgstr "Servicios no deseados"
+
+#: src/domain.py:211
+# i should see the context, english text permits multiple interpretations
+msgid "User Source"
+msgstr "Fuente de usuario"
+
+#: src/domain.py:211 src/domain.py:212 src/domain.py:213 src/domain.py:214
+#: src/domain.py:215
+msgid "COMAR"
+msgstr "COMAR"
+
+#: src/domain.py:211
+msgid "Local"
+msgstr "Local"
+
+#: src/domain.py:211
+msgid "LDAP"
+msgstr "LDAP"
+
+#: src/domain.py:212
+# verificar esta traduccion
+msgid "Search Scope"
+msgstr "Área de busqueda"
+
+#: src/domain.py:212
+msgid "Base"
+msgstr "Base"
+
+#: src/domain.py:212
+msgid "One Level"
+msgstr "Un nivel"
+
+#: src/domain.py:212
+msgid "Subtree"
+msgstr "Sub-arbol"
+
+#: src/domain.py:213
+msgid "Database URI"
+msgstr "Dirección URL de la base de datos"
+
+#: src/domain.py:214
+msgid "Base DN"
+msgstr "DN de base"
+
+#: src/domain.py:215
+msgid "User Filter"
+msgstr "Usar filtro"
+
+#: src/domain.py:227
+msgid "Directory"
+msgstr "Directorio"
+
+#: src/domain.py:230
+msgid "Label"
+msgstr "Rótulo"
+
+#: src/domain.py:241 src/domain.py:260
+msgid "Password"
+msgstr "Contraseña"
+
+#: src/domain.py:242
+msgid "Member of"
+msgstr "Miembro de"
+
+#: src/domain.py:247
+msgid "Unit"
+msgstr "Unidad"
+
+#: src/domain.py:256
+msgid "User"
+msgstr "Usuario"
+
+#: src/domain.py:259
+msgid "Real Name"
+msgstr "Nombre real"
+
+#: src/domain.py:261
+msgid "Shell"
+msgstr "Shell"
+
+#: src/domain.py:262
+msgid "Home"
+msgstr "Home"
+
+#: src/domain.py:263
+msgid "User ID"
+msgstr "ID de usuario"
+
+#: src/domain.py:264 src/domain.py:272
+msgid "Group ID"
+msgstr "ID de grupo"
+
+#: src/domain.py:269
+msgid "Group"
+msgstr "Grupo"
+
+#: src/domain.py:273
+msgid "Members"
+msgstr "Miembros"
+
+#: src/lider.py:25
+msgid "Pardus Management Console"
+msgstr "Consola de Administración de Pardus"
+
+#: src/mainwindow.py:29
+msgid "New Domain"
+msgstr "Nuevo dominio"
+
+#: src/mainwindow.py:34
+msgid "&Domain"
+msgstr "&Dominio"
+
+#: src/mainwindow.py:56
+msgid "Computers"
+msgstr "Computadoras"
+
+#: src/mainwindow.py:59
+msgid "Units"
+msgstr "Unidades"
+
+#: src/mainwindow.py:62
+msgid "Users"
+msgstr "Usuarios"
+
+#: src/mainwindow.py:65
+msgid "Groups"
+msgstr "Grupos"
+
+#: src/mainwindow.py:76
+msgid "Critical Error"
+msgstr "Error crítico"
+
+#: src/mainwindow.py:82
+# depending on the gramatical context translation could be improved
+msgid "Unable to complete operation:"
+msgstr "No posible finalizar la operación:"
+
+#: src/ldapview.py:80
+msgid "Select..."
+msgstr "Elija..."
+
+#: src/ldapview.py:101
+msgid "Edit List"
+msgstr "Editar lista"
+

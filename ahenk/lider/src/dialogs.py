@@ -200,7 +200,7 @@ class ObjectDialog(KDialog):
                 if group == "*":
                     continue
                 tab = QWidget(self.tabs)
-                self.tabs.insertTab(tab, group)
+                self.tabs.insertTab(tab, i18n(group))
                 tab_grid = QGridLayout(tab, 1, 2, 6)
                 widgets = [(x, y, z) for x, y, z in self.model.widgets if x in varnames]
                 genWidgets(widgets, tab_grid, tab)

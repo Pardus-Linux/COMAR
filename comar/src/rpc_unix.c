@@ -104,25 +104,24 @@ get_size(const unsigned char *buf)
 static int
 create_pipe(const char *pipe_name)
 {
-·   /*!
-·   Creates a pipe, with listen. length of the queue is 5
-·   @return Returns -2 if can't assign address to socket \n
-·   Returns -3 if can't listen requests
-·   */
-
+	/*!
+	Creates a pipe, with listen. length of the queue is 5
+	@return Returns -2 if can't assign address to socket \n
+	Returns -3 if can't listen requests
+	*/
 	struct sockaddr_un name;
 	size_t size;
 
 	pipe_fd = socket(PF_LOCAL, SOCK_STREAM, 0);
 	if (pipe_fd < 0) return -1;
 
-    // delete cfg_socket_name
+	// delete cfg_socket_name
 	unlink(pipe_name);
 
 	name.sun_family = AF_LOCAL;
 	strncpy(name.sun_path, pipe_name, sizeof(name.sun_path));
 	size = (offsetof(struct sockaddr_un, sun_path) + strlen(name.sun_path) + 1);
-    // assign address to socket
+	// assign address to socket
 	if (0 != bind(pipe_fd, (struct sockaddr *) &name, size)) {
 		close(pipe_fd);
 		return -2;
@@ -130,7 +129,7 @@ create_pipe(const char *pipe_name)
 
 	chmod(pipe_name, 0666);
 
-    // to enable connection requests on the socket ( a server socket )
+	// to enable connection requests on the socket ( a server socket )
 	if (0 != listen(pipe_fd, 5)) {
 		close(pipe_fd);
 		return -3;
@@ -143,10 +142,10 @@ create_pipe(const char *pipe_name)
 static int
 get_peer(int sock, struct Creds *cred)
 {
-·   /*!
-·   Gets options of sock, and fills cred according to these options
-·   @return Returns 0. Returns -1 on error.
-·   */
+	/*!
+	Gets options of sock, and fills cred according to these options
+	@return Returns 0. Returns -1 on error.
+	*/
 	// NOTE: this implementation requires a linux kernel
 	struct {
 		pid_t pid;
@@ -256,10 +255,9 @@ get_arg(struct arg_s *args, char **argp, size_t *sizep)
 static int
 write_rpc(struct connection *c, unsigned int cmd, int id, const char *buffer, size_t size)
 {
-·   /*!
-·   Checks the command cmd, and sends c's socket the answer
-·   */
-
+	/*!
+	Checks the command cmd, and sends c's socket the answer
+	*/
 	unsigned char head[8];
 
 	head[4] = (id >> 24) & 0xFF;
@@ -300,11 +298,10 @@ write_rpc(struct connection *c, unsigned int cmd, int id, const char *buffer, si
 static int
 parse_rpc(struct connection *c)
 {
-·   /*!
-    This is parser function for RPC
-·   According to command in c's buffer, checks for permissions
-·   and executes, denies etc. the command
-·   */
+	/*! This is parser function for RPC
+	According to command in c's buffer, checks for permissions
+	and executes, denies etc. the command
+	*/
 
 	struct ipc_struct ipc;
 	struct arg_s args;
@@ -501,7 +498,7 @@ read_rpc(struct connection *c)
 		}
 	}
 	if (c->pos == c->data_size + 8) {
-		if (parse_rpc(c)) return -1;
+		if (read_rpc(c)) return -1;
 		c->data_size = 0;
 		c->pos = 0;
 	}
@@ -526,7 +523,6 @@ add_rpc_fds(fd_set *fds, int max)
 	}
 	return max;
 }
-
 //! This is handler function for custom rpc commands
 void
 handle_rpc_fds(fd_set *fds)
@@ -652,11 +648,10 @@ rpc_proc(void)
 void
 rpc_unix_start(void)
 {
-·   /*!
-·   Fork RPC process
-·   @return Returns -1 on error
-·   */
-
+	/*!
+	Fork RPC process
+	@return Returns -1 on error
+	*/
 	struct ProcChild *p;
 
 	p = proc_fork(rpc_proc, "ComarRPC");

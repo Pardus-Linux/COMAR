@@ -39,11 +39,11 @@ stop_running_comar(void)
 	size_t size;
 	int sock;
 
-    // create socket
+	// create socket
 	sock = socket(PF_LOCAL, SOCK_STREAM, 0);
 	if (sock == -1) return;
 
-    // a local socket
+	// a local socket
 	name.sun_family = AF_LOCAL;
 	strncpy(name.sun_path, cfg_socket_name, sizeof (name.sun_path));
 	size = (offsetof (struct sockaddr_un, sun_path) + strlen (name.sun_path) + 1);
@@ -152,6 +152,5 @@ main(int argc, char *argv[])
 			}
 		}
 	}
-
 	return 0;
 }

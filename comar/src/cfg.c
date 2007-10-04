@@ -17,7 +17,7 @@
 #include "cfg.h"
 #include "process.h"
 
-/* global option variables with defaults */
+// global option variables with defaults
 char *cfg_model_file = "/etc/comar/model.xml";
 char *cfg_data_dir = "/var/db/comar";
 char *cfg_socket_name = "/var/run/comar.socket";
@@ -59,7 +59,7 @@ static char *shortopts = "m:d:s:g:phv";
 static void
 print_usage(void)
 {
-	puts(
+puts(
 		_("Usage: comar [OPTIONS]\n"
 		"Pardus configuration manager.\n"
 		" -m, --model [FILE]  Use the given xml model file.\n"
@@ -93,6 +93,9 @@ print_version(void)
 void
 cfg_init(int argc, char *argv[])
 {
+	/*!
+	Parses command line options
+	*/
 	int c, i, j;
 
 	while ((c = getopt_long(argc, argv, shortopts, longopts, &i)) != -1) {

@@ -37,12 +37,11 @@ static unsigned int acl_nr_allowed_gids;
 static int
 count_groups(iks *tag, int class_no)
 {
-    /*!
-    Returns the number of group tags in child tags of 'tag'
-    It also counts group tags under class tag ( class permissions )
-    @return Returns number of groups
-    */
-
+	/*!
+	Returns the number of group tags in child tags of 'tag'
+	It also counts group tags under class tag ( class permissions )
+	@return Returns number of groups
+	*/
 	iks *x;
 	unsigned int nr = 0;
 	// global permissions
@@ -63,11 +62,10 @@ count_groups(iks *tag, int class_no)
 static void
 add_allowed(gid_t gid)
 {
-    /*!
-    This function allocates memory for allowed group id's. @see acl_allowed_gids
-    Every group is added once
-    */
-
+	/*!
+	This function allocates memory for allowed group id's. @see acl_allowed_gids
+	Every group is added once
+	*/
 	static unsigned int max_allowed = 0;
 	unsigned int i;
 
@@ -94,12 +92,11 @@ add_allowed(gid_t gid)
 static void
 add_group(iks *tag, int level, struct acl_class *ac)
 {
-    /*!
-    Scans the 'tag's 'name' attribute, and searches the result in groups database (unix groups db)
-    When found, numerical group id and level is set to current group structure
-    \param ac is the allocated memory for acl_group structure \param level is permissions level
-    */
-
+	/*!
+	Scans the 'tag's 'name' attribute, and searches the result in groups database (unix groups db)
+	When found, numerical group id and level is set to current group structure
+	\param ac is the allocated memory for acl_group structure \param level is permissions level
+	*/
 	struct acl_group *ag;
 	char *name;
 	struct group *grp;
@@ -122,12 +119,11 @@ add_group(iks *tag, int level, struct acl_class *ac)
 static void
 add_groups(iks *tag, int class_no, int level, struct acl_class *ac)
 {
-·   /*!
-·   Searches 'tag' in 'group' and 'class' tags, calls add_group function with found tags
-·   level and acl_class is passed to add_group
-·   \sa add_group
-·   */
-
+	/*!
+	Searches 'tag' in 'group' and 'class' tags, calls add_group function with found tags
+	level and acl_class is passed to add_group
+	\sa add_group
+	*/
 	iks *x;
 	// global permissions
 	for (x = iks_find(tag, "group"); x; x = iks_next_tag(x)) {
@@ -146,12 +142,11 @@ add_groups(iks *tag, int class_no, int level, struct acl_class *ac)
 static void
 set_class(iks *model, int class_no)
 {
-·   /*!
-·   Allocates memory for all found 'group's in 'model' @see count_groups()
-·   Then add_groups is called and acl_class is put in node table
-·   \sa add_groups
-·   */
-
+	/*!
+	Allocates memory for all found 'group's in 'model' @see count_groups()
+	Then add_groups is called and acl_class is put in node table
+	\sa add_groups
+	*/
 	struct acl_class *ac;
 	int nr_groups = 0;
 
@@ -174,11 +169,10 @@ set_class(iks *model, int class_no)
 void
 acl_init(void)
 {
-·   /*!
-·   Loads /etc/comar/security-policy.xml file
-·   For all classes in model.xml file, look in security-policy if theres a match
-·   */
-
+	/*!
+	Loads /etc/comar/security-policy.xml file
+	For all classes in model.xml file look in security-policy if theres a match
+	*/
 	iks *policy;
 	iks *model;
 	int class_no;
@@ -211,11 +205,10 @@ acl_init(void)
 static int
 check_acl(int node, struct Creds *cred)
 {
-·   /*!
-·   Checks if cred->uid user is capable to perform the action,
-·   @return Returns 1 if capable, 0 otherwise
-·   */
-
+	/*!
+	Checks if cred->uid user is capable to perform the action,
+	@return Returns 1 if capable, 0 otherwise
+	*/
 	gid_t gids[64];
 	int nr_gids = 64;
 	struct passwd *pw;
@@ -249,16 +242,16 @@ check_acl(int node, struct Creds *cred)
 	return 0;
 }
 
-//! Find if user is ok to execute command
+//! Find if user is ok to exec cmd
 int
 acl_is_capable(int cmd, int node, struct Creds *cred)
 {
-·   /*!
-·   Checks if cred->uid user is capable executing command cmd.
-·   Root is always capable, only CMD_CALL commands are allowed here
-·   @return Returns 1 if allowed, 0 otherwise
-·   */
-
+	/*!
+	Checks if cred->uid user is capable executing command cmd.
+	Root is always capable, only CMD_CALL commands are allowed here
+	@return Returns 1 if allowed, 0 otherwise
+	*/
+	// root always capable
 	if (cred->uid == 0)
 		return 1;
 
@@ -274,11 +267,10 @@ acl_is_capable(int cmd, int node, struct Creds *cred)
 int
 acl_can_connect(struct Creds *cred)
 {
-·   /*!
-·   Checks if user with user id cred->uid can connect comar.
-·   @return Returns 1 if can connect, 0 otherwise
-·   */
-
+	/*!
+	Checks if user with user id cred->uid can connect comar.
+	@return Returns 1 if can connect, 0 otherwise
+	*/
 	gid_t gids[64];
 	int nr_gids = 64;
 	struct passwd *pw;

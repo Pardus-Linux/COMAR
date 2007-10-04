@@ -19,11 +19,12 @@ int utf8_is_valid(const char *str, size_t size);
 
 unsigned long time_diff(struct timeval *start, struct timeval *end);
 
+//! A package struct
 struct pack {
-	unsigned char *buffer;
-	size_t max;
-	size_t used;
-	unsigned int pos;
+	unsigned char *buffer; /*!< Buffer that carries data */
+	size_t max; /*!< Max size of data */
+	size_t used; /*!< Used size */
+	unsigned int pos; /*!< Position in data */
 };
 
 struct pack *pack_new(size_t min_size);

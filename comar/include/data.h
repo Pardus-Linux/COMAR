@@ -12,6 +12,11 @@
 
 #include "utility.h"
 
+//!  Database operations
+/*!
+  All database related functions are here
+*/
+
 int db_init(void);
 
 int db_put_script(int node_no, const char *app, const char *buffer, size_t size);

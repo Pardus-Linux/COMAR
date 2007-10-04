@@ -10,6 +10,7 @@
 #ifndef ACL_H
 #define ACL_H 1
 
+//! A user id and group id only
 struct Creds {
 	uid_t uid;
 	gid_t gid;

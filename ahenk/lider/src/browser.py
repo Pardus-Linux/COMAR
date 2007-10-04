@@ -30,6 +30,9 @@ class Browser(KListView):
         self.setRootIsDecorated(True)
         self.window = window
         
+        self.menu_blank = QPopupMenu(self)
+        self.menu_blank.insertItem(getIconSet("filenew", KIcon.Small), i18n("&New Domain"), self.slotNewDomain)
+        
         self.menu_domain = QPopupMenu(self)
         self.menu_domain.insertItem(getIconSet("folder", KIcon.Small), i18n("&New Directory"), self.slotNewDirectory)
         self.menu_domain.insertSeparator()
@@ -51,6 +54,9 @@ class Browser(KListView):
         self.connect(self, SIGNAL("collapsed(QListViewItem*)"), self.slotCollapse)
         self.connect(self, SIGNAL("selectionChanged()"), self.slotNodeChanged)
         
+        self.tipper = BrowserItemTip(self.viewport())
+        self.tipper.list = self
+        
         self.initDomains()
     
     def initDomains(self):
@@ -66,6 +72,8 @@ class Browser(KListView):
                 self.menu_directory.exec_loop(point)
             else:
                 self.menu_domain.exec_loop(point)
+        else:
+            self.menu_blank.exec_loop(point)
     
     def slotConfigure(self):
         item = self.selectedItem()
@@ -95,6 +103,14 @@ class Browser(KListView):
             else:
                 item.parent().collapseNodes()
                 item.parent().expandNodes()
+    
+    def slotNewDomain(self):
+        dd = DomainDialog(self)
+        if dd.exec_loop():
+            dn = dd.connection.base_dn
+            label = dd.connection.label
+            self.window.dc.addConnection(dd.connection)
+            BrowserItem(self, self.window, dn, label, dd.connection)
     
     def slotNewDirectory(self):
         item = self.selectedItem()
@@ -188,6 +204,18 @@ class Browser(KListView):
                     object_len = len(result)
         
         self.window.tab.showPage(show_tab)
+
+
+class BrowserItemTip(QToolTip):
+    def maybeTip(self, point):
+        item = self.list.itemAt(point)
+        if item and not isinstance(item.parent(), BrowserItem):
+            rect = self.list.itemRect(item)
+            args = [
+                item.connection.label,
+                item.connection.host,
+            ]
+            self.tip(self.list.itemRect(item), i18n("<strong>%1</strong><br>Host: %2").arg(*args))
 
 
 class BrowserItem(QListViewItem):

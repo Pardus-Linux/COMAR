@@ -26,18 +26,10 @@ class MainWindow(KMainWindow):
         self.setMinimumSize(560, 440)
         self.application = app
         
-        self.act_new_domain = QAction(getIconSet("filenew"), i18n("New Domain"), Qt.CTRL + Qt.Key_N, self)
-        self.connect(self.act_new_domain, SIGNAL("activated()"), self.slotNewDomain)
-        
         mbar = self.menuBar()
         menu = QPopupMenu(self)
-        mbar.insertItem(i18n("&Domain"), menu)
-        self.act_new_domain.addTo(menu)
-        menu.insertSeparator()
+        mbar.insertItem("&Lider", menu)
         menu.insertItem(i18n("&Quit"), self.slotQuit, Qt.CTRL + Qt.Key_Q)
-        
-        self.toolbar = QToolBar(self)
-        self.act_new_domain.addTo(self.toolbar)
         
         self.status = QStatusBar(self)
         
@@ -104,14 +96,6 @@ class MainWindow(KMainWindow):
             self.dc.fromXML()
         except domain.DomainXMLParseError, e:
             self.showCriticalError(e.args[0])
-    
-    def slotNewDomain(self):
-        dd = browser.DomainDialog(self)
-        if dd.exec_loop():
-            dn = dd.connection.base_dn
-            label = dd.connection.label
-            self.dc.addConnection(dd.connection)
-            browser.BrowserItem(self.browser, self, dn, label, dd.connection)
     
     def closeEvent(self, e):
         self.slotQuit()

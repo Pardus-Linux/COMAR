@@ -11,6 +11,7 @@
 
 import os
 import ldap
+import ldap.modlist
 
 import ajan.config
 
@@ -83,6 +84,22 @@ class Connection:
         if conf.bind_dn:
             conn.simple_bind_s(conf.bind_dn, conf.bind_password)
         self.conn = conn
+        
+        # Set memory capacity
+        if conf.bind_dn:
+            memory = ""
+            for line in file("/proc/meminfo"):
+                if line.startswith("MemTotal:"):
+                    memory = line.split("MemTotal:")[1].strip()
+                    memory = memory.split(" ")[0]
+                    break
+            if memory:
+                try:
+                    ldif = ldap.modlist.modifyModlist({"pardusMemoryCapacity": []}, {"pardusMemoryCapacity": memory})
+                    conn.modify_s(conf.bind_dn, ldif)
+                except ldap.LDAPError:
+                    ldif = ldap.modlist.modifyModlist({"pardusMemoryCapacity": "0"}, {"pardusMemoryCapacity": memory})
+                    conn.modify_s(conf.bind_dn, ldif)
     
     def close(self):
 	""" Closes connection"""

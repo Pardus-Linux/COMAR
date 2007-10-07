@@ -238,7 +238,7 @@ class ComputerModel(ldapmodel.LdapClass):
     objectClass = ["top", "device", "pardusComputer", "pisiPolicy", "comarUserPolicy", "comarServicePolicy"]
     entries = (
         ("description", "description", str, i18n("Description"), ldapview.textWidget, "*", {}),
-        ("password", "userPassword", str, i18n("Password"), ldapview.passwordWidget, "*", {}),
+        ("password", "userPassword", str, i18n("Password"), ldapview.passwordWidget, "*", {"hashMethod": "utility.saltedSHA"}),
         ("unit", "ou", str, i18n("Member of"), ldapview.textWidget, "*", {}),
     )
 
@@ -257,7 +257,7 @@ class UserModel(ldapmodel.LdapClass):
     objectClass = ["top", "account", "posixAccount", "shadowAccount"]
     entries = (
         ("label", "cn", str, i18n("Real Name"), ldapview.textWidget, "*", {}),
-        ("password", "userPassword", str, i18n("Password"), ldapview.passwordWidget, "*", {"hashMethod": 'utility.shadowCrypt'}),
+        ("password", "userPassword", str, i18n("Password"), ldapview.passwordWidget, "*", {"hashMethod": "utility.saltedSHA"}),
         ("shell", "loginShell", str, i18n("Shell"), ldapview.textWidget, "*", {}),
         ("home", "homeDirectory", str, i18n("Home"), ldapview.textWidget, "*", {}),
         ("uid", "uidNumber", int, i18n("User ID"), ldapview.numberWidget, "*", {}),

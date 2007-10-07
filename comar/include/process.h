@@ -16,29 +16,27 @@ extern int shutdown_activated;
 
 struct ipc_source {
 	void *chan;
-	unsigned int cookie; /*!< To detect process */
+	unsigned int cookie;
 	int id;
-	unsigned char lang[4]; /*!< Messages language */
+	unsigned char lang[4];
 };
 
-//! A basic process structure
 struct ProcChild {
-	int from; /*!< FIXME. */
-	int to; /*!< FIXME. */
-	pid_t pid; /*!< Process id */
-	const char *desc; /*!< Description of process, also its name */
+	int from;
+	int to;
+	pid_t pid;
+	const char *desc;
 	// keep track of command source, used by job_cancel
 	struct ipc_source source;
 };
 
-//! A Process
 struct Proc {
 	// parent info
-	struct ProcChild parent; /*!< Parent of this process */
-	const char *desc; /*!< Name of this process */
+	struct ProcChild parent;
+	const char *desc;
 	// children info
-	int nr_children; /*!< Number of children */
-	int max_children; /*!< Maximum children */
+	int nr_children;
+	int max_children;
 	struct ProcChild *children;
 };
 
@@ -47,12 +45,13 @@ struct ipc_struct {
 	int node;
 };
 
-extern struct Proc my_proc; /*!< Per process global variable */
+// per process global variable
+extern struct Proc my_proc;
 
-//! For readability of send_cmd/data functions
+// for readability of send_cmd/data functions
 #define TO_PARENT NULL
 
-//! ipc commands
+// ipc commands
 enum {
 	CMD_FINISH = 0,
 	CMD_RESULT,

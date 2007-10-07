@@ -59,8 +59,11 @@ job_send_result(int cmd, const char *data, size_t size)
 static int
 do_register(int node, const char *app, const char *fname)
 {
-	/*! Register script by first testing it by compiling
-	If it compiles well, put script. \sa db_put_script csl_compile*/
+·   /*!
+    Register script by first testing it by compiling.
+·   If it compiles well, put script. \sa db_put_script csl_compile
+    */
+
 	char *buf;
 	char *code;
 	size_t codelen;
@@ -147,11 +150,13 @@ do_event(const char *event, int node, const char *app, struct pack *p)
 static int
 do_execute(int node, const char *app, struct pack *pak)
 {
-	/*! Load the app code and execute it with python/c api @see csl.c
-	If execution lasts more than 6 seconds, logs this information @see log_info
-	Returns 0 on a successfull call, returns error returned by csl execute function otherwise
-	\sa csl.c
-	*/
+·   /*!
+    Load the app code and execute it with python/c api @see csl.c
+·   If execution lasts more than 6 seconds, logs this information @see log_info
+·   Returns 0 on a successfull call, returns error returned by csl execute function otherwise
+·   \sa csl.c
+·   */
+
 	struct timeval start, end;
 	unsigned long msec;
 	struct pack *p = NULL;
@@ -229,8 +234,11 @@ exec_proc(void)
 static int
 do_call(int node, struct pack *pak)
 {
-	/*! Get scripts and run them, send results and return 
-	@return Returns 0 */
+·   /*!
+    Get scripts and run them, send results and return
+·   @return Returns 0
+    */
+
 	struct pack *p = NULL;
 	char *apps;
 	int ok = 0;
@@ -354,9 +362,10 @@ do_dump_profile(void)
 static void
 job_proc(void)
 {
-	/*!
-	Listen for incoming requests and process the commands.
-	*/
+·   /*!
+·   Listen for incoming requests and process the commands.
+·   */
+
 	struct ipc_struct ipc;
 	struct pack *p;
 	struct ProcChild *sender;
@@ -365,7 +374,7 @@ job_proc(void)
 	size_t size;
 
 	p = pack_new(256);
-	// wait untill theres something to listen
+    // wait untill theres something to listen
 	while (1) {
 		if (1 == proc_listen(&sender, &cmd, &size, 1)) break;
 	}

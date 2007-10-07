@@ -307,20 +307,15 @@ static PyMethodDef methods[] = {
 	{ NULL, NULL, 0, NULL }
 };
 
-//! Basic initialization
 void
 csl_setup(void)
 {
 	Py_Initialize();
 }
 
-//! Log exceptions
 static void
 log_exception(void)
 {
-	/*! Log exceptions as errors.
-	\sa log.c log_error
-	*/
 	PyObject *pType;
 	PyObject *pValue;
 	PyObject *pTrace;
@@ -328,7 +323,6 @@ log_exception(void)
 	char *vStr = "";
 	long lineno = 0;
 
-	// Retrieve the error indicator into variables
 	PyErr_Fetch(&pType, &pValue, &pTrace);
 	if (!pType) {
 		log_error("csl.c log_exception() called when there isn't an exception\n");
@@ -508,7 +502,6 @@ csl_execute(char *code, size_t size, const char *func_name, struct pack *pak, ch
 	return 0;
 }
 
-//! Finish
 void
 csl_cleanup(void)
 {

@@ -47,10 +47,12 @@ pidstamp(FILE *f)
 static void
 log_print(const char *fmt, va_list ap, int error)
 {
-	/*! Writes log to file (cfg_log_file_name) or stdout according to cfg_log_* options
-	comar version, process id, timestamp and errors(if any) are written
-	\sa cfg.c
-	*/
+·   /*!
+    Writes log to file (cfg_log_file_name) or stdout according to cfg_log_* options
+·   comar version, process id, timestamp and errors(if any) are written
+·   \sa cfg.c
+·   */
+
 	if (cfg_log_console) {
 		pidstamp(stdout);
 		vprintf(fmt, ap);
@@ -87,10 +89,11 @@ log_start(void)
 void
 log_error(const char *fmt, ...)
 {
-	/*!
-	Same as log_info, if this function is called instead, writes
-	information as an 'error' to log file
-	*/
+·   /*!
+·   Same as log_info, if this function is called instead, writes
+·   information as an 'error' to log file
+·   */
+
 	va_list ap;
 
 	va_start(ap, fmt);
@@ -102,11 +105,12 @@ log_error(const char *fmt, ...)
 void
 log_info(const char *fmt, ...)
 {
-	/*!
-	Prints log info of variable arguments with log_print function.
-	Console or file usage depends on cfg_log_* options
-	\sa log_print cfg.c
-	*/
+·   /*!
+·   Prints log info of variable arguments with log_print function.
+·   Console or file usage depends on cfg_log_* options
+·   \sa log_print cfg.c
+·   */
+
 	va_list ap;
 
 	va_start(ap, fmt);

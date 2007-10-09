@@ -150,11 +150,11 @@ def _checkPid(pid, user_uid=None, command=None, name=None):
             if e.errno != 2:
                 raise
             return False
-        if stat.split("(")[1].split(")")[0] != name:
+        if stats.split("(")[1].split(")")[0] != name:
             return False
     return True
 
-def _findProcesses(command=None, user=None):
+def _findProcesses(command=None, user=None, name=None):
     """Return the list of process IDs matching our criteria."""
     pids = []
     user_uid = None
@@ -164,7 +164,7 @@ def _findProcesses(command=None, user=None):
     for entry in os.listdir("/proc"):
         if entry[0] in "0123456789":
             pid = int(entry)
-            if _checkPid(pid, user_uid=user_uid, command=command):
+            if _checkPid(pid, user_uid=user_uid, command=command, name=name):
                 pids.append(pid)
     if len(pids) > 0:
         return pids

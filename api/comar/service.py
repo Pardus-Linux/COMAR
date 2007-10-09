@@ -115,7 +115,7 @@ def _getPid(pidfile):
         return None
     return int(pid)
 
-def _checkPid(pid, user_uid=None, command=None):
+def _checkPid(pid, user_uid=None, command=None, name=None):
     """Check that given process ID matches our criteria."""
     if not pid:
         return False
@@ -142,6 +142,15 @@ def _checkPid(pid, user_uid=None, command=None):
                 raise
             return False
         if cmdline.split("\0")[0] != command:
+            return False
+    elif name:
+        try:
+            stats = file("%s/stat" % path).read()
+        except IOError, e:
+            if e.errno != 2:
+                raise
+            return False
+        if stat.split("(")[1].split(")")[0] != name:
             return False
     return True
 
@@ -256,14 +265,14 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
             if ret == 0:
                 notify("System.Service.changed", "started")
             else:
-                err = "Unable to start service."
                 ret.stdout, ret.stderr = popen.communicate()
+                err = "Unable to start service."
                 if ret.stderr != "":
                     err = "Unable to start: " + str(ret.stderr)
                 fail(err)
         return ret
 
-def stopService(pidfile=None, command=None, args=None, chuid=None, user=None, signalno=None, donotify=False):
+def stopService(pidfile=None, command=None, args=None, chuid=None, user=None, name=None, signalno=None, donotify=False):
     """Stop given service.
     
     pidfile:   Process ID of the service is kept in this file when running.
@@ -325,13 +334,20 @@ def stopService(pidfile=None, command=None, args=None, chuid=None, user=None, si
             # Already stopped, no need to send notification.
             return None
     else:
-        if not command and not user:
+        if command and user:
+            pids = _findProcesses(user=user, command=command)
+            if pids is not None:
+                for pid in pids:
+                    os.kill(pid, signalno)
+                notify("System.Service.changed", "stopped")
+        elif name and user:
+            pids = _findProcesses(user=user, name=name)
+            if pids is not None:
+                for pid in pids:
+                    os.kill(pid, signalno)
+                notify("System.Service.changed", "stopped")
+        else:
             raise TypeError("You should give a criteria to select service processes!")
-        pids = _findProcesses(user=user, command=command)
-        if pids is not None:
-            for pid in pids:
-                os.kill(pid, signalno)
-            notify("System.Service.changed", "stopped")
     return None
 
 def isServiceRunning(pidfile=None, command=None):

@@ -108,9 +108,8 @@ class Browser(KListView):
         dd = DomainDialog(self)
         if dd.exec_loop():
             dn = dd.connection.base_dn
-            label = dd.connection.label
             self.window.dc.addConnection(dd.connection)
-            BrowserItem(self, self.window, dn, label, dd.connection)
+            BrowserItem(self, self.window, dn, None, dd.connection)
     
     def slotNewDirectory(self):
         item = self.selectedItem()

@@ -156,16 +156,18 @@ class DomainConfig:
     
     def fromXML(self, filename=None, clear=False):
         """Load configuration from specified filename. (default: ~/.lider.xml)"""
-        ignore_errors = False
+        create_new = False
         if not filename:
             filename = os.path.join(os.environ["HOME"], ".lider.xml")
-            ignore_errors = True
+            create_new = True
         if not os.path.exists(filename):
-            if not ignore_errors:
+            if create_new:
+                file(filename, "w").write("<Lider></Lider>")
+            else:
                 raise DomainConfigMissing, i18n("Domain configuration file is missing.")
         try:
             doc = piksemel.parse(filename)
-        except piksemel.ParseError:
+        except (piksemel.ParseError, MemoryError):
             raise DomainXMLParseError, i18n("Domain configuration file has syntax errors.")
         if clear:
             self.clear()

@@ -62,7 +62,7 @@ class MainWindow(KMainWindow):
         self.show()
         
         if not len(self.dc.connections):
-            self.slotNewDomain()
+            self.browser.slotNewDomain()
     
     def showCriticalError(self, message):
         QMessageBox.critical(self, i18n("Critical Error"), message)

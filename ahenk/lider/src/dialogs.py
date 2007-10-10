@@ -175,6 +175,8 @@ class ObjectDialog(KDialog):
             for varname, label, widget in _widgets:
                 if not widget:
                     continue
+                if self.multiple and not self.model.options[varname].get("multi", True):
+                    continue
                 lab = QLabel(i18n(label) + ":", _parent)
                 _grid.addWidget(lab, _row, 0, Qt.AlignRight)
                 self.widgets[varname] = widget(_parent, self.mode, self.model.options[varname])

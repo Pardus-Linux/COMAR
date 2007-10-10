@@ -198,7 +198,6 @@ class ComputerInfoModel(ldapmodel.LdapClass):
 class ComputerPolicyModel(ldapmodel.LdapClass):
     name_field = "cn"
     object_label = i18n("Policy")
-    allow_multiple_edit = True
     objectClass = ["top", "device", "pardusComputer", "pisiPolicy", "comarUserPolicy", "comarServicePolicy"]
     entries = (
         # pisiPolicy
@@ -221,7 +220,6 @@ class ComputerPolicyModel(ldapmodel.LdapClass):
 class UnitPolicyModel(ComputerPolicyModel):
     name_field = "ou"
     object_label = i18n("Policy")
-    allow_multiple_edit = True
     objectClass = ["top", "organizationalUnit", "pisiPolicy", "comarUserPolicy", "comarServicePolicy"]
 
 class DirectoryModel(ldapmodel.LdapClass):
@@ -229,14 +227,13 @@ class DirectoryModel(ldapmodel.LdapClass):
     object_label = i18n("Directory")
     objectClass = ["dcObject", "organization"]
     entries = (
-        ("label", "o", str, i18n("Label"), ldapview.textWidget, "*", {}),
+        ("label", "o", str, i18n("Label"), ldapview.textWidget, "*", {"multi": False}),
         ("description", "description", str, i18n("Description"), ldapview.textWidget, "*", {}),
     )
 
 class ComputerModel(ldapmodel.LdapClass):
     name_field = "cn"
     object_label = i18n("Computer")
-    allow_multiple_edit = True
     objectClass = ["top", "device", "pardusComputer", "pisiPolicy", "comarUserPolicy", "comarServicePolicy"]
     entries = (
         ("description", "description", str, i18n("Description"), ldapview.textWidget, "*", {}),
@@ -247,7 +244,6 @@ class ComputerModel(ldapmodel.LdapClass):
 class UnitModel(ldapmodel.LdapClass):
     name_field = "ou"
     object_label = i18n("Unit")
-    allow_multiple_edit = True
     objectClass = ["top", "organizationalUnit", "pisiPolicy", "comarUserPolicy", "comarServicePolicy"]
     entries = (
         ("description", "description", str, i18n("Description"), ldapview.textWidget, "*", {}),
@@ -258,12 +254,12 @@ class UserModel(ldapmodel.LdapClass):
     object_label = i18n("User")
     objectClass = ["top", "account", "posixAccount", "shadowAccount"]
     entries = (
-        ("label", "cn", str, i18n("Real Name"), ldapview.textWidget, "*", {}),
+        ("label", "cn", str, i18n("Real Name"), ldapview.textWidget, "*", {"multi": False}),
         ("password", "userPassword", str, i18n("Password"), ldapview.passwordWidget, "*", {"hashMethod": "utility.saltedSHA"}),
         ("shell", "loginShell", str, i18n("Shell"), ldapview.textWidget, "*", {}),
-        ("home", "homeDirectory", str, i18n("Home"), ldapview.textWidget, "*", {}),
-        ("uid", "uidNumber", int, i18n("User ID"), ldapview.numberWidget, "*", {}),
-        ("gid", "gidNumber", int, i18n("Group ID"), ldapview.numberWidget, "*", {}),
+        ("home", "homeDirectory", str, i18n("Home"), ldapview.textWidget, "*", {"multi": False}),
+        ("uid", "uidNumber", int, i18n("User ID"), ldapview.numberWidget, "*", {"multi": False}),
+        ("gid", "gidNumber", int, i18n("Group ID"), ldapview.numberWidget, "*", {"multi": False}),
     )
 
 class GroupModel(ldapmodel.LdapClass):
@@ -271,6 +267,6 @@ class GroupModel(ldapmodel.LdapClass):
     object_label = i18n("Group")
     objectClass = ["top", "posixGroup"]
     entries = (
-        ("gid", "gidNumber", int, i18n("Group ID"), ldapview.numberWidget, "*", {}),
+        ("gid", "gidNumber", int, i18n("Group ID"), ldapview.numberWidget, "*", {"multi": False}),
         ("members", "memberUid", list, i18n("Members"), ldapview.listWidget, "*", {}),
     )

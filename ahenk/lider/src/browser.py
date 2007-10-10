@@ -386,9 +386,11 @@ class ObjectList(KListView):
             self.menu_item.setItemVisible(i, True)
         items = self.selectedItems()
         if len(items):
-            if len(items) > 1 and not items[0].model.allow_multiple_edit:
+            """
+            if len(items) > 1:
                 for i in self.id_menu[3:]:
                     self.menu_item.setItemVisible(i, False)
+            """
             if not items[0].info:
                 self.menu_item.setItemVisible(self.id_menu[4], False)
             if not items[0].policy:
@@ -437,7 +439,7 @@ class ObjectList(KListView):
             if item.model:
                 item.model = item.model.__class__(attrs)
         item = items[0]
-        if len(items) > 1 and item.model.allow_multiple_edit:
+        if len(items) > 1:
             multiple = True
             od = ObjectDialog(self.window, item.dn, item.model.__class__(), multiple=True)
         else:
@@ -478,7 +480,7 @@ class ObjectList(KListView):
         item = items[0]
         if not item.policy:
             return
-        if len(items) > 1 and item.policy.allow_multiple_edit:
+        if len(items) > 1:
             multiple = True
             od = ObjectDialog(self.window, item.dn, item.policy.__class__(), multiple=True, unset=True)
         else:

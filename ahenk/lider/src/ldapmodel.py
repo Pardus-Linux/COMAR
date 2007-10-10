@@ -15,7 +15,6 @@ class LdapClass:
     object_label = ""
     objectClass = []
     entries = ()
-    allow_multiple_edit = False
     
     def __init__(self, attr={}):
         self.fields = {}

@@ -334,20 +334,14 @@ def stopService(pidfile=None, command=None, args=None, chuid=None, user=None, na
             # Already stopped, no need to send notification.
             return None
     else:
-        if command and user:
-            pids = _findProcesses(user=user, command=command)
-            if pids is not None:
-                for pid in pids:
-                    os.kill(pid, signalno)
-                notify("System.Service.changed", "stopped")
-        elif name and user:
-            pids = _findProcesses(user=user, name=name)
-            if pids is not None:
-                for pid in pids:
-                    os.kill(pid, signalno)
-                notify("System.Service.changed", "stopped")
-        else:
+        if not command and not user and not name:
             raise TypeError("You should give a criteria to select service processes!")
+        pids = _findProcesses(user=user, command=command, name=name)
+        if pids is not None:
+            for pid in pids:
+                os.kill(pid, signalno)
+            if donotify:
+                notify("System.Service.changed", "stopped")
     return None
 
 def isServiceRunning(pidfile=None, command=None):

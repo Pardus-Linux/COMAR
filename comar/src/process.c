@@ -100,10 +100,10 @@ proc_get_rpc(void)
 static struct ProcChild *
 add_child(pid_t pid, int to, int from, const char *desc)
 {
-·   /*!
-·   Adds a child process with given arguments to process
-·   @return Returns added child process
-·   */
+    /*!
+    Adds a child process with given arguments to process
+    @return Returns added child process
+    */
 
 	int i;
 
@@ -148,10 +148,10 @@ rem_child(int nr)
 static void
 stop_children(void)
 {
-·   /*!
-·   Send SIGTERM to all child processes, wait for 3 seconds
-·   if they resist, kill'em all
-·   */
+    /*!
+    Send SIGTERM to all child processes, wait for 3 seconds
+    if they resist, kill'em all
+    */
 
 	struct timeval start;
 	struct timeval cur;
@@ -229,11 +229,11 @@ proc_finish(void)
 struct ProcChild *
 proc_fork(void (*child_func)(void), const char *desc)
 {
-·   /*!
-·   Child process fork function, child process continues from child_func
-·   \param desc is description, process name
-·   @return Returns Null on error
-·   */
+    /*!
+    Child process fork function, child process continues from child_func
+    \param desc is description, process name
+    @return Returns Null on error
+    */
 
 	pid_t pid;
 	int fdr[2], fdw[2];
@@ -310,11 +310,11 @@ proc_setup_fds(fd_set *fds)
 int
 proc_select_fds(fd_set *fds, int max, struct ProcChild **senderp, int *cmdp, size_t *sizep, int timeout)
 {
-·   /*!
-·   Listen incoming requests with 'select()'
-·   Sets command, data size and returns 1 if there's something to listen
-·   Returns 0 otherwise
-·   */
+    /*!
+    Listen incoming requests with 'select()'
+    Sets command, data size and returns 1 if there's something to listen
+    Returns 0 otherwise
+    */
 
 	unsigned int ipc;
 	struct timeval tv, *tvptr;

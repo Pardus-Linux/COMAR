@@ -122,11 +122,11 @@ add_group(iks *tag, int level, struct acl_class *ac)
 static void
 add_groups(iks *tag, int class_no, int level, struct acl_class *ac)
 {
-·   /*!
-·   Searches 'tag' in 'group' and 'class' tags, calls add_group function with found tags
-·   level and acl_class is passed to add_group
-·   \sa add_group
-·   */
+    /*!
+    Searches 'tag' in 'group' and 'class' tags, calls add_group function with found tags
+    level and acl_class is passed to add_group
+    \sa add_group
+    */
 
 	iks *x;
 	// global permissions
@@ -146,11 +146,11 @@ add_groups(iks *tag, int class_no, int level, struct acl_class *ac)
 static void
 set_class(iks *model, int class_no)
 {
-·   /*!
-·   Allocates memory for all found 'group's in 'model' @see count_groups()
-·   Then add_groups is called and acl_class is put in node table
-·   \sa add_groups
-·   */
+    /*!
+    Allocates memory for all found 'group's in 'model' @see count_groups()
+    Then add_groups is called and acl_class is put in node table
+    \sa add_groups
+    */
 
 	struct acl_class *ac;
 	int nr_groups = 0;
@@ -174,10 +174,10 @@ set_class(iks *model, int class_no)
 void
 acl_init(void)
 {
-·   /*!
-·   Loads /etc/comar/security-policy.xml file
-·   For all classes in model.xml file, look in security-policy if theres a match
-·   */
+    /*!
+    Loads /etc/comar/security-policy.xml file
+    For all classes in model.xml file, look in security-policy if theres a match
+    */
 
 	iks *policy;
 	iks *model;
@@ -211,10 +211,10 @@ acl_init(void)
 static int
 check_acl(int node, struct Creds *cred)
 {
-·   /*!
-·   Checks if cred->uid user is capable to perform the action,
-·   @return Returns 1 if capable, 0 otherwise
-·   */
+    /*!
+    Checks if cred->uid user is capable to perform the action,
+    @return Returns 1 if capable, 0 otherwise
+    */
 
 	gid_t gids[64];
 	int nr_gids = 64;
@@ -253,11 +253,11 @@ check_acl(int node, struct Creds *cred)
 int
 acl_is_capable(int cmd, int node, struct Creds *cred)
 {
-·   /*!
-·   Checks if cred->uid user is capable executing command cmd.
-·   Root is always capable, only CMD_CALL commands are allowed here
-·   @return Returns 1 if allowed, 0 otherwise
-·   */
+    /*!
+    Checks if cred->uid user is capable executing command cmd.
+    Root is always capable, only CMD_CALL commands are allowed here
+    @return Returns 1 if allowed, 0 otherwise
+    */
 
 	if (cred->uid == 0)
 		return 1;
@@ -274,10 +274,10 @@ acl_is_capable(int cmd, int node, struct Creds *cred)
 int
 acl_can_connect(struct Creds *cred)
 {
-·   /*!
-·   Checks if user with user id cred->uid can connect comar.
-·   @return Returns 1 if can connect, 0 otherwise
-·   */
+    /*!
+    Checks if user with user id cred->uid can connect comar.
+    @return Returns 1 if can connect, 0 otherwise
+    */
 
 	gid_t gids[64];
 	int nr_gids = 64;

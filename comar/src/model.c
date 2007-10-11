@@ -64,10 +64,10 @@ hash_string(const unsigned char *str, int len)
 static int
 prepare_tables(int max_nodes, size_t str_size)
 {
-·   /*!
-·   @return Returns 0 if successfully allocates memory for nodes, node table and paths,
-·   -1 otherwise
-·   */
+    /*!
+    @return Returns 0 if successfully allocates memory for nodes, node table and paths,
+    -1 otherwise
+    */
 
 	nodes = calloc(max_nodes, sizeof(struct node));
 	node_table = calloc(TABLE_SIZE, sizeof(struct node *));
@@ -80,10 +80,10 @@ prepare_tables(int max_nodes, size_t str_size)
 static int
 add_node(int parent_no, const char *path, int type)
 {
-·   /*!
-·   parent_no is depth of node. adds node with path and type (method)
-·   to node table
-·   */
+    /*!
+    parent_no is depth of node. adds node with path and type (method)
+    to node table
+    */
 
 	struct node *n;
 	int val;
@@ -115,11 +115,11 @@ static char *path_ptr = NULL;
 static char *
 build_path(iks *g, iks *o, iks *m)
 {
-·   /*!
-·   Returns the 'name' attr of 'g' iks node (group)
-·   if 'm' is given, returns it as group.object.method (names)
-·   if 'o' is given, returns group.object (names)
-·   */
+    /*!
+    Returns the 'name' attr of 'g' iks node (group)
+    if 'm' is given, returns it as group.object.method (names)
+    if 'o' is given, returns group.object (names)
+    */
 
 	if (path_ptr) {
 		path_ptr += strlen(path_ptr) + 1;
@@ -170,12 +170,12 @@ build_arg(int no, int is_instance, const char *name)
 int
 model_init(void)
 {
-·   /*!
-·   This function parses model.xml file (cfg_model_file)
-·   Converts model.xml's access levels and flags to ACL levels and
-·   flags, and loads into memory before deleting dom tree
-·   \sa cfg.c
-·   */
+    /*!
+    This function parses model.xml file (cfg_model_file)
+    Converts model.xml's access levels and flags to ACL levels and
+    flags, and loads into memory before deleting dom tree
+    \sa cfg.c
+    */
 
 	iks *model;
 	iks *grp, *obj, *met;
@@ -335,10 +335,10 @@ model_lookup_class(const char *path)
 int
 model_lookup_method(const char *path)
 {
-·   /*!
+    /*!
     Lookup a method in node table.
-·   @return If found, returns its number in table, returns -1 otherwise·
-·   */
+    @return If found, returns its number in table, returns -1 otherwise·
+    */
 
 	struct node *n;
 	int val;
@@ -356,10 +356,10 @@ model_lookup_method(const char *path)
 int
 model_lookup_notify(const char *path)
 {
-·   /*!
-·   If specified path's record in node table has a type of 'notify'
-·   returns its number in table, returns -1 otherwise
-·   */
+    /*!
+    If specified path's record in node table has a type of 'notify'
+    returns its number in table, returns -1 otherwise
+    */
 
 	struct node *n;
 	int val;
@@ -377,10 +377,10 @@ model_lookup_notify(const char *path)
 int
 model_parent(int node_no)
 {
-·   /*!
+    /*!
     if node_no numbered record in node table is a method, returns its parent number
-·   else returns node_no
-·   */
+    else returns node_no
+    */
 
 	struct node *n;
 
@@ -414,9 +414,9 @@ model_get_path(int node_no)
 int
 model_has_argument(int node_no, const char *argname)
 {
-·   /*!
-·   @return Returns 1 if argname is found in node table, 0 otherwise
-·   */
+    /*!
+    @return Returns 1 if argname is found in node table, 0 otherwise
+    */
 
 	struct node *n;
 	int max, i;
@@ -491,11 +491,11 @@ model_acl_set(int node_no, void *acldata)
 void
 model_acl_get(int node_no, void **acldatap, unsigned int *levelp)
 {
-·   /*!
-·   This function gets 'acldata' and 'level' from node table, from record numbered 'node_no'
-·   \param acldatap is pointer to acldata
-·   \param levelp is pointer to level
-·   */
+    /*!
+    This function gets 'acldata' and 'level' from node table, from record numbered 'node_no'
+    \param acldatap is pointer to acldata
+    \param levelp is pointer to level
+    */
 
 	struct node *n;
 
@@ -513,11 +513,11 @@ model_acl_get(int node_no, void **acldatap, unsigned int *levelp)
 int
 model_next_class(int *class_nop)
 {
-·   /*!
-·   Scans node table for class tags
-·   @return If found, returns 1 and sets the node number to given argument (class_nop) \n
-·   Returns 0 if no classes found
-·   */
+    /*!
+    Scans node table for class tags
+    @return If found, returns 1 and sets the node number to given argument (class_nop) \n
+    Returns 0 if no classes found
+    */
 
 	int no;
 	struct node *n;

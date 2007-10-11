@@ -20,10 +20,10 @@
 void *
 notify_alloc(void)
 {
-·   /*!
-·   Allocates memory for notifies and returns pointer to allocated memory
-·   Returns Null on error.
-·   */
+    /*!
+    Allocates memory for notifies and returns pointer to allocated memory
+    Returns Null on error.
+    */
 
 	int size;
 

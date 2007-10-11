@@ -104,11 +104,11 @@ get_size(const unsigned char *buf)
 static int
 create_pipe(const char *pipe_name)
 {
-·   /*!
-·   Creates a pipe, with listen. length of the queue is 5
-·   @return Returns -2 if can't assign address to socket \n
-·   Returns -3 if can't listen requests
-·   */
+    /*!
+    Creates a pipe, with listen. length of the queue is 5
+    @return Returns -2 if can't assign address to socket \n
+    Returns -3 if can't listen requests
+    */
 
 	struct sockaddr_un name;
 	size_t size;
@@ -143,10 +143,10 @@ create_pipe(const char *pipe_name)
 static int
 get_peer(int sock, struct Creds *cred)
 {
-·   /*!
-·   Gets options of sock, and fills cred according to these options
-·   @return Returns 0. Returns -1 on error.
-·   */
+    /*!
+    Gets options of sock, and fills cred according to these options
+    @return Returns 0. Returns -1 on error.
+    */
 	// NOTE: this implementation requires a linux kernel
 	struct {
 		pid_t pid;
@@ -256,9 +256,9 @@ get_arg(struct arg_s *args, char **argp, size_t *sizep)
 static int
 write_rpc(struct connection *c, unsigned int cmd, int id, const char *buffer, size_t size)
 {
-·   /*!
-·   Checks the command cmd, and sends c's socket the answer
-·   */
+    /*!
+    Checks the command cmd, and sends c's socket the answer
+    */
 
 	unsigned char head[8];
 
@@ -300,11 +300,11 @@ write_rpc(struct connection *c, unsigned int cmd, int id, const char *buffer, si
 static int
 parse_rpc(struct connection *c)
 {
-·   /*!
+    /*!
     This is parser function for RPC
-·   According to command in c's buffer, checks for permissions
-·   and executes, denies etc. the command
-·   */
+    According to command in c's buffer, checks for permissions
+    and executes, denies etc. the command
+    */
 
 	struct ipc_struct ipc;
 	struct arg_s args;
@@ -652,10 +652,10 @@ rpc_proc(void)
 void
 rpc_unix_start(void)
 {
-·   /*!
-·   Fork RPC process
-·   @return Returns -1 on error
-·   */
+    /*!
+    Fork RPC process
+    @return Returns -1 on error
+    */
 
 	struct ProcChild *p;
 

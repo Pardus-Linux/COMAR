@@ -28,10 +28,10 @@
 static int
 check_db_format(void)
 {
-·   /*!
-·   Checks db format.
-·   @return returns 0 if db is Model db or App db, 1 else
-·   */
+    /*!
+    Checks db format.
+    @return returns 0 if db is Model db or App db, 1 else
+    */
 
 	FILE *f;
 	size_t len;
@@ -70,13 +70,13 @@ static char *code_lock_name;
 int
 db_init(void)
 {
-·   /*!
-·   Checks comar db directory and db format, creates if not exists.
-·   Also checks code/lock file
-·   @return Returns 0 on success, \n Returns -1 on error, \n Returns -2 if db type is not app or model \n
-·   Returns -3 if code/lock name is not set ( either theres something wrong with data dir,
-·   or memory allocation error )
-·   */
+    /*!
+    Checks comar db directory and db format, creates if not exists.
+    Also checks code/lock file
+    @return Returns 0 on success, \n Returns -1 on error, \n Returns -2 if db type is not app or model \n
+    Returns -3 if code/lock name is not set ( either theres something wrong with data dir,
+    or memory allocation error )
+    */
 
 	struct stat fs;
 	size_t size;
@@ -126,15 +126,15 @@ struct databases {
 static int
 open_database(DB_ENV *env, DB **dbp, const char *name)
 {
-·   /*!
-·   Creates a DB structure that is the handle for a Berkeley DB database
-·   and opens it as a standalone, sorted - balanced tree structured DB.
-·   env is the environment, and dbp is db type ( model, app, code or profile )
-·   with 'name' file name
-·   @return Returns -1 if can not create database \n
-·   Returns -2 if can not open database \n
-·   Returns 0 otherwise \n
-·   */
+    /*!
+    Creates a DB structure that is the handle for a Berkeley DB database
+    and opens it as a standalone, sorted - balanced tree structured DB.
+    env is the environment, and dbp is db type ( model, app, code or profile )
+    with 'name' file name
+    @return Returns -1 if can not create database \n
+    Returns -2 if can not open database \n
+    Returns 0 otherwise \n
+    */
 
 	int e;
 	DB *db;
@@ -158,18 +158,18 @@ open_database(DB_ENV *env, DB **dbp, const char *name)
 static int
 open_env(struct databases *db, int which)
 {
-·   /*!
-·   Creates DB_ENV structure with db_home directory set to
-·   comar db dir. After creating enviroment, opens database
-·   with created env and specified DB type (type is 'which' in this case)
-·   @return Returns -1 if can not create database environment \n
-·   Returns -2 if can not open database environment. \n
-·   Returns -3 if which is a model db, and db could not be created or opened \n
-·   Returns -4 if which is a app db, and db could not be created or opened \n
-·   Returns -5 if which is a code db, and db could not be created or opened \n
-·   Returns -6 if which is a profile db, and db could not be created or opened \n
-·   Returns 0 otherwise
-·   */
+    /*!
+    Creates DB_ENV structure with db_home directory set to
+    comar db dir. After creating enviroment, opens database
+    with created env and specified DB type (type is 'which' in this case)
+    @return Returns -1 if can not create database environment \n
+    Returns -2 if can not open database environment. \n
+    Returns -3 if which is a model db, and db could not be created or opened \n
+    Returns -4 if which is a app db, and db could not be created or opened \n
+    Returns -5 if which is a code db, and db could not be created or opened \n
+    Returns -6 if which is a profile db, and db could not be created or opened \n
+    Returns 0 otherwise
+    */
 
 	int e;
 
@@ -241,13 +241,13 @@ get_data(DB *db, const char *name, size_t *sizep, int *errorp)
 static int
 put_data(DB *db, const char *name, const char *data, size_t size)
 {
-·   /*!
-·   Puts "name and 'size of name'" as first pair, and
-·   "data and size" as second pair to DB. \n
-·   DBT is key/data pair structure of berkeley db
-·   @return This function can return a non-zero error for errors specified for \n
-·   other Berkeley DB and C library or system functions. or DB_RUNRECOVERY
-·   */
+    /*!
+    Puts "name and 'size of name'" as first pair, and
+    "data and size" as second pair to DB. \n
+    DBT is key/data pair structure of berkeley db
+    @return This function can return a non-zero error for errors specified for \n
+    other Berkeley DB and C library or system functions. or DB_RUNRECOVERY
+    */
 
 	DBT pair[2];
 
@@ -276,11 +276,11 @@ del_data(DB *db, const char *name)
 static char *
 make_key(int node_no, const char *app)
 {
-·   /*!
+    /*!
     This function looks for node_no numbered record in node table
-·   and makes a key formatted like: path/app
-·   @return returns the key
-·   */
+    and makes a key formatted like: path/app
+    @return returns the key
+    */
 
 	const char *path;
 	char *key;
@@ -300,11 +300,11 @@ make_key(int node_no, const char *app)
 static int
 append_item(DB *db, const char *key, const char *item)
 {
-·   /*!
-·   If theres no such record, put it in db
-·   @return If item is already in db returns -1 \n
-·   Returns 0 normally
-·   */
+    /*!
+    If theres no such record, put it in db
+    @return If item is already in db returns -1 \n
+    Returns 0 normally
+    */
 
 	char *t, *s;
 	char *old;
@@ -352,9 +352,9 @@ append_item(DB *db, const char *key, const char *item)
 int
 db_put_script(int node_no, const char *app, const char *buffer, size_t size)
 {
-·   /**
-·   @return -1 or -2 on error, 0 normally
-·   */
+    /**
+    @return -1 or -2 on error, 0 normally
+    */
 	
     struct databases db;
 	int e, ret = -1;
@@ -380,10 +380,10 @@ out:
 int
 db_del_app(const char *app)
 {
-·   /*!
+    /*!
     Delete app application from app, model and code databases
-·   \sa db_delete_code del_data
-·   */
+    \sa db_delete_code del_data
+    */
 
 	struct databases db;
 	char *list, *list2, *t, *s;
@@ -445,9 +445,9 @@ int
 db_get_apps(int node_no, char **bufferp)
 {
     /*!
-·   Fetches data of node 'node_no' and writes it to bufferp
-·   @return Returns -1 on error, 0 otherwise
-·   */
+    Fetches data of node 'node_no' and writes it to bufferp
+    @return Returns -1 on error, 0 otherwise
+    */
 	struct databases db;
 	int e, ret = -1;
 
@@ -486,11 +486,11 @@ out:
 static char *
 make_code_key(int node_no, const char *app)
 {
-·   /*!
-·   Key path will be in format: cfg_data_dir/code/script.py
-·   @return Returns the key, or 0 on allocation error
-·   \sa cfg.c
-·   */
+    /*!
+    Key path will be in format: cfg_data_dir/code/script.py
+    @return Returns the key, or 0 on allocation error
+    \sa cfg.c
+    */
 
 	const char *path;
 	char *key;
@@ -516,11 +516,11 @@ make_code_key(int node_no, const char *app)
 static int
 lock_code_db(int is_exclusive)
 {
-·   /*!
-·   Locks the lock file for reading or writing
-·   if is_exclusive is true, lock for writing, otherwise, lock for reading
-·   @return Returns file descriptor to lock file, -1 on error
-·   */
+    /*!
+    Locks the lock file for reading or writing
+    if is_exclusive is true, lock for writing, otherwise, lock for reading
+    @return Returns file descriptor to lock file, -1 on error
+    */
 
 	int fd;
 
@@ -550,12 +550,12 @@ unlock_code_db(int fd)
 int
 db_load_code(int node_no, const char *app, char **bufferp)
 {
-·   /*!
-·   Loads the code numbered 'node_no' in node table, and assigns bufferp to its address
-·   @return Returns -1 on allocation error @see make_code_key \n
-·   Returns -2 if can not load code @see load_code
-·   \sa make_code_key load_file
-·   */
+    /*!
+    Loads the code numbered 'node_no' in node table, and assigns bufferp to its address
+    @return Returns -1 on allocation error @see make_code_key \n
+    Returns -2 if can not load code @see load_code
+    \sa make_code_key load_file
+    */
 
 	char *key;
 	char *code;
@@ -577,11 +577,11 @@ db_load_code(int node_no, const char *app, char **bufferp)
 int
 db_save_code(int node_no, const char *app, const char *buffer)
 {
-·   /*!
-·   @return Returns -1 on file path error \n
-·   Returns -2 on write error \n
-·   Returns 0 normally
-·   */
+    /*!
+    @return Returns -1 on file path error \n
+    Returns -2 on write error \n
+    Returns 0 normally
+    */
 
 	char *key;
 	int fd;
@@ -601,12 +601,12 @@ db_save_code(int node_no, const char *app, const char *buffer)
 int
 db_delete_code(int node_no, const char *app)
 {
-·   /*!
+    /*!
     Deletes code numbered 'node_no' in node table from filesystem·
-·   @return Returns -1 on allocation error @see make_code_key \n
-·   Returns -2 on error unlinking file
-·   Returns 0 otherwise
-·   */
+    @return Returns -1 on allocation error @see make_code_key \n
+    Returns -2 on error unlinking file
+    Returns 0 otherwise
+    */
 
 	char *key;
 	int fd;
@@ -723,12 +723,12 @@ struct databases *blaa = NULL;
 struct pack *
 db_get_profile(int node_no, const char *app, const char *inst_key, const char *inst_value)
 {
-·   /*!
-·   From node_no, app, inst_key and inst_value, this function first makes a profile key
-·   with format node/app/instance=value. Then gets this key from profile db
-·   and returns a pointer to a package structure carrying its data and size
-·   @return Returns a pointer to data pack
-·   */
+    /*!
+    From node_no, app, inst_key and inst_value, this function first makes a profile key
+    with format node/app/instance=value. Then gets this key from profile db
+    and returns a pointer to a package structure carrying its data and size
+    @return Returns a pointer to data pack
+    */
 
 	struct databases db;
 	struct pack *p = NULL;

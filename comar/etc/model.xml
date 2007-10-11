@@ -295,6 +295,7 @@
 <method name="setRemote" profile="package">
     <instance>name</instance>
     <argument>remote</argument>
+    <argument>apmac</argument>
 </method>
 <method name="setNameService" profile="package">
     <instance>name</instance>

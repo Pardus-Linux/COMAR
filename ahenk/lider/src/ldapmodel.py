@@ -60,12 +60,16 @@ class LdapClass:
                     self.groups[group] = []
                 self.groups[group].append(varname)
     
-    def toEntry(self, multiple=False):
+    def toEntry(self, multiple=False, only_fields=[]):
         """  Reads attributes from entries to a list'attr' 
              If the attribute type is int type conversion is made to str    
         """
         attr = {}
         for item in self.entries:
+            if item[0] not in self.fields:
+                continue
+            if len(only_fields) and item[0] not in only_fields:
+                continue
             val = self.fields[item[0]]
             if val is not None:
                 if item[2] == int:

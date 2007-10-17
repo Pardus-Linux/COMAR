@@ -108,6 +108,17 @@ class DomainDialog(KDialog):
         KDialog.reject(self)
 
 
+class ObjectCheckBox(QCheckBox):
+    def __init__(self, label, parent, connected_widget):
+        QCheckBox.__init__(self, label, parent)
+        self.widget = connected_widget
+        self.widget.setEnabled(False)
+        self.connect(self, SIGNAL("clicked()"), self.clicked)
+    
+    def clicked(self):
+        self.widget.setEnabled(self.isChecked())
+
+
 class ObjectDialog(KDialog):
     """Directory object attributes dialog."""
     
@@ -175,12 +186,16 @@ class ObjectDialog(KDialog):
             for varname, label, widget in _widgets:
                 if not widget:
                     continue
-                if self.multiple and not self.model.options[varname].get("multi", True):
-                    continue
-                lab = QLabel(i18n(label) + ":", _parent)
-                _grid.addWidget(lab, _row, 0, Qt.AlignRight)
                 self.widgets[varname] = widget(_parent, self.mode, self.model.options[varname])
                 _grid.addWidget(self.widgets[varname], _row, 1)
+                if self.multiple:
+                    lab = ObjectCheckBox(i18n(label) + ":", _parent, self.widgets[varname])
+                    _grid.addWidget(lab, _row, 0, Qt.AlignLeft)
+                    if not self.model.options[varname].get("multi", True):
+                        lab.setEnabled(False)
+                else:
+                    lab = QLabel(i18n(label) + ":", _parent)
+                    _grid.addWidget(lab, _row, 0, Qt.AlignRight)
                 _row += 1
             _grid.setRowStretch(_row, 1)
         
@@ -247,7 +262,10 @@ class ObjectDialog(KDialog):
             self.dn = "%s=%s,%s" % (self.model.name_field, self.w_name.text(), self.dn)
             self.model.name = str(self.w_name.text())
         for varname, widget in self.widgets.iteritems():
-            self.model.fields[varname] = widget.exportValue()
+            if widget.isEnabled():
+                self.model.fields[varname] = widget.exportValue()
+            else:
+                del self.model.fields[varname]
     
     def unsetValues(self):
         if self.mode == "edit":

@@ -99,6 +99,7 @@ class Browser(KListView):
                 if e.__class__ in domain.LDAPCritical:
                     item.disableDomain()
                 else:
+                    print e.args
                     self.window.showError(e.args[0]["info"])
             else:
                 item.parent().collapseNodes()
@@ -451,8 +452,11 @@ class ObjectList(KListView):
             try:
                 # Modify attributes
                 if multiple:
+                    fields = model_new.fields.keys()
+                    if not fields:
+                        return
                     for item in items:
-                        connection.modify(item.dn, item.model.toEntry(multiple=True), model_new.toEntry(multiple=True))
+                        connection.modify(item.dn, item.model.toEntry(multiple=True, only_fields=fields), model_new.toEntry(multiple=True))
                 else:
                     connection.modify(od.dn, model_old.toEntry(), model_new.toEntry())
                     """
@@ -491,8 +495,11 @@ class ObjectList(KListView):
             model_new = od.model
             try:
                 if multiple:
+                    fields = model_new.fields.keys()
+                    if not fields:
+                        return
                     for item in items:
-                        connection.modify(item.dn, item.policy.toEntry(multiple=True), model_new.toEntry(multiple=True))
+                        connection.modify(item.dn, item.policy.toEntry(multiple=True, only_fields=fields), model_new.toEntry(multiple=True))
                 else:
                     connection.modify(od.dn, model_old.toEntry(multiple=True), model_new.toEntry(multiple=True))
             except ldap.LDAPError, e:

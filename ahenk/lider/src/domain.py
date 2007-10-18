@@ -202,7 +202,8 @@ class ComputerPolicyModel(ldapmodel.LdapClass):
     entries = (
         # pisiPolicy
         ("pisi_mode", "pisiAutoUpdateMode", str, i18n("Update Mode"), ldapview.comboWidget, i18n("PISI"), {"options": [("off", i18n("Off")), ("security", i18n("Security Only")), ("full", i18n("Full"))], "default": "off"}),
-        ("pisi_interval", "pisiAutoUpdateInterval", int, i18n("Interval"), ldapview.numberWidget, i18n("PISI"), {}),
+        ("pisi_interval", "pisiAutoUpdateInterval", int, i18n("Interval"), ldapview.timerWidget, i18n("PISI"), {}),
+        ("pisi_zone", "pisiAutoUpdateZone", str, i18n("Update Between"), ldapview.timeIntervalWidget, i18n("PISI"), {}),
         ("pisi_wanted", "pisiWantedPackage", list, i18n("Wanted Packages"), ldapview.listWidget, i18n("PISI"), {}),
         ("pisi_unwanted", "pisiUnwantedPackage", list, i18n("Unwanted Packages"), ldapview.listWidget, i18n("PISI"), {}),
         # comarServicePolicy

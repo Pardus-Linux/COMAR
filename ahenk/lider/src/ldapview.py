@@ -55,7 +55,7 @@ class passwordWidget(QLineEdit):
 
 class numberWidget(QSpinBox):
     def __init__(self, parent, mode, options):
-        QLineEdit.__init__(self, parent)
+        QSpinBox.__init__(self, parent)
         self.setMaxValue(2**30)
         self.setMinValue(0)
         self.mode = mode
@@ -168,3 +168,53 @@ class listWidget(QWidget):
     def exportValue(self):
         return self.items
 
+
+class timerWidget(QTimeEdit):
+    def __init__(self, parent, mode, options):
+        QTimeEdit.__init__(self, parent)
+        self.setRange(QTime(0, 0, 0), QTime(23, 59, 59))
+        self.mode = mode
+        self.options = options
+    
+    def importValue(self, value):
+        if value:
+            min, secs = divmod(value, 60)
+            hour, min = divmod(min, 60)
+            self.setTime(QTime(hour, min, secs))
+    
+    def exportValue(self):
+        t = self.time()
+        return t.hour() * 60 * 60 + t.minute() * 60 + t.second()
+
+
+class timeIntervalWidget(QWidget):
+    def __init__(self, parent, mode, options):
+        QWidget.__init__(self, parent)
+        self.mode = mode
+        self.options = options
+        
+        layout = QHBoxLayout(self)
+        layout.setMargin(0)
+        layout.setSpacing(4)
+        
+        self.begin = timerWidget(self, mode, options)
+        layout.addWidget(self.begin)
+        
+        sep = QLabel("-", self)
+        layout.addWidget(sep)
+        
+        self.end = timerWidget(self, mode, options)
+        layout.addWidget(self.end)
+    
+    def importValue(self, value):
+        if value:
+            begin, end = value.split("-")
+            self.begin.importValue(begin)
+            self.end.importValue(end)
+    
+    def exportValue(self):
+        begin = self.begin.exportValue()
+        end = self.end.exportValue()
+        if begin == 0 and end == 0:
+            return ""
+        return "%s-%s" % (begin, end)

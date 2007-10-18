@@ -167,13 +167,13 @@ class ObjectDialog(KDialog):
                 self.mode = "new"
             else:
                 self.mode = "edit"
-            grid.addWidget(lab, 0, 0, Qt.AlignRight)
+            grid.addWidget(lab, 0, 0, Qt.AlignLeft)
             self.w_dn = QLineEdit(self.grp)
             self.w_dn.setReadOnly(True)
             grid.addWidget(self.w_dn, 0, 1)
             # Name
             lab = QLabel(i18n("Name:"), self.grp)
-            grid.addWidget(lab, 1, 0, Qt.AlignRight)
+            grid.addWidget(lab, 1, 0, Qt.AlignLeft)
             self.w_name = QLineEdit(self.grp)
             if self.mode == "edit":
                 self.w_name.setReadOnly(True)
@@ -190,12 +190,11 @@ class ObjectDialog(KDialog):
                 _grid.addWidget(self.widgets[varname], _row, 1)
                 if self.multiple:
                     lab = ObjectCheckBox(i18n(label) + ":", _parent, self.widgets[varname])
-                    _grid.addWidget(lab, _row, 0, Qt.AlignLeft)
                     if not self.model.options[varname].get("multi", True):
                         lab.setEnabled(False)
                 else:
                     lab = QLabel(i18n(label) + ":", _parent)
-                    _grid.addWidget(lab, _row, 0, Qt.AlignRight)
+                _grid.addWidget(lab, _row, 0, Qt.AlignLeft)
                 _row += 1
             _grid.setRowStretch(_row, 1)
         

@@ -18,6 +18,8 @@ import logging
 import ldif
 import sha
 
+import comar.utility
+
 import ajan.config
 import ajan.ldaputil
 
@@ -72,7 +74,11 @@ class Applier(threading.Thread):
         try:
             # 'update' function updates policy attributes, 'apply' functions does the related actions
             policy.update(computer, units)
+            # Set a lock file before applying policy
+            alock = comar.utility.FileLock("/var/run/.ahenk.lock")
+            alock.lock()
             policy.apply()
+            alock.unlock()
         
         except Exception, e:
             self.result_queue.put(("error", str(e)))

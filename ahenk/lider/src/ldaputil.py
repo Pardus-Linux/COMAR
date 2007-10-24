@@ -16,12 +16,13 @@ class LdapClass:
     objectClass = []
     entries = ()
     
-    def __init__(self, attr={}):
+    def __init__(self, attr={}, connection=None):
         self.fields = {}
         self.options = {}
         self.widgets = []
         self.groups = {}
         self.new = True
+        self.connection = connection
         self.fromEntry(attr)
     
     def fromEntry(self, attr):

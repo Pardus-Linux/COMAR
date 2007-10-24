@@ -109,14 +109,17 @@ class DomainDialog(KDialog):
 
 
 class ObjectCheckBox(QCheckBox):
-    def __init__(self, label, parent, connected_widget):
+    def __init__(self, label, parent):
         QCheckBox.__init__(self, label, parent)
-        self.widget = connected_widget
-        self.widget.setEnabled(False)
         self.connect(self, SIGNAL("clicked()"), self.clicked)
+    
+    def setWidget(self, widget):
+        self.widget = widget
+        self.widget.setEnabled(False)
     
     def clicked(self):
         self.widget.setEnabled(self.isChecked())
+        self.setFocus()
 
 
 class ObjectDialog(KDialog):
@@ -131,11 +134,11 @@ class ObjectDialog(KDialog):
         self.unset = unset
        
         if infowin:
-            self.setCaption(i18n("%1 Information").arg(self.objectLabel()))
+            self.setCaption(i18n("%1 Information").arg(self.model.object_label))
         elif model.name or self.multiple:
-            self.setCaption(i18n("%1 Properties").arg(self.objectLabel()))
+            self.setCaption(i18n("%1 Properties").arg(self.model.object_label))
         else:
-            self.setCaption(i18n("New %1").arg(self.objectLabel()))
+            self.setCaption(i18n("New %1").arg(self.model.object_label))
         
         self.resize(320, 120)
         
@@ -148,7 +151,7 @@ class ObjectDialog(KDialog):
         self.grp.layout().setMargin(11)
         
         if unset:
-            self.grp.setTitle(i18n("Enable %1").arg(self.objectLabel()))
+            self.grp.setTitle(i18n("Enable %1").arg(self.model.object_label))
             self.grp.setCheckable(True)
             if self.model.new:
                 self.grp.setChecked(False)
@@ -186,15 +189,17 @@ class ObjectDialog(KDialog):
             for varname, label, widget in _widgets:
                 if not widget:
                     continue
-                self.widgets[varname] = widget(_parent, self.mode, self.model.options[varname])
-                _grid.addWidget(self.widgets[varname], _row, 1)
                 if self.multiple:
-                    lab = ObjectCheckBox(i18n(label) + ":", _parent, self.widgets[varname])
+                    lab = ObjectCheckBox(i18n(label) + ":", _parent)
                     if not self.model.options[varname].get("multi", True):
                         lab.setEnabled(False)
                 else:
                     lab = QLabel(i18n(label) + ":", _parent)
                 _grid.addWidget(lab, _row, 0, Qt.AlignLeft)
+                self.widgets[varname] = widget(_parent, self.mode, self.model.options[varname])
+                _grid.addWidget(self.widgets[varname], _row, 1)
+                if self.multiple:
+                    lab.setWidget(self.widgets[varname])
                 _row += 1
             _grid.setRowStretch(_row, 1)
         
@@ -242,9 +247,6 @@ class ObjectDialog(KDialog):
             self.connect(but, SIGNAL("clicked()"), self.accept)
         
         self.setValues()
-    
-    def objectLabel(self):
-        return i18n(self.model.object_label)
     
     def isModified(self):
         return True

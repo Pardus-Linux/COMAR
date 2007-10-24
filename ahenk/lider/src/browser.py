@@ -16,6 +16,7 @@ from kdecore import *
 from utility import *
 from dialogs import *
 import domain
+import ldapmodel
 
 import ldap
 
@@ -115,7 +116,7 @@ class Browser(KListView):
     def slotNewDirectory(self):
         item = self.selectedItem()
         connection = item.connection
-        od = ObjectDialog(self.window, item.dn, domain.DirectoryModel())
+        od = ObjectDialog(self.window, item.dn, ldapmodel.DirectoryModel(connection=connection))
         if od.exec_loop():
             try:
                 connection.add(od.dn, od.model.toEntry())
@@ -170,10 +171,10 @@ class Browser(KListView):
         show_tab = None
         
         objects = [
-            (self.window.computers, "pardusComputer", domain.ComputerModel, domain.ComputerPolicyModel, domain.ComputerInfoModel, "krdc", i18n("Computers (%1)")),
-            (self.window.units, "organizationalUnit", domain.UnitModel, domain.UnitPolicyModel, None, "server", i18n("Units (%1)")),
-            (self.window.users, "posixAccount", domain.UserModel, None, None, "user", i18n("Users (%1)")),
-            (self.window.groups, "posixGroup", domain.GroupModel, None, None, "kontact_contacts", i18n("Groups (%1)")),
+            (self.window.computers, "pardusComputer", ldapmodel.ComputerModel, ldapmodel.ComputerPolicyModel, ldapmodel.ComputerInfoModel, "krdc", i18n("Computers (%1)")),
+            (self.window.units, "organizationalUnit", ldapmodel.UnitModel, ldapmodel.UnitPolicyModel, None, "server", i18n("Units (%1)")),
+            (self.window.users, "posixAccount", ldapmodel.UserModel, None, None, "user", i18n("Users (%1)")),
+            (self.window.groups, "posixGroup", ldapmodel.GroupModel, None, None, "kontact_contacts", i18n("Groups (%1)")),
         ]
         
         for objectWidget, objectClass, objectModel, objectPolicy, objectInfo, icon, label in objects:
@@ -190,13 +191,13 @@ class Browser(KListView):
                         self.window.showError(e.args[0]["info"])
                 else:
                     for dn, attrs in result:
-                        model = objectModel(attrs)
+                        model = objectModel(attrs, item.connection)
                         policy = None
                         if objectPolicy:
-                            policy = objectPolicy(attrs)
+                            policy = objectPolicy(attrs, item.connection)
                         info = None
                         if objectInfo:
-                            info = objectInfo(attrs)
+                            info = objectInfo(attrs, item.connection)
                         ObjectListItem(objectWidget, self.window, dn, model, policy, info, icon)
                     self.window.tab.setTabLabel(objectWidget, label.arg(len(result)))
                 if len(result) > object_len:
@@ -335,7 +336,7 @@ class BrowserItem(QListViewItem):
             self.clearNodes()
             for organization in organizations:
                 dn, attrs = organization
-                model = domain.DirectoryModel(attrs)
+                model = ldapmodel.DirectoryModel(attrs, self.connection)
                 BrowserItem(self, self.window, dn, model)
             
             if not len(organizations):
@@ -407,13 +408,13 @@ class ObjectList(KListView):
         connection = item.connection
         dn = item.dn
         if self.type == "computer":
-            model = domain.ComputerModel()
+            model = ldapmodel.ComputerModel(connection=connection)
         elif self.type == "unit":
-            model = domain.UnitModel()
+            model = ldapmodel.UnitModel(connection=connection)
         elif self.type == "user":
-            model = domain.UserModel()
+            model = ldapmodel.UserModel(connection=connection)
         elif self.type == "group":
-            model = domain.GroupModel()
+            model = ldapmodel.GroupModel(connection=connection)
         od = ObjectDialog(self.window, dn, model)
         if od.exec_loop():
             try:

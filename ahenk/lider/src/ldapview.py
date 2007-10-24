@@ -178,6 +178,7 @@ class timerWidget(QTimeEdit):
     
     def importValue(self, value):
         if value:
+            value = int(value)
             min, secs = divmod(value, 60)
             hour, min = divmod(min, 60)
             self.setTime(QTime(hour, min, secs))

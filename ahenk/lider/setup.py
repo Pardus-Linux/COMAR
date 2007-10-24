@@ -58,6 +58,7 @@ kdedistutils.setup(
     license = "GPL",
     application_data = ["src/browser.py", "src/dialogs.py", "src/domain.py", "src/lider.py",
                         "src/mainwindow.py", "src/utility.py", "src/ldapmodel.py", "src/ldapview.py",
+                        "src/ldaputil.py",
                         ("/usr/kde/3.5/share/icons/hicolor/128x128/apps", ["src/lider.png"])],
     executable_links = [("lider", "lider.py")],
     i18n = ("po", ["src/"]),

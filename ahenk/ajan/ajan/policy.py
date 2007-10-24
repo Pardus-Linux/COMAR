@@ -18,8 +18,6 @@ import logging
 import ldif
 import sha
 
-import comar.utility
-
 import ajan.config
 import ajan.ldaputil
 
@@ -53,6 +51,7 @@ class Applier(threading.Thread):
         self.log = logging.getLogger("Applier")
         self.apply_queue = apply_queue
         self.result_queue = result_queue
+        self.active = True
         
         #Create all modules' -module names are stored in a tuple in config.py file- Policy objects and stores them in 'policies' list 
         self.policies = map(lambda x: x.Policy(), ajan.config.modules)
@@ -74,11 +73,7 @@ class Applier(threading.Thread):
         try:
             # 'update' function updates policy attributes, 'apply' functions does the related actions
             policy.update(computer, units)
-            # Set a lock file before applying policy
-            alock = comar.utility.FileLock("/var/run/.ahenk.lock")
-            alock.lock()
             policy.apply()
-            alock.unlock()
         
         except Exception, e:
             self.result_queue.put(("error", str(e)))
@@ -102,14 +97,9 @@ class Applier(threading.Thread):
         """ ?????????????????????????????????????"""
         self.log.debug("started")
         
-        while True:
-            try:
-                new_policy = self.apply_queue.get(True, self.next_timeout())
-            except Queue.Empty:
-                new_policy = None
-            
-            if new_policy:
-                computer, units = new_policy
+        while self.active:
+            if not self.apply_queue.empty():
+                computer, units = self.apply_queue.get()
                 for policy in self.policies:
                     self.update_policy(policy, computer, units)
             else:
@@ -120,11 +110,7 @@ class Applier(threading.Thread):
                         event.callable()
                     except Exception, e:
                         self.result_queue.put(("error", str(e)))
-
-
-#
-#
-#
+            time.sleep(1)
 
 
 class Loader(ldif.LDIFParser):
@@ -141,6 +127,7 @@ class Fetcher(threading.Thread):
         threading.Thread.__init__(self)
         self.result_queue = result_queue
         self.log = logging.getLogger("Fetcher")
+        self.active = True
     
     def fetch(self):
         self.log.debug("Fetching new policy...")
@@ -197,7 +184,7 @@ class Fetcher(threading.Thread):
                 self.result_queue.put(message)
         
         # Periodically fetch latest policy
-        while True:
+        while self.active:
             try:
                 computer, units, ldif_hash = self.fetch()
                 if ldif_hash != old_hash:
@@ -210,4 +197,7 @@ class Fetcher(threading.Thread):
             except Exception, e:
                 self.result_queue.put(("error", "Fetch error: %s" % str(e)))
             
-            time.sleep(ajan.config.policy_check_interval)
+            timeout = ajan.config.policy_check_interval
+            while timeout > 0 and self.active:
+                timeout -= 0.5
+                time.sleep(0.5)

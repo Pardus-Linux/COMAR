@@ -11,6 +11,8 @@
 
 import Queue
 import logging
+import signal
+import time
 
 import ajan.config
 import ajan.policy
@@ -28,17 +30,27 @@ def start(debug=False):
     
     # This thread modifies the system according to current policy
     applier = ajan.policy.Applier(apply_queue, result_queue)
-    applier.start()
     
     # This thread periodically checks central policy changes
     fetcher = ajan.policy.Fetcher(result_queue)
+    
+    def handle_signal(signum, frame):
+        applier.active = False
+        fetcher.active = False
+    signal.signal(signal.SIGHUP, handle_signal)
+    signal.signal(signal.SIGINT, handle_signal)
+    
+    applier.start()
     fetcher.start()
     
     # Serve forever
     logging.debug("Entering main loop")
-    while True:
-        op, data = result_queue.get()
-        
-        logging.debug("CMD %s" % str(data))
-        if op == "policy":
-            apply_queue.put(data)
+    while applier.isAlive() or fetcher.isAlive():
+        if not result_queue.empty():
+            op, data = result_queue.get()
+            
+            logging.debug("CMD %s" % str(data))
+            if op == "policy":
+                apply_queue.put(data)
+        time.sleep(1)
+    logging.debug("Exiting...")

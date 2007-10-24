@@ -13,11 +13,9 @@ def start():
                  donotify=True)
 
 def stop():
-    alock = FileLock("/var/run/.ahenk.lock")
-    alock.lock()
     stopService(pidfile="/var/run/ahenk-ajan.pid",
+                signalno=1,
                 donotify=True)
-    alock.unlock()
 
 def status():
     return isServiceRunning("/var/run/ahenk-ajan.pid")

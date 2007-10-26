@@ -35,6 +35,7 @@ def start(debug=False):
     fetcher = ajan.policy.Fetcher(result_queue)
     
     def handle_signal(signum, frame):
+        logging.debug("Got signal %s, shutting down..." % signum)
         applier.active = False
         fetcher.active = False
     signal.signal(signal.SIGHUP, handle_signal)
@@ -53,4 +54,4 @@ def start(debug=False):
             if op == "policy":
                 apply_queue.put(data)
         time.sleep(1)
-    logging.debug("Exiting...")
+    logging.debug("Bye")

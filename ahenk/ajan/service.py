@@ -1,5 +1,4 @@
 from comar.service import *
-from comar.utility import FileLock
 
 serviceType = "local"
 serviceDesc = _({"en": "Ahenk Agent",

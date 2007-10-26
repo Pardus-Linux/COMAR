@@ -17,7 +17,7 @@ class ComputerInfoModel(ldaputil.LdapClass):
     object_label = i18n("Computer")
     entries = (
         ("memory", "pardusMemoryCapacity", int, i18n("Memory"), ldapview.numberWidget, "*", {}),
-        ("services", "pardusServices", list, i18n("Services"), ldapview.listWidget, "*", {}),
+        ("services", "pardusServices", list, i18n("Services"), ldapview.listWidget, "*", {"items": [i18n("Service")]}),
     )
 
 
@@ -30,11 +30,12 @@ class ComputerPolicyModel(ldaputil.LdapClass):
         ("pisi_mode", "pisiAutoUpdateMode", str, i18n("Update Mode"), ldapview.comboWidget, i18n("PISI"), {"options": [("off", i18n("Off")), ("security", i18n("Security Only")), ("full", i18n("Full"))], "default": "off"}),
         ("pisi_interval", "pisiAutoUpdateInterval", int, i18n("Interval"), ldapview.timerWidget, i18n("PISI"), {}),
         ("pisi_zone", "pisiAutoUpdateZone", str, i18n("Update Between"), ldapview.timeIntervalWidget, i18n("PISI"), {}),
-        ("pisi_wanted", "pisiWantedPackage", list, i18n("Wanted Packages"), ldapview.listWidget, i18n("PISI"), {}),
-        ("pisi_unwanted", "pisiUnwantedPackage", list, i18n("Unwanted Packages"), ldapview.listWidget, i18n("PISI"), {}),
+        ("pisi_repos", "pisiRepositories", str, i18n("Repositories"), ldapview.listWidget, i18n("PISI"), {"items": [i18n("Repo Name"), i18n("URL")], "seperator": "|", "items_seperator": ","}),
+        ("pisi_wanted", "pisiWantedPackage", list, i18n("Wanted Packages"), ldapview.listWidget, i18n("PISI"), {"items": [i18n("Package")]}),
+        ("pisi_unwanted", "pisiUnwantedPackage", list, i18n("Unwanted Packages"), ldapview.listWidget, i18n("PISI"), {"items": [i18n("Package")]}),
         # comarServicePolicy
-        ("service_start", "comarServiceStart", list, i18n("Wanted Services"), ldapview.listWidget, i18n("Services"), {}),
-        ("service_stop", "comarServiceStop", list, i18n("Unwanted Services"), ldapview.listWidget, i18n("Services"), {}),
+        ("service_start", "comarServiceStart", list, i18n("Wanted Services"), ldapview.listWidget, i18n("Services"), {"items": [i18n("Service")]}),
+        ("service_stop", "comarServiceStop", list, i18n("Unwanted Services"), ldapview.listWidget, i18n("Services"), {"items": [i18n("Service")]}),
         # comarUserPolicy
         ("user_source", "comarUserSourceMode", str, i18n("User Source"), ldapview.comboWidget, i18n("COMAR"), {"options": [("local", i18n("Local")), ("ldap", i18n("LDAP"))], "default": "local"}),
         ("user_scope", "comarUserLdapSearchScope", str, i18n("Search Scope"), ldapview.comboWidget, i18n("COMAR"), {"options": [("base", i18n("Base")), ("onelevel", i18n("One Level")), ("subtree", i18n("Subtree"))], "default": "subtree"}),
@@ -54,7 +55,7 @@ class DirectoryModel(ldaputil.LdapClass):
     object_label = i18n("Directory")
     objectClass = ["dcObject", "organization"]
     entries = (
-        ("label", "o", str, i18n("Label"), ldapview.textWidget, "*", {"multi": False}),
+        ("label", "o", str, i18n("Label"), ldapview.textWidget, "*", {"multi": False, "required": True}),
         ("description", "description", str, i18n("Description"), ldapview.textWidget, "*", {}),
     )
 
@@ -81,12 +82,12 @@ class UserModel(ldaputil.LdapClass):
     object_label = i18n("User")
     objectClass = ["top", "account", "posixAccount", "shadowAccount"]
     entries = (
-        ("label", "cn", str, i18n("Real Name"), ldapview.textWidget, "*", {"multi": False}),
+        ("label", "cn", str, i18n("Real Name"), ldapview.textWidget, "*", {"multi": False, "required": True}),
         ("password", "userPassword", str, i18n("Password"), ldapview.passwordWidget, "*", {"hashMethod": "utility.saltedSHA"}),
-        ("shell", "loginShell", str, i18n("Shell"), ldapview.textWidget, "*", {}),
-        ("home", "homeDirectory", str, i18n("Home"), ldapview.textWidget, "*", {"multi": False}),
-        ("uid", "uidNumber", int, i18n("User ID"), ldapview.numberWidget, "*", {"multi": False}),
-        ("gid", "gidNumber", int, i18n("Group ID"), ldapview.numberWidget, "*", {"multi": False}),
+        ("shell", "loginShell", str, i18n("Shell"), ldapview.textWidget, "*", {"required": True}),
+        ("home", "homeDirectory", str, i18n("Home"), ldapview.textWidget, "*", {"multi": False, "required": True}),
+        ("uid", "uidNumber", int, i18n("User ID"), ldapview.numberWidget, "*", {"multi": False, "required": True}),
+        ("gid", "gidNumber", int, i18n("Group ID"), ldapview.numberWidget, "*", {"multi": False, "required": True}),
     )
 
 class GroupModel(ldaputil.LdapClass):
@@ -94,6 +95,6 @@ class GroupModel(ldaputil.LdapClass):
     object_label = i18n("Group")
     objectClass = ["top", "posixGroup"]
     entries = (
-        ("gid", "gidNumber", int, i18n("Group ID"), ldapview.numberWidget, "*", {"multi": False}),
-        ("members", "memberUid", list, i18n("Members"), ldapview.listWidget, "*", {}),
+        ("gid", "gidNumber", int, i18n("Group ID"), ldapview.numberWidget, "*", {"multi": False, "required": True}),
+        ("members", "memberUid", list, i18n("Members"), ldapview.listWidget, "*", {"items": [i18n("Username")]}),
     )

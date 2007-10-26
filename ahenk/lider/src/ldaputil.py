@@ -66,21 +66,25 @@ class LdapClass:
              If the attribute type is int type conversion is made to str    
         """
         attr = {}
-        for item in self.entries:
-            if item[0] not in self.fields:
+        for varname, attrname, valuetype, label, widget, group, options in self.entries:
+            if varname not in self.fields:
                 continue
-            if len(only_fields) and item[0] not in only_fields:
+            if len(only_fields) and varname not in only_fields:
                 continue
-            val = self.fields[item[0]]
+            val = self.fields[varname]
             if val is not None:
-                if item[2] == int:
+                if valuetype == int:
                     if not isinstance(val, list):
                         val = str(val)
-                elif item[2] == set:
+                elif valuetype == set:
                     val = list(val)
-                attr[item[1]] = val
+                elif valuetype == str:
+                    if isinstance(val, list):
+                        sep = options.get("item_seperator", ",")
+                        val = sep.join(val)
+                attr[attrname] = val
             else:
-                attr[item[1]] = []
+                attr[attrname] = []
             attr["objectClass"] = self.objectClass
             if self.name and not multiple:
                 attr[self.name_field] = self.name

@@ -13,14 +13,27 @@ from kdeui import *
 
 from utility import *
 
+"""
+Common options:
+    multi     : user can change the attribute when editing multiple objects (default: True)
+    required  : attribute is required or not (default: False)
+"""
+
 
 class textWidget(QLineEdit):
+    """Text widget for string typed attributes.
+       Options:
+        no_edit : attribute can be changed after creation (default: False)
+    """
     def __init__(self, parent, mode, options):
         QLineEdit.__init__(self, parent)
         self.mode = mode
         self.options = options
         if options.get("no_edit", False) and mode == "edit":
             self.setReadOnly(True)
+    
+    def focusOutEvent(self, event):
+        pass
     
     def importValue(self, value):
         self.setText(unicode(value))
@@ -30,6 +43,10 @@ class textWidget(QLineEdit):
 
 
 class passwordWidget(QLineEdit):
+    """Password widget.
+       Options:
+        hashMethod : hash method to be used while setting new password
+    """
     def __init__(self, parent, mode, options):
         QLineEdit.__init__(self, parent)
         self.setEchoMode(QLineEdit.Password)
@@ -54,6 +71,7 @@ class passwordWidget(QLineEdit):
 
 
 class numberWidget(QSpinBox):
+    """Number widget for integer typed attributes."""
     def __init__(self, parent, mode, options):
         QSpinBox.__init__(self, parent)
         self.setMaxValue(2**30)
@@ -70,6 +88,12 @@ class numberWidget(QSpinBox):
 
 
 class comboWidget(QComboBox):
+    """Combo widget for enumerated attributes
+       Options:
+        options    : list of possible values in (key, value) format
+        default    : default value
+        allow_null : ?
+    """
     def __init__(self, parent, mode, options):
         QComboBox.__init__(self, parent)
         self.mode = mode
@@ -95,15 +119,116 @@ class comboWidget(QComboBox):
         return str(self.values[self.currentItem()])
 
 
+class listWidgetListBox(QWidget):
+    def __init__(self, parent, options):
+        QWidget.__init__(self, parent)
+        layout = QGridLayout(self, 1, 1, 4, 4)
+        
+        items = options.get("items", [i18n("New Item")])
+        self.sep = options.get("seperator", "|")
+        
+        col = 0
+        self.edits = []
+        for item in items:
+            lab = QLabel(item, self)
+            layout.addWidget(lab, 1, col)
+            edit = QLineEdit(self)
+            layout.addWidget(edit, 2, col)
+            self.edits.append(edit)
+            col += 1
+        
+        self.listbox = QListBox(self)
+        layout.addMultiCellWidget(self.listbox, 3, 7, 0, col - 1)
+        
+        self.add = QPushButton(self)
+        self.add.setText(i18n("Add"))
+        layout.addWidget(self.add, 3, col)
+        
+        self.rem = QPushButton(self)
+        self.rem.setText(i18n("Remove"))
+        layout.addWidget(self.rem, 4, col)
+        
+        self.up = QPushButton(self)
+        self.up.setText(i18n("Up"))
+        layout.addWidget(self.up, 5, col)
+        
+        self.down = QPushButton(self)
+        self.down.setText(i18n("Down"))
+        layout.addWidget(self.down, 6, col)
+        
+        spacer = QSpacerItem(1, 2, QSizePolicy.Fixed, QSizePolicy.Expanding)
+        layout.addItem(spacer, 7, col)
+        
+        self.reset()
+        
+        self.connect(self.listbox, SIGNAL("selectionChanged(QListBoxItem*)"), self.slotSelected)
+        self.connect(self.add, SIGNAL("clicked()"), self.slotAdd)
+        self.connect(self.rem, SIGNAL("clicked()"), self.slotRem)
+        self.connect(self.up, SIGNAL("clicked()"), self.slotUp)
+        self.connect(self.down, SIGNAL("clicked()"), self.slotDown)
+    
+    def reset(self):
+        self.rem.setEnabled(False)
+        self.up.setEnabled(False)
+        self.down.setEnabled(False)
+        for x in self.edits:
+            x.setText("")
+    
+    def slotAdd(self):
+        values = []
+        for widget in self.edits:
+            values.append(unicode(widget.text()))
+            widget.setText("")
+        self.listbox.insertItem(self.sep.join(values))
+    
+    def slotRem(self):
+        self.listbox.takeItem(self.listbox.selectedItem())
+    
+    def slotUp(self):
+        selected = self.listbox.selectedItem()
+        index = self.listbox.index(selected)
+        old = self.listbox.text(index)
+        new = self.listbox.text(index - 1)
+        self.listbox.changeItem(new, index)
+        self.listbox.changeItem(old, index - 1)
+    
+    def slotDown(self):
+        selected = self.listbox.selectedItem()
+        index = self.listbox.index(selected)
+        old = self.listbox.text(index)
+        new = self.listbox.text(index + 1)
+        self.listbox.changeItem(new, index)
+        self.listbox.changeItem(old, index + 1)
+    
+    def slotSelected(self, item):
+        self.reset()
+        self.rem.setEnabled(True)
+        index = self.listbox.index(item)
+        if index > 0:
+            self.up.setEnabled(True)
+        if index < self.listbox.count() - 1:
+            self.down.setEnabled(True)
+    
+    def items(self):
+        items = []
+        for index in xrange(self.listbox.count()):
+            items.append(str(self.listbox.text(index)))
+        return items
+    
+    def setItems(self, items):
+        for item in items:
+            self.listbox.insertItem(unicode(item))
+
+
 class listWidgetEditor(QDialog):
-    def __init__(self, parent):
+    def __init__(self, parent, options):
         QDialog.__init__(self, parent)
         self.setCaption(i18n("Edit List"))
         layout = QVBoxLayout(self)
         layout.setMargin(4)
         layout.setSpacing(4)
         
-        self.editor = KEditListBox(self, "editor")
+        self.editor = listWidgetListBox(self, options)
         layout.addWidget(self.editor)
         
         layout_buttons = QHBoxLayout()
@@ -149,7 +274,7 @@ class listWidget(QWidget):
         self.connect(self.buttonEdit, SIGNAL("clicked()"), self.slotEdit)
     
     def slotEdit(self):
-        dialog = listWidgetEditor(self)
+        dialog = listWidgetEditor(self, self.options)
         items = [unicode(x) for x in self.items]
         dialog.importValue(items)
         if dialog.exec_loop():
@@ -157,6 +282,10 @@ class listWidget(QWidget):
             self.importValue(items)
     
     def importValue(self, value):
+        if not value:
+            return
+        if isinstance(value, str):
+            value = value.split(self.options.get("items_seperator", ","))
         self.items = value
         short_value = value[:3]
         if len(short_value) < len(value):

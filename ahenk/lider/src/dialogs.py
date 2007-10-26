@@ -264,10 +264,20 @@ class ObjectDialog(KDialog):
     def getValues(self):
         if not self.multiple and self.mode == "new":
             self.dn = "%s=%s,%s" % (self.model.name_field, self.w_name.text(), self.dn)
-            self.model.name = str(self.w_name.text())
+            if str(self.w_name.text()):
+                self.model.name = str(self.w_name.text())
+            else:
+                QMessageBox.warning(self, i18n("Error"), i18n("Name is required"))
+                self.w_name.setFocus()
+                return
         for varname, widget in self.widgets.iteritems():
             if widget.isEnabled():
-                self.model.fields[varname] = widget.exportValue()
+                if self.model.options[varname].get("required", False) and not widget.exportValue():
+                    QMessageBox.warning(self, i18n("Error"), i18n("%1 is required".args(varname)))
+                    widget.setFocus()
+                    return
+                else:
+                    self.model.fields[varname] = widget.exportValue()
             else:
                 del self.model.fields[varname]
     

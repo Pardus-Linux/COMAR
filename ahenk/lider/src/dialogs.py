@@ -101,6 +101,9 @@ class DomainDialog(KDialog):
                                                 unicode(self.w_bind_pass.text()))
     
     def accept(self):
+        if not len(self.w_name.text()) or not len(self.w_host.text()) or not len(self.w_base_dn.text()):
+            KDialog.reject(self)
+            return
         self.setValues()
         KDialog.accept(self)
     

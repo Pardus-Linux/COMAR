@@ -100,7 +100,6 @@ class Browser(KListView):
                 if e.__class__ in domain.LDAPCritical:
                     item.disableDomain()
                 else:
-                    print e.args
                     self.window.showError(e.args[0]["info"])
             else:
                 item.parent().collapseNodes()
@@ -109,9 +108,16 @@ class Browser(KListView):
     def slotNewDomain(self):
         dd = DomainDialog(self)
         if dd.exec_loop():
+            try:
+                dd.connection.bind()
+            except ldap.LDAPError:
+                self.window.showCriticalError(i18n("Unable to connect to LDAP server."))
+                return
             dn = dd.connection.base_dn
             self.window.dc.addConnection(dd.connection)
             BrowserItem(self, self.window, dn, None, dd.connection)
+        elif not len(self.window.dc.connections):
+            self.window.showInfo(i18n("You can add new domain by right clicking panel on right."))
     
     def slotNewDirectory(self):
         item = self.selectedItem()

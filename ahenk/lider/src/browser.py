@@ -117,7 +117,7 @@ class Browser(KListView):
             self.window.dc.addConnection(dd.connection)
             BrowserItem(self, self.window, dn, None, dd.connection)
         elif not len(self.window.dc.connections):
-            self.window.showInfo(i18n("You can add new domain by right clicking panel on right."))
+            self.window.showInfo(i18n("You can add new domain by right clicking panel on left."))
     
     def slotNewDirectory(self):
         item = self.selectedItem()

@@ -23,50 +23,34 @@ Common options:
 class textWidget(QLineEdit):
     """Text widget for string typed attributes.
        Options:
-        no_edit : attribute can be changed after creation (default: False)
+        no_edit  : attribute can not be changed after creation (default: False)
+        password : password attribute (default: False)
     """
     def __init__(self, parent, mode, options):
         QLineEdit.__init__(self, parent)
-        self.mode = mode
-        self.options = options
-        if options.get("no_edit", False) and mode == "edit":
-            self.setReadOnly(True)
-    
-    def focusOutEvent(self, event):
-        pass
-    
-    def importValue(self, value):
-        self.setText(unicode(value))
-    
-    def exportValue(self):
-        return str(self.text())
-
-
-class passwordWidget(QLineEdit):
-    """Password widget.
-       Options:
-        hashMethod : hash method to be used while setting new password
-    """
-    def __init__(self, parent, mode, options):
-        QLineEdit.__init__(self, parent)
-        self.setEchoMode(QLineEdit.Password)
         self.mode = mode
         self.options = options
         self.value = ""
+        if options.get("no_edit", False) and mode == "edit":
+            self.setReadOnly(True)
+        if options.get("password", False):
+            self.setEchoMode(QLineEdit.Password)
     
     def importValue(self, value):
-        if value:
-            self.value = value
-            self.setText("*" * 10)
+        self.value = value
+        if self.options.get("password", False):
+            self.setText("*" * 8)
             self.clearModified()
+        else:
+            self.setText(unicode(value))
     
     def exportValue(self):
         if self.isModified():
             self.value = str(self.text())
-        if "hashMethod" in self.options:
-            mod, met = self.options["hashMethod"].rsplit(".", 1)
-            crypt = getattr(__import__(mod), met)
-            return crypt(self.value)
+            if self.options.get("password", False):
+                return saltedSHA(self.value)
+            else:
+                return self.value
         return self.value
 
 

@@ -465,13 +465,8 @@ class ObjectList(KListView):
                     for item in items:
                         connection.modify(item.dn, item.model.toEntry(multiple=True, only_fields=fields), model_new.toEntry(multiple=True))
                 else:
+                    print model_new.toEntry()
                     connection.modify(od.dn, model_old.toEntry(), model_new.toEntry())
-                    """
-                    # Rename
-                    if model_new.fields["name"] != model_old.fields["name"]:
-                        new_name = od.objectName()
-                        connection.rename(item.dn, new_name)
-                    """
             except ldap.LDAPError, e:
                 if e.__class__ in domain.LDAPCritical:
                     item.disableDomain()

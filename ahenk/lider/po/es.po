@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2007-10-26 11:51+0300\n"
-"PO-Revision-Date: 2007-09-30 21:22-0400\n"
+"PO-Revision-Date: 2007-10-27 18:08-0300\n"
 "Last-Translator: Klemens <click3d_at_linuxmail_org>\n"
 "Language-Team: español <es@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,9 +19,8 @@ msgstr ""
 "X-Generator: KBabel 1.11.4\n"
 
 #: src/browser.py:35
-#, fuzzy
 msgid "&New Domain"
-msgstr "Nuevo dominio"
+msgstr "&Nuevo Dominio"
 
 #: src/browser.py:38 src/browser.py:45
 msgid "&New Directory"
@@ -37,11 +36,11 @@ msgstr "&Propiedades"
 
 #: src/browser.py:114
 msgid "Unable to connect to LDAP server."
-msgstr ""
+msgstr "No posible conectar con servidor LDAP."
 
 #: src/browser.py:120
 msgid "You can add new domain by right clicking panel on left."
-msgstr ""
+msgstr "Puede agregar un domino nuevo con clíc derecho sobre el panel de la izquierda."
 
 #: src/browser.py:141
 msgid "Remove directory?"
@@ -77,7 +76,7 @@ msgstr "Grupos (%1)"
 
 #: src/browser.py:225
 msgid "<strong>%1</strong><br>Host: %2"
-msgstr ""
+msgstr "<strong>%1</strong><br>Host: %2"
 
 #: src/browser.py:366
 msgid "Name"
@@ -267,9 +266,9 @@ msgid "Interval"
 msgstr "Intervalo"
 
 #: src/ldapmodel.py:32
-#, fuzzy
+# duda, ver contexto, please proofread
 msgid "Update Between"
-msgstr "Modo de actualización"
+msgstr "Actualizar entre"
 
 # i should see the context, maybe the translation could be more explicit
 #: src/ldapmodel.py:33
@@ -395,5 +394,3 @@ msgstr "Elija..."
 msgid "Edit List"
 msgstr "Editar lista"
 
-#~ msgid "&Domain"
-#~ msgstr "&Dominio"

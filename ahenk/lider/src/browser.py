@@ -465,7 +465,6 @@ class ObjectList(KListView):
                     for item in items:
                         connection.modify(item.dn, item.model.toEntry(multiple=True, only_fields=fields), model_new.toEntry(multiple=True))
                 else:
-                    print model_new.toEntry()
                     connection.modify(od.dn, model_old.toEntry(), model_new.toEntry())
             except ldap.LDAPError, e:
                 if e.__class__ in domain.LDAPCritical:
@@ -503,7 +502,7 @@ class ObjectList(KListView):
                     for item in items:
                         connection.modify(item.dn, item.policy.toEntry(multiple=True, only_fields=fields), model_new.toEntry(multiple=True))
                 else:
-                    connection.modify(od.dn, model_old.toEntry(multiple=True), model_new.toEntry(multiple=True))
+                    connection.modify(od.dn, model_old.toEntry(), model_new.toEntry())
             except ldap.LDAPError, e:
                 if e.__class__ in domain.LDAPCritical:
                     item.disableDomain()

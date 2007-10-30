@@ -39,8 +39,9 @@ class textWidget(QLineEdit):
     def importValue(self, value):
         self.value = value
         if self.options.get("password", False):
-            self.setText("*" * 8)
-            self.clearModified()
+            if value:
+                self.setText("*" * 8)
+                self.clearModified()
         else:
             self.setText(unicode(value))
     

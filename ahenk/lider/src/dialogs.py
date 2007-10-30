@@ -269,17 +269,18 @@ class ObjectDialog(KDialog):
             else:
                 QMessageBox.warning(self, i18n("Error"), i18n("Name is required"))
                 self.w_name.setFocus()
-                return
+                return False
         for varname, widget in self.widgets.iteritems():
             if widget.isEnabled():
                 if self.model.options[varname].get("required", False) and not widget.exportValue():
                     QMessageBox.warning(self, i18n("Error"), i18n("%1 is required".args(varname)))
                     widget.setFocus()
-                    return
+                    return False
                 else:
                     self.model.fields[varname] = widget.exportValue()
             else:
                 del self.model.fields[varname]
+        return True
     
     def unsetValues(self):
         if self.mode == "edit":
@@ -292,8 +293,8 @@ class ObjectDialog(KDialog):
                 if not self.model.new:
                     self.unsetValues()
             else:
-                self.getValues()
-        KDialog.accept(self)
+                if self.getValues():
+                    KDialog.accept(self)
     
     def reject(self):
         KDialog.reject(self)

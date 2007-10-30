@@ -101,11 +101,15 @@ class DomainDialog(KDialog):
                                                 unicode(self.w_bind_pass.text()))
     
     def accept(self):
-        if not len(self.w_name.text()) or not len(self.w_host.text()) or not len(self.w_base_dn.text()):
-            KDialog.reject(self)
-            return
-        self.setValues()
-        KDialog.accept(self)
+        if not len(self.w_name.text()):
+            QMessageBox.warning(self, i18n("Error"), i18n("Domain label is required"))
+        elif not len(self.w_host.text()):
+            QMessageBox.warning(self, i18n("Error"), i18n("Hostname is required"))
+        elif not len(self.w_base_dn.text()):
+            QMessageBox.warning(self, i18n("Error"), i18n("Base DN is required"))
+        else:
+            self.setValues()
+            KDialog.accept(self)
     
     def reject(self):
         KDialog.reject(self)

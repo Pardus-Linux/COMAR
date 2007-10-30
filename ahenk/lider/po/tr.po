@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-10-26 11:51+0300\n"
+"POT-Creation-Date: 2007-10-30 11:16+0200\n"
 "PO-Revision-Date: 2007-09-12 11:08+0300\n"
 "Last-Translator: Bahadır Kandemir <bahadir@pardus.org.tr>\n"
 "Language-Team: Bahadır Kandemir <bahadir@pardus.org.tr>\n"
@@ -43,11 +43,11 @@ msgstr "Soldaki panele sağ tıklayarak yeni alanadı ekleyebilirsiniz."
 msgid "Remove directory?"
 msgstr "Dizin silinsin mi?"
 
-#: src/browser.py:141 src/browser.py:156 src/browser.py:542
+#: src/browser.py:141 src/browser.py:156 src/browser.py:536
 msgid "Are you sure you want to remove '%1' ?"
 msgstr "'%1' nesnesini silmek istediğinizden emin misiniz?"
 
-#: src/browser.py:141 src/browser.py:542 src/browser.py:546 src/browser.py:549
+#: src/browser.py:141 src/browser.py:536 src/browser.py:540 src/browser.py:543
 msgid "This is not undoable. Are you sure you want to continue?"
 msgstr "Bu işlem geri alınamaz. Devam etmek istediğinize emin misiniz?"
 
@@ -79,8 +79,8 @@ msgstr "<strong>%1</strong><br>Adres: %2"
 msgid "Name"
 msgstr "İsim"
 
-#: src/browser.py:367 src/ldapmodel.py:58 src/ldapmodel.py:66
-#: src/ldapmodel.py:76
+#: src/browser.py:367 src/ldapmodel.py:59 src/ldapmodel.py:67
+#: src/ldapmodel.py:77
 msgid "Description"
 msgstr "Açıklama"
 
@@ -100,15 +100,15 @@ msgstr "&Politika"
 msgid "&Configuration"
 msgstr "&Seçenekler"
 
-#: src/browser.py:542
+#: src/browser.py:536
 msgid "Remove object?"
 msgstr "Nesne silinsin mi?"
 
-#: src/browser.py:546 src/browser.py:549
+#: src/browser.py:540 src/browser.py:543
 msgid "Remove objects?"
 msgstr "Nesneler silinsin mi?"
 
-#: src/browser.py:546
+#: src/browser.py:540
 msgid ""
 "Are you sure you want to remove these objects?\n"
 "%1"
@@ -116,11 +116,11 @@ msgstr ""
 "Bu nesneleri silmek istediğinizden emin misiniz?\n"
 "%1"
 
-#: src/browser.py:549
+#: src/browser.py:543
 msgid "Are you sure you want to remove %1 objects?"
 msgstr "%1 nesneyi silmek istediğinizden emin misiniz?"
 
-#: src/browser.py:565
+#: src/browser.py:559
 msgid ""
 "Unable to delete these objects:\n"
 "%1"
@@ -128,7 +128,7 @@ msgstr ""
 "Bu nesneler silinemedi:\n"
 "%1"
 
-#: src/browser.py:568
+#: src/browser.py:562
 msgid "Removed %1 objects."
 msgstr "%1 nesne silindi."
 
@@ -184,6 +184,14 @@ msgstr "Ana DN:"
 msgid "Name:"
 msgstr "İsim:"
 
+#: src/dialogs.py:270
+msgid "Name is required"
+msgstr "İsim gerekli"
+
+#: src/dialogs.py:276
+msgid "%1 is required"
+msgstr "%1 gerekli"
+
 #: src/domain.py:143
 msgid "Not a valid Connection instance."
 msgstr "Geçerli bir bağlantı değil."
@@ -224,7 +232,7 @@ msgstr "Kritik Hata"
 msgid "Unable to complete operation:"
 msgstr "İşlem tamamlanamadı:"
 
-#: src/ldapmodel.py:17 src/ldapmodel.py:63
+#: src/ldapmodel.py:17 src/ldapmodel.py:64
 msgid "Computer"
 msgstr "Bilgisayar"
 
@@ -232,11 +240,15 @@ msgstr "Bilgisayar"
 msgid "Memory"
 msgstr "Bellek"
 
-#: src/ldapmodel.py:20 src/ldapmodel.py:36 src/ldapmodel.py:37
+#: src/ldapmodel.py:20 src/ldapmodel.py:37 src/ldapmodel.py:38
 msgid "Services"
 msgstr "Servisler"
 
-#: src/ldapmodel.py:26 src/ldapmodel.py:49
+#: src/ldapmodel.py:20 src/ldapmodel.py:37 src/ldapmodel.py:38
+msgid "Service"
+msgstr "Servis"
+
+#: src/ldapmodel.py:26 src/ldapmodel.py:50
 msgid "Policy"
 msgstr "Politika"
 
@@ -245,7 +257,7 @@ msgid "Update Mode"
 msgstr "Güncelleme Modu"
 
 #: src/ldapmodel.py:30 src/ldapmodel.py:31 src/ldapmodel.py:32
-#: src/ldapmodel.py:33 src/ldapmodel.py:34
+#: src/ldapmodel.py:33 src/ldapmodel.py:34 src/ldapmodel.py:35
 msgid "PISI"
 msgstr "PISI"
 
@@ -266,122 +278,154 @@ msgid "Update Between"
 msgstr "Güncelleme Zamanı"
 
 #: src/ldapmodel.py:33
+msgid "Repositories"
+msgstr "Depolar"
+
+#: src/ldapmodel.py:33
+msgid "Repo Name"
+msgstr "Depo Adı"
+
+#: src/ldapmodel.py:33
+msgid "URL"
+msgstr "URL"
+
+#: src/ldapmodel.py:34
 msgid "Wanted Packages"
 msgstr "İstenen Paketler"
 
-#: src/ldapmodel.py:34
+#: src/ldapmodel.py:34 src/ldapmodel.py:35
+msgid "Package"
+msgstr "Paket"
+
+#: src/ldapmodel.py:35
 msgid "Unwanted Packages"
 msgstr "İstenmeyen Paketler"
 
-#: src/ldapmodel.py:36
+#: src/ldapmodel.py:37
 msgid "Wanted Services"
 msgstr "İstenen Servisler"
 
-#: src/ldapmodel.py:37
+#: src/ldapmodel.py:38
 msgid "Unwanted Services"
 msgstr "İstenmeyen Servisler"
 
-#: src/ldapmodel.py:39
+#: src/ldapmodel.py:40
 msgid "User Source"
 msgstr "Kullanıcı Kaynağı"
 
-#: src/ldapmodel.py:39 src/ldapmodel.py:40 src/ldapmodel.py:41
-#: src/ldapmodel.py:42 src/ldapmodel.py:43
+#: src/ldapmodel.py:40 src/ldapmodel.py:41 src/ldapmodel.py:42
+#: src/ldapmodel.py:43 src/ldapmodel.py:44
 msgid "COMAR"
 msgstr "COMAR"
 
-#: src/ldapmodel.py:39
+#: src/ldapmodel.py:40
 msgid "Local"
 msgstr "Yerel"
 
-#: src/ldapmodel.py:39
+#: src/ldapmodel.py:40
 msgid "LDAP"
 msgstr "LDAP"
 
-#: src/ldapmodel.py:40
+#: src/ldapmodel.py:41
 msgid "Search Scope"
 msgstr "Arama Menzili"
 
-#: src/ldapmodel.py:40
+#: src/ldapmodel.py:41
 msgid "Base"
 msgstr "Taban"
 
-#: src/ldapmodel.py:40
+#: src/ldapmodel.py:41
 msgid "One Level"
 msgstr "Tek Seviye"
 
-#: src/ldapmodel.py:40
+#: src/ldapmodel.py:41
 msgid "Subtree"
 msgstr "Alt Dallar"
 
-#: src/ldapmodel.py:41
+#: src/ldapmodel.py:42
 msgid "Database URI"
 msgstr "Veritabanı Adresi"
 
-#: src/ldapmodel.py:42
+#: src/ldapmodel.py:43
 msgid "Base DN"
 msgstr "Ana DN"
 
-#: src/ldapmodel.py:43
+#: src/ldapmodel.py:44
 msgid "User Filter"
 msgstr "Kullanıcı Filtresi"
 
-#: src/ldapmodel.py:54
+#: src/ldapmodel.py:55
 msgid "Directory"
 msgstr "Dizin"
 
-#: src/ldapmodel.py:57
+#: src/ldapmodel.py:58
 msgid "Label"
 msgstr "Etiket"
 
-#: src/ldapmodel.py:68
+#: src/ldapmodel.py:69
 msgid "Member of"
 msgstr "Üst Birim"
 
-#: src/ldapmodel.py:73
+#: src/ldapmodel.py:74
 msgid "Unit"
 msgstr "Birim"
 
-#: src/ldapmodel.py:81
+#: src/ldapmodel.py:82
 msgid "User"
 msgstr "Kullanıcı"
 
-#: src/ldapmodel.py:84
+#: src/ldapmodel.py:85
 msgid "Real Name"
 msgstr "Gerçek İsim"
 
-#: src/ldapmodel.py:85
+#: src/ldapmodel.py:86
 msgid "Password"
 msgstr "Parola"
 
-#: src/ldapmodel.py:86
+#: src/ldapmodel.py:87
 msgid "Shell"
 msgstr "Kabuk"
 
-#: src/ldapmodel.py:87
+#: src/ldapmodel.py:88
 msgid "Home"
 msgstr "Ev Dizini"
 
-#: src/ldapmodel.py:88
+#: src/ldapmodel.py:89
 msgid "User ID"
 msgstr "Kullanıcı No"
 
-#: src/ldapmodel.py:89 src/ldapmodel.py:97
+#: src/ldapmodel.py:90 src/ldapmodel.py:98
 msgid "Group ID"
 msgstr "Grup No"
 
-#: src/ldapmodel.py:94
+#: src/ldapmodel.py:95
 msgid "Group"
 msgstr "Grup"
 
-#: src/ldapmodel.py:98
+#: src/ldapmodel.py:99
 msgid "Members"
 msgstr "Üyeler"
 
-#: src/ldapview.py:80
+#: src/ldapmodel.py:99
+msgid "Username"
+msgstr "Kullanıcı Adı"
+
+#: src/ldapview.py:95
 msgid "Select..."
 msgstr "Seçin..."
 
-#: src/ldapview.py:101
+#: src/ldapview.py:118
+msgid "New Item"
+msgstr "Yeni Nesne"
+
+#: src/ldapview.py:143
+msgid "Up"
+msgstr "Yukarı"
+
+#: src/ldapview.py:147
+msgid "Down"
+msgstr "Aşağı"
+
+#: src/ldapview.py:217
 msgid "Edit List"
 msgstr "Listeyi Değiştir"

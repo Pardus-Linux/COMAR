@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-10-26 11:51+0300\n"
+"POT-Creation-Date: 2007-10-30 11:16+0200\n"
 "PO-Revision-Date: 2007-10-27 18:08-0300\n"
 "Last-Translator: Klemens <click3d_at_linuxmail_org>\n"
 "Language-Team: español <es@li.org>\n"
@@ -40,17 +40,19 @@ msgstr "No posible conectar con servidor LDAP."
 
 #: src/browser.py:120
 msgid "You can add new domain by right clicking panel on left."
-msgstr "Puede agregar un domino nuevo con clíc derecho sobre el panel de la izquierda."
+msgstr ""
+"Puede agregar un domino nuevo con clíc derecho sobre el panel de la "
+"izquierda."
 
 #: src/browser.py:141
 msgid "Remove directory?"
 msgstr "Eliminar directorio ?"
 
-#: src/browser.py:141 src/browser.py:156 src/browser.py:542
+#: src/browser.py:141 src/browser.py:156 src/browser.py:536
 msgid "Are you sure you want to remove '%1' ?"
 msgstr "Está seguro que desea eliminar '%1'?"
 
-#: src/browser.py:141 src/browser.py:542 src/browser.py:546 src/browser.py:549
+#: src/browser.py:141 src/browser.py:536 src/browser.py:540 src/browser.py:543
 msgid "This is not undoable. Are you sure you want to continue?"
 msgstr "Esta operación no se podrá deshacer. Está seguro que desea continuar?"
 
@@ -82,8 +84,8 @@ msgstr "<strong>%1</strong><br>Host: %2"
 msgid "Name"
 msgstr "Nombre"
 
-#: src/browser.py:367 src/ldapmodel.py:58 src/ldapmodel.py:66
-#: src/ldapmodel.py:76
+#: src/browser.py:367 src/ldapmodel.py:59 src/ldapmodel.py:67
+#: src/ldapmodel.py:77
 msgid "Description"
 msgstr "Descripción"
 
@@ -103,15 +105,15 @@ msgstr "&Política"
 msgid "&Configuration"
 msgstr "&Configuración"
 
-#: src/browser.py:542
+#: src/browser.py:536
 msgid "Remove object?"
 msgstr "Eliminar objeto?"
 
-#: src/browser.py:546 src/browser.py:549
+#: src/browser.py:540 src/browser.py:543
 msgid "Remove objects?"
 msgstr "Eliminar objetos?"
 
-#: src/browser.py:546
+#: src/browser.py:540
 msgid ""
 "Are you sure you want to remove these objects?\n"
 "%1"
@@ -119,11 +121,11 @@ msgstr ""
 "Está seguro que desea eliminar estos objetos?\n"
 "%1"
 
-#: src/browser.py:549
+#: src/browser.py:543
 msgid "Are you sure you want to remove %1 objects?"
 msgstr "Está seguro que desea eliminar %1 objetos?"
 
-#: src/browser.py:565
+#: src/browser.py:559
 msgid ""
 "Unable to delete these objects:\n"
 "%1"
@@ -131,7 +133,7 @@ msgstr ""
 "No posible eliminar los siguientes objetos:\n"
 "%1"
 
-#: src/browser.py:568
+#: src/browser.py:562
 msgid "Removed %1 objects."
 msgstr "%1 objetos eliminados."
 
@@ -187,6 +189,14 @@ msgstr "DN Padre:"
 msgid "Name:"
 msgstr "Nombre:"
 
+#: src/dialogs.py:270
+msgid "Name is required"
+msgstr ""
+
+#: src/dialogs.py:276
+msgid "%1 is required"
+msgstr ""
+
 #: src/domain.py:143
 msgid "Not a valid Connection instance."
 msgstr "No es una instancia válida de conexión."
@@ -228,7 +238,7 @@ msgstr "Error crítico"
 msgid "Unable to complete operation:"
 msgstr "No posible finalizar la operación:"
 
-#: src/ldapmodel.py:17 src/ldapmodel.py:63
+#: src/ldapmodel.py:17 src/ldapmodel.py:64
 msgid "Computer"
 msgstr "Computadora"
 
@@ -236,11 +246,16 @@ msgstr "Computadora"
 msgid "Memory"
 msgstr "Memoria"
 
-#: src/ldapmodel.py:20 src/ldapmodel.py:36 src/ldapmodel.py:37
+#: src/ldapmodel.py:20 src/ldapmodel.py:37 src/ldapmodel.py:38
 msgid "Services"
 msgstr "Servicios"
 
-#: src/ldapmodel.py:26 src/ldapmodel.py:49
+#: src/ldapmodel.py:20 src/ldapmodel.py:37 src/ldapmodel.py:38
+#, fuzzy
+msgid "Service"
+msgstr "Servicios"
+
+#: src/ldapmodel.py:26 src/ldapmodel.py:50
 msgid "Policy"
 msgstr "Politica"
 
@@ -249,7 +264,7 @@ msgid "Update Mode"
 msgstr "Modo de actualización"
 
 #: src/ldapmodel.py:30 src/ldapmodel.py:31 src/ldapmodel.py:32
-#: src/ldapmodel.py:33 src/ldapmodel.py:34
+#: src/ldapmodel.py:33 src/ldapmodel.py:34 src/ldapmodel.py:35
 msgid "PISI"
 msgstr "PISI"
 
@@ -265,132 +280,167 @@ msgstr "Completo"
 msgid "Interval"
 msgstr "Intervalo"
 
-#: src/ldapmodel.py:32
 # duda, ver contexto, please proofread
+#: src/ldapmodel.py:32
 msgid "Update Between"
 msgstr "Actualizar entre"
 
-# i should see the context, maybe the translation could be more explicit
 #: src/ldapmodel.py:33
+msgid "Repositories"
+msgstr ""
+
+#: src/ldapmodel.py:33
+#, fuzzy
+msgid "Repo Name"
+msgstr "Nombre real"
+
+#: src/ldapmodel.py:33
+msgid "URL"
+msgstr ""
+
+# i should see the context, maybe the translation could be more explicit
+#: src/ldapmodel.py:34
 msgid "Wanted Packages"
 msgstr "Paquetes deseados"
 
-#: src/ldapmodel.py:34
+# i should see the context, maybe the translation could be more explicit
+#: src/ldapmodel.py:34 src/ldapmodel.py:35
+#, fuzzy
+msgid "Package"
+msgstr "Paquetes deseados"
+
+#: src/ldapmodel.py:35
 msgid "Unwanted Packages"
 msgstr "Paquetes no deseados"
 
-#: src/ldapmodel.py:36
+#: src/ldapmodel.py:37
 msgid "Wanted Services"
 msgstr "Servicios deseados"
 
-#: src/ldapmodel.py:37
+#: src/ldapmodel.py:38
 msgid "Unwanted Services"
 msgstr "Servicios no deseados"
 
 # i should see the context, english text permits multiple interpretations
-#: src/ldapmodel.py:39
+#: src/ldapmodel.py:40
 msgid "User Source"
 msgstr "Fuente de usuario"
 
-#: src/ldapmodel.py:39 src/ldapmodel.py:40 src/ldapmodel.py:41
-#: src/ldapmodel.py:42 src/ldapmodel.py:43
+#: src/ldapmodel.py:40 src/ldapmodel.py:41 src/ldapmodel.py:42
+#: src/ldapmodel.py:43 src/ldapmodel.py:44
 msgid "COMAR"
 msgstr "COMAR"
 
-#: src/ldapmodel.py:39
+#: src/ldapmodel.py:40
 msgid "Local"
 msgstr "Local"
 
-#: src/ldapmodel.py:39
+#: src/ldapmodel.py:40
 msgid "LDAP"
 msgstr "LDAP"
 
 # verificar esta traduccion
-#: src/ldapmodel.py:40
+#: src/ldapmodel.py:41
 msgid "Search Scope"
 msgstr "Área de busqueda"
 
-#: src/ldapmodel.py:40
+#: src/ldapmodel.py:41
 msgid "Base"
 msgstr "Base"
 
-#: src/ldapmodel.py:40
+#: src/ldapmodel.py:41
 msgid "One Level"
 msgstr "Un nivel"
 
-#: src/ldapmodel.py:40
+#: src/ldapmodel.py:41
 msgid "Subtree"
 msgstr "Sub-arbol"
 
-#: src/ldapmodel.py:41
+#: src/ldapmodel.py:42
 msgid "Database URI"
 msgstr "Dirección URL de la base de datos"
 
-#: src/ldapmodel.py:42
+#: src/ldapmodel.py:43
 msgid "Base DN"
 msgstr "DN de base"
 
-#: src/ldapmodel.py:43
+#: src/ldapmodel.py:44
 msgid "User Filter"
 msgstr "Usar filtro"
 
-#: src/ldapmodel.py:54
+#: src/ldapmodel.py:55
 msgid "Directory"
 msgstr "Directorio"
 
-#: src/ldapmodel.py:57
+#: src/ldapmodel.py:58
 msgid "Label"
 msgstr "Rótulo"
 
-#: src/ldapmodel.py:68
+#: src/ldapmodel.py:69
 msgid "Member of"
 msgstr "Miembro de"
 
-#: src/ldapmodel.py:73
+#: src/ldapmodel.py:74
 msgid "Unit"
 msgstr "Unidad"
 
-#: src/ldapmodel.py:81
+#: src/ldapmodel.py:82
 msgid "User"
 msgstr "Usuario"
 
-#: src/ldapmodel.py:84
+#: src/ldapmodel.py:85
 msgid "Real Name"
 msgstr "Nombre real"
 
-#: src/ldapmodel.py:85
+#: src/ldapmodel.py:86
 msgid "Password"
 msgstr "Contraseña"
 
-#: src/ldapmodel.py:86
+#: src/ldapmodel.py:87
 msgid "Shell"
 msgstr "Shell"
 
-#: src/ldapmodel.py:87
+#: src/ldapmodel.py:88
 msgid "Home"
 msgstr "Home"
 
-#: src/ldapmodel.py:88
+#: src/ldapmodel.py:89
 msgid "User ID"
 msgstr "ID de usuario"
 
-#: src/ldapmodel.py:89 src/ldapmodel.py:97
+#: src/ldapmodel.py:90 src/ldapmodel.py:98
 msgid "Group ID"
 msgstr "ID de grupo"
 
-#: src/ldapmodel.py:94
+#: src/ldapmodel.py:95
 msgid "Group"
 msgstr "Grupo"
 
-#: src/ldapmodel.py:98
+#: src/ldapmodel.py:99
 msgid "Members"
 msgstr "Miembros"
 
-#: src/ldapview.py:80
+#: src/ldapmodel.py:99
+#, fuzzy
+msgid "Username"
+msgstr "Usuario"
+
+#: src/ldapview.py:95
 msgid "Select..."
 msgstr "Elija..."
 
-#: src/ldapview.py:101
+#: src/ldapview.py:118
+msgid "New Item"
+msgstr ""
+
+#: src/ldapview.py:143
+msgid "Up"
+msgstr ""
+
+#: src/ldapview.py:147
+msgid "Down"
+msgstr ""
+
+#: src/ldapview.py:217
 msgid "Edit List"
 msgstr "Editar lista"
-

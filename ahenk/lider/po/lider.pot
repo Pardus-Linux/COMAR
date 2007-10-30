@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-10-26 11:51+0300\n"
+"POT-Creation-Date: 2007-10-30 11:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,11 +44,11 @@ msgstr ""
 msgid "Remove directory?"
 msgstr ""
 
-#: src/browser.py:141 src/browser.py:156 src/browser.py:542
+#: src/browser.py:141 src/browser.py:156 src/browser.py:536
 msgid "Are you sure you want to remove '%1' ?"
 msgstr ""
 
-#: src/browser.py:141 src/browser.py:542 src/browser.py:546 src/browser.py:549
+#: src/browser.py:141 src/browser.py:536 src/browser.py:540 src/browser.py:543
 msgid "This is not undoable. Are you sure you want to continue?"
 msgstr ""
 
@@ -80,8 +80,8 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: src/browser.py:367 src/ldapmodel.py:58 src/ldapmodel.py:66
-#: src/ldapmodel.py:76
+#: src/browser.py:367 src/ldapmodel.py:59 src/ldapmodel.py:67
+#: src/ldapmodel.py:77
 msgid "Description"
 msgstr ""
 
@@ -101,31 +101,31 @@ msgstr ""
 msgid "&Configuration"
 msgstr ""
 
-#: src/browser.py:542
+#: src/browser.py:536
 msgid "Remove object?"
 msgstr ""
 
-#: src/browser.py:546 src/browser.py:549
+#: src/browser.py:540 src/browser.py:543
 msgid "Remove objects?"
 msgstr ""
 
-#: src/browser.py:546
+#: src/browser.py:540
 msgid ""
 "Are you sure you want to remove these objects?\n"
 "%1"
 msgstr ""
 
-#: src/browser.py:549
+#: src/browser.py:543
 msgid "Are you sure you want to remove %1 objects?"
 msgstr ""
 
-#: src/browser.py:565
+#: src/browser.py:559
 msgid ""
 "Unable to delete these objects:\n"
 "%1"
 msgstr ""
 
-#: src/browser.py:568
+#: src/browser.py:562
 msgid "Removed %1 objects."
 msgstr ""
 
@@ -181,6 +181,14 @@ msgstr ""
 msgid "Name:"
 msgstr ""
 
+#: src/dialogs.py:270
+msgid "Name is required"
+msgstr ""
+
+#: src/dialogs.py:276
+msgid "%1 is required"
+msgstr ""
+
 #: src/domain.py:143
 msgid "Not a valid Connection instance."
 msgstr ""
@@ -221,7 +229,7 @@ msgstr ""
 msgid "Unable to complete operation:"
 msgstr ""
 
-#: src/ldapmodel.py:17 src/ldapmodel.py:63
+#: src/ldapmodel.py:17 src/ldapmodel.py:64
 msgid "Computer"
 msgstr ""
 
@@ -229,11 +237,15 @@ msgstr ""
 msgid "Memory"
 msgstr ""
 
-#: src/ldapmodel.py:20 src/ldapmodel.py:36 src/ldapmodel.py:37
+#: src/ldapmodel.py:20 src/ldapmodel.py:37 src/ldapmodel.py:38
 msgid "Services"
 msgstr ""
 
-#: src/ldapmodel.py:26 src/ldapmodel.py:49
+#: src/ldapmodel.py:20 src/ldapmodel.py:37 src/ldapmodel.py:38
+msgid "Service"
+msgstr ""
+
+#: src/ldapmodel.py:26 src/ldapmodel.py:50
 msgid "Policy"
 msgstr ""
 
@@ -242,7 +254,7 @@ msgid "Update Mode"
 msgstr ""
 
 #: src/ldapmodel.py:30 src/ldapmodel.py:31 src/ldapmodel.py:32
-#: src/ldapmodel.py:33 src/ldapmodel.py:34
+#: src/ldapmodel.py:33 src/ldapmodel.py:34 src/ldapmodel.py:35
 msgid "PISI"
 msgstr ""
 
@@ -263,122 +275,154 @@ msgid "Update Between"
 msgstr ""
 
 #: src/ldapmodel.py:33
-msgid "Wanted Packages"
+msgid "Repositories"
+msgstr ""
+
+#: src/ldapmodel.py:33
+msgid "Repo Name"
+msgstr ""
+
+#: src/ldapmodel.py:33
+msgid "URL"
 msgstr ""
 
 #: src/ldapmodel.py:34
+msgid "Wanted Packages"
+msgstr ""
+
+#: src/ldapmodel.py:34 src/ldapmodel.py:35
+msgid "Package"
+msgstr ""
+
+#: src/ldapmodel.py:35
 msgid "Unwanted Packages"
 msgstr ""
 
-#: src/ldapmodel.py:36
+#: src/ldapmodel.py:37
 msgid "Wanted Services"
 msgstr ""
 
-#: src/ldapmodel.py:37
+#: src/ldapmodel.py:38
 msgid "Unwanted Services"
 msgstr ""
 
-#: src/ldapmodel.py:39
+#: src/ldapmodel.py:40
 msgid "User Source"
 msgstr ""
 
-#: src/ldapmodel.py:39 src/ldapmodel.py:40 src/ldapmodel.py:41
-#: src/ldapmodel.py:42 src/ldapmodel.py:43
+#: src/ldapmodel.py:40 src/ldapmodel.py:41 src/ldapmodel.py:42
+#: src/ldapmodel.py:43 src/ldapmodel.py:44
 msgid "COMAR"
 msgstr ""
 
-#: src/ldapmodel.py:39
+#: src/ldapmodel.py:40
 msgid "Local"
 msgstr ""
 
-#: src/ldapmodel.py:39
+#: src/ldapmodel.py:40
 msgid "LDAP"
 msgstr ""
 
-#: src/ldapmodel.py:40
+#: src/ldapmodel.py:41
 msgid "Search Scope"
 msgstr ""
 
-#: src/ldapmodel.py:40
+#: src/ldapmodel.py:41
 msgid "Base"
 msgstr ""
 
-#: src/ldapmodel.py:40
+#: src/ldapmodel.py:41
 msgid "One Level"
 msgstr ""
 
-#: src/ldapmodel.py:40
+#: src/ldapmodel.py:41
 msgid "Subtree"
 msgstr ""
 
-#: src/ldapmodel.py:41
+#: src/ldapmodel.py:42
 msgid "Database URI"
 msgstr ""
 
-#: src/ldapmodel.py:42
+#: src/ldapmodel.py:43
 msgid "Base DN"
 msgstr ""
 
-#: src/ldapmodel.py:43
+#: src/ldapmodel.py:44
 msgid "User Filter"
 msgstr ""
 
-#: src/ldapmodel.py:54
+#: src/ldapmodel.py:55
 msgid "Directory"
 msgstr ""
 
-#: src/ldapmodel.py:57
+#: src/ldapmodel.py:58
 msgid "Label"
 msgstr ""
 
-#: src/ldapmodel.py:68
+#: src/ldapmodel.py:69
 msgid "Member of"
 msgstr ""
 
-#: src/ldapmodel.py:73
+#: src/ldapmodel.py:74
 msgid "Unit"
 msgstr ""
 
-#: src/ldapmodel.py:81
+#: src/ldapmodel.py:82
 msgid "User"
 msgstr ""
 
-#: src/ldapmodel.py:84
+#: src/ldapmodel.py:85
 msgid "Real Name"
 msgstr ""
 
-#: src/ldapmodel.py:85
+#: src/ldapmodel.py:86
 msgid "Password"
 msgstr ""
 
-#: src/ldapmodel.py:86
+#: src/ldapmodel.py:87
 msgid "Shell"
 msgstr ""
 
-#: src/ldapmodel.py:87
+#: src/ldapmodel.py:88
 msgid "Home"
 msgstr ""
 
-#: src/ldapmodel.py:88
+#: src/ldapmodel.py:89
 msgid "User ID"
 msgstr ""
 
-#: src/ldapmodel.py:89 src/ldapmodel.py:97
+#: src/ldapmodel.py:90 src/ldapmodel.py:98
 msgid "Group ID"
 msgstr ""
 
-#: src/ldapmodel.py:94
+#: src/ldapmodel.py:95
 msgid "Group"
 msgstr ""
 
-#: src/ldapmodel.py:98
+#: src/ldapmodel.py:99
 msgid "Members"
 msgstr ""
 
-#: src/ldapview.py:80
+#: src/ldapmodel.py:99
+msgid "Username"
+msgstr ""
+
+#: src/ldapview.py:95
 msgid "Select..."
 msgstr ""
 
-#: src/ldapview.py:101
+#: src/ldapview.py:118
+msgid "New Item"
+msgstr ""
+
+#: src/ldapview.py:143
+msgid "Up"
+msgstr ""
+
+#: src/ldapview.py:147
+msgid "Down"
+msgstr ""
+
+#: src/ldapview.py:217
 msgid "Edit List"
 msgstr ""

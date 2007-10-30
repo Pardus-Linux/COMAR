@@ -7,6 +7,8 @@
 # option) any later version. Please read the COPYING file.
 #
 
+import urllib
+
 from qt import *
 from kdecore import *
 from kdeui import *
@@ -37,6 +39,8 @@ class textWidget(QLineEdit):
             self.setEchoMode(QLineEdit.Password)
     
     def importValue(self, value):
+        if self.options.get("urlencode", False):
+            value = urllib.unquote(value)
         self.value = value
         if self.options.get("password", False):
             if value:
@@ -52,6 +56,8 @@ class textWidget(QLineEdit):
                 return saltedSHA(self.value)
             else:
                 return self.value
+        if self.options.get("urlencode", False):
+            self.value = urllib.urlencode({"x": self.value}).split("=", 1)[1]
         return self.value
 
 

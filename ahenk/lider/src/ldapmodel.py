@@ -39,7 +39,7 @@ class ComputerPolicyModel(ldaputil.LdapClass):
         # comarUserPolicy
         ("user_source", "comarUserSourceMode", str, i18n("User Source"), ldapview.comboWidget, i18n("COMAR"), {"options": [("local", i18n("Local")), ("ldap", i18n("LDAP"))], "default": "local"}),
         ("user_scope", "comarUserLdapSearchScope", str, i18n("Search Scope"), ldapview.comboWidget, i18n("COMAR"), {"options": [("base", i18n("Base")), ("onelevel", i18n("One Level")), ("subtree", i18n("Subtree"))], "default": "subtree"}),
-        ("user_uri", "comarUserLdapURI", str, i18n("Database URI"), ldapview.textWidget, i18n("COMAR"), {}),
+        ("user_uri", "comarUserLdapURI", str, i18n("Database URI"), ldapview.textWidget, i18n("COMAR"), {"urlencode": True}),
         ("user_base", "comarUserLdapBase", str, i18n("Base DN"), ldapview.textWidget, i18n("COMAR"), {}),
         ("user_filter", "comarUserLdapFilter", str, i18n("User Filter"), ldapview.textWidget, i18n("COMAR"), {}),
     )

@@ -137,11 +137,11 @@ class ObjectDialog(KDialog):
         self.unset = unset
        
         if infowin:
-            self.setCaption(i18n("%1 Information").arg(self.model.object_label))
+            self.setCaption(i18n("%1 Information").arg(i18n(self.model.object_label)))
         elif model.name or self.multiple:
-            self.setCaption(i18n("%1 Properties").arg(self.model.object_label))
+            self.setCaption(i18n("%1 Properties").arg(i18n(self.model.object_label)))
         else:
-            self.setCaption(i18n("New %1").arg(self.model.object_label))
+            self.setCaption(i18n("New %1").arg(i18n(self.model.object_label)))
         
         self.resize(320, 120)
         
@@ -154,7 +154,7 @@ class ObjectDialog(KDialog):
         self.grp.layout().setMargin(11)
         
         if unset:
-            self.grp.setTitle(i18n("Enable %1").arg(self.model.object_label))
+            self.grp.setTitle(i18n("Enable %1").arg(i18n(self.model.object_label)))
             self.grp.setCheckable(True)
             if self.model.new:
                 self.grp.setChecked(False)

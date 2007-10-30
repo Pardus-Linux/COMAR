@@ -273,7 +273,7 @@ class ObjectDialog(KDialog):
         for varname, widget in self.widgets.iteritems():
             if widget.isEnabled():
                 if self.model.options[varname].get("required", False) and not widget.exportValue():
-                    QMessageBox.warning(self, i18n("Error"), i18n("%1 is required".args(varname)))
+                    QMessageBox.warning(self, i18n("Error"), i18n("%1 is required".arg(varname)))
                     widget.setFocus()
                     return False
                 else:

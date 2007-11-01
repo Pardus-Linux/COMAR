@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Leader
+Name[tr]=Lider
+Icon=lider
+Type=Application
+Exec=lider
+Categories=Qt;KDE;System

@@ -51,6 +51,8 @@ class Policy:
                 self.policy.interval = temp.interval
         if temp.zone:
             self.policy.zone = temp.zone
+        if temp.repos:
+            self.policy.repos = temp.repos
     
     def update(self, computer, units):
         self.log.debug("Updating pisi policy")
@@ -62,6 +64,13 @@ class Policy:
     
     def apply(self):
         self.log.debug("Applying pisi policy")
+        if self.policy.repos:
+            self.policy.repos = self.policy.repos.replace("|", ",")
+            # Set PiSi repositories
+            link = comar.Link()
+            self.log.debug("Setting new repo(s): %s" % self.policy.repos)
+            link.System.Manager.setRepositories(repos=self.policy.repos)
+            link.read_cmd()
     
     def timers(self):
         return {

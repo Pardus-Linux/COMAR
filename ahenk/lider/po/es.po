@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2007-10-30 11:16+0200\n"
-"PO-Revision-Date: 2007-10-27 18:08-0300\n"
+"PO-Revision-Date: 2007-10-30 20:15-0300\n"
 "Last-Translator: Klemens <click3d_at_linuxmail_org>\n"
 "Language-Team: español <es@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -191,11 +191,12 @@ msgstr "Nombre:"
 
 #: src/dialogs.py:270
 msgid "Name is required"
-msgstr ""
+msgstr "Se requiere el nombre"
 
 #: src/dialogs.py:276
+# duda: favor revisar
 msgid "%1 is required"
-msgstr ""
+msgstr "%1 es requerido"
 
 #: src/domain.py:143
 msgid "Not a valid Connection instance."
@@ -251,9 +252,8 @@ msgid "Services"
 msgstr "Servicios"
 
 #: src/ldapmodel.py:20 src/ldapmodel.py:37 src/ldapmodel.py:38
-#, fuzzy
 msgid "Service"
-msgstr "Servicios"
+msgstr "Servicio"
 
 #: src/ldapmodel.py:26 src/ldapmodel.py:50
 msgid "Policy"
@@ -287,27 +287,24 @@ msgstr "Actualizar entre"
 
 #: src/ldapmodel.py:33
 msgid "Repositories"
-msgstr ""
+msgstr "Repositorios"
 
 #: src/ldapmodel.py:33
-#, fuzzy
 msgid "Repo Name"
-msgstr "Nombre real"
+msgstr "Nombre de repositorio"
 
 #: src/ldapmodel.py:33
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 # i should see the context, maybe the translation could be more explicit
 #: src/ldapmodel.py:34
 msgid "Wanted Packages"
 msgstr "Paquetes deseados"
 
-# i should see the context, maybe the translation could be more explicit
 #: src/ldapmodel.py:34 src/ldapmodel.py:35
-#, fuzzy
 msgid "Package"
-msgstr "Paquetes deseados"
+msgstr "Paquete"
 
 #: src/ldapmodel.py:35
 msgid "Unwanted Packages"
@@ -421,9 +418,8 @@ msgid "Members"
 msgstr "Miembros"
 
 #: src/ldapmodel.py:99
-#, fuzzy
 msgid "Username"
-msgstr "Usuario"
+msgstr "Nombre de usuario"
 
 #: src/ldapview.py:95
 msgid "Select..."
@@ -431,16 +427,17 @@ msgstr "Elija..."
 
 #: src/ldapview.py:118
 msgid "New Item"
-msgstr ""
+msgstr "Ítem nuevo"
 
 #: src/ldapview.py:143
 msgid "Up"
-msgstr ""
+msgstr "Arriba"
 
 #: src/ldapview.py:147
 msgid "Down"
-msgstr ""
+msgstr "Abajo"
 
 #: src/ldapview.py:217
 msgid "Edit List"
 msgstr "Editar lista"
+

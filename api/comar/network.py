@@ -228,7 +228,9 @@ class IF:
         info = AutoInfo()
         for line in f:
             line = line.strip()
-            if line.startswith("DNSSERVERS='"):
+            if line.startswith("DNS="):
+                info.servers = line[4:].rstrip('\n').split(',')
+            elif line.startswith("DNSSERVERS='"):
                 info.servers = line[12:].rstrip('\n').rstrip("'").split(' ')
             elif line.startswith("DNSSEARCH='"):
                 info.search = line[11:].rstrip('\n').rstrip("'").split(' ')

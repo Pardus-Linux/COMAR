@@ -782,10 +782,15 @@
 10de039e nv
 10de0400 nv
 10de0402 nv
+10de0404 nv
 10de0407 nv
+10de0409 nv
+10de040a nv
 10de040b nv
 10de040c nv
 10de040d nv
+10de040e nv
+10de040f nv
 10de0421 nv
 10de0422 nv
 10de0423 nv
@@ -797,6 +802,8 @@
 10de042a nv
 10de042b nv
 10de042d nv
+10de042f nv
+10de0611 nv
 10e09128 imstt
 10e09135 imstt
 10ea2010 fbdev

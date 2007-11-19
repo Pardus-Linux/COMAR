@@ -55,12 +55,20 @@ class IF:
     def __init__(self, ifname):
         self.name = ifname
         self._sock = None
-    
+        self.timeout = "120"
+
+        # -R -Y -N to prevent dhcpcd rewrite nameservers
+        #          we should add nameservers, not rewrite them
+        # -H to set hostname due to info from server
+        # -t for timeout
+
+        self.autoCmd = ["/sbin/dhcpcd", "-R", "-Y", "-N", self.name, "-t", self.timeout]
+
     def ioctl(self, func, args):
         if not self._sock:
             self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         return fcntl.ioctl(self._sock.fileno(), func, args)
-    
+
     def _call(self, func, ip = None):
         if ip:
             ifreq = (self.name + '\0' * 16)[:16]
@@ -183,7 +191,7 @@ class IF:
             return True
         return None
     
-    def startAuto(self, timeout=30):
+    def startAuto(self):
         if self.isAuto():
             self.stopAuto()
             import time
@@ -191,18 +199,15 @@ class IF:
             while tt > 0 and self.isAuto():
                 time.sleep(0.2)
                 tt -= 0.2
-        
-        # -R -Y -N to prevent dhcpcd rewrite nameservers
-        #          we should add nameservers, not rewrite them
-        # -H to set hostname due to info from server
-        # -t for timeout
-        
-        cmd = ["/sbin/dhcpcd", "-R", "-Y", "-N", "-t", str(timeout), self.name]
-        return subprocess.call(cmd)
-    
+
+        return subprocess.call(self.autoCmd)
+
     def stopAuto(self):
-        subprocess.call(["/sbin/dhcpcd", "-k", self.name])
-    
+        # dhcpcd does not create a pid file until it gets 
+        # an ip address so dhcpcd -k does not work while cancelling
+        if subprocess.call(["/sbin/dhcpcd", "-k", self.name], stderr=file("/dev/null")):
+            subprocess.call(["pkill","-f","%s" % " ".join(self.autoCmd)])
+
     def isAuto(self):
         path = "/var/run/dhcpcd-%s.pid" % self.name
         if not os.path.exists(path):

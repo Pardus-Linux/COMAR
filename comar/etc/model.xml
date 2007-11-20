@@ -267,6 +267,7 @@
 </method>
 <method name="useNameServers">
     <argument>nameservers</argument>
+    <argument>searchdomain</argument>
 </method>
 <method name="getHostNames" access="guest"/>
 <method name="setHostNames" profile="global">

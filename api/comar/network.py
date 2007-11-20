@@ -248,6 +248,10 @@ class IF:
         if info:
             return info.servers
 
+    def autoNameSearch(self):
+        info = self.autoInfo()
+        if info:
+            return info.search
 
 def interfaces():
     """Iterate over available network interfaces"""

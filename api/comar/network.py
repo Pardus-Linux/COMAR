@@ -251,7 +251,7 @@ class IF:
     def autoNameSearch(self):
         info = self.autoInfo()
         if info:
-            return info.search
+            return "".join(info.search)
 
 def interfaces():
     """Iterate over available network interfaces"""

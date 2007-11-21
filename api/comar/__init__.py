@@ -9,7 +9,7 @@
 # option) any later version. Please read the COPYING file.
 #
 
-__version__ = '1.10'
+__version__ = '1.16'
 
 
 #

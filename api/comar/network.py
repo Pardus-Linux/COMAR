@@ -222,8 +222,9 @@ class IF:
     
     def autoInfo(self):
         class AutoInfo:
-            pass
-        
+            servers = None
+            search = None
+            
         info_file = self.autoInfoFile()
         try:
             f = file(info_file)
@@ -250,8 +251,9 @@ class IF:
 
     def autoNameSearch(self):
         info = self.autoInfo()
-        if info:
+        if info and info.search:
             return "".join(info.search)
+        return None
 
 def interfaces():
     """Iterate over available network interfaces"""

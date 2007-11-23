@@ -72,6 +72,13 @@
                 <argument>cacheDir</argument>
                 <argument>limit</argument>
             </method>
+            <method name="getBlacklist"/>
+            <method name="addBlacklist">
+                <argument>package</argument>
+            </method>
+            <method name="deleteBlacklist">
+                <argument>package</argument>
+            </method>
             <notify name="progress"/>
             <notify name="error"/>
             <notify name="warning"/>

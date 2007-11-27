@@ -718,8 +718,15 @@
 10e09128 imstt
 10e09135 imstt
 10ea2010 fbdev
-11063122 via
-11067205 via
+11063108 openchrome
+11063118 openchrome
+11063122 openchrome
+11063157 openchrome
+11063230 openchrome
+11063343 openchrome
+11063344 openchrome
+11063371 openchrome
+11067205 openchrome
 1142643d apm
 11630001 vga
 11632000 vga

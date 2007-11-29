@@ -39,8 +39,8 @@ class textWidget(QLineEdit):
             self.setEchoMode(QLineEdit.Password)
     
     def importValue(self, value):
-        #if self.options.get("urlencode", False):
-        #    value = urllib.unquote(value)
+        if self.options.get("urlencode", False):
+            value = urllib.unquote(value)
         self.value = value
         if self.options.get("password", False):
             if value:
@@ -50,15 +50,15 @@ class textWidget(QLineEdit):
             self.setText(unicode(value))
     
     def exportValue(self):
+        val = self.value
         if self.isModified():
-            self.value = str(self.text())
+            val = str(self.text())
             if self.options.get("password", False):
-                return saltedSHA(self.value)
-            else:
-                return self.value
-        #if self.options.get("urlencode", False):
-        #    self.value = urllib.urlencode({"x": self.value}).split("=", 1)[1]
-        return self.value
+                val = saltedSHA(val)
+        if self.options.get("urlencode", False):
+            url, args = val.rsplit("/", 1)
+            val = "%s/%s" % (url, urllib.urlencode({"x": args}).split("=", 1)[1])
+        return val
 
 
 class numberWidget(QSpinBox):

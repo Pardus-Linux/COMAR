@@ -90,12 +90,12 @@ class Browser(KListView):
     def slotDirectoryProperties(self):
         item = self.selectedItem()
         connection = item.connection
-        model_old = copy.deepcopy(item.model)
+        model_old = item.model.toEntry()
         od = ObjectDialog(self.window, item.dn, item.model)
         if od.exec_loop():
             model_new = od.model
             try:
-                connection.modify(od.dn, model_old.toEntry(), model_new.toEntry())
+                connection.modify(od.dn, model_old, model_new.toEntry())
             except ldap.LDAPError, e:
                 if e.__class__ in domain.LDAPCritical:
                     item.disableDomain()

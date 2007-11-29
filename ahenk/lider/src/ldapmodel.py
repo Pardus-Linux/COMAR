@@ -86,8 +86,8 @@ class UserModel(ldaputil.LdapClass):
         ("password", "userPassword", str, i18n("Password"), ldapview.textWidget, "*", {"password": True}),
         ("shell", "loginShell", str, i18n("Shell"), ldapview.textWidget, "*", {"required": True}),
         ("home", "homeDirectory", str, i18n("Home"), ldapview.textWidget, "*", {"multi": False, "required": True}),
-        ("uid", "uidNumber", int, i18n("User ID"), ldapview.numberWidget, "*", {"multi": False, "required": True}),
-        ("gid", "gidNumber", int, i18n("Group ID"), ldapview.numberWidget, "*", {"multi": False, "required": True}),
+        ("uid", "uidNumber", int, i18n("User ID"), ldapview.numberWidget, "*", {"multi": False}),
+        ("gid", "gidNumber", int, i18n("Group ID"), ldapview.numberWidget, "*", {"multi": False}),
     )
 
 class GroupModel(ldaputil.LdapClass):

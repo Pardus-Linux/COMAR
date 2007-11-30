@@ -33,8 +33,8 @@ MonitorsDB = "/usr/lib/X11/MonitorsDB"
 driver_path = "/usr/lib/xorg/modules/drivers"
 xkb_path = "/usr/share/X11/xkb/symbols/pc"
 
-truecolor_cards = ["i810", "intel", "nv", "nvidia", "radeon", "fglrx"]
-lcd_drivers = [ "nv", "nvidia", "ati", "via", "i810", "intel", "sis", "savage", "neomagic"]
+truecolor_cards = ["i810", "intel", "nv", "nvidia", "radeon", "fglrx", "openchrome"]
+lcd_drivers = [ "nv", "nvidia", "ati", "openchrome", "i810", "intel", "sis", "savage", "neomagic"]
 touchpad_devices = ["synaptics", "alps"]
 default_kmap = "trq"
 
@@ -1008,6 +1008,13 @@ def autoConfigure():
             if cards[i].Driver == "nv":
                 out.info("changing card[%i] nv driver to nvidia" % i)
                 cards[i].Driver = "nvidia"
+
+    # use openchrome if via is found
+    if "openchrome" in available_drivers:
+        for i in range(len(cards)):
+            if cards[i].Driver == "via":
+                out.info("changing card[%i] via driver to openchrome" % i)
+                cards[i].Driver = "openchrome"
 
     # save active cards for checking next boots.
     saveActiveCard(cards)

@@ -944,6 +944,9 @@ def keysMonitors(monitors, cards):
         else:
             keys_mon["DEPTH"] = "16"
 
+        if cards[i].Driver == "ati" and "composite" in getKernelOpt("xorg"):
+            keys_mon["DEPTH"] = "24"
+
         sec_monitor += template_monitor % keys_mon
         sec_screen += template_screen % keys_mon
 

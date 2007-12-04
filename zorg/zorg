@@ -904,7 +904,7 @@ def keysVideoCards(cards):
 
         keys_vc["AIGLX_OPTS"] = ""
 
-        if "composite" in getKernelOpt():
+        if "composite" in getKernelOpt("xorg"):
             if cards[i].Driver in ("ati", "intel"):
                 keys_vc["AIGLX_OPTS"] = 'Option "XAANoOffscreenPixmaps" "true"'
 
@@ -1055,7 +1055,7 @@ def autoConfigure():
     # Enable composite extension if requested
     keys_main["AIGLX_OPTS"] = ""
 
-    if "composite" in getKernelOpt():
+    if "composite" in getKernelOpt("xorg"):
         keys_main["COMPOSITE"] = 'Option "Composite" "enable"'
 
         if cards[0].Driver in ("ati", "intel"):

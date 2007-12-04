@@ -48,6 +48,7 @@ Section "Device"
     VendorName "%(VENDORNAME)s"
     BoardName  "%(BOARDNAME)s"
     %(BUSID)s
+    %(AIGLX_OPTS)s
 EndSection
 """
 
@@ -117,6 +118,11 @@ Section "InputDevice"
 EndSection
 """
 
+template_nvidia_aiglx = """
+    Option "AddARGBGLXVisuals" "true"
+    Option "AllowGLXWithComposite" "true"
+"""
+
 template_screen = """
 Section "Screen"
     Identifier "Screen%(N)s"
@@ -183,7 +189,7 @@ Section "Module"
 EndSection
 
 Section "Extensions"
-#    Option "Composite" "Enable"
+    %(COMPOSITE)s
 EndSection
 
 Section "dri"
@@ -248,6 +254,7 @@ Section "ServerLayout"
     # Screen      1  "Screen1" RightOf "Screen0"
     Option      "Xinerama" "off"
     Option      "Clone" "off"
+    %(AIGLX_OPTS)s
 EndSection
 """
 
@@ -894,6 +901,16 @@ def keysVideoCards(cards):
         keys_vc["VENDORNAME"] = cards[i].VendorName
         keys_vc["BOARDNAME"] = cards[i].BoardName
         keys_vc["BUSID"] = cards[i].BusId 
+
+        keys_vc["AIGLX_OPTS"] = ""
+
+        if "composite" in getKernelOpt():
+            if cards[i].Driver in ("ati", "intel"):
+                keys_vc["AIGLX_OPTS"] = 'Option "XAANoOffscreenPixmaps" "true"'
+
+            elif cards[i].Driver == "nvidia":
+                keys_vc["AIGLX_OPTS"] = template_nvidia_aiglx
+
         sec += template_videocard % keys_vc
     return sec
 
@@ -1034,6 +1051,18 @@ def autoConfigure():
     # input devices, we have to use mainkeys for touchpad as it changes all over the config
     keysTouchpad(keys_main)
     keys_main["KEYMAP"] = queryKeymap()
+
+    # Enable composite extension if requested
+    keys_main["AIGLX_OPTS"] = ""
+
+    if "composite" in getKernelOpt():
+        keys_main["COMPOSITE"] = 'Option "Composite" "enable"'
+
+        if cards[0].Driver in ("ati", "intel"):
+            keys_main["AIGLX_OPTS"] = 'Option "AIGLX" "true"'
+
+    else:
+        keys_main["COMPOSITE"] = '#Option "Composite" "enable"'
 
     write_tmpl(keys_main)
 

@@ -118,6 +118,8 @@ Section "InputDevice"
 EndSection
 """
 
+composite_option = 'Option "Composite" "Enable"'
+
 template_nvidia_aiglx = """
     Option "AddARGBGLXVisuals" "true"
     Option "AllowGLXWithComposite" "true"
@@ -1059,13 +1061,13 @@ def autoConfigure():
     keys_main["AIGLX_OPTS"] = ""
 
     if "composite" in getKernelOpt("xorg"):
-        keys_main["COMPOSITE"] = 'Option "Composite" "enable"'
+        keys_main["COMPOSITE"] = composite_option
 
         if cards[0].Driver in ("ati", "intel"):
             keys_main["AIGLX_OPTS"] = 'Option "AIGLX" "true"'
 
     else:
-        keys_main["COMPOSITE"] = '#Option "Composite" "enable"'
+        keys_main["COMPOSITE"] = '#%s' % composite_option
 
     write_tmpl(keys_main)
 
@@ -1112,7 +1114,7 @@ def safeConfigure(_driver = "vesa"):
     keys_main["SYNAPTICS_LAY"] = ""
 
     keys_main["AIGLX_OPTS"] = ""
-    keys_main["COMPOSITE"] = '#Option "Composite" "enable"'
+    keys_main["COMPOSITE"] = '#%s' % composite_option
 
     write_tmpl(keys_main)
 

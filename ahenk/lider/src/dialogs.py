@@ -296,9 +296,12 @@ class ObjectDialog(KDialog):
             if self.unset and not self.grp.isChecked():
                 if not self.model.new:
                     self.unsetValues()
+                    KDialog.accept(self)
             else:
                 if self.getValues():
                     KDialog.accept(self)
+        else:
+            KDialog.accept(self)
     
     def reject(self):
         KDialog.reject(self)

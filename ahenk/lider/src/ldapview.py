@@ -55,7 +55,7 @@ class textWidget(QLineEdit):
             val = str(self.text())
             if self.options.get("password", False):
                 val = saltedSHA(val)
-        if self.options.get("urlencode", False):
+        if "/" in val and self.options.get("urlencode", False):
             url, args = val.rsplit("/", 1)
             val = "%s/%s" % (url, urllib.urlencode({"x": args}).split("=", 1)[1])
         return val

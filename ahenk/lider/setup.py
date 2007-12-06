@@ -12,7 +12,7 @@ import sys
 
 import kdedistutils
 
-version = "0.2"
+version = "0.3"
 
 distfiles = """
     setup.py

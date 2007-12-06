@@ -16,7 +16,7 @@ from kdecore import *
 import mainwindow
 from utility import *
 
-version = "0.1"
+version = "0.3"
 
 def aboutData():
     about = KAboutData("lider",

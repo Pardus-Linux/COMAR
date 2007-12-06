@@ -10,6 +10,19 @@ import ldap.modlist
 SUCCESS, FAIL = xrange(2)
 
 
+def saltedSHA(password):
+    import base64
+    import sha
+    import random
+    
+    chars = "".join([chr(x) for x in xrange(33, 91)])
+    salt = "".join([random.choice(chars) for x in xrange(10)])
+    ctx = sha.new(password)
+    ctx.update(salt)
+    hash = "{SSHA}" + base64.b64encode(ctx.digest() + salt)
+    return hash
+
+
 def tidy_modlist(_attrs):
     attrs = {}
     for key, values in _attrs.iteritems():
@@ -24,14 +37,22 @@ def main():
         return SUCCESS
     
     try:
-        ldap_server = raw_input("Server: ")
-        ldap_user = raw_input("User: ")
-        ldap_password = raw_input("Password: ")
-        ldap_base_users = raw_input("Users DN: ")
-        ldap_base_groups = raw_input("Groups DN: ")
+        ldap_server = sys.argv[1]
+        ldap_user = sys.argv[2]
+        ldap_password = sys.argv[3]
+        ldap_base_users = sys.argv[4]
+        ldap_base_groups = sys.argv[5]
+        ldap_default_pw = sys.argv[6]
     except KeyboardInterrupt:
         print
         print "Cancelled"
+        return FAIL
+    except (IndexError, ValueError,):
+        print "Usage:"
+        print "%s serverURI userDN userPW usersDN groupsDN defaultUserPW" % sys.argv[0]
+        print
+        print "Example:"
+        print "%s 127.0.0.1 cn=admin,dc=domain,dc=com qwerty dc=users,dc=domain,dc=com dc=groups,dc=domain,dc=com 1q2w3e4r5t6y" % sys.argv[0]
         return FAIL
     
     try:
@@ -43,7 +64,7 @@ def main():
     
     failed_users = []
     failed_groups = []
-    
+
     print "Importing groups..."
     for line in file("/etc/group"):
         line = line.strip()
@@ -60,7 +81,7 @@ def main():
             conn.add_s(dn, ldap.modlist.addModlist(attrs))
         except ldap.LDAPError, e:
             print "[ER] %s (%s)" % (attrs["cn"][0], e.args[0]["desc"])
-            failed_groups.append(groupname)
+            failed_groups.append(attrs["cn"][0])
         else:
             print "[OK] %s" % attrs["cn"][0]
     
@@ -93,8 +114,8 @@ def main():
         line = line.strip()
         username, password, other = line.split(":", 2)
         dn = "uid=%s,%s" % (username, ldap_base_users)
-        if dn in users:
-            users[dn]["userPassword"] = [password]
+        if dn in users and users[dn]["uidNumber"][0] >= 1000:
+            users[dn]["userPassword"] = [saltedSHA(ldap_default_pw)]
     
     print "Importing users..."
     for dn, attrs in users.iteritems():
@@ -103,7 +124,7 @@ def main():
             conn.add_s(dn, ldap.modlist.addModlist(attrs))
         except ldap.LDAPError, e:
             print "[ER] %s (%s)" % (attrs["uid"][0], e.args[0]["desc"])
-            failed_users.append(username)
+            failed_users.append(attrs["uid"][0])
         else:
             print "[OK] %s" % attrs["uid"][0]
     

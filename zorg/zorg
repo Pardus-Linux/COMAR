@@ -632,10 +632,13 @@ class intelWorkaround:
             run(*cmd)
 
 
-def getKernelOpt(cmdopt):
-    for cmd in "".join(loadFile("/proc/cmdline")).split():
-        if cmd.startswith("%s=" % cmdopt):
-            return cmd[len(cmdopt)+1:].split(",")
+def getKernelOpt(cmdopt=None):
+    if cmdopt:
+        for cmd in "".join(loadFile("/proc/cmdline")).split():
+            if cmd.startswith("%s=" % cmdopt):
+                return cmd[len(cmdopt)+1:].split(",")
+    else:
+        return "".join(loadFile("/proc/cmdline")).split()
 
     return ""
 
@@ -906,7 +909,7 @@ def keysVideoCards(cards):
 
         keys_vc["AIGLX_OPTS"] = ""
 
-        if "composite" in getKernelOpt("xorg"):
+        if "enable_composite" in getKernelOpt():
             if cards[i].Driver in ("ati", "intel"):
                 keys_vc["AIGLX_OPTS"] = 'Option "XAANoOffscreenPixmaps" "true"'
 
@@ -946,7 +949,7 @@ def keysMonitors(monitors, cards):
         else:
             keys_mon["DEPTH"] = "16"
 
-        if cards[i].Driver == "ati" and "composite" in getKernelOpt("xorg"):
+        if cards[i].Driver == "ati" and "enable_composite" in getKernelOpt():
             keys_mon["DEPTH"] = "24"
 
         sec_monitor += template_monitor % keys_mon
@@ -1060,7 +1063,7 @@ def autoConfigure():
     # Enable composite extension if requested
     keys_main["AIGLX_OPTS"] = ""
 
-    if "composite" in getKernelOpt("xorg"):
+    if "enable_composite" in getKernelOpt():
         keys_main["COMPOSITE"] = composite_option
 
         if cards[0].Driver in ("ati", "intel"):

@@ -1006,6 +1006,22 @@ def write_tmpl(_keys, _type = "normal"):
 
     write_file(xorg_conf, tmpl % _keys)
 
+def updateOpenGL(driver):
+    if "livecd" in getKernelOpt("mudur"):
+        return
+
+    impls = {
+        "fglrx"     : "ati",
+        "nvidia"    : "nvidia"
+    }
+
+    ret = capture("/sbin/update-opengl", "--get-implementation")
+    oldImpl = ret[0].rstrip()
+    newImpl = impls.get(driver, "xorg-x11")
+
+    if oldImpl != newImpl:
+        run("/sbin/update-opengl", newImpl);
+
 # om call
 def autoConfigure():
     out.sect("Autodetecting devices")
@@ -1074,13 +1090,7 @@ def autoConfigure():
 
     write_tmpl(keys_main)
 
-    if not "livecd" in getKernelOpt("mudur"):
-        impls = {
-            "fglrx"     : "ati",
-            "nvidia"    : "nvidia"
-        }
-
-        run("/sbin/update-opengl", impls.get(cards[0].Driver, "xorg-x11"));
+    updateOpenGL()
 
 def safeConfigure(_driver = "vesa"):
     # set failsafe graphics card
@@ -1131,6 +1141,8 @@ def safeConfigure(_driver = "vesa"):
 
     if not "livecd" in getKernelOpt("mudur"):
         run("/sbin/update-opengl", "xorg-x11");
+
+    updateOpenGL()
 
 def activeCardChanged(cards):
     out.sect("Videocards changed, reconfiguring X")

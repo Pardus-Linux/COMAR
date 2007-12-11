@@ -1139,9 +1139,6 @@ def safeConfigure(_driver = "vesa"):
 
     write_tmpl(keys_main)
 
-    if not "livecd" in getKernelOpt("mudur"):
-        run("/sbin/update-opengl", "xorg-x11");
-
     updateOpenGL(_driver)
 
 def activeCardChanged(cards):

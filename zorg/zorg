@@ -1074,6 +1074,14 @@ def autoConfigure():
 
     write_tmpl(keys_main)
 
+    if not "livecd" in getKernelOpt("mudur"):
+        impls = {
+            "fglrx"     : "ati",
+            "nvidia"    : "nvidia"
+        }
+
+        run("/sbin/update-opengl", impls.get(cards[0].Driver, "xorg-x11"));
+
 def safeConfigure(_driver = "vesa"):
     # set failsafe graphics card
     safedrv = _driver.upper()
@@ -1120,6 +1128,9 @@ def safeConfigure(_driver = "vesa"):
     keys_main["COMPOSITE"] = '#%s' % composite_option
 
     write_tmpl(keys_main)
+
+    if not "livecd" in getKernelOpt("mudur"):
+        run("/sbin/update-opengl", "xorg-x11");
 
 def activeCardChanged(cards):
     out.sect("Videocards changed, reconfiguring X")

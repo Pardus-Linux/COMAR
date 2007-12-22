@@ -19,7 +19,7 @@
 #include "log.h"
 #include "process.h"
 
-//! Puts time into f
+//! Add timestamp to log
 static void
 timestamp(FILE *f)
 {
@@ -33,7 +33,7 @@ timestamp(FILE *f)
 	fputs(buf, f);
 }
 
-//! Prints comar version info and process id to stdout
+//! Add comar version info and process id to log
 static void
 pidstamp(FILE *f)
 {

@@ -191,7 +191,9 @@ class IF:
             return True
         return None
     
-    def startAuto(self):
+    # timeout parameter is unused and is here for compatibility reasons
+    # (Bug #6626)
+    def startAuto(self, timeout=120):
         if self.isAuto():
             self.stopAuto()
             import time

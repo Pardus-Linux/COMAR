@@ -1,0 +1,433 @@
+# translation of de.po to Deutsch
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Mustafa Ölcerman <m.oelcerman@pardus-linux.de>, 2008.
+msgid ""
+msgstr ""
+"Project-Id-Version: de\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-10-30 11:16+0200\n"
+"PO-Revision-Date: 2008-01-07 06:23+0200\n"
+"Last-Translator: Mustafa Ölcerman <m.oelcerman@pardus-linux.de>\n"
+"Language-Team: Deutsch <pardus-translation-de@pardus.org.tr>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.11.4\n"
+
+#: src/browser.py:35
+msgid "&New Domain"
+msgstr "&Neue Domain"
+
+#: src/browser.py:38 src/browser.py:45
+msgid "&New Directory"
+msgstr "&Neues Verzeichnis"
+
+#: src/browser.py:49
+msgid "&Refresh"
+msgstr "&Aktualisieren"
+
+#: src/browser.py:51
+msgid "&Properties"
+msgstr "&Eigenschaften"
+
+#: src/browser.py:114
+msgid "Unable to connect to LDAP server."
+msgstr "Kann nicht mit dem LDAP-Server verbunden werden."
+
+#: src/browser.py:120
+msgid "You can add new domain by right clicking panel on left."
+msgstr "Sie können durch ein Rechtsklick auf der linken Seite Domain hinzufügen."
+
+#: src/browser.py:141
+msgid "Remove directory?"
+msgstr "Verzeichnis entfernen?"
+
+#: src/browser.py:141 src/browser.py:156 src/browser.py:536
+msgid "Are you sure you want to remove '%1' ?"
+msgstr "Sind Sie sicher, dass Sie '%1' entfernen möchten?"
+
+#: src/browser.py:141 src/browser.py:536 src/browser.py:540 src/browser.py:543
+msgid "This is not undoable. Are you sure you want to continue?"
+msgstr "Dies ist unlösbar. Sind Sie sicher, dass Sie fortfahren möchten?"
+
+#: src/browser.py:156
+msgid "Remove domain?"
+msgstr "Domaine entfernen?"
+
+#: src/browser.py:180
+msgid "Computers (%1)"
+msgstr "Computer (%1)"
+
+#: src/browser.py:181
+msgid "Units (%1)"
+msgstr "Einheiten (%1)"
+
+#: src/browser.py:182
+msgid "Users (%1)"
+msgstr "Benutzer (%1)"
+
+#: src/browser.py:183
+msgid "Groups (%1)"
+msgstr "Gruppen (%1)"
+
+#: src/browser.py:225
+msgid "<strong>%1</strong><br>Host: %2"
+msgstr "<strong>%1</strong><br>Host: %2"
+
+#: src/browser.py:366
+msgid "Name"
+msgstr "Name"
+
+#: src/browser.py:367 src/ldapmodel.py:59 src/ldapmodel.py:67
+#: src/ldapmodel.py:77
+msgid "Description"
+msgstr "Beschreibung"
+
+#: src/browser.py:377
+msgid "&New"
+msgstr "&Neu"
+
+#: src/browser.py:381
+msgid "&Information"
+msgstr "&Information"
+
+#: src/browser.py:382
+msgid "&Policy"
+msgstr "&Richtlinie"
+
+#: src/browser.py:383
+msgid "&Configuration"
+msgstr "&Konfiguration"
+
+#: src/browser.py:536
+msgid "Remove object?"
+msgstr "Objekt entfernen?"
+
+#: src/browser.py:540 src/browser.py:543
+msgid "Remove objects?"
+msgstr "Objekte entfernen?"
+
+#: src/browser.py:540
+msgid ""
+"Are you sure you want to remove these objects?\n"
+"%1"
+msgstr ""
+"Sind Sie sicher, dass Sie diese Objekte entfernen möchten?\n"
+"%1"
+
+#: src/browser.py:543
+msgid "Are you sure you want to remove %1 objects?"
+msgstr "Sind Sie sicher, dass Sie %1 Objekte entfernen möchten?"
+
+#: src/browser.py:559
+msgid ""
+"Unable to delete these objects:\n"
+"%1"
+msgstr ""
+"Diese Objekte können nicht gelöscht werden:\n"
+"%1"
+
+#: src/browser.py:562
+msgid "Removed %1 objects."
+msgstr "%1 entfernte Objekte."
+
+#: src/dialogs.py:26 src/dialogs.py:142
+msgid "%1 Properties"
+msgstr "%1 Eigenschaften"
+
+#: src/dialogs.py:28
+msgid "Add New Domain"
+msgstr "Neue Domain hinzufügen"
+
+#: src/dialogs.py:38
+msgid "Label:"
+msgstr "Kennung:"
+
+#: src/dialogs.py:43
+msgid "Directory server:"
+msgstr "Verzeichnisserver:"
+
+#: src/dialogs.py:48
+msgid "Base DN:"
+msgstr "Basis DN:"
+
+#: src/dialogs.py:53
+msgid "Bind DN:"
+msgstr "Bind DN:"
+
+#: src/dialogs.py:58
+msgid "Bind Password:"
+msgstr "Bind-Kennwort:"
+
+#: src/dialogs.py:140
+msgid "%1 Information"
+msgstr "%1 Information"
+
+#: src/dialogs.py:144
+msgid "New %1"
+msgstr "Neu %1"
+
+#: src/dialogs.py:157
+msgid "Enable %1"
+msgstr "%1 aktivieren"
+
+#: src/dialogs.py:170
+msgid "DN:"
+msgstr "DN:"
+
+#: src/dialogs.py:172
+msgid "Parent DN:"
+msgstr "Eltern DN:"
+
+#: src/dialogs.py:181
+msgid "Name:"
+msgstr "Name:"
+
+#: src/dialogs.py:270
+msgid "Name is required"
+msgstr "Name ist erforderlich"
+
+#: src/dialogs.py:276
+msgid "%1 is required"
+msgstr "%1 ist erforderlich"
+
+#: src/domain.py:143
+msgid "Not a valid Connection instance."
+msgstr "Keine gültige Verbindungsinstanz."
+
+#: src/domain.py:181
+msgid "Domain configuration file is missing."
+msgstr "Die Domain-Konfigurationsdatei fehlt."
+
+#: src/domain.py:185
+msgid "Domain configuration file has syntax errors."
+msgstr "Die Domain-Konfigurationsdatei hat Syntaxfehler."
+
+#: src/lider.py:25
+msgid "Pardus Management Console"
+msgstr "Pardus Management-Konsole"
+
+#: src/mainwindow.py:48
+msgid "Computers"
+msgstr "Computer"
+
+#: src/mainwindow.py:51
+msgid "Units"
+msgstr "Einheiten"
+
+#: src/mainwindow.py:54
+msgid "Users"
+msgstr "Benutzer"
+
+#: src/mainwindow.py:57
+msgid "Groups"
+msgstr "Gruppen"
+
+#: src/mainwindow.py:68
+msgid "Critical Error"
+msgstr "Kritischer Fehler"
+
+#: src/mainwindow.py:74
+msgid "Unable to complete operation:"
+msgstr "Vorgang kann nicht fertiggestellt werden:"
+
+#: src/ldapmodel.py:17 src/ldapmodel.py:64
+msgid "Computer"
+msgstr "Computer"
+
+#: src/ldapmodel.py:19
+msgid "Memory"
+msgstr "Speicher"
+
+#: src/ldapmodel.py:20 src/ldapmodel.py:37 src/ldapmodel.py:38
+msgid "Services"
+msgstr "Dienste"
+
+#: src/ldapmodel.py:20 src/ldapmodel.py:37 src/ldapmodel.py:38
+msgid "Service"
+msgstr "Dienst"
+
+#: src/ldapmodel.py:26 src/ldapmodel.py:50
+msgid "Policy"
+msgstr "Richtlinie"
+
+#: src/ldapmodel.py:30
+msgid "Update Mode"
+msgstr "Modus aktivieren"
+
+#: src/ldapmodel.py:30 src/ldapmodel.py:31 src/ldapmodel.py:32
+#: src/ldapmodel.py:33 src/ldapmodel.py:34 src/ldapmodel.py:35
+msgid "PISI"
+msgstr "PISI"
+
+#: src/ldapmodel.py:30
+msgid "Security Only"
+msgstr "Nur Sicherheit"
+
+#: src/ldapmodel.py:30
+msgid "Full"
+msgstr "Voll"
+
+#: src/ldapmodel.py:31
+msgid "Interval"
+msgstr "Intervall"
+
+#: src/ldapmodel.py:32
+msgid "Update Between"
+msgstr "Aktualisieren zwischen"
+
+#: src/ldapmodel.py:33
+msgid "Repositories"
+msgstr "Depots"
+
+#: src/ldapmodel.py:33
+msgid "Repo Name"
+msgstr "Depot-Name"
+
+#: src/ldapmodel.py:33
+msgid "URL"
+msgstr "URL"
+
+#: src/ldapmodel.py:34
+msgid "Wanted Packages"
+msgstr "Erwünschte Pakete"
+
+#: src/ldapmodel.py:34 src/ldapmodel.py:35
+msgid "Package"
+msgstr "Paket"
+
+#: src/ldapmodel.py:35
+msgid "Unwanted Packages"
+msgstr "Unerwünschte Pakete"
+
+#: src/ldapmodel.py:37
+msgid "Wanted Services"
+msgstr "Erwünschte Dienste"
+
+#: src/ldapmodel.py:38
+msgid "Unwanted Services"
+msgstr "Unerwünschte Dienste"
+
+#: src/ldapmodel.py:40
+msgid "User Source"
+msgstr "Benutzerquelle"
+
+#: src/ldapmodel.py:40 src/ldapmodel.py:41 src/ldapmodel.py:42
+#: src/ldapmodel.py:43 src/ldapmodel.py:44
+msgid "COMAR"
+msgstr "COMAR"
+
+#: src/ldapmodel.py:40
+msgid "Local"
+msgstr "Lokal"
+
+#: src/ldapmodel.py:40
+msgid "LDAP"
+msgstr "LDAP"
+
+#: src/ldapmodel.py:41
+msgid "Search Scope"
+msgstr "Bereich durchsuchen"
+
+#: src/ldapmodel.py:41
+msgid "Base"
+msgstr "Basis"
+
+#: src/ldapmodel.py:41
+msgid "One Level"
+msgstr "Einstufig"
+
+#: src/ldapmodel.py:41
+msgid "Subtree"
+msgstr "Teilbaum"
+
+#: src/ldapmodel.py:42
+msgid "Database URI"
+msgstr "Datenbank URI"
+
+#: src/ldapmodel.py:43
+msgid "Base DN"
+msgstr "Basis DN"
+
+#: src/ldapmodel.py:44
+msgid "User Filter"
+msgstr "Benutzerfilter"
+
+#: src/ldapmodel.py:55
+msgid "Directory"
+msgstr "Verzeichnis"
+
+#: src/ldapmodel.py:58
+msgid "Label"
+msgstr "Kennung"
+
+#: src/ldapmodel.py:69
+msgid "Member of"
+msgstr "Mitglied von"
+
+#: src/ldapmodel.py:74
+msgid "Unit"
+msgstr "Einheit"
+
+#: src/ldapmodel.py:82
+msgid "User"
+msgstr "Benutzer"
+
+#: src/ldapmodel.py:85
+msgid "Real Name"
+msgstr "Vollständiger Name"
+
+#: src/ldapmodel.py:86
+msgid "Password"
+msgstr "Kennwort"
+
+#: src/ldapmodel.py:87
+msgid "Shell"
+msgstr "Shell"
+
+#: src/ldapmodel.py:88
+msgid "Home"
+msgstr "Home"
+
+#: src/ldapmodel.py:89
+msgid "User ID"
+msgstr "Benutzer-ID"
+
+#: src/ldapmodel.py:90 src/ldapmodel.py:98
+msgid "Group ID"
+msgstr "Gruppen-ID"
+
+#: src/ldapmodel.py:95
+msgid "Group"
+msgstr "Gruppe"
+
+#: src/ldapmodel.py:99
+msgid "Members"
+msgstr "Mitglieder"
+
+#: src/ldapmodel.py:99
+msgid "Username"
+msgstr "Benutzername"
+
+#: src/ldapview.py:95
+msgid "Select..."
+msgstr "Auswählen..."
+
+#: src/ldapview.py:118
+msgid "New Item"
+msgstr "Neues Element"
+
+#: src/ldapview.py:143
+msgid "Up"
+msgstr "Aufwärts"
+
+#: src/ldapview.py:147
+msgid "Down"
+msgstr "Abwärts"
+
+#: src/ldapview.py:217
+msgid "Edit List"
+msgstr "Liste bearbeiten"
+

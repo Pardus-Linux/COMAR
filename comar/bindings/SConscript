@@ -1,9 +1,0 @@
-#!/usr/bin/python
-
-Import('env')
-
-env2 = env.Copy(LIBS='')
-libcomar = env2.SharedLibrary("libcomar", [ "libcomar.c" ])
-hav = env2.Program("hav", [ "libcomar.c", "hav.c" ])
-
-Return('libcomar hav')

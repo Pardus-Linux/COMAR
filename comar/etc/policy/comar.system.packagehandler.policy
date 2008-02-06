@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN" "http://www.freedesktop.org/standards/PolicyKit/1.0/policyconfig.dtd">
+
+<policyconfig>
+
+    <action id="tr.org.pardus.comar.system.packagehandler.setuppackage">
+        <description>Execute package handler setup scripts</description>
+        <message>System policy prevents executing package handlers' setup scripts.</message>
+        <defaults>
+            <allow_any>no</allow_any>
+            <allow_inactive>no</allow_inactive>
+            <allow_active>no</allow_active>
+        </defaults>
+    </action>
+
+    <action id="tr.org.pardus.comar.system.packagehandler.cleanuppackage">
+        <description>Execute package handler cleanup scripts</description>
+        <message>System policy prevents executing package handlers' cleanup scripts.</message>
+        <defaults>
+            <allow_any>no</allow_any>
+            <allow_inactive>no</allow_inactive>
+            <allow_active>no</allow_active>
+        </defaults>
+    </action>
+</policyconfig>

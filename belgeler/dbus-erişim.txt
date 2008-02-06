@@ -1,0 +1,136 @@
+Erişim Denetimi
+===============
+
+Erişim denetimi, PolicyKit ile sağlanmaktadır. Sunulan arayüzlere ait 
+erişim ayarları /usr/share/PolicyKit/policy/ içinde bulunmaktadır.
+
+model.xml'de tanımlı her model için (standart org.freedesktop.DBus 
+arayüzleri hariç) bir erişim ayar dosyası vardır. ÇOMAR, çağrıyı 
+yapan kullanıcı root haklarına sahip değilse, PolicyKit'e başvurur 
+ve PolicyKit, bu ayar dosyalarındaki tanımlara göre kullanıcının 
+yetkili olup olmadığını denetler.
+
+
+Erişim Dosyası               Nesne       Arayüz
+--------------               ----------  ------
+comar.policy                 /           tr.org.pardus.comar
+comar.bootloader.policy      /package/*  tr.org.pardus.comar.Boot.Loader
+comar.modules.policy         /package/*  tr.org.pardus.comar.Boot.Modules
+comar.netlink.policy         /package/*  tr.org.pardus.comar.Net.Link
+comar.netstack.policy        /package/*  tr.org.pardus.comar.Net.Stack
+comar.system.package.policy  /package/*  tr.org.pardus.comar.System.Package
+comar.time.polic             /package/*  tr.org.pardus.comar.Time.Clock
+comar.user.policy            /package/*  tr.org.pardus.comar.User.Manager
+
+
+Erişim Dosyası Yapısı
+=====================
+
+    <action id="tr.org.pardus.comar.boot.loader.listsystems">
+        <description>List systems supported by boot loader</description>
+        <message>System policy prevents listing systems.</message>
+        <defaults>
+            <allow_any>yes</allow_any>
+            <allow_active>yes</allow_active>
+            <allow_inactive>yes</allow_inactive>
+        </defaults>
+    </action>
+
+
+İşlem Adları (action id)
+------------------------
+
+İşlem adları, kullanıcının yapmak istediği işlemi temsil ederler. 
+Sadece "[a-z][0-9].-" karakterlerini içerebilirler.
+
+** ÖNEMLİ **
+İşlem adı, genellikle arayüzadı.method şeklinde tanımlıdır. İşlem 
+adı büyük harf içeremeyeceğinden, önce tüm karakterler küçük harfe 
+dönüştürülür.
+
+
+Erişim Türleri (allow_*)
+------------------------
+
+allow_any                Herhangi bir oturum için erişim hakkı
+allow_active             Aktif oturumlar için erişim hakkı
+allow_inactive           İnaktif oturumlar için erişim hakkı
+
+
+Erişim Hakları (allow_* değerleri)
+----------------------------------
+
+yes                      Herkes bu işlemi yapabili
+no                       Sadece root bu işlemi yapabilir
+auth_self                Kendi parolasını girerek yetki alabilir
+auth_self_keep_session   Kendi parolasını bir kez girdikten sonra 
+                         oturum boyunca bir daha parola girmesine 
+                         gerek kalmaz
+auto_self_keep_always    Kendi parolsını bir kez girdikten sonra 
+                         bir daha parola girmesine gerek kalmaz
+auth_admin               Root parolasını girerek yetki alabilir
+auth_admin_keep_session  Root parolasını bir kez girdikten sonra 
+                         oturum boyunca bir daha parola girmesine 
+                         gerek kalmaz
+auto_admin_keep_always   Root parolasını bir kez girdikten sonra 
+                         bir daha parola girmesine gerek kalmaz
+
+
+Benzer İşlemler
+===============
+
+ÇOMAR, model.xml'de birbirine benzer işlemleri belirleye olanak tanır:
+
+        <method name="setOption" access_label="set">
+            <arg name="option" type="s" direction="in"/>
+            <arg name="value" type="s" direction="in"/>
+        </method>
+        <method name="setEntry" access_label="set">
+            <arg name="title" type="s" direction="in"/>
+            <arg name="os_type" type="s" direction="in"/>
+            <arg name="root" type="s" direction="in"/>
+            <arg name="kernel" type="s" direction="in"/>
+            <arg name="initrd" type="s" direction="in"/>
+            <arg name="options" type="s" direction="in"/>
+            <arg name="default" type="s" direction="in"/>
+            <arg name="index" type="i" direction="in"/>
+        </method>
+
+Bu durumda, erişim denetimi yapılırken
+
+    tr.org.pardus.comar.boot.loader.setoption
+    tr.org.pardus.comar.boot.loader.setentry
+
+işlem isimleri yerine
+
+    tr.org.pardus.comar.boot.loader.set
+
+kullanılır.
+
+** ÖNEMLİ **
+ÇOMAR'dan "işlem yetkiniz yok" mesajı alan istemci, PolicyKit ajanından 
+kimlik doğrulama yoluyla erişim sağlama yaparken, yukarıdaki gibi
+
+    tr.org.pardus.comar.boot.loader.set
+
+işlemi için yetki istemelidir.
+
+
+PolicyKit Ajanı İle Yetki İsteme
+================================
+
+Aşağıdaki Python kodu ile, sistemde PolicyKit-gnome kurulu ise, istenen 
+işlem için yetki istenebilir (method True/False döndürür):
+
+  def obtainAuthorization(action, winID, pid):
+    import dbus
+    bus = dbus.SessionBus()
+    obj = bus.get_object("org.gnome.PolicyKit", "/")
+    iface = dbus.Interface(obj, "org.freedesktop.PolicyKit.AuthenticationAgent")
+    return iface.ObtainAuthorization(action, winID, pid)
+
+İşlem adıyla birlikte, XWindow pencere numarası ve yetki alacak uygulamanın 
+süreç numarası belirtilmelidir.
+
+İşlem adı, politika ayalar dosyalarının birinde tanımlı değilse, pencere/süreç 
+numarası geçersiz ise erişim denetimi daima False döndürür.

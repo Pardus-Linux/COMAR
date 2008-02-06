@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN" "http://www.freedesktop.org/standards/PolicyKit/1.0/policyconfig.dtd">
+
+<policyconfig>
+
+    <!-- Access Labels -->
+    <action id="tr.org.pardus.comar.net.stack.set">
+        <description>Set hostname/nameserver info</description>
+        <message>System policy prevents changing host/nameserver information.</message>
+        <defaults>
+            <allow_any>auth_admin_keep_session</allow_any>
+            <allow_active>auth_admin_keep_session</allow_active>
+            <allow_inactive>auth_admin_keep_session</allow_inactive>
+        </defaults>
+    </action>
+
+    <action id="tr.org.pardus.comar.net.stack.get">
+        <description>Get hostname/nameserver info</description>
+        <message>System policy prevents getting host/nameserver info.</message>
+        <defaults>
+            <allow_any>yes</allow_any>
+            <allow_active>yes</allow_active>
+            <allow_inactive>yes</allow_inactive>
+        </defaults>
+    </action>
+</policyconfig>

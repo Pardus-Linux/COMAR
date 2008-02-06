@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN" "http://www.freedesktop.org/standards/PolicyKit/1.0/policyconfig.dtd">
+
+<policyconfig>
+
+    <action id="tr.org.pardus.comar.net.link.scanremote">
+        <description>Scan remote access points.</description>
+        <message>System policy prevents scanning remote access points.</message>
+        <defaults>
+            <allow_any>yes</allow_any>
+            <allow_active>yes</allow_active>
+            <allow_inactive>yes</allow_inactive>
+        </defaults>
+    </action>
+
+    <action id="tr.org.pardus.comar.net.link.deleteconnection">
+        <description>Delete connection.</description>
+        <message>System policy prevents removing connections.</message>
+        <defaults>
+            <allow_any>auth_admin_keep_session</allow_any>
+            <allow_active>auth_admin_keep_session</allow_active>
+            <allow_inactive>auth_admin_keep_session</allow_inactive>
+        </defaults>
+    </action>
+
+    <action id="tr.org.pardus.comar.net.link.setstate">
+        <description>Set connection state.</description>
+        <message>System policy prevents changing connection state.</message>
+        <defaults>
+            <allow_any>auth_admin_keep_session</allow_any>
+            <allow_active>auth_admin_keep_session</allow_active>
+            <allow_inactive>auth_admin_keep_session</allow_inactive>
+        </defaults>
+    </action>
+
+    <!-- Access Labels -->
+    <action id="tr.org.pardus.comar.net.link.set">
+        <description>Set connection details.</description>
+        <message>System policy prevents adding/editing connections.</message>
+        <defaults>
+            <allow_any>auth_admin_keep_session</allow_any>
+            <allow_active>auth_admin_keep_session</allow_active>
+            <allow_inactive>auth_admin_keep_session</allow_inactive>
+        </defaults>
+    </action>
+
+    <action id="tr.org.pardus.comar.net.link.get">
+        <description>Get connection/device details</description>
+        <message>System policy prevents getting connection/device details.</message>
+        <defaults>
+            <allow_any>yes</allow_any>
+            <allow_active>yes</allow_active>
+            <allow_inactive>yes</allow_inactive>
+        </defaults>
+    </action>
+</policyconfig>

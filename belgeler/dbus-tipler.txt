@@ -1,0 +1,56 @@
+Tipler İle İlgili Kısıtlamalar
+==============================
+
+Aşağıdaki tipler desteklenmektedir:
+
+  Python        DBus (DBUS_TYPE_*)
+  ------        ------------------
+  bool          BOOLEAN
+  int           INT16, UINT16, INT32, UINT32
+  long          INT64, UINT64
+  float         DOUBLE
+  list          ARRAY
+  tuple         STRUCT
+  dict          ARRAY of DICT_ELEM
+  str           STRING
+
+Tuple, dict ve list için DBus Spec'inden kaynaklanan bazı kısıtlamalar mevcuttur.
+
+
+tuple (DBUS_STRUCT)
+-------------------
+
+Tuple içindeki elemanlar keyfi tipte olabilir.
+
+    (1, "iki", 3.0, [1, 2, 3])
+
+
+dict (DBUS_ARRAY of DBUS_DICT_ELEM)
+-----------------------------------
+
+Dict anahtarları ve elemanları (kendi aralarında) aynı tipte olmalı.
+
+  Doğru:
+    {"a": 1, "b": 2}
+    {1: "deneme", 2: "test"}
+
+  Yanlış:
+    {1: "a", "2": "b"}       # Anahtarlar farklı tipte
+    {"a": 1, "b": 2.0}       # Elemanlar farklı tipte
+
+
+list (DBUS_ARRAY)
+-----------------
+
+Liste içindeki elemanların tipi aynı olmalı.
+
+  Doğru:
+    [1, 2, 3, 4, 5]
+    ["a", "b", "c"]
+    [{"a": 1, "b": 2, "c": 3}, {"x": 10, "y": 20}]
+    [(1, 2.0, "üç"), (10, 20.0, "otuz")]
+
+ Yanlış:
+    [1, 2.0, "üç"]                            # Farklı tipte elemanlar içeriyor
+    [(1, 2.0, "üç"), (1.0, "iki", 3.0)]       # Her tuple aynı formatta olmalı
+    [{"a": 1, "b": 2}, {"a": 1.0, "b": 2.0}]  # Her dict aynı formatta olmalı

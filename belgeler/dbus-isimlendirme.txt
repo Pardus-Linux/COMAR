@@ -1,0 +1,110 @@
+
+                                          Nesne Yolu
+                                              |
+             Bus Adresi (ters çevrilir)       |
+                        |                     |
+                 _______|________   __________|_________
+                /                \ /                    \
+        dbus://comar.pardus.org.tr/package/wireless_tools
+
+
+        Nesnenin sunduğu işlem arayüzleri (Interface):
+
+        - org.freedesktop.Introspectable (Standart)
+          - Introspect()
+        - tr.org.pardus.comar.System.Package
+          - postInstall()
+          - preRemove()
+        - tr.org.pardus.comar.Net.Link
+          - setConnection(name, device)
+          - setAddress(name, mode, address, ...)
+          - ...
+        ...
+
+
+İsimlendirme Kuralları
+======================
+
+- Bus adresi, nesne yolu, arayüz ve metod isimlerinin her biri en 
+  fazla 255 karakter olabilir.
+
+- Bus adresleri (örnek: tr.org.pardus.commar, :1.35, ...)
+  - Her bağlantının bir ya da daha fazla Bus adresi olabilir. ":" 
+    ile başlayanlar özgün bağlantı isimleridir.
+  - Noktalarla ayrılmış, en az iki kelimeden oluşur. Kelimeler 
+    sadece "[A-Z][a-z][0-9]_-" karakterlerini içerebilir.
+  - Rakam ve "." ile başlayan Bus adresi olamaz.
+
+- Arayüz isimleri (örnek: tr.org.pardus.comar.Net.Link)
+  - Noktalarla ayrılmış, en az iki kelimeden oluşur. Kelimeler 
+    sadece "[A-Z][a-z][0-9]_" karakterlerini içerebilir. Bus 
+    adresinden farkı, "-" karakteri içermemeleridir.
+  - Rakam ve "." ile başlayan arayüz ismi olamaz.
+
+- Üye (method, sinyal) isimleri (örnek: postInstall)
+  - "[A-Z][a-z][0-9]_" karakterlerinden oluşan en az bir karakter 
+    uzunlukta bir kelime olabilir.
+  - "." içeremez
+  - Rakam ile başlayamaz.
+
+- Hata isimleri (örnek: org.freedesktop.DBus.Exception)
+  - Arayüz isimlendirme kuralları aynen geçerlidir.
+
+
+COMAR'ın Sunduğu Nesne/Arayüz/Methodlar
+=======================================
+
+    / (kök)
+        * org.freedesktop.Introspectable
+            - Introspect()
+        * tr.org.pardus.comar
+            - register(app, model, script_file)
+            - remove(app)
+            - listApplications()
+            - listModels()
+            - listModelApplications(model)
+            - listApplicationModels(app)
+        /package
+            /package/mysql
+                * org.freedesktop.Introspectable
+                    - Introspect()
+                * tr.org.pardus.comar.System.Package
+                    - postInstall(fromVersion, toVersion, ...)
+                    - preRemove()
+            /package/wireless_tools
+                * org.freedesktop.Introspectable
+                    - Introspect()
+                * tr.org.pardus.comar.System.Package
+                    - postInstall(fromVersion, toVersion, ...)
+                    - preRemove()
+                * tr.org.pardus.comar.Net.Link
+                    - setConnection(name, deviceID)
+                    - setAddress(name, mode, address, ...)
+                    - ...
+                * ...
+            /package/...
+
+
+Kök nesne altındaki tr.org.pardus.comar arayüzü, ÇOMAR'a yeni uygulama 
+ve uygulama betikleri ekleme, varolanları sorgulama/silme için gerekli 
+metodları sunar.
+
+Her nesne standart org.freedesktop.Introspectable arayüzünü sunar. Bu 
+arayüzün Introspect() methodu ile, o anki nesne yolunun sunduğu 
+arayüzler, alt nesleler ve metodlar sorgulanabilir.
+
+tr.org.pardus.comar.System.Package ve tr.org.pardus.comar.Net.Link 
+gibi arayüz isimleri, model.xml'den üretilir. Arayüzün sunduğu method 
+ve sinyaller (üyeler), yine model.xml'de tanımlıdır.
+
+register() metodu ile ÇOMAR'a kayıt edilen paketler, /package altına 
+eklenir. Kayıt ederken bir model ismi ve o model ile tanımlı işi 
+gerçekleştirecek Python betiğinin tam dosya yolu belirtilmelidir:
+
+    register("apache", "System.Package", "/root/apache_package.py")
+
+Yukarıdaki methodun çağrılmasının ardından, eğer System.Package 
+arayüzü model.xml'de tanımlı ise, "apache" geçerli bir paket ismi 
+ise "apache_package.py", Apache'ye ait ÇOMAR veritabanına eklenir 
+ve /package/apache nesnesi altında tr.org.pardus.comar.System.Package 
+arayüzü sunulmaya başlanır.

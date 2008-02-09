@@ -75,10 +75,9 @@ c_call(PyObject *self, PyObject *args)
      * @return Called method's reply
      */
 
-    PyObject *tuple = NULL;
-    PyObject *result;
-    char *app, *model, *method;
-    int ret;
+    PyObject *ret, *tuple = NULL;
+    char *app, *model, *method, *interface, *path;
+    int size, i;
 
     if (!PyArg_ParseTuple(args, "sss|O", &app, &model, &method, &tuple))
         return NULL;
@@ -88,21 +87,76 @@ c_call(PyObject *self, PyObject *args)
         tuple = PyTuple_New(0);
     }
 
-    if (db_check_model(app, model) && model_lookup_method(model, method) != -1) {
-        ret = py_call_method(app, model, method, tuple, &result);
+    DBusConnection *conn;
+    DBusError err;
+    DBusMessage *msg, *reply;
+    DBusMessageIter iter;
 
-        if (ret == 0) {
-            return result;
-        }
-        else if (ret == 1) {
-            PyErr_SetString(PyExc_Exception, "Internal error, unable to find script.");
-        }
+    dbus_error_init(&err);
+    conn = dbus_bus_get_private(DBUS_BUS_SYSTEM, &err);
+    if (dbus_error_is_set(&err)) {
+        PyErr_SetString(PyExc_Exception, "Unable to open connection for call() method.");
+        dbus_error_free(&err);
         return NULL;
+    }
+
+    size = strlen(cfg_bus_interface) + 1 + strlen(model) + 1;
+    interface = malloc(size);
+    snprintf(interface, size, "%s.%s", cfg_bus_interface, model);
+    interface[size - 1] = '\0';
+
+    size = strlen("/package/") + strlen(app) + 1;
+    path = malloc(size);
+    snprintf(path, size, "/package/%s", app);
+    path[size - 1] = '\0';
+
+    msg = dbus_message_new_method_call(cfg_bus_name, path, interface, method);
+    free(interface);
+    free(path);
+
+    dbus_message_iter_init_append(msg, &iter);
+
+    if (PyTuple_Check(tuple)) {
+        if (PyTuple_Size(tuple) > 0) {
+            for (i = 0; i < PyTuple_Size(tuple); i++) {
+                if (dbus_py_export(&iter, PyTuple_GetItem(tuple, i)) != 0) {
+                    return NULL;
+                }
+            }
+        }
     }
     else {
-        PyErr_SetString(PyExc_Exception, "Invalid application, model or method.");
+        if (dbus_py_export(&iter, tuple) != 0) {
+            return NULL;
+        }
+    }
+
+    reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, &err);
+    dbus_message_unref(msg);
+    dbus_connection_close(conn);
+    dbus_connection_unref(conn);
+    if (dbus_error_is_set(&err)) {
+        PyErr_Format(PyExc_Exception, "Unable to call method: %s", err.message);
+        dbus_error_free(&err);
         return NULL;
     }
+
+    switch (dbus_message_get_type(reply)) {
+        case DBUS_MESSAGE_TYPE_METHOD_RETURN:
+            ret = PyList_AsTuple(dbus_py_import(reply));
+            if (PyTuple_Size(ret) == 1) {
+                ret = PyTuple_GetItem(ret, 0);
+            }
+            dbus_message_unref(reply);
+            return ret;
+        case DBUS_MESSAGE_TYPE_ERROR:
+            PyErr_SetString(PyExc_Exception, dbus_message_get_error_name(reply));
+            dbus_message_unref(reply);
+            return NULL;
+    }
+
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
 //! CSL method: notify(model, signal, message)

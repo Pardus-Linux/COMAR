@@ -77,6 +77,11 @@ INSTALL (PROGRAMS comar
          DESTINATION /usr/bin
          RENAME ${APP_NAME})
 
+# Install comar cli to /usr/bin/hav${APP_SUFFIX}
+INSTALL (PROGRAMS tools/hav.py
+         DESTINATION /usr/bin
+         RENAME hav${APP_SUFFIX})
+
 # Install model file under /etc/<app-name>/
 INSTALL (FILES etc/model.xml
          DESTINATION /etc/${APP_NAME})

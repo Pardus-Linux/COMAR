@@ -54,9 +54,12 @@ def is_on():
     except:
         pass
     config = loadConfig("/etc/conf.d/mudur")
-    services = config.get("services", "").split()
-    if script() in services:
+    services_on = config.get("services_on", "").split()
+    services_off = config.get("services_off", "").split()
+    if script() in services_on:
         state = "on"
+    if script() in services_off:
+        state = "off"
     return state
 
 def loadEnvironment():
@@ -398,14 +401,20 @@ def setState(state=None):
         fail("Unknown state '%s'" % state)
     
     config = loadConfig("/etc/conf.d/mudur")
-    services = set(config.get("services", "").split())
+    services_on = set(config.get("services_on", "").split())
+    services_off = set(config.get("services_off", "").split())
     
     if state == "on":
-        services.add(script())
-    elif script() in services:
-        services.remove(script())
+        services_on.add(script())
+        if script() in services_off:
+            services_off.remove(script())
+    else:
+        services_off.add(script())
+        if script() in services_on:
+            services_on.remove(script())
     
-    changed = False
+    changed_on = False
+    changed_off = False
     lines = []
     for line in file("/etc/conf.d/mudur"):
         try:
@@ -415,14 +424,19 @@ def setState(state=None):
             continue
         key = key.strip()
         value = value.strip()
-        if key == 'services':
-            lines.append('services = %s\n' % " ".join(services))
-            changed = True
+        if key == 'services_on':
+            lines.append('services_on="%s"\n' % " ".join(services_on))
+            changed_on = True
+        elif key == 'services_off':
+            lines.append('services_off="%s"\n' % " ".join(services_off))
+            changed_off = True
         else:
             lines.append(line)
     
-    if not changed:
-        lines.append('services = %s\n' % " ".join(services))
+    if not changed_on:
+        lines.append('services_on="%s"\n' % " ".join(services_on))
+    if not changed_off:
+        lines.append('services_off="%s"\n' % " ".join(services_off))
     
     file("/etc/conf.d/mudur", "w").write("".join(lines))
     

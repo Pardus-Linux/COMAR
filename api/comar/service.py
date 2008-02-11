@@ -48,18 +48,22 @@ def loadConfig(filename=None):
 
 def is_on():
     state = "off"
-    try:
-        from csl import serviceDefault
-        state = serviceDefault
-    except:
-        pass
-    config = loadConfig("/etc/conf.d/mudur")
-    services_on = config.get("services_on", "").split()
-    services_off = config.get("services_off", "").split()
-    if script() in services_on:
+    
+    def makeDir(_dir):
+        if not os.access(_dir, os.W_OK):
+            os.makedirs(_dir)
+    
+    makeDir("/etc/mudur/services/enabled")
+    makeDir("/etc/mudur/services/disabled")
+    makeDir("/etc/mudur/services/conditional")
+    
+    if os.access(os.path.join("/etc/mudur/services/enabled", script()), os.F_OK):
         state = "on"
-    if script() in services_off:
+    elif os.access(os.path.join("/etc/mudur/services/disabled", script()), os.F_OK):
         state = "off"
+    elif os.access(os.path.join("/etc/mudur/services/conditional", script()), os.F_OK):
+        state = "conditional"
+    
     return state
 
 def loadEnvironment():
@@ -400,44 +404,54 @@ def setState(state=None):
     if state != "on" and state != "off":
         fail("Unknown state '%s'" % state)
     
-    config = loadConfig("/etc/conf.d/mudur")
-    services_on = set(config.get("services_on", "").split())
-    services_off = set(config.get("services_off", "").split())
+    def makeDir(_dir):
+        if not os.access(_dir, os.W_OK):
+            os.makedirs(_dir)
+    
+    def touch(_file):
+        file(_file, "w").close()
+    
+    def remove(_file):
+        os.unlink(_file)
+    
+    makeDir("/etc/mudur/services/enabled")
+    makeDir("/etc/mudur/services/disabled")
+    makeDir("/etc/mudur/services/conditional")
     
     if state == "on":
-        services_on.add(script())
-        if script() in services_off:
-            services_off.remove(script())
+        touch(os.path.join("/etc/mudur/services/enabled", script()))
+        if os.access(os.path.join("/etc/mudur/services/disabled", script()), os.F_OK):
+            remove(os.path.join("/etc/mudur/services/disabled", script()))
+        if os.access(os.path.join("/etc/mudur/services/conditional", script()), os.F_OK):
+            remove(os.path.join("/etc/mudur/services/conditional", script()))
     else:
-        services_off.add(script())
-        if script() in services_on:
-            services_on.remove(script())
-    
-    changed_on = False
-    changed_off = False
-    lines = []
-    for line in file("/etc/conf.d/mudur"):
-        try:
-            key, value = line.split('=', 1)
-        except ValueError:
-            lines.append(line)
-            continue
-        key = key.strip()
-        value = value.strip()
-        if key == 'services_on':
-            lines.append('services_on="%s"\n' % " ".join(services_on))
-            changed_on = True
-        elif key == 'services_off':
-            lines.append('services_off="%s"\n' % " ".join(services_off))
-            changed_off = True
-        else:
-            lines.append(line)
-    
-    if not changed_on:
-        lines.append('services_on="%s"\n' % " ".join(services_on))
-    if not changed_off:
-        lines.append('services_off="%s"\n' % " ".join(services_off))
-    
-    file("/etc/conf.d/mudur", "w").write("".join(lines))
+        touch(os.path.join("/etc/mudur/services/disabled", script()))
+        if os.access(os.path.join("/etc/mudur/services/enabled", script()), os.F_OK):
+            remove(os.path.join("/etc/mudur/services/enabled", script()))
+        if os.access(os.path.join("/etc/mudur/services/conditional", script()), os.F_OK):
+            remove(os.path.join("/etc/mudur/services/conditional", script()))
     
     notify("System.Service", "Changed", (script(), state))
+
+def registerState():
+    def makeDir(_dir):
+        if not os.access(_dir, os.W_OK):
+            os.makedirs(_dir)
+    
+    def touch(_file):
+        file(_file, "w").close()
+    
+    makeDir("/etc/mudur/services/enabled")
+    makeDir("/etc/mudur/services/conditional")
+    
+    state = None
+    try:
+        from csl import serviceDefault
+        state = serviceDefault
+    except:
+        pass
+    
+    if state == "on":
+        touch(os.path.join("/etc/mudur/services/enabled", script()))
+    elif state == "conditional":
+        touch(os.path.join("/etc/mudur/services/conditional", script()))

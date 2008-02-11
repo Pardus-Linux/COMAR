@@ -386,6 +386,9 @@
             <arg name="state" type="s" direction="in"/>
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
+        <method name="registerState" access_label="set">
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
         <method name="info" access_label="get">
             <arg name="description" type="s" direction="out"/>
             <arg name="status" type="s" direction="out"/>

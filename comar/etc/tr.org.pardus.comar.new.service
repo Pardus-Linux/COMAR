@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=tr.org.pardus.comar.new
+Exec=/usr/bin/comar2 --busname=tr.org.pardus.comar.new
+User=root

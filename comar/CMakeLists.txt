@@ -95,6 +95,7 @@ INSTALL (FILES
 # Install comar service activation under /usr/share/dbus-1/system-services/
 INSTALL (FILES
          etc/tr.org.pardus.comar.service
+         etc/tr.org.pardus.comar.new.service
          DESTINATION /usr/share/dbus-1/system-services/)
 
 # Install PK policies

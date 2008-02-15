@@ -29,7 +29,11 @@ def synchronized(func):
     """
     class Handler:
         def handler(self, *args, **kwargs):
-            lock = FileLock("/var/run/comar-%s-%s.lock" % (script(), self.myfunc.__name__))
+            try:
+                os.makedirs("/var/lock/comar")
+            except OSError:
+                pass
+            lock = FileLock("/var/lock/comar/%s-%s" % (script(), self.myfunc.__name__))
             lock.lock()
             self.myfunc(*args, **kwargs)
             lock.unlock()

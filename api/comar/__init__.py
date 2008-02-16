@@ -9,4 +9,4 @@
 # option) any later version. Please read the COPYING file.
 #
 
-__version__ = '2.0'
+__version__ = '2.0_alpha1'

@@ -2,7 +2,7 @@ PROJECT (comar-dbus)
 
 # Application name
 SET (APP_NAME "comar")
-SET (APP_SUFFIX "2")
+SET (APP_SUFFIX "")
 
 # Version string
 SET (VERSION_MAJOR "2")
@@ -10,7 +10,7 @@ SET (VERSION_MINOR "0")
 SET (VERSION_PATCH "0")
 
 # Uncomment this for production releases.
-SET (VERSION_SUFFIX "svn")
+SET (VERSION_SUFFIX "alpha1")
 SET (FLAGS "-g -O0 -Werror -Wcast-align -Wno-uninitialized -Wall -fstrict-aliasing") # -fprofile-arcs -ftest-coverage")
 SET (CMAKE_C_FLAGS "${FLAGS}")
 

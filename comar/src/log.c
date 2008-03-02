@@ -28,7 +28,7 @@ timestamp(FILE *f)
     struct tm *bt;
 
     time(&t);
-    bt = gmtime(&t);
+    bt = localtime(&t);
     strftime(buf, 127, "%F %T ", bt);
     fputs(buf, f);
 }

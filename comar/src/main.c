@@ -59,13 +59,9 @@ main(int argc, char *argv[])
         exit(1);
     }
 
-    while (!shutdown_activated) {
-        // Listen for DBus calls
-        dbus_listen();
-        if (!shutdown_activated) {
-            log_info("DBus connection is lost. Waiting 5 seconds and trying again...\n");
-            sleep(5);
-        }
+    dbus_listen();
+    if (!shutdown_activated) {
+        log_info("DBus connection is lost.\n");
     }
 
     model_free();

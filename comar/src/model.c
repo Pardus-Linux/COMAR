@@ -134,7 +134,7 @@ model_lookup_interface(const char *iface)
     struct node *n;
     int val;
 
-    val = hash_string(iface, strlen(iface)) % TABLE_SIZE;
+    val = hash_string((unsigned char*) iface, strlen(iface)) % TABLE_SIZE;
     for (n = node_table[val]; n; n = n->next) {
         if (N_INTERFACE == n->type && strcmp(n->path, iface) == 0) {
             return n->no;
@@ -163,7 +163,7 @@ model_lookup_method(const char *iface, const char *method)
     snprintf(path, size, "%s.%s", iface, method);
     path[size - 1] = '\0';
 
-    val = hash_string(path, strlen(path)) % TABLE_SIZE;
+    val = hash_string((unsigned char*) path, strlen(path)) % TABLE_SIZE;
     for (n = node_table[val]; n; n = n->next) {
         if (N_METHOD == n->type && strcmp(n->path, path) == 0) {
             free(path);
@@ -204,7 +204,7 @@ model_lookup_signal(const char *iface, const char *signal)
     snprintf(path, size, "%s.%s", iface, signal);
     path[size - 1] = '\0';
 
-    val = hash_string(path, strlen(path)) % TABLE_SIZE;
+    val = hash_string((unsigned char*) path, strlen(path)) % TABLE_SIZE;
     for (n = node_table[val]; n; n = n->next) {
         if (N_SIGNAL == n->type && strcmp(n->path, path) == 0) {
             free(path);
@@ -239,7 +239,7 @@ add_node(int parent_no, const char *path, char *label, int type)
     n->no = model_nr_nodes++;
     n->access_label = label;
 
-    val = hash_string(path, len) % TABLE_SIZE;
+    val = hash_string((unsigned char*) path, len) % TABLE_SIZE;
     n->next = node_table[val];
     node_table[val] = n;
 

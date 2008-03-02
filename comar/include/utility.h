@@ -13,7 +13,7 @@ char *strsub(const char *str, int start, int end);
 char *strrep(const char *str, char old, char new);
 
 int check_file(const char *fname);
-unsigned char *load_file(const char *fname, int *sizeptr);
+char *load_file(const char *fname, int *sizeptr);
 int save_file(const char *fname, const char *buffer, size_t size);
 
 unsigned long time_diff(struct timeval *start, struct timeval *end);

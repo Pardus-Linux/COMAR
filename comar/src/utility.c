@@ -96,7 +96,7 @@ check_file(const char *fname)
 }
 
 //! Returns content of a file
-unsigned char *
+char *
 load_file(const char *fname, int *sizeptr)
 {
     /*!
@@ -110,7 +110,7 @@ load_file(const char *fname, int *sizeptr)
     FILE *f;
     struct stat fs;
     size_t size;
-    unsigned char *data;
+    char *data;
 
     if (stat(fname, &fs) != 0) return NULL;
     size = fs.st_size;

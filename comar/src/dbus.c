@@ -100,7 +100,7 @@ log_exception()
         return;
     }
 
-    eStr = PyString_AsString(PyObject_Str(pType));
+    eStr = PyString_AsString(PyObject_GetAttrString(pType, "__name__"));
 
     if (pValue) {
         PyObject *tmp;

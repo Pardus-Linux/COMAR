@@ -346,14 +346,14 @@
         </method>
     </interface>
     <interface name="Net.Filter">
-        <method name="setRule">
+        <method name="setRule" access_label="set">
             <arg name="rule" type="s" direction="in"/>
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
-        <method name="getRules">
+        <method name="getRules" access_label="get">
             <arg name="rules" type="as" direction="out"/>
         </method>
-        <method name="setProfile">
+        <method name="setProfile" access_label="set">
             <arg name="profile" type="s" direction="in"/>
             <arg name="save_filter" type="s" direction="in"/>
             <arg name="save_mangle" type="s" direction="in"/>
@@ -361,13 +361,20 @@
             <arg name="save_raw" type="s" direction="in"/>
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
-        <method name="getProfile">
+        <method name="getProfile" access_label="get">
             <arg name="profile" type="s" direction="out"/>
             <arg name="save_filter" type="s" direction="out"/>
             <arg name="save_mangle" type="s" direction="out"/>
             <arg name="save_nat" type="s" direction="out"/>
             <arg name="save_raw" type="s" direction="out"/>
         </method>
+        <signal name="ProfileChanged">
+            <arg name="profile" type="s"/>
+            <arg name="filter" type="s"/>
+            <arg name="mangle" type="s"/>
+            <arg name="nat" type="s"/>
+            <arg name="raw" type="s"/>
+        </signal>
     </interface>
     <interface name="System.Service">
         <method name="ready" access_label="set">

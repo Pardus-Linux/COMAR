@@ -397,6 +397,7 @@
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
         <method name="info" access_label="get">
+            <arg name="type" type="s" direction="out"/>
             <arg name="description" type="s" direction="out"/>
             <arg name="status" type="s" direction="out"/>
         </method>

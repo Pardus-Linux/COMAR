@@ -28,6 +28,7 @@ strsub(const char *str, int start, int end)
      * @end Where to end
      * @return Requested part
      */
+    char *new_src, *t;
 
     if (start < 0) {
         start = strlen(str) + start;
@@ -45,7 +46,6 @@ strsub(const char *str, int start, int end)
         end = strlen(str);
     }
 
-    char *new_src, *t;
     new_src = malloc(end - start + 2);
     for (t = (char *) str + start; t < str + end; t++) {
         new_src[t - (str + start)] = *t;

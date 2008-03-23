@@ -16,6 +16,7 @@
 #include <sys/file.h>
 #include <unistd.h>
 
+#include "data.h"
 #include "cfg.h"
 #include "log.h"
 #include "utility.h"
@@ -32,6 +33,7 @@ db_init(void)
 
     struct stat fs;
     size_t size;
+    char *code_dir;
 
     if (stat(cfg_data_dir, &fs) != 0) {
         if (0 != mkdir(cfg_data_dir, S_IRWXU)) {
@@ -46,7 +48,7 @@ db_init(void)
     }
 
     size = strlen(cfg_data_dir) + 6;
-    char *code_dir = malloc(size);
+    code_dir = malloc(size);
     if (!code_dir) return -3;
     snprintf(code_dir, size, "%s/code", cfg_data_dir);
     code_dir[size -1] = '\0';

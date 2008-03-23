@@ -11,8 +11,13 @@ SET (VERSION_PATCH "0")
 
 # Uncomment this for production releases.
 SET (VERSION_SUFFIX "alpha1")
-SET (FLAGS "-g -O0 -Werror -Wcast-align -Wno-uninitialized -Wall -fstrict-aliasing") # -fprofile-arcs -ftest-coverage")
+SET (FLAGS "-g -O0 -Werror -Wcast-align -Wno-uninitialized -Wall -fstrict-aliasing")
+
+# Uncomment this for gprof profiling
+# SET (FLAGS "-g -O0 -Werror -Wcast-align -Wno-uninitialized -Wall -fstrict-aliasing -fprofile-arcs -ftest-coverage")
 SET (CMAKE_C_FLAGS "${FLAGS}")
+# Uncomment this for sparse building
+# SET (CMAKE_C_COMPILER cgcc)
 
 # Append version suffix, if specified
 SET (VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})

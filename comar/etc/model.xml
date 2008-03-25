@@ -408,6 +408,7 @@
     </interface>
     <interface name="Xorg.Display">
         <method name="ready" access_label="set">
+            <arg name="boot" type="b" direction="in"/>
             <arg name="result" type="b" direction="out"/>
         </method>
         <method name="initialConfig" access_label="set">

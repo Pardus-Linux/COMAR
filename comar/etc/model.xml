@@ -29,6 +29,9 @@
             <arg name="application" type="s" direction="in"/>
             <arg name="models" type="as" direction="out"/>
         </method>
+        <method name="cancel">
+            <arg name="killed_jobs" type="i" direction="out"/>
+        </method>
     </interface>
     <interface name="Boot.Loader">
         <method name="listSystems" access_label="get">

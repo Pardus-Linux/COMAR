@@ -488,7 +488,9 @@ dbus_app_methods(const char *interface, const char *path, const char *method)
     }
     else {
         args = PyList_AsTuple(dbus_py_import(my_proc.bus_msg));
+        log_debug(LOG_ARGS, "Arguments: %s\n", PyString_AsString(PyObject_Repr(args)));
         ret = py_call_method(app, model, method, args, &result);
+        log_debug(LOG_ARGS, "Reply: %s\n", PyString_AsString(PyObject_Repr(result)));
 
         if (ret == 1) {
             log_error("Unable to find: %s (%s)\n", model, app);
@@ -507,6 +509,30 @@ dbus_app_methods(const char *interface, const char *path, const char *method)
     }
     free(app);
     free(model);
+}
+
+//! Cancels all running jobs of sender
+static void
+dbus_cancel()
+{
+    int i, count = 0;
+    log_debug(LOG_DBUS, "Cancel requested.\n");
+    for (i = 0; i < my_proc.nr_children; i++) {
+        if (dbus_message_has_sender(my_proc.children[i].bus_msg, dbus_message_get_sender(my_proc.bus_msg))) {
+            kill(my_proc.children[i].pid, SIGKILL);
+            count++;
+        }
+    }
+    log_debug(LOG_PROC, "%d processes killed.\n", count);
+
+    if (dbus_message_get_no_reply(my_proc.bus_msg)) return;
+
+    DBusMessage *reply;
+    DBusMessageIter iter;
+    reply = dbus_message_new_method_return(my_proc.bus_msg);
+    dbus_message_iter_init_append(reply, &iter);
+    dbus_message_iter_append_basic(&iter, DBUS_TYPE_INT32, &count);
+    dbus_send(reply);
 }
 
 //! Checks if sender is allowed to call specified method
@@ -617,12 +643,27 @@ filter_func(DBusConnection *conn, DBusMessage *msg, void *data)
 {
     const char *sender = dbus_message_get_sender(msg);
     const char *interface = dbus_message_get_interface(msg);
+    const char *path = dbus_message_get_path(msg);
     const char *method = dbus_message_get_member(msg);
 
     switch (dbus_message_get_type(msg)) {
         case DBUS_MESSAGE_TYPE_METHOD_CALL:
             log_debug(LOG_DBUS, "DBus method call [%s.%s] from [%s]\n", interface, method, sender);
-            proc_fork(dbus_method_call, "ComarJob", conn, msg);
+
+            // Attach message to process header
+            my_proc.bus_msg = msg;
+
+            if (!interface || !path || !method) {
+                dbus_reply_error("dbus", "missing", "Missing interface, path or method.");
+            }
+            else if (strncmp(interface, cfg_bus_interface, strlen(cfg_bus_interface)) == 0 &&
+                     strcmp(path, "/") == 0 && strcmp(interface, cfg_bus_interface) == 0 &&
+                     strcmp(method, "cancel") == 0) {
+                dbus_cancel();
+            }
+            else {
+                proc_fork(dbus_method_call, "ComarJob", conn, msg);
+            }
             break;
         case DBUS_MESSAGE_TYPE_SIGNAL:
             log_debug(LOG_DBUS, "DBus signal [%s.%s] from [%s]\n", interface, method, sender);
@@ -750,6 +791,9 @@ dbus_listen()
 
     unique_name = dbus_bus_get_unique_name(conn);
     log_info("Listening on %s (%s)...\n", cfg_bus_name, unique_name);
+
+    // Attach connection to process header
+    my_proc.bus_conn = conn;
 
     while (1) {
         struct pollfd fds[MAX_FDS];

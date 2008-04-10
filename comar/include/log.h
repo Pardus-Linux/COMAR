@@ -11,6 +11,7 @@
 #define LOG_PROC 2
 #define LOG_PLCY 4
 #define LOG_PERF 8
+#define LOG_ARGS 16
 #define LOG_FULL 0xffffffff
 
 int log_start(void);

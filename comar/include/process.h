@@ -13,6 +13,7 @@ struct ProcChild {
     int from;
     int to;
     pid_t pid;
+    DBusMessage *bus_msg;
     const char *desc;
 };
 

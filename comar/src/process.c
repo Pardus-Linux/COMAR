@@ -131,7 +131,7 @@ proc_init(int argc, char *argv[], const char *name)
 
 //! Appends child process' information to parent's info table
 static struct ProcChild *
-add_child(pid_t pid, int to, int from, const char *desc)
+add_child(pid_t pid, int to, int from, DBusMessage *bus_msg, const char *desc)
 {
     /*!
      * Appends child process' information to parent's info table.
@@ -139,6 +139,7 @@ add_child(pid_t pid, int to, int from, const char *desc)
      * @pid Process ID
      * @to Input FD
      * @from Output FD
+     * @bus_msg DBus message
      * @desc Process description
      * @return ProcChild node
      */
@@ -160,6 +161,7 @@ add_child(pid_t pid, int to, int from, const char *desc)
     my_proc.children[i].from = from;
     my_proc.children[i].to = to;
     my_proc.children[i].pid = pid;
+    my_proc.children[i].bus_msg = bus_msg;
     my_proc.children[i].desc = desc;
     ++my_proc.nr_children;
     return &my_proc.children[i];
@@ -324,7 +326,7 @@ proc_fork(void (*child_func)(void), const char *desc, DBusConnection *bus_conn, 
         // parent process continues
         close(fdw[0]);
         close(fdr[1]);
-        return add_child(pid, fdw[1], fdr[0], desc);
+        return add_child(pid, fdw[1], fdr[0], bus_msg, desc);
     }
 }
 

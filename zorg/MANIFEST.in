@@ -1,0 +1,3 @@
+recursive-include zorg/ddc *.h
+include data/*DB
+include COPYING README TODO

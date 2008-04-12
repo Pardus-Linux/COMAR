@@ -1,0 +1,27 @@
+
+What is zorg?
+-------------
+
+zorg consists of python scripts and modules which
+automate the configuration of Xorg.
+
+
+Requirements
+------------
+
+* libx86
+
+
+Installing & Running
+--------------------
+
+1. Apply the patch comar/model.xml.patch in /etc/comar
+2. Register Çomar script:
+
+    hav register Xorg.Display zorg comar/xorg.display.py
+
+3. Install:
+
+    ./setup.py install --install-lib=/usr/lib/pardus
+
+4. Run: zorg-cli

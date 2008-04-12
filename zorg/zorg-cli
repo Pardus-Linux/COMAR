@@ -1,0 +1,89 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 2005-2008 TUBITAK/UEKAE
+#
+# This program is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2 of the License, or (at your option)
+# any later version.
+#
+# Please read the COPYING file.
+
+import optparse
+import sys
+
+import dbus
+import zorg
+
+zorg_info = " Xorg AutoConfiguration tool"
+
+class ComarLink:
+    def __init__(self):
+        self.bus = None
+        self.iface = None
+
+    def __getattr__(self, method):
+        if not self.iface:
+            self._connect()
+
+        return getattr(self.iface, method)
+
+    def _connect(self):
+        self.bus = dbus.SystemBus()
+        object = self.bus.get_object("tr.org.pardus.comar", "/package/zorg", introspect=False)
+        self.iface = dbus.Interface(object, "tr.org.pardus.comar.Xorg.Display")
+
+link = ComarLink()
+
+def safe():
+    if link.safeConfig():
+        print "Initialized a safe configuration using VESA driver."
+    else:
+        print "Failed to create a safe configuration with VESA driver."
+
+def probe(opts):
+    if link.initialConfig():
+        print "Created an initial configuration for your video device."
+    else:
+        print "An error occured while creating an initial configuration."
+
+def setMode(opts):
+    pass
+
+def setDriver(driver):
+    pass
+
+if __name__ == "__main__":
+    parser = optparse.OptionParser(description = "%s version %s"
+                                    % (zorg_info, zorg.versionString()))
+
+    parser.add_option("-s", "--safe", action="store_true",
+        dest="safe", default=False,
+        help="setup VESA 800x600 config without probing hardware")
+
+    parser.add_option("-p", "--probe", action="store_true",
+        dest="probe", default=False,
+        help="force probing all devices, even if xorg.conf exists")
+
+    parser.add_option("-m", "--mode", action="store", type="string",
+        dest="mode", default=None,
+        help="use MODE given in form <width>x<height>[-<depth>] if supported")
+
+    parser.add_option("-d", "--driver", action="store", type="string",
+        dest="driver", default=None,
+        help="set video card driver to DRIVER")
+
+    opts, args = parser.parse_args()
+
+    if opts.safe:
+        safe()
+    elif opts.probe:
+        probe(opts)
+    elif opts.mode or opts.driver:
+        if opts.mode:
+            setMode(opts)
+        if opts.driver:
+            setDriver(opts.driver)
+    else:
+        parser.print_help()

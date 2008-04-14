@@ -37,6 +37,16 @@ ADD_DEFINITIONS (-D'VERSION="${VERSION}"'
                  -D'PID_FILE="/var/run/${APP_NAME}.pid"'
                  -D'LOG_FILE="/var/log/${APP_NAME}.log"')
 
+# Load CMAKE modules
+SET (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules/")
+
+# Check if system has PolicyKit
+# PK is not a required dependency in SVN builds.
+FIND_PACKAGE (PolicyKit REQUIRED)
+
+# Python
+FIND_PACKAGE(PythonLibs REQUIRED)
+
 # Set standard sources
 SET (SOURCES src/main.c
              src/cfg.c
@@ -52,24 +62,17 @@ SET (SOURCES src/main.c
              src/utility.c)
 
 # Set standard libraries
-SET (LIBS python2.4
+SET (LIBS ${PYTHON_LIBRARY}
           dbus-1
           polkit-dbus
           db)
 
 # Include standard headers
 INCLUDE_DIRECTORIES (include/
-                     /usr/include/python2.4
+                     ${PYTHON_INCLUDE_PATH}
                      /usr/include/dbus-1.0
                      /usr/lib/dbus-1.0/include
                      /usr/include/PolicyKit)
-
-# Load CMAKE modules
-SET (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules/")
-
-# Check if system has PolicyKit
-# PK is not a required dependency in SVN builds.
-FIND_PACKAGE (PolicyKit REQUIRED)
 
 # Compile comar from specified sources
 ADD_EXECUTABLE (comar ${SOURCES})

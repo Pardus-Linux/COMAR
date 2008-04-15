@@ -186,12 +186,20 @@ def getDeviceInfo(busId):
 
     activeOutputs = []
     modes = {}
-    for tag in activeConfigTag.tags("Output"):
-        name = tag.firstChild().data()
-        mode = tag.getAttribute("mode")
-        activeOutputs.append(name)
-        if mode:
-            modes[name] = mode
+
+    outputTag = activeConfigTag.getTag("Output")
+    name = outputTag.firstChild().data()
+    activeOutputs.append(name)
+    mode = outputTag.getAttribute("mode")
+    if mode:
+        modes[name] = mode
+
+    outputTag = activeConfigTag.getTag("SecondOutput")
+    name = outputTag.firstChild().data()
+    activeOutputs.append(name)
+    mode = outputTag.getAttribute("mode")
+    if mode:
+        modes[name] = mode
 
     device.desktop_setup = activeConfigTag.getTagData("DesktopSetup")
 

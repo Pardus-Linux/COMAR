@@ -450,4 +450,56 @@
             <arg name="options" type="ss" direction="out"/>
         </method>
     </interface>
+    <interface name="System.Manager">
+        <method name="installPackage" access_label="set">
+            <arg name="package" type="as" direction="in"/>
+        </method>
+        <method name="removePackage" access_label="set">
+            <arg name="package" type="as" direction="in"/>
+        </method>
+        <method name="updatePackage" access_label="set">
+            <arg name="package" type="as" direction="in"/>
+        </method>
+        <method name="updateRepository" access_label="set">
+            <arg name="repository" type="s" direction="in"/>
+        </method>
+        <method name="updateAllRepositories" access_label="set"/>
+        <method name="addRepository" access_label="set">
+            <arg name="name" type="s" direction="in"/>
+            <arg name="uri" type="s" direction="in"/>
+        </method>
+        <method name="removeRepository" access_label="set">
+            <arg name="repository" type="s" direction="in"/>
+        </method>
+        <method name="getInstalled" access_label="get">
+          <arg name="installed" type="as" direction="out"/>
+        </method>
+        <method name="getUpgradable" access_label="get">
+          <arg name="upgradable" type="as" direction="out"/>
+        </method>
+        <method name="getPackageInfo" access_label="get">
+          <arg name="info" type="s" direction="out"/>
+        </method>
+        <method name="getRepositories" access_label="get">
+          <arg name="repositories" type="as" direction="out"/>
+        </method>
+        <method name="setRepositories" access_label="set">
+          <arg name="repositories" type="as" direction="in"/>
+        </method>
+        <method name="setCache" access_label="set">
+          <arg name="enabled" type="b"/>
+          <arg name="limit" type="i"/>
+        </method>
+        <method name="clearCache" access_label="set">
+          <arg name="cacheDir" type="s"/>
+          <arg name="limit" type="i"/>
+        </method>
+        <signal name="progress"/>
+        <signal name="error"/>
+        <signal name="warning"/>
+        <signal name="info"/>
+        <signal name="notify"/>
+        <signal name="finished"/>
+        <signal name="updatingRepo"/>
+    </interface>
 </comarModel>

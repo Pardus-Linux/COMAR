@@ -151,7 +151,7 @@ class VideoDevice:
                 "default-modes":    "1024x768,800x600,640x480",
                 "flags":            "no-modes-line"
                 })
-            self.depth = 24
+            self.depth = "24"
             return
 
         self.probe_result = call(self.package, "Xorg.Driver", "probe", self.getDict())

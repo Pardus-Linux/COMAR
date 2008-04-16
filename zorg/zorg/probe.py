@@ -169,7 +169,7 @@ class VideoDevice:
 
             queryMonitor(self)
 
-        depthlist = self.probe_result["depths"].split(",")
+        depthlist = self.probe_result.get("depths", "16,24").split(",")
         self.depth = depthlist[0]
 
         #flags = self.probe_result["flags"].split(",")

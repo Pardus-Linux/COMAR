@@ -147,6 +147,7 @@ class VideoDevice:
 
         if self.vendor_id == "80ee" and self.product_id == "beef":  # VirtualBox Graphics Adapter
             self.probe_result.update({
+                "outputs":          "default",
                 "default-modes":    "1024x768,800x600,640x480",
                 "flags":            "no-modes-line"
                 })

@@ -10,7 +10,7 @@
 # Please read the COPYING file.
 #
 
-__version__ = "0.92"
+__version__ = "0.93"
 
 __all__ = ["config",
            "ddc",

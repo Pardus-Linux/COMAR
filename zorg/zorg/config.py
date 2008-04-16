@@ -195,11 +195,12 @@ def getDeviceInfo(busId):
         modes[name] = mode
 
     outputTag = activeConfigTag.getTag("SecondOutput")
-    name = outputTag.firstChild().data()
-    activeOutputs.append(name)
-    mode = outputTag.getAttribute("mode")
-    if mode:
-        modes[name] = mode
+    if outputTag:
+        name = outputTag.firstChild().data()
+        activeOutputs.append(name)
+        mode = outputTag.getAttribute("mode")
+        if mode:
+            modes[name] = mode
 
     device.desktop_setup = activeConfigTag.getTagData("DesktopSetup")
 

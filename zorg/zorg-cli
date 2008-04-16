@@ -11,7 +11,6 @@
 # Please read the COPYING file.
 
 import optparse
-import sys
 
 import dbus
 import zorg
@@ -74,6 +73,10 @@ if __name__ == "__main__":
         dest="driver", default=None,
         help="set video card driver to DRIVER")
 
+    parser.add_option("-k", "--keymap", action="store", type="string",
+        dest="keymap", default=None, metavar="LAYOUT[,VARIANT]",
+        help="changes keyboard map")
+
     opts, args = parser.parse_args()
 
     if opts.safe:
@@ -85,5 +88,8 @@ if __name__ == "__main__":
             setMode(opts)
         if opts.driver:
             setDriver(opts.driver)
+    elif opts.keymap:
+        layout, variant = opts.keymap.split(",", 1) if "," in opts.keymap else (opts.keymap, "")
+        link.setKeymap(layout, variant)
     else:
         parser.print_help()

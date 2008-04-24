@@ -490,7 +490,6 @@ dbus_app_methods(const char *interface, const char *path, const char *method)
         args = PyList_AsTuple(dbus_py_import(my_proc.bus_msg));
         log_debug(LOG_ARGS, "Arguments: %s\n", PyString_AsString(PyObject_Repr(args)));
         ret = py_call_method(app, model, method, args, &result);
-        log_debug(LOG_ARGS, "Reply: %s\n", PyString_AsString(PyObject_Repr(result)));
 
         if (ret == 1) {
             log_error("Unable to find: %s (%s)\n", model, app);
@@ -504,6 +503,7 @@ dbus_app_methods(const char *interface, const char *path, const char *method)
             dbus_reply_error("python", "missing", "Method is not defined in script.");
         }
         else {
+            log_debug(LOG_ARGS, "Reply: %s\n", PyString_AsString(PyObject_Repr(result)));
             dbus_reply_object(result);
         }
     }

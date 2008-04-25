@@ -16,5 +16,7 @@ setup(name="zorg",
                                         "zorg/ddc/vesamode.c"],
                                libraries=["x86"])],
       scripts = ["zorg-cli", "inf2mondb"],
-      data_files = [("/usr/lib/X11", ["data/DriversDB", "data/MonitorsDB"])]
+      data_files = [("/usr/lib/X11", ["data/DriversDB", "data/MonitorsDB"]),
+                    ("/sbin", ["zorg-loadmodule"]),
+                    ("/etc/modprobe.d", ["data/modprobe.d/zorg"])]
       )

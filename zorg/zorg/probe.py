@@ -96,7 +96,7 @@ class VideoDevice:
 
         return info
 
-    def query(self):
+    def chooseDriver(self):
         driverPackages = listDriverPackages()
 
         for line in loadFile(DriversDB):
@@ -137,6 +137,26 @@ class VideoDevice:
                         self.driverlist.append(self.driver)
 
                     print "Driver reported by X server is %s." % self.driver
+
+    def query(self, withDriver=None):
+        driverPackages = listDriverPackages()
+        self.package = "xorg-video"
+
+        if withDriver:
+            if ":" in withDriver:
+                drvname, drvpackage = withDriver.split(":", 1)
+                if drvpackage.replace("-", "_") in driverPackages:
+                    self.driver = drvname
+                    self.package = drvpackage
+
+            elif driverExists(withDriver):
+                self.driver = withDriver
+
+            else:
+                self.chooseDriver()
+
+        else:
+            self.chooseDriver()
 
         oldpackage = enabledPackage()
         if self.package != oldpackage:
@@ -474,10 +494,13 @@ def queryMonitor(device):
     if not result:
         result = queryDDC(1)
 
+    modes = []
     if result:
         monitor, modes = result
     else:
         monitor = Monitor()
+
+    if not modes:
         modes = ["800x600", "640x480"]
 
     # check lcd panel

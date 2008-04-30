@@ -123,7 +123,7 @@
         </defaults>
     </action>
 
-    <action id="tr.org.pardus.comar.system.manager.setCache">
+    <action id="tr.org.pardus.comar.system.manager.setcache">
         <description>Set pisi package cache</description>
         <message>System policy prevents setting pisi package cache.</message>
         <defaults>
@@ -133,7 +133,7 @@
         </defaults>
     </action>
 
-    <action id="tr.org.pardus.comar.system.manager.clearCache">
+    <action id="tr.org.pardus.comar.system.manager.clearcache">
         <description>Clear pisi caches</description>
         <message>System policy prevents clearing pisi package cache.</message>
         <defaults>

@@ -451,46 +451,46 @@
         </method>
     </interface>
     <interface name="System.Manager">
-        <method name="installPackage" access_label="set">
+        <method name="installPackage">
             <arg name="package" type="as" direction="in"/>
         </method>
-        <method name="removePackage" access_label="set">
+        <method name="removePackage">
             <arg name="package" type="as" direction="in"/>
         </method>
-        <method name="updatePackage" access_label="set">
+        <method name="updatePackage">
             <arg name="package" type="as" direction="in"/>
         </method>
-        <method name="updateRepository" access_label="set">
+        <method name="updateRepository">
             <arg name="repository" type="s" direction="in"/>
         </method>
-        <method name="updateAllRepositories" access_label="set"/>
-        <method name="addRepository" access_label="set">
+        <method name="updateAllRepositories"/>
+        <method name="addRepository">
             <arg name="name" type="s" direction="in"/>
             <arg name="uri" type="s" direction="in"/>
         </method>
-        <method name="removeRepository" access_label="set">
+        <method name="removeRepository">
             <arg name="repository" type="s" direction="in"/>
         </method>
-        <method name="getInstalled" access_label="get">
+        <method name="getInstalled">
           <arg name="installed" type="as" direction="out"/>
         </method>
-        <method name="getUpgradable" access_label="get">
+        <method name="getUpgradable">
           <arg name="upgradable" type="as" direction="out"/>
         </method>
-        <method name="getPackageInfo" access_label="get">
+        <method name="getPackageInfo">
           <arg name="info" type="s" direction="out"/>
         </method>
-        <method name="getRepositories" access_label="get">
+        <method name="getRepositories">
           <arg name="repositories" type="as" direction="out"/>
         </method>
-        <method name="setRepositories" access_label="set">
+        <method name="setRepositories">
           <arg name="repositories" type="as" direction="in"/>
         </method>
-        <method name="setCache" access_label="set">
+        <method name="setCache">
           <arg name="enabled" type="b"/>
           <arg name="limit" type="i"/>
         </method>
-        <method name="clearCache" access_label="set">
+        <method name="clearCache">
           <arg name="cacheDir" type="s"/>
           <arg name="limit" type="i"/>
         </method>

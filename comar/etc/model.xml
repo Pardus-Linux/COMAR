@@ -498,7 +498,7 @@
         <signal name="error"/>
         <signal name="warning"/>
         <signal name="info"/>
-        <signal name="notify"/>
+        <signal name="status"/>
         <signal name="finished"/>
         <signal name="updatingRepo"/>
     </interface>

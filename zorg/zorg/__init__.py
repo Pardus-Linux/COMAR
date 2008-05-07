@@ -13,6 +13,7 @@
 __version__ = "0.94"
 
 __all__ = ["config",
+           "consts",
            "ddc",
            "modeline",
            "parser",

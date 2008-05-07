@@ -4,13 +4,10 @@ import os
 
 import piksemel
 
+from zorg.consts import *
 from zorg.parser import *
 from zorg.probe import VideoDevice, Monitor
 from zorg.utils import atoi
-
-xorgConf = "/etc/X11/xorg.conf"
-zorgConfigDir = "/var/lib/zorg"
-zorgConfig = "config.xml"
 
 def saveXorgConfig(card):
     parser = XorgParser()
@@ -19,6 +16,8 @@ def saveXorgConfig(card):
     secdri = XorgSection("dri")
     secFiles = XorgSection("Files")
     secFlags = XorgSection("ServerFlags")
+    secKeyboard = XorgSection("InputDevice")
+    secMouse = XorgSection("InputDevice")
     secDevice = XorgSection("Device")
     secScr = XorgSection("Screen")
     secLay = XorgSection("ServerLayout")
@@ -28,9 +27,11 @@ def saveXorgConfig(card):
         secdri,
         secFiles,
         secFlags,
-        secLay,
+        secKeyboard,
+        secMouse,
+        secDevice,
         secScr,
-        secDevice
+        secLay
     ]
 
     extmod = XorgSection("extmod")
@@ -57,12 +58,27 @@ def saveXorgConfig(card):
         secFiles.add("FontPath", fontPath)
 
     secFlags.options = {
-        "AllowEmptyInput" : "true",
         "AllowMouseOpenFail" : "true",
         "BlankTime" : "0",
         "StandbyTime" : "0",
         "SuspendTime" : "0",
         "OffTime" : "0"
+    }
+
+    secKeyboard.set("Identifier", "Keyboard")
+    secKeyboard.set("Driver", "kbd")
+    xkb_layout, xkb_variant = getKeymap()
+    secKeyboard.options = {
+        "CoreKeyboard" :    "true",
+        "XkbModel" :        "pc105",
+        "XkbLayout" :       xkb_layout,
+        "XkbVariant" :      xkb_variant
+    }
+
+    secMouse.set("Identifier", "Mouse")
+    secMouse.set("Driver", "mouse")
+    secMouse.options = {
+        "CorePointer" :     "true",
     }
 
     info = card.getDict()
@@ -144,7 +160,7 @@ def getDeviceInfo(busId):
         drvname = tag.firstChild().data()
         drvpackage = tag.getAttribute("package")
         if drvpackage != "xorg-video":
-            drvname += ":%s" % drvpackage
+            drvname += package_sep + drvpackage
 
         drivers.append(drvname)
 
@@ -237,8 +253,8 @@ def saveDeviceInfo(card):
 
     drivers = cardTag.insertTag("Drivers")
     for driver in card.driverlist:
-        if ":" in driver:
-            drv, pkg = driver.split(":", 1)
+        if package_sep in driver:
+            drv, pkg = driver.split(package_sep, 1)
         else:
             drv = driver
             pkg = "xorg-video"
@@ -298,3 +314,64 @@ def saveDeviceInfo(card):
     f = file(configFile, "w")
     f.write(doc.toPrettyString())
     f.close()
+
+def getKeymap():
+    layout = None
+    variant = "basic"
+
+    configFile = os.path.join(zorgConfigDir, zorgConfig)
+
+    try:
+        doc = piksemel.parse(configFile)
+
+        keyboard = doc.getTag("Keyboard")
+        if keyboard:
+            layoutTag = keyboard.getTag("Layout")
+            if layoutTag:
+                layout = layoutTag.firstChild().data()
+
+            variantTag = keyboard.getTag("Variant")
+            if variantTag:
+                variant = variantTag.firstChild().data()
+
+    except OSError:
+        pass
+
+    if not layout:
+        from pardus.localedata import languages
+
+        try:
+            language = file("/etc/mudur/language").read().strip()
+        except IOError:
+            language = "en"
+
+        if not languages.has_key(language):
+            language = "en"
+
+        keymap = languages[language].keymaps[0]
+        layout = keymap.xkb_layout
+        variant = keymap.xkb_variant
+
+    return layout, variant
+
+def saveKeymap(layout, variant="basic"):
+    if not os.path.exists(zorgConfigDir):
+        os.mkdir(zorgConfigDir, 0755)
+
+    configFile = os.path.join(zorgConfigDir, zorgConfig)
+
+    try:
+        doc = piksemel.parse(configFile)
+    except OSError:
+        doc = piksemel.newDocument("ZORG")
+
+    keyboardTag = doc.getTag("Keyboard")
+
+    if keyboardTag:
+        keyboardTag.hide()
+
+    keyboardTag = doc.insertTag("Keyboard")
+    keyboardTag.insertTag("Layout").insertData(layout)
+    keyboardTag.insertTag("Variant").insertData(variant)
+
+    file(configFile, "w").write(doc.toPrettyString())

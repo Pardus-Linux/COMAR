@@ -14,6 +14,7 @@ import optparse
 
 import dbus
 import zorg
+from zorg.consts import package_sep
 
 zorg_info = " Xorg AutoConfiguration tool"
 
@@ -71,11 +72,11 @@ if __name__ == "__main__":
         help="use MODE given in form <width>x<height>[-<depth>] if supported")
 
     parser.add_option("-d", "--driver", action="store", type="string",
-        dest="driver", default=None, metavar="DRIVER[:PACKAGE]",
+        dest="driver", default=None, metavar="DRIVER[%sPACKAGE]" % package_sep,
         help="set video card driver to DRIVER")
 
     parser.add_option("-k", "--keymap", action="store", type="string",
-        dest="keymap", default=None, metavar="LAYOUT[,VARIANT]",
+        dest="keymap", default=None, metavar="LAYOUT[/VARIANT]",
         help="changes keyboard map")
 
     opts, args = parser.parse_args()
@@ -90,7 +91,7 @@ if __name__ == "__main__":
         if opts.mode:
             setMode(opts)
     elif opts.keymap:
-        layout, variant = opts.keymap.split(",", 1) if "," in opts.keymap else (opts.keymap, "")
-        link.setKeymap(layout, variant)
+        keymap = opts.keymap.split("/", 1)
+        link.setKeymap(*keymap)
     else:
         parser.print_help()

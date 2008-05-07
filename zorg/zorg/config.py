@@ -102,7 +102,7 @@ def saveXorgConfig(card):
     subsec = XorgSection("Display")
     subsec.set("Depth", atoi(card.depth))
 
-    if "no-modes-line" not in flags:
+    if "no-modes-line" not in flags or "randr12" not in flags:
         output = card.active_outputs[0]
         if card.modes.has_key(output):
             subsec.set("Modes", card.modes[output], "800x600", "640x480")

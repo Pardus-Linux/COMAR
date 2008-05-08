@@ -97,6 +97,7 @@ INSTALL (FILES etc/model.xml
 # Install comar system bus configuration under /etc/dbus-1/system.d/
 INSTALL (FILES
          etc/comar.conf
+         etc/comar2.conf
          DESTINATION /etc/dbus-1/system.d
          RENAME ${APP_NAME}.conf)
 

@@ -5,7 +5,9 @@
     <!-- Access Labels -->
     <action id="tr.org.pardus.comar.xorg.display.get">
         <description>Get display info</description>
-        <message>System policy prevents getting display info.</message>
+        <description xml:lang="tr">Görüntü bilgisini al</description>
+        <message>System policy prevents getting display info</message>
+        <message xml:lang="tr">Sistem politikası görüntü bilgisini almayı engeller</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>
@@ -15,7 +17,9 @@
 
     <action id="tr.org.pardus.comar.xorg.display.set">
         <description>Change display configuration</description>
-        <message>System policy prevents setting display configuration.</message>
+        <description xml:lang="tr">Görüntü yapılandırmasını değiştir</description>
+        <message>System policy prevents setting display configuration</message>
+        <message xml:lang="tr">Sistem politikası görüntü yapılandırmasını değiştirmeyi engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>

@@ -5,7 +5,9 @@
 
     <action id="tr.org.pardus.comar.user.manager.adduser">
         <description>Add user</description>
-        <message>System policy prevents adding new user.</message>
+        <description xml:lang="tr">Kullanıcı ekle</description>
+        <message>System policy prevents adding new user</message>
+        <message xml:lang="tr">Sistem politikası yeni kullanıcı eklemeyi engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -15,7 +17,9 @@
 
     <action id="tr.org.pardus.comar.user.manager.setuser">
         <description>Change user details</description>
-        <message>System policy prevents editing user details.</message>
+        <description xml:lang="tr">Kullanıcı bilgilerini değiştir</description>
+        <message>System policy prevents editing user details</message>
+        <message xml:lang="tr">Sistem politikası kullanıcı bilgilerini değiştirmeyi engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -25,7 +29,9 @@
 
     <action id="tr.org.pardus.comar.user.manager.deleteuser">
         <description>Delete user</description>
-        <message>System policy prevents removing user.</message>
+        <description xml:lang="tr">Kullanıcı sil</description>
+        <message>System policy prevents removing user</message>
+        <description xml:lang="tr">Sistem politikası kullanıcı silmeyi engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -35,7 +41,9 @@
 
     <action id="tr.org.pardus.comar.user.manager.addgroup">
         <description>Add group</description>
-        <message>System policy prevents adding new group.</message>
+        <description xml:lang="tr">Grup ekle</description>
+        <message>System policy prevents adding new group</message>
+        <message xml:lang="tr">Sistem politikası yeni grup eklemeyi engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -45,7 +53,9 @@
 
     <action id="tr.org.pardus.comar.user.manager.deletegroup">
         <description>Delete group</description>
-        <message>System policy prevents removing group.</message>
+        <description xml:lang="tr">Grup sil</description>
+        <message>System policy prevents removing group</message>
+        <message xml:lang="tr">Sistem politikası grup silmeyi engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -56,7 +66,9 @@
     <!-- Access Labels -->
     <action id="tr.org.pardus.comar.user.manager.get">
         <description>Get user/groups</description>
-        <message>System policy prevents getting user/group details.</message>
+        <description xml:lang="tr">Kullanıcı/grupları al</description>
+        <message>System policy prevents getting user/group details</message>
+        <message xml:lang="tr">Sistem politikası kullanıcı/grup detaylarını almayı engeller</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>

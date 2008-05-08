@@ -4,8 +4,10 @@
 <policyconfig>
 
     <action id="tr.org.pardus.comar.net.link.scanremote">
-        <description>Scan remote access points.</description>
-        <message>System policy prevents scanning remote access points.</message>
+        <description>Scan remote access points</description>
+        <description xml:lang="tr">Uzak erişim noktalarını tara</description>
+        <message>System policy prevents scanning remote access points</message>
+        <message xml:lang="tr">Sistem politikası uzak erişim noktalarını taramayı engeller</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>
@@ -14,8 +16,10 @@
     </action>
 
     <action id="tr.org.pardus.comar.net.link.deleteconnection">
-        <description>Delete connection.</description>
-        <message>System policy prevents removing connections.</message>
+        <description>Delete connection</description>
+        <description xml:lang="tr">Bağlantıyı sil</description>
+        <message>System policy prevents removing connections</message>
+        <message xml:lang="tr">Sistem politikası bağlantı silmeyi engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -24,8 +28,10 @@
     </action>
 
     <action id="tr.org.pardus.comar.net.link.setstate">
-        <description>Set connection state.</description>
-        <message>System policy prevents changing connection state.</message>
+        <description>Set connection state</description>
+        <description xml:lang="tr">Bağlantı durumunu değiştir</description>
+        <message>System policy prevents changing connection state</message>
+        <message xml:lang="tr">Sistem politikası bağlantı durumunu değiştirmeyi engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -35,8 +41,10 @@
 
     <!-- Access Labels -->
     <action id="tr.org.pardus.comar.net.link.set">
-        <description>Set connection details.</description>
-        <message>System policy prevents adding/editing connections.</message>
+        <description>Set connection details</description>
+        <description xml:lang="tr">Bağlantı detaylarını değiştir</description>
+        <message>System policy prevents adding/editing connections</message>
+        <message xml:lang="tr">Sistem politikası bağlantı eklemeyi/bağlantıda değişiklik yapmayı engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -46,7 +54,9 @@
 
     <action id="tr.org.pardus.comar.net.link.get">
         <description>Get connection/device details</description>
-        <message>System policy prevents getting connection/device details.</message>
+        <description xml:lang="tr">Bağlantı/aygıt detaylarını al</description>
+        <message>System policy prevents getting connection/device details</message>
+        <message xml:lang="tr">Sistem politikası bağlantı/aygıt detaylarını almayı engeller</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>

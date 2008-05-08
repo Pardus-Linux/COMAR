@@ -5,7 +5,9 @@
 
     <action id="tr.org.pardus.comar.register">
         <description>Register new scripts</description>
-        <message>System policy prevents registering scripts.</message>
+        <description xml:lang="tr>Yeni betikleri sisteme kaydet</description>
+        <message>System policy prevents registering scripts</message>
+        <message xml:lang="tr>Sistem politikası betiklerin sisteme kaydedilmesini engeller</message>
         <defaults>
             <allow_any>no</allow_any>
             <allow_active>no</allow_active>
@@ -15,7 +17,9 @@
 
     <action id="tr.org.pardus.comar.remove">
         <description>Remove application</description>
-        <message>System policy prevents removing applications.</message>
+        <description xml:lang="tr>Uygulama kaldır</description>
+        <message>System policy prevents removing applications</message>
+        <message xml:lang="tr>Sistem politikası uygulamaların kaldırılmasını engeller</message>
         <defaults>
             <allow_any>no</allow_any>
             <allow_active>no</allow_active>
@@ -25,7 +29,9 @@
 
     <action id="tr.org.pardus.comar.listapplications">
         <description>List applications</description>
-        <message>...</message>
+        <description xml:lang="tr>Uygulamaları listele</description>
+        <message>System policy prevents listing applications</message>
+        <message xml:lang="tr>Sistem politikaları uygulamaların listelenmesini engeller</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>
@@ -35,7 +41,9 @@
 
     <action id="tr.org.pardus.comar.listmodels">
         <description>List models</description>
-        <message>...</message>
+        <description xml:lang="tr>Modelleri listele</description>
+        <message>System policy prevents listing models</message>
+        <message xml:lang="tr>Sistem politikası modellerin listelenmesini engeller</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>
@@ -45,7 +53,9 @@
 
     <action id="tr.org.pardus.comar.listapplicationmodels">
         <description>List application models</description>
-        <message>...</message>
+        <description xml:lang="tr>Uygulama modellerini listele</description>
+        <message>System policy prevents listing application models</message>
+        <message xml:lang="tr>Sistem politikası uygulama modellerinin listelenmesini engeller</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>
@@ -55,7 +65,9 @@
 
     <action id="tr.org.pardus.comar.listmodelapplications">
         <description>List model applications</description>
-        <message>...</message>
+        <description xml:lang="tr>Model uygulamaları listele</description>
+        <message>System policy prevents listing model applications</message>
+        <message xml:lang="tr>Sistem politikası model uygulamaların listelenmesini engeller</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>

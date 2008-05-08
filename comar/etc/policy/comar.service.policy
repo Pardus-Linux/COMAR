@@ -4,16 +4,21 @@
 <policyconfig>
     <action id="tr.org.pardus.comar.system.service.set">
         <description>Change service state</description>
-        <message>System policy prevents changing service state.</message>
+        <description xml:lang="tr>Servis durumunu değiştir</description>
+        <message>System policy prevents changing service state</message>
+        <message xml:lang="tr>Sistem politikası servis durumunu değiştirmeyi engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
             <allow_inactive>auth_admin_keep_session</allow_inactive>
         </defaults>
     </action>
+
     <action id="tr.org.pardus.comar.system.service.get">
         <description>Get service status</description>
-        <message>System policy prevents getting service status.</message>
+        <description xml:lang="tr>Servis durumunu oku</description>
+        <message>System policy prevents getting service status</message>
+        <message xml:lang="tr>Sistem politikası servis durumunu okumayı engeller</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>

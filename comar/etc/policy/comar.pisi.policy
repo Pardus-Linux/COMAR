@@ -5,7 +5,9 @@
 
     <action id="tr.org.pardus.comar.system.manager.installpackage">
         <description>Install package</description>
-        <message>System policy prevents installing package.</message>
+        <description xml:lang="tr">Paket yükle</description>
+        <message>System policy prevents installing package</message>
+        <message xml:lang="tr">Sistem politikası paket yüklemeyi engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -15,7 +17,9 @@
 
     <action id="tr.org.pardus.comar.system.manager.removepackage">
         <description>Remove package</description>
-        <message>System policy prevents removing package.</message>
+        <description xml:lang="tr">Paket kaldır</description>
+        <message>System policy prevents removing package</message>
+        <message xml:lang="tr">Sistem politikası paket kaldırmayı engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -25,7 +29,9 @@
 
     <action id="tr.org.pardus.comar.system.manager.updatepackage">
         <description>Update package</description>
-        <message>System policy prevents updating package.</message>
+        <description xml:lang="tr">Paket güncelle</description>
+        <message>System policy prevents updating package</message>
+        <message xml:lang="tr">Sistem politikası paket güncellemeyi engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -35,7 +41,9 @@
 
     <action id="tr.org.pardus.comar.system.manager.updaterepository">
         <description>Update repository</description>
-        <message>System policy prevents updating repository.</message>
+        <description xml:lang="tr>Depo güncelle</description>
+        <message>System policy prevents updating repository</message>
+        <message xml:lang="tr>Sistem politikası depo güncellemeyi engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -45,7 +53,9 @@
 
     <action id="tr.org.pardus.comar.system.manager.updateallrepositories">
         <description>Update all repositories</description>
-        <message>System policy prevents updating repositories.</message>
+        <description xml:lang="tr>Tüm depoları güncelle</description>
+        <message>System policy prevents updating all repositories</message>
+        <message xml:lang="tr>Sistem politikası tüm depoları güncellemeyi engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -55,7 +65,9 @@
 
     <action id="tr.org.pardus.comar.system.manager.addrepository">
         <description>Add repository</description>
-        <message>System policy prevents adding repository.</message>
+        <description xml:lang="tr>Depo ekle</description>
+        <message>System policy prevents adding repository</message>
+        <message xml:lang="tr>Sistem politikası depo eklemeyi engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -65,7 +77,9 @@
 
     <action id="tr.org.pardus.comar.system.manager.removerepository">
         <description>Remove repository</description>
-        <message>System policy prevents removing repository.</message>
+        <description xml:lang="tr>Depo kaldır</description>
+        <message>System policy prevents removing repository</message>
+        <message>Sistem politikası depo kaldırmayı engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -75,7 +89,9 @@
 
     <action id="tr.org.pardus.comar.system.manager.getinstalled">
         <description>Get installed packages list</description>
-        <message>System policy prevents getting installed packages list.</message>
+        <description xml:lang="tr>Yüklü paket listesini al</description>
+        <message>System policy prevents getting installed packages list</message>
+        <message xml:lang="tr>Sistem politikası yüklü paketlerin listesini almayı engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -85,7 +101,9 @@
 
     <action id="tr.org.pardus.comar.system.manager.getupgradable">
         <description>Get upgradable packages list</description>
-        <message>System policy prevents getting upgradable packages list.</message>
+        <description xml:lang="tr>Güncellenebilir paket listesini al</description>
+        <message>System policy prevents getting upgradable packages list</message>
+        <message xml:lang="tr>Sistem politikası güncellenebilir paketlerin listesini almayı engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -95,7 +113,9 @@
 
     <action id="tr.org.pardus.comar.system.manager.getpackageinfo">
         <description>Get package info</description>
-        <message>System policy prevents getting package info.</message>
+        <description xml:lang="tr>Paket bilgisini al</description>
+        <message>System policy prevents getting package info</message>
+        <message xml:lang="tr>Sistem politikası paket bilgisini almayı engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -105,7 +125,9 @@
 
     <action id="tr.org.pardus.comar.system.manager.getrepositories">
         <description>Get repositories</description>
-        <message>System policy prevents getting repositories.</message>
+        <description xml:lang="tr>Depoları oku</description>
+        <message>System policy prevents getting repositories</message>
+        <message xml:lang="tr>Sistem politikası depoları almayı engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -115,7 +137,9 @@
 
     <action id="tr.org.pardus.comar.system.manager.setrepositories">
         <description>Set repositories</description>
-        <message>System policy prevents setting repositories.</message>
+        <description xml:lang="tr>Depoları yaz</description>
+        <message>System policy prevents setting repositories</message>
+        <message xml:lang="tr>Sistem politikası depoları yazmayı engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -124,8 +148,10 @@
     </action>
 
     <action id="tr.org.pardus.comar.system.manager.setcache">
-        <description>Set pisi package cache</description>
-        <message>System policy prevents setting pisi package cache.</message>
+        <description>Set PiSi package cache</description>
+        <description xml:lang="tr>PiSi paket önbelleğini yaz</description>
+        <message>System policy prevents setting PiSi package cache</message>
+        <message xml:lang="tr>Sistem politikası PiSi paket önbelleğini yazmayı engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -134,8 +160,10 @@
     </action>
 
     <action id="tr.org.pardus.comar.system.manager.clearcache">
-        <description>Clear pisi caches</description>
-        <message>System policy prevents clearing pisi package cache.</message>
+        <description>Clear PiSi cache</description>
+        <description xml:lang="tr>PiSi önbelleğini boşalt</description>
+        <message>System policy prevents clearing PiSi package cache</message>
+        <message xml:lang="tr>Sistem politikası PiSi paket önbelleğini boşaltmayı engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>

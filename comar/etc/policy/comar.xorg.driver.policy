@@ -4,7 +4,9 @@
 <policyconfig>
     <action id="tr.org.pardus.comar.xorg.driver.enable">
         <description>Enable driver</description>
-        <message>System policy prevents enabling driver.</message>
+        <description xml:lang="tr">Sürücü etkinleştir</description>
+        <message>System policy prevents enabling driver</message>
+        <message xml:lang="tr">Sistem politikası sürücü etkileştirmeyi engeller</message>
         <defaults>
             <allow_any>no</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -14,7 +16,9 @@
 
     <action id="tr.org.pardus.comar.xorg.driver.disable">
         <description>Disable driver</description>
-        <message>System policy prevents disabling driver.</message>
+        <description xml:lang="tr">Sürücü etkisiz kıl</description>
+        <message>System policy prevents disabling driver</message>
+        <message xml:lang="tr">Sistem politikası sürücü geçersiz kılmayı engeller</message>
         <defaults>
             <allow_any>no</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -24,7 +28,9 @@
 
     <action id="tr.org.pardus.comar.xorg.driver.probe">
         <description>Probe display</description>
-        <message>System policy prevents probing display.</message>
+        <description xml:lang="tr">Ekranı sorgula</description>
+        <message>System policy prevents probing display</message>
+        <message xml:lang="tr">Sistem politikası ekranı sorgulamayı engeller</message>
         <defaults>
             <allow_any>no</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>
@@ -34,7 +40,9 @@
 
     <action id="tr.org.pardus.comar.xorg.driver.getoptions">
         <description>Get driver options</description>
-        <message>System policy prevents getting driver options.</message>
+        <description xml:lang="tr">Sürücü seçeneklerini al</description>
+        <message>System policy prevents getting driver options</message>
+        <message xml:lang="tr">Sistem politikası sürücü seçeneklerini almayı engeller</message>
         <defaults>
             <allow_any>auth_admin_keep_session</allow_any>
             <allow_active>auth_admin_keep_session</allow_active>

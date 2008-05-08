@@ -98,8 +98,7 @@ INSTALL (FILES etc/model.xml
 INSTALL (FILES
          etc/comar.conf
          etc/comar2.conf
-         DESTINATION /etc/dbus-1/system.d
-         RENAME ${APP_NAME}.conf)
+         DESTINATION /etc/dbus-1/system.d)
 
 # Install comar service activation under /usr/share/dbus-1/system-services/
 INSTALL (FILES

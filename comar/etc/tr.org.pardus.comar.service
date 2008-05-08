@@ -1,4 +1,4 @@
 [D-BUS Service]
 Name=tr.org.pardus.comar
-Exec=/usr/bin/comar
+Exec=/usr/bin/comar --debug=all
 User=root

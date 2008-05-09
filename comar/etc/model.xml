@@ -213,7 +213,7 @@
             <arg name="groups" type="as" direction="out"/>
         </method>
         <method name="addUser">
-            <arg name="uid" type="s" direction="in"/>
+            <arg name="uid" type="i" direction="in"/>
             <arg name="name" type="s" direction="in"/>
             <arg name="realname" type="s" direction="in"/>
             <arg name="homedir" type="s" direction="in"/>

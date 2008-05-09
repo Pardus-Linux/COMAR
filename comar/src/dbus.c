@@ -519,7 +519,7 @@ dbus_cancel()
     log_debug(LOG_DBUS, "Cancel requested.\n");
     for (i = 0; i < my_proc.nr_children; i++) {
         if (dbus_message_has_sender(my_proc.children[i].bus_msg, dbus_message_get_sender(my_proc.bus_msg))) {
-            kill(my_proc.children[i].pid, SIGKILL);
+            kill(my_proc.children[i].pid, SIGINT);
             count++;
         }
     }

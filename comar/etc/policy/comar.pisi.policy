@@ -87,54 +87,6 @@
         </defaults>
     </action>
 
-    <action id="tr.org.pardus.comar.system.manager.getinstalled">
-        <description>Get installed packages list</description>
-        <description xml:lang="tr">Yüklü paket listesini al</description>
-        <message>System policy prevents getting installed packages list</message>
-        <message xml:lang="tr">Sistem politikası yüklü paketlerin listesini almayı engelliyor</message>
-        <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
-        </defaults>
-    </action>
-
-    <action id="tr.org.pardus.comar.system.manager.getupgradable">
-        <description>Get upgradable packages list</description>
-        <description xml:lang="tr">Güncellenebilir paket listesini al</description>
-        <message>System policy prevents getting upgradable packages list</message>
-        <message xml:lang="tr">Sistem politikası güncellenebilir paketlerin listesini almayı engelliyor</message>
-        <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
-        </defaults>
-    </action>
-
-    <action id="tr.org.pardus.comar.system.manager.getpackageinfo">
-        <description>Get package info</description>
-        <description xml:lang="tr">Paket bilgisini al</description>
-        <message>System policy prevents getting package info</message>
-        <message xml:lang="tr">Sistem politikası paket bilgisini almayı engelliyor</message>
-        <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
-        </defaults>
-    </action>
-
-    <action id="tr.org.pardus.comar.system.manager.getrepositories">
-        <description>Get repositories</description>
-        <description xml:lang="tr">Depoları oku</description>
-        <message>System policy prevents getting repositories</message>
-        <message xml:lang="tr">Sistem politikası depoları almayı engelliyor</message>
-        <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
-        </defaults>
-    </action>
-
     <action id="tr.org.pardus.comar.system.manager.setrepositories">
         <description>Set repositories</description>
         <description xml:lang="tr">Depoları yaz</description>

@@ -31,7 +31,7 @@
         <description>Delete user</description>
         <description xml:lang="tr">Kullanıcı sil</description>
         <message>System policy prevents removing user</message>
-        <description xml:lang="tr">Sistem politikası kullanıcı silmeyi engelliyor</message>
+        <description xml:lang="tr">Sistem politikası kullanıcı silmeyi engelliyor</description>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>

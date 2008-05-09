@@ -44,9 +44,6 @@ SET (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules/")
 # PK is not a required dependency in SVN builds.
 FIND_PACKAGE (PolicyKit REQUIRED)
 
-# Python
-FIND_PACKAGE(PythonLibs REQUIRED)
-
 # Set standard sources
 SET (SOURCES src/main.c
              src/cfg.c
@@ -62,14 +59,14 @@ SET (SOURCES src/main.c
              src/utility.c)
 
 # Set standard libraries
-SET (LIBS ${PYTHON_LIBRARY}
+SET (LIBS python2.5
           dbus-1
           polkit-dbus
           db)
 
 # Include standard headers
 INCLUDE_DIRECTORIES (include/
-                     ${PYTHON_INCLUDE_PATH}
+                     /usr/include/python2.5
                      /usr/include/dbus-1.0
                      /usr/lib/dbus-1.0/include
                      /usr/include/PolicyKit)

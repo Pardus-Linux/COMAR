@@ -7,7 +7,7 @@
         <description>Change firewall configuration</description>
         <description xml:lang="tr">Güvenlik duvarı yapılandırmasını değiştir</description>
         <message>System policy prevents changing firewall configuration</message>
-        <message xml:lang="tr">Sistem politikası güvenlik duvarı yapılandırmasını değiştirmeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası güvenlik duvarı yapılandırmasını değiştirmeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -19,7 +19,7 @@
         <description>View firewall configuration</description>
         <description xml:lang="tr">Güvenlik duvarı yapılandırmasına bak</description>
         <message>System policy prevents viewing firewall configuration</message>
-        <message xml:lang="tr">Sistem politikası güvenlik duvarı yapılandırmasına bakmayı engeller</message>
+        <message xml:lang="tr">Sistem politikası güvenlik duvarı yapılandırmasına bakmayı engelliyor</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>

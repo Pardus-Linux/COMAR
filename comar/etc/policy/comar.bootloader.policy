@@ -7,7 +7,7 @@
         <description>Update kernel release on specified partition</description>
         <description xml:lang="tr">Belirli disk bölümündeki çekirdek sürümünü güncelle</description>
         <message>System policy prevents updating kernel</message>
-        <message xml:lang="tr">Sistem politikası çekirdek güncellemeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası çekirdek güncellemeyi engelliyor</message>
         <defaults>
             <allow_any>no</allow_any>
             <allow_active>no</allow_active>
@@ -19,7 +19,7 @@
         <description>Remove entry from boot loader</description>
         <description xml:lang="tr">Önyükleyiciden girdi sil</description>
         <message>System policy prevents removing entry</message>
-        <message xml:lang="tr">Sistem politikası girdi silmeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası girdi silmeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -31,7 +31,7 @@
         <description>Remove unused kernel from system</description>
         <description xml:lang="tr">Sistemden kullanılmayan çekirdeği sil</description>
         <message>System policy prevents removing unused kernels</message>
-        <message xml:lang="tr">Sistem politikası kullanılmayan çekirdeği silmeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası kullanılmayan çekirdeği silmeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -44,7 +44,7 @@
         <description>Edit boot loader options and add new entries</description>
         <description xml:lang="tr">Önyükleyici seçeneklerini değiştir ve yeni girdiler ekle</description>
         <message>System policy prevents changing bootloader settings</message>
-        <message xml:lang="tr">Sistem politikası önyükleyici ayarlarını değiştirmeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası önyükleyici ayarlarını değiştirmeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -56,7 +56,7 @@
         <description>View boot loader options and list entries</description>
         <description xml:lang="tr">Önyükleyici seçeneklerine bak ve girdileri listele</description>
         <message>System policy prevents viewing bootloader settings</message>
-        <message xml:lang="tr">Sistem politikası önyükleyici ayarlarına bakmayı engeller</message>
+        <message xml:lang="tr">Sistem politikası önyükleyici ayarlarına bakmayı engelliyor</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>

@@ -7,7 +7,7 @@
         <description>Set module options</description>
         <description xml:lang="tr">Modül seçeneklerini değiştir</description>
         <message>System policy prevents setting module options</message>
-        <message xml:lang="tr">Sistem politikası modül seçeneklerini değiştirmeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası modül seçeneklerini değiştirmeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -19,7 +19,7 @@
         <description>Load kernel module</description>
         <description xml:lang="tr">Çekirdek modülünü etkinleştir</description>
         <message>System policy prevents loading kernel module</message>
-        <message xml:lang="tr">Sistem politikası çekirdek modülünü etkinleştirmeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası çekirdek modülünü etkinleştirmeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -31,7 +31,7 @@
         <description>Unload kernel module</description>
         <description xml:lang="tr">Çekirdek modülünü etkisiz kıl</description>
         <message>System policy prevents unloading kernel module</message>
-        <message xml:lang="tr">Sistem politikası çekirdek modülünü etkisiz kılmayı engeller</message>
+        <message xml:lang="tr">Sistem politikası çekirdek modülünü etkisiz kılmayı engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -43,7 +43,7 @@
         <description>Add autoloading kernel module</description>
         <description xml:lang="tr">Otomatik yüklenen çekirdek modülü ekle</description>
         <message>System policy prevents adding an autoloading kernel module</message>
-        <message xml:lang="tr">Sistem politikası otomatik yüklenen çekirdek modülü eklenmesini engeller</message>
+        <message xml:lang="tr">Sistem politikası otomatik yüklenen çekirdek modülü eklenmesini engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -55,7 +55,7 @@
         <description>Update module configuration</description>
         <description xml:lang="tr">Modül yapılandırmasını güncelle</description>
         <message>System policy prevents updating module configuration</message>
-        <message xml:lang="tr">Sistem politikası modül yapılandırmasını güncellemeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası modül yapılandırmasını güncellemeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -68,7 +68,7 @@
         <description>Get module information</description>
         <description xml:lang="tr">Modül bilgisini al</description>
         <message>System policy prevents getting module information</message>
-        <message xml:lang="tr">Sistem politikası modül bilgisini almayı engeller</message>
+        <message xml:lang="tr">Sistem politikası modül bilgisini almayı engelliyor</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>
@@ -80,7 +80,7 @@
         <description>Edit autoload list</description>
         <description xml:lang="tr">Otomatik yükleme listesini değiştir</description>
         <message>System policy prevents editing autoload list</message>
-        <message xml:lang="tr">Sistem politikası otomatik yükleme listesini değiştirmeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası otomatik yükleme listesini değiştirmeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -92,7 +92,7 @@
         <description>Edit module blacklist</description>
         <description xml:lang="tr">Modül karalistesini değiştir</description>
         <message>System policy prevents editing module blacklist</message>
-        <message xml:lang="tr">Sistem politikası modül karalistesini değiştirmeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası modül karalistesini değiştirmeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>

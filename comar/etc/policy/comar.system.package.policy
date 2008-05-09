@@ -7,7 +7,7 @@
         <description>Execute post-install script of a package</description>
         <description xml:lang="tr">Bir paketin yükleme sonrası betiğini çalıştır</description>
         <message>System policy prevents executing post-install script</message>
-        <message xml:lang="tr">Sistem politikası yükleme sonrası betiği çalıştırmayı engeller</message>
+        <message xml:lang="tr">Sistem politikası yükleme sonrası betiği çalıştırmayı engelliyor</message>
         <defaults>
             <allow_any>no</allow_any>
             <allow_inactive>no</allow_inactive>
@@ -19,7 +19,7 @@
         <description>Execute pre-remove script of a package</description>
         <description xml:lang="tr">Bir paketin kaldırma öncesi betiğini çalıştır</description>
         <message>System policy prevents executing pre-remove script</message>
-        <message xml:lang="tr">Sistem politikası kaldırma öncesi betiği çalıştırmayı engeller</message>
+        <message xml:lang="tr">Sistem politikası kaldırma öncesi betiği çalıştırmayı engelliyor</message>
         <defaults>
             <allow_any>no</allow_any>
             <allow_inactive>no</allow_inactive>

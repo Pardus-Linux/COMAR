@@ -7,7 +7,7 @@
         <description>Add user</description>
         <description xml:lang="tr">Kullanıcı ekle</description>
         <message>System policy prevents adding new user</message>
-        <message xml:lang="tr">Sistem politikası yeni kullanıcı eklemeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası yeni kullanıcı eklemeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -19,7 +19,7 @@
         <description>Change user details</description>
         <description xml:lang="tr">Kullanıcı bilgilerini değiştir</description>
         <message>System policy prevents editing user details</message>
-        <message xml:lang="tr">Sistem politikası kullanıcı bilgilerini değiştirmeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası kullanıcı bilgilerini değiştirmeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -31,7 +31,7 @@
         <description>Delete user</description>
         <description xml:lang="tr">Kullanıcı sil</description>
         <message>System policy prevents removing user</message>
-        <description xml:lang="tr">Sistem politikası kullanıcı silmeyi engeller</message>
+        <description xml:lang="tr">Sistem politikası kullanıcı silmeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -43,7 +43,7 @@
         <description>Add group</description>
         <description xml:lang="tr">Grup ekle</description>
         <message>System policy prevents adding new group</message>
-        <message xml:lang="tr">Sistem politikası yeni grup eklemeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası yeni grup eklemeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -55,7 +55,7 @@
         <description>Delete group</description>
         <description xml:lang="tr">Grup sil</description>
         <message>System policy prevents removing group</message>
-        <message xml:lang="tr">Sistem politikası grup silmeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası grup silmeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -68,7 +68,7 @@
         <description>Get user/groups</description>
         <description xml:lang="tr">Kullanıcı/grupları al</description>
         <message>System policy prevents getting user/group details</message>
-        <message xml:lang="tr">Sistem politikası kullanıcı/grup detaylarını almayı engeller</message>
+        <message xml:lang="tr">Sistem politikası kullanıcı/grup detaylarını almayı engelliyor</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>

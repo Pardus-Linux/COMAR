@@ -6,7 +6,7 @@
         <description>Change service state</description>
         <description xml:lang="tr">Servis durumunu değiştir</description>
         <message>System policy prevents changing service state</message>
-        <message xml:lang="tr">Sistem politikası servis durumunu değiştirmeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası servis durumunu değiştirmeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -18,7 +18,7 @@
         <description>Get service status</description>
         <description xml:lang="tr">Servis durumunu oku</description>
         <message>System policy prevents getting service status</message>
-        <message xml:lang="tr">Sistem politikası servis durumunu okumayı engeller</message>
+        <message xml:lang="tr">Sistem politikası servis durumunu okumayı engelliyor</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>

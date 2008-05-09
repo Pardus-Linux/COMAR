@@ -7,7 +7,7 @@
         <description>Execute package handler setup scripts</description>
         <description xml:lang="tr">Paket işleyicisi kurulum betiklerini çalıştır</description>
         <message>System policy prevents executing package handlers' setup scripts</message>
-        <message xml:lang="tr">Sistem politikası paket işleyicilerinin kurulum betiklerinin çalıştırılmasını engeller</message>
+        <message xml:lang="tr">Sistem politikası paket işleyicilerinin kurulum betiklerinin çalıştırılmasını engelliyor</message>
         <defaults>
             <allow_any>no</allow_any>
             <allow_inactive>no</allow_inactive>
@@ -19,7 +19,7 @@
         <description>Execute package handler cleanup scripts</description>
         <description xml:lang="tr">Paket işleyicisi temizlik betiklerini çalıştır</description>
         <message>System policy prevents executing package handlers' cleanup scripts</message>
-        <message xml:lang="tr">Sistem politikası paket işleyicilerinin temizlik betiklerininin çalıştırılmasını engeller</message>
+        <message xml:lang="tr">Sistem politikası paket işleyicilerinin temizlik betiklerininin çalıştırılmasını engelliyor</message>
         <defaults>
             <allow_any>no</allow_any>
             <allow_inactive>no</allow_inactive>

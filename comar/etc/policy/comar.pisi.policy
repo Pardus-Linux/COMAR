@@ -7,7 +7,7 @@
         <description>Install package</description>
         <description xml:lang="tr">Paket yükle</description>
         <message>System policy prevents installing package</message>
-        <message xml:lang="tr">Sistem politikası paket yüklemeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası paket yüklemeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -19,7 +19,7 @@
         <description>Remove package</description>
         <description xml:lang="tr">Paket kaldır</description>
         <message>System policy prevents removing package</message>
-        <message xml:lang="tr">Sistem politikası paket kaldırmayı engeller</message>
+        <message xml:lang="tr">Sistem politikası paket kaldırmayı engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -31,7 +31,7 @@
         <description>Update package</description>
         <description xml:lang="tr">Paket güncelle</description>
         <message>System policy prevents updating package</message>
-        <message xml:lang="tr">Sistem politikası paket güncellemeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası paket güncellemeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -43,7 +43,7 @@
         <description>Update repository</description>
         <description xml:lang="tr">Depo güncelle</description>
         <message>System policy prevents updating repository</message>
-        <message xml:lang="tr">Sistem politikası depo güncellemeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası depo güncellemeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -55,7 +55,7 @@
         <description>Update all repositories</description>
         <description xml:lang="tr">Tüm depoları güncelle</description>
         <message>System policy prevents updating all repositories</message>
-        <message xml:lang="tr">Sistem politikası tüm depoları güncellemeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası tüm depoları güncellemeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -67,7 +67,7 @@
         <description>Add repository</description>
         <description xml:lang="tr">Depo ekle</description>
         <message>System policy prevents adding repository</message>
-        <message xml:lang="tr">Sistem politikası depo eklemeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası depo eklemeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -79,7 +79,7 @@
         <description>Remove repository</description>
         <description xml:lang="tr">Depo kaldır</description>
         <message>System policy prevents removing repository</message>
-        <message>Sistem politikası depo kaldırmayı engeller</message>
+        <message>Sistem politikası depo kaldırmayı engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -91,7 +91,7 @@
         <description>Get installed packages list</description>
         <description xml:lang="tr">Yüklü paket listesini al</description>
         <message>System policy prevents getting installed packages list</message>
-        <message xml:lang="tr">Sistem politikası yüklü paketlerin listesini almayı engeller</message>
+        <message xml:lang="tr">Sistem politikası yüklü paketlerin listesini almayı engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -103,7 +103,7 @@
         <description>Get upgradable packages list</description>
         <description xml:lang="tr">Güncellenebilir paket listesini al</description>
         <message>System policy prevents getting upgradable packages list</message>
-        <message xml:lang="tr">Sistem politikası güncellenebilir paketlerin listesini almayı engeller</message>
+        <message xml:lang="tr">Sistem politikası güncellenebilir paketlerin listesini almayı engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -115,7 +115,7 @@
         <description>Get package info</description>
         <description xml:lang="tr">Paket bilgisini al</description>
         <message>System policy prevents getting package info</message>
-        <message xml:lang="tr">Sistem politikası paket bilgisini almayı engeller</message>
+        <message xml:lang="tr">Sistem politikası paket bilgisini almayı engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -127,7 +127,7 @@
         <description>Get repositories</description>
         <description xml:lang="tr">Depoları oku</description>
         <message>System policy prevents getting repositories</message>
-        <message xml:lang="tr">Sistem politikası depoları almayı engeller</message>
+        <message xml:lang="tr">Sistem politikası depoları almayı engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -139,7 +139,7 @@
         <description>Set repositories</description>
         <description xml:lang="tr">Depoları yaz</description>
         <message>System policy prevents setting repositories</message>
-        <message xml:lang="tr">Sistem politikası depoları yazmayı engeller</message>
+        <message xml:lang="tr">Sistem politikası depoları yazmayı engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -151,7 +151,7 @@
         <description>Set PiSi package cache</description>
         <description xml:lang="tr">PiSi paket önbelleğini yaz</description>
         <message>System policy prevents setting PiSi package cache</message>
-        <message xml:lang="tr">Sistem politikası PiSi paket önbelleğini yazmayı engeller</message>
+        <message xml:lang="tr">Sistem politikası PiSi paket önbelleğini yazmayı engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -163,7 +163,7 @@
         <description>Clear PiSi cache</description>
         <description xml:lang="tr">PiSi önbelleğini boşalt</description>
         <message>System policy prevents clearing PiSi package cache</message>
-        <message xml:lang="tr">Sistem politikası PiSi paket önbelleğini boşaltmayı engeller</message>
+        <message xml:lang="tr">Sistem politikası PiSi paket önbelleğini boşaltmayı engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>

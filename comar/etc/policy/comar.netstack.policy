@@ -8,7 +8,7 @@
         <description>Set hostname/nameserver info</description>
         <description xml:lang="tr">Makine adı/isim sunucu bilgisini değiştir</description>
         <message>System policy prevents changing host/nameserver information</message>
-        <message xml:lang="tr">Sistem politikası makine adı/isim sunucu bilgisini değiştirmeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası makine adı/isim sunucu bilgisini değiştirmeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -20,7 +20,7 @@
         <description>Get hostname/nameserver info</description>
         <description xml:lang="tr">Makine adı/isim sunucu bilgisini al</description>
         <message>System policy prevents getting host/nameserver info</message>
-        <message xml:lang="tr">Sistem politikası makine adı/isim sunucu bilgisini almayı engeller</message>
+        <message xml:lang="tr">Sistem politikası makine adı/isim sunucu bilgisini almayı engelliyor</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>

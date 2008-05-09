@@ -8,7 +8,7 @@
         <description>Set date/time</description>
         <description xml:lang="tr">Tarih/saat değiştir</description>
         <message>System policy prevents changing date/time</message>
-        <message xml:lang="tr">Sistem politikası tarihi/saati değiştirmeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası tarihi/saati değiştirmeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -20,7 +20,7 @@
         <description>Get date/time</description>
         <description xml:lang="tr">Tarih/saati oku</description>
         <message>System policy prevents getting date/time info</message>
-        <message xml:lang="tr">Sistem politikası tarih/saat bilgisini okumayı engeller</message>
+        <message xml:lang="tr">Sistem politikası tarih/saat bilgisini okumayı engelliyor</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>

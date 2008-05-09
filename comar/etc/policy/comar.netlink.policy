@@ -7,7 +7,7 @@
         <description>Scan remote access points</description>
         <description xml:lang="tr">Uzak erişim noktalarını tara</description>
         <message>System policy prevents scanning remote access points</message>
-        <message xml:lang="tr">Sistem politikası uzak erişim noktalarını taramayı engeller</message>
+        <message xml:lang="tr">Sistem politikası uzak erişim noktalarını taramayı engelliyor</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>
@@ -19,7 +19,7 @@
         <description>Delete connection</description>
         <description xml:lang="tr">Bağlantıyı sil</description>
         <message>System policy prevents removing connections</message>
-        <message xml:lang="tr">Sistem politikası bağlantı silmeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası bağlantı silmeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -31,7 +31,7 @@
         <description>Set connection state</description>
         <description xml:lang="tr">Bağlantı durumunu değiştir</description>
         <message>System policy prevents changing connection state</message>
-        <message xml:lang="tr">Sistem politikası bağlantı durumunu değiştirmeyi engeller</message>
+        <message xml:lang="tr">Sistem politikası bağlantı durumunu değiştirmeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -44,7 +44,7 @@
         <description>Set connection details</description>
         <description xml:lang="tr">Bağlantı detaylarını değiştir</description>
         <message>System policy prevents adding/editing connections</message>
-        <message xml:lang="tr">Sistem politikası bağlantı eklemeyi/bağlantıda değişiklik yapmayı engeller</message>
+        <message xml:lang="tr">Sistem politikası bağlantı eklemeyi/bağlantıda değişiklik yapmayı engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -56,7 +56,7 @@
         <description>Get connection/device details</description>
         <description xml:lang="tr">Bağlantı/aygıt detaylarını al</description>
         <message>System policy prevents getting connection/device details</message>
-        <message xml:lang="tr">Sistem politikası bağlantı/aygıt detaylarını almayı engeller</message>
+        <message xml:lang="tr">Sistem politikası bağlantı/aygıt detaylarını almayı engelliyor</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>

@@ -9,9 +9,9 @@
         <message>System policy prevents adding new user</message>
         <message xml:lang="tr">Sistem politikası yeni kullanıcı eklemeyi engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -21,9 +21,9 @@
         <message>System policy prevents editing user details</message>
         <message xml:lang="tr">Sistem politikası kullanıcı bilgilerini değiştirmeyi engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -33,9 +33,9 @@
         <message>System policy prevents removing user</message>
         <description xml:lang="tr">Sistem politikası kullanıcı silmeyi engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -45,9 +45,9 @@
         <message>System policy prevents adding new group</message>
         <message xml:lang="tr">Sistem politikası yeni grup eklemeyi engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -57,9 +57,9 @@
         <message>System policy prevents removing group</message>
         <message xml:lang="tr">Sistem politikası grup silmeyi engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 

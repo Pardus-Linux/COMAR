@@ -9,9 +9,9 @@
         <message>System policy prevents installing package</message>
         <message xml:lang="tr">Sistem politikası paket yüklemeyi engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -21,9 +21,9 @@
         <message>System policy prevents removing package</message>
         <message xml:lang="tr">Sistem politikası paket kaldırmayı engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -33,9 +33,9 @@
         <message>System policy prevents updating package</message>
         <message xml:lang="tr">Sistem politikası paket güncellemeyi engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -45,9 +45,9 @@
         <message>System policy prevents updating repository</message>
         <message xml:lang="tr">Sistem politikası depo güncellemeyi engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -57,9 +57,9 @@
         <message>System policy prevents updating all repositories</message>
         <message xml:lang="tr">Sistem politikası tüm depoları güncellemeyi engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -69,9 +69,9 @@
         <message>System policy prevents adding repository</message>
         <message xml:lang="tr">Sistem politikası depo eklemeyi engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -81,9 +81,9 @@
         <message>System policy prevents removing repository</message>
         <message>Sistem politikası depo kaldırmayı engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -93,9 +93,9 @@
         <message>System policy prevents getting installed packages list</message>
         <message xml:lang="tr">Sistem politikası yüklü paketlerin listesini almayı engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -105,9 +105,9 @@
         <message>System policy prevents getting upgradable packages list</message>
         <message xml:lang="tr">Sistem politikası güncellenebilir paketlerin listesini almayı engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -117,9 +117,9 @@
         <message>System policy prevents getting package info</message>
         <message xml:lang="tr">Sistem politikası paket bilgisini almayı engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -129,9 +129,9 @@
         <message>System policy prevents getting repositories</message>
         <message xml:lang="tr">Sistem politikası depoları almayı engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -141,9 +141,9 @@
         <message>System policy prevents setting repositories</message>
         <message xml:lang="tr">Sistem politikası depoları yazmayı engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -153,9 +153,9 @@
         <message>System policy prevents setting PiSi package cache</message>
         <message xml:lang="tr">Sistem politikası PiSi paket önbelleğini yazmayı engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -165,9 +165,9 @@
         <message>System policy prevents clearing PiSi package cache</message>
         <message xml:lang="tr">Sistem politikası PiSi paket önbelleğini boşaltmayı engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 

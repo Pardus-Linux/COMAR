@@ -10,9 +10,9 @@
         <message>System policy prevents changing date/time</message>
         <message xml:lang="tr">Sistem politikası tarihi/saati değiştirmeyi engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 

@@ -21,9 +21,9 @@
         <message>System policy prevents removing entry</message>
         <message xml:lang="tr">Sistem politikası girdi silmeyi engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -33,9 +33,9 @@
         <message>System policy prevents removing unused kernels</message>
         <message xml:lang="tr">Sistem politikası kullanılmayan çekirdeği silmeyi engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -46,9 +46,9 @@
         <message>System policy prevents changing bootloader settings</message>
         <message xml:lang="tr">Sistem politikası önyükleyici ayarlarını değiştirmeyi engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 

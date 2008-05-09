@@ -9,9 +9,9 @@
         <message>System policy prevents setting module options</message>
         <message xml:lang="tr">Sistem politikası modül seçeneklerini değiştirmeyi engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -21,9 +21,9 @@
         <message>System policy prevents loading kernel module</message>
         <message xml:lang="tr">Sistem politikası çekirdek modülünü etkinleştirmeyi engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -33,9 +33,9 @@
         <message>System policy prevents unloading kernel module</message>
         <message xml:lang="tr">Sistem politikası çekirdek modülünü etkisiz kılmayı engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -45,9 +45,9 @@
         <message>System policy prevents adding an autoloading kernel module</message>
         <message xml:lang="tr">Sistem politikası otomatik yüklenen çekirdek modülü eklenmesini engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -57,9 +57,9 @@
         <message>System policy prevents updating module configuration</message>
         <message xml:lang="tr">Sistem politikası modül yapılandırmasını güncellemeyi engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -82,9 +82,9 @@
         <message>System policy prevents editing autoload list</message>
         <message xml:lang="tr">Sistem politikası otomatik yükleme listesini değiştirmeyi engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 
@@ -94,9 +94,9 @@
         <message>System policy prevents editing module blacklist</message>
         <message xml:lang="tr">Sistem politikası modül karalistesini değiştirmeyi engeller</message>
         <defaults>
-            <allow_any>auth_admin_keep_session</allow_any>
-            <allow_active>auth_admin_keep_session</allow_active>
-            <allow_inactive>auth_admin_keep_session</allow_inactive>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
 </policyconfig>

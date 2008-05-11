@@ -488,6 +488,7 @@
         <signal name="info"/>
         <signal name="status"/>
         <signal name="finished"/>
+        <signal name="cancelled"/>
         <signal name="updatingRepo"/>
     </interface>
 </comarModel>

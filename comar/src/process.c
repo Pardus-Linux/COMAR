@@ -49,6 +49,7 @@ handle_signals(void)
 {
     struct sigaction act;
     struct sigaction ign;
+    struct sigaction dfl;
 
     act.sa_handler = handle_sigterm;
     /*! initialize and empty a signal set. Signals are to be blocked while executing handle_sigterm */
@@ -59,9 +60,13 @@ handle_signals(void)
     sigemptyset(&ign.sa_mask);
     ign.sa_flags = 0;
 
+    dfl.sa_handler = SIG_DFL;
+    sigemptyset(&dfl.sa_mask);
+    dfl.sa_flags = 0;
+
     sigaction(SIGTERM, &act, NULL);
-    sigaction(SIGINT, &act, NULL);
     sigaction(SIGPIPE, &ign, NULL);
+    sigaction(SIGINT, &dfl, NULL);
 }
 
 //! Sets process name

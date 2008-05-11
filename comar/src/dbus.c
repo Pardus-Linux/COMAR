@@ -554,21 +554,25 @@ dbus_policy_check(const char *sender, const char *interface, const char *method)
         switch (polkit_result) {
             case POLKIT_RESULT_YES:
             case POLKIT_RESULT_N_RESULTS:
+                dbus_signal("/", interface, "PolicyKit", PyString_FromString("policy_yes"));
                 return 1;
             case POLKIT_RESULT_UNKNOWN:
             case POLKIT_RESULT_NO:
+                dbus_signal("/", interface, "PolicyKit", PyString_FromString("policy_no"));
                 dbus_reply_error("policy", "no", "Access denied.");
                 return 0;
             case POLKIT_RESULT_ONLY_VIA_ADMIN_AUTH:
             case POLKIT_RESULT_ONLY_VIA_ADMIN_AUTH_KEEP_SESSION:
             case POLKIT_RESULT_ONLY_VIA_ADMIN_AUTH_KEEP_ALWAYS:
             case POLKIT_RESULT_ONLY_VIA_ADMIN_AUTH_ONE_SHOT:
+                dbus_signal("/", interface, "PolicyKit", PyString_FromString("policy_auth_admin"));
                 dbus_reply_error("policy", "auth_admin", "Access denied, but can be granted via admin auth.");
                 return 0;
             case POLKIT_RESULT_ONLY_VIA_SELF_AUTH:
             case POLKIT_RESULT_ONLY_VIA_SELF_AUTH_KEEP_SESSION:
             case POLKIT_RESULT_ONLY_VIA_SELF_AUTH_KEEP_ALWAYS:
             case POLKIT_RESULT_ONLY_VIA_SELF_AUTH_ONE_SHOT:
+                dbus_signal("/", interface, "PolicyKit", PyString_FromString("policy_auth_self"));
                 dbus_reply_error("policy", "auth_self", "Access denied, but can be granted via self auth.");
                 return 0;
         }

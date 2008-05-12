@@ -339,6 +339,7 @@ def XProbe(dev):
             "-config", "/tmp/xorg.conf", \
             "-logfile", "/var/log/xlog", \
             "-logverbose", "6")
+    unlink("/tmp/xorg.conf")
     if ret != 0:
         return
 

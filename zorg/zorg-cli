@@ -49,8 +49,8 @@ def probe(opts):
         print "An error occured while creating an initial configuration."
 
 def setDriver(driver):
-    bus = link.activeDeviceID()
-    link.changeDriver(bus, driver)
+    link.changeDriver(driver)
+    print "Your driver will be changed at next boot."
 
 def setMode(opts):
     pass

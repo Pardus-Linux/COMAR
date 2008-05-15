@@ -481,6 +481,10 @@
           <arg name="cacheDir" type="s"/>
           <arg name="limit" type="i"/>
         </method>
+        <method name="takeSnapshot"/>
+        <method name="takeBack">
+          <arg name="operation" type="i" direction="in"/>
+        </method>
         <signal name="progress"/>
         <signal name="error"/>
         <signal name="warning"/>
@@ -489,5 +493,7 @@
         <signal name="finished"/>
         <signal name="cancelled"/>
         <signal name="updatingRepo"/>
+        <signal name="takingSnapshot"/>
+        <signal name="takingBack"/>
     </interface>
 </comarModel>

@@ -110,8 +110,6 @@ class XorgSection:
 class XorgParser:
     def __init__(self):
         self.sections = []
-        self.screens = []
-        self.inputDevices = []
 
     def parseFile(self, filePath):
         section = None

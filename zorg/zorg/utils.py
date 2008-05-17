@@ -87,6 +87,27 @@ def sysValue(path, dir, _file):
     f.close()
     return data
 
+def idsQuery(vendor, device, idsFile="/usr/share/misc/pci.ids"):
+    f = file(idsFile)
+    flag = 0
+    company = "Unknown Company"
+    model = "Unknown Model"
+
+    for line in f.readlines():
+        if flag == 0:
+            if line.startswith(vendor):
+                flag = 1
+                company = line[5:].strip()
+        else:
+            if line.startswith("\t"):
+                if line.startswith("\t" + device):
+                    model = line[6:].strip()
+                    break
+            elif not line.startswith("#"):
+                flag = 0
+
+    return company, model
+
 def xisrunning():
     return os.path.exists(xorg_lock)
 

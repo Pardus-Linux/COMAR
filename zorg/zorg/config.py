@@ -7,7 +7,7 @@ import piksemel
 from zorg.consts import *
 from zorg.parser import *
 from zorg.probe import VideoDevice, Monitor
-from zorg.utils import atoi
+from zorg.utils import atoi, idsQuery
 
 def saveXorgConfig(card):
     parser = XorgParser()
@@ -83,11 +83,11 @@ def saveXorgConfig(card):
 
     info = card.getDict()
 
-    #secDevice.set("Screen", screenNumber)
     secDevice.set("Identifier", "VideoCard")
     secDevice.set("Driver", card.driver)
-    #secDevice.set("VendorName", dev.vendorName)
-    #secDevice.set("BoardName", dev.boardName)
+    vendorName, boardName = idsQuery(card.vendor_id, card.product_id)
+    secDevice.set("VendorName", vendorName)
+    secDevice.set("BoardName", boardName)
     secDevice.set("BusId", info["bus-id"])
     secDevice.options.update(card.driver_options)
 

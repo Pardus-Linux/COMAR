@@ -48,11 +48,12 @@ class VideoDevice:
             self.bus = tuple(int(x) for x in busId.split(":")[1:4])
             deviceDir = "0000:%02x:%02x.%x" % self.bus
 
-        self.vendor_id = lremove(pciInfo(deviceDir, "vendor"), "0x").lower()
+        self.vendor_id  = lremove(pciInfo(deviceDir, "vendor"), "0x").lower()
         self.product_id = lremove(pciInfo(deviceDir, "device"), "0x").lower()
+        self.saved_vendor_id  = None
+        self.saved_product_id = None
 
         self.driverlist = ["vesa"]
-        #self.depthlist = ["16", "24"]
         self.driver = "vesa"
         self.package = "xorg-video"
 
@@ -65,6 +66,13 @@ class VideoDevice:
 
         self.driver_options = {}
         self.monitors = {}
+
+        self._driver_packages = None
+
+    def _driverPackages(self):
+        if self._driver_packages is None:
+            self._driver_packages = listDriverPackages()
+        return self._driver_packages
 
     def getDict(self):
         info = {
@@ -84,8 +92,6 @@ class VideoDevice:
         return info
 
     def chooseDriver(self):
-        driverPackages = listDriverPackages()
-
         for line in loadFile(DriversDB):
             if line.startswith(self.vendor_id + self.product_id):
                 print "Device ID found in driver database."
@@ -95,7 +101,7 @@ class VideoDevice:
                 for drv in self.driverlist:
                     if package_sep in drv:
                         drvname, drvpackage = drv.split(package_sep, 1)
-                        if drvpackage.replace("-", "_") in driverPackages:
+                        if drvpackage.replace("-", "_") in self._driverPackages():
                             self.driver = drvname
                             self.package = drvpackage
                             break
@@ -126,13 +132,12 @@ class VideoDevice:
                     print "Driver reported by X server is %s." % self.driver
 
     def query(self, withDriver=None):
-        driverPackages = listDriverPackages()
         self.package = "xorg-video"
 
         if withDriver:
             if package_sep in withDriver:
                 drvname, drvpackage = withDriver.split(package_sep, 1)
-                if drvpackage.replace("-", "_") in driverPackages:
+                if drvpackage.replace("-", "_") in self._driverPackages():
                     self.driver = drvname
                     self.package = drvpackage
 
@@ -145,12 +150,7 @@ class VideoDevice:
         else:
             self.chooseDriver()
 
-        oldpackage = enabledPackage()
-        if self.package != oldpackage:
-            if oldpackage.replace("-", "_") in driverPackages:
-                call(oldpackage, "Xorg.Driver", "disable")
-
-            call(self.package, "Xorg.Driver", "enable")
+        self.enableDriver()
 
         if self.vendor_id == "80ee" and self.product_id == "beef":  # VirtualBox Graphics Adapter
             self.probe_result.update({
@@ -182,8 +182,21 @@ class VideoDevice:
 
         #flags = self.probe_result["flags"].split(",")
 
+    def enableDriver(self):
+        oldpackage = enabledPackage()
+        if self.package != oldpackage:
+            if oldpackage.replace("-", "_") in self._driverPackages():
+                call(oldpackage, "Xorg.Driver", "disable")
+
+            call(self.package, "Xorg.Driver", "enable")
+
     def requestDriverOptions(self):
         self.driver_options = call(self.package, "Xorg.Driver", "getOptions", self.getDict())
+
+    def isChanged(self):
+        if self.saved_vendor_id and self.saved_product_id:
+            return (self.vendor_id, self.product_id) != (self.saved_vendor_id, self.saved_product_id)
+        return False
 
 class Monitor:
     def __init__(self):

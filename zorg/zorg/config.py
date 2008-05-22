@@ -156,6 +156,9 @@ def getDeviceInfo(busId):
 
     device = VideoDevice(busId=busId)
 
+    device.saved_vendor_id  = cardTag.getTagData("VendorId")
+    device.saved_product_id = cardTag.getTagData("ProductId")
+
     driversTag = cardTag.getTag("Drivers")
     drivers = []
     for tag in driversTag.tags("Driver"):
@@ -250,8 +253,8 @@ def saveDeviceInfo(card):
     cardTag = doc.insertTag("Card")
     cardTag.setAttribute("busId", info["bus-id"])
 
-    #addTag(cardTag, "VendorId", card.vendor_id)
-    #addTag(cardTag, "ProductId", card.product_id)
+    addTag(cardTag, "VendorId", card.vendor_id)
+    addTag(cardTag, "ProductId", card.product_id)
 
     drivers = cardTag.insertTag("Drivers")
     for driver in card.driverlist:

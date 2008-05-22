@@ -7,7 +7,7 @@ import piksemel
 from zorg.consts import *
 from zorg.parser import *
 from zorg.probe import VideoDevice, Monitor
-from zorg.utils import atoi, idsQuery
+from zorg.utils import atoi, backup, idsQuery
 
 def saveXorgConfig(card):
     parser = XorgParser()
@@ -127,6 +127,8 @@ def saveXorgConfig(card):
 
     secLay.set("Identifier", "Layout")
     secLay.set("Screen", "Screen")
+
+    backup(xorgConf)
 
     f = open(xorgConf, "w")
     f.write(parser.toString())

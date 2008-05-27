@@ -498,11 +498,11 @@
     </interface>
     <interface name="Disk.Manager">
         <method name="getDevices" access_label="get"/>
-        <method name="getDeviceByLabel" access_label="get"/>
+        <method name="getDeviceByLabel" access_label="get">
             <arg name="label" type="s" direction="in"/>
             <arg name="device" type="s" direction="out"/>
         </method>
-        <method name="getDeviceParts" access_label="get"/>
+        <method name="getDeviceParts" access_label="get">
             <arg name="device" type="s" direction="in"/>
             <arg name="parts" type="as" direction="out"/>
         </method>

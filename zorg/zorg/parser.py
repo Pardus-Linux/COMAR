@@ -88,12 +88,12 @@ class XorgSection:
     def getSections(self, *names):
         return tuple(x for x in self.sections if x.name in names)
 
-    def get(self, key, index = 0, *defaults):
+    def get(self, key, index = 0, default = None):
         entry = self.entry(key)
         if entry:
             return entry.values[index]
         else:
-            return defaults
+            return default
 
     def set(self, key, *values):
         entry = self.entry(key)

@@ -408,6 +408,18 @@
 1002940a fglrx/ati-drivers radeon radeonhd
 1002940b fglrx/ati-drivers radeon radeonhd
 1002940f fglrx/ati-drivers radeon radeonhd
+10029440 fglrx/ati-drivers
+10029442 fglrx/ati-drivers
+10029446 fglrx/ati-drivers
+1002944a fglrx/ati-drivers
+1002944b fglrx/ati-drivers
+1002944e fglrx/ati-drivers
+1002945a fglrx/ati-drivers
+1002945b fglrx/ati-drivers
+1002946a fglrx/ati-drivers
+1002946b fglrx/ati-drivers
+1002947a fglrx/ati-drivers
+1002947b fglrx/ati-drivers
 100294c0 fglrx/ati-drivers radeon radeonhd
 100294c1 fglrx/ati-drivers radeon radeonhd
 100294c3 fglrx/ati-drivers radeonhd radeon
@@ -430,6 +442,8 @@
 1002950f radeonhd
 10029511 fglrx/ati-drivers radeon radeonhd
 10029515 fglrx/ati-drivers radeon
+10029517 fglrx/ati-drivers
+10029519 fglrx/ati-drivers
 10029580 fglrx/ati-drivers radeon radeonhd
 10029581 fglrx/ati-drivers radeon radeonhd
 10029583 fglrx/ati-drivers radeon radeonhd

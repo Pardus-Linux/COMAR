@@ -159,16 +159,6 @@ def getDeviceInfo(busId):
     device.saved_vendor_id  = cardTag.getTagData("VendorId")
     device.saved_product_id = cardTag.getTagData("ProductId")
 
-    driversTag = cardTag.getTag("Drivers")
-    drivers = []
-    for tag in driversTag.tags("Driver"):
-        drvname = tag.firstChild().data()
-        drvpackage = tag.getAttribute("package")
-        if drvpackage != "xorg-video":
-            drvname += package_sep + drvpackage
-
-        drivers.append(drvname)
-
     probeResultTag = cardTag.getTag("ProbeResult")
     probeResult = {}
     for tag in probeResultTag.tags("Value"):
@@ -225,7 +215,6 @@ def getDeviceInfo(busId):
 
     device.desktop_setup = activeConfigTag.getTagData("DesktopSetup")
 
-    device.driverlist = drivers
     device.probe_result = probeResult
     device.active_outputs = activeOutputs
     device.modes = modes
@@ -255,18 +244,6 @@ def saveDeviceInfo(card):
 
     addTag(cardTag, "VendorId", card.vendor_id)
     addTag(cardTag, "ProductId", card.product_id)
-
-    drivers = cardTag.insertTag("Drivers")
-    for driver in card.driverlist:
-        if package_sep in driver:
-            drv, pkg = driver.split(package_sep, 1)
-        else:
-            drv = driver
-            pkg = "xorg-video"
-
-        d = drivers.insertTag("Driver")
-        d.setAttribute("package", pkg)
-        d.insertData(drv)
 
     probeResult = cardTag.insertTag("ProbeResult")
     for key, value in card.probe_result.items():

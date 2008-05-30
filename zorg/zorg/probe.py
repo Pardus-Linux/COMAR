@@ -53,7 +53,6 @@ class VideoDevice:
         self.saved_vendor_id  = None
         self.saved_product_id = None
 
-        self.driverlist = ["vesa"]
         self.driver = "vesa"
         self.package = "xorg-video"
 
@@ -96,9 +95,9 @@ class VideoDevice:
             if line.startswith(self.vendor_id + self.product_id):
                 print "Device ID found in driver database."
 
-                self.driverlist = line.rstrip("\n").split(" ")[1:]
+                driverlist = line.rstrip("\n").split(" ")[1:]
 
-                for drv in self.driverlist:
+                for drv in driverlist:
                     if package_sep in drv:
                         drvname, drvpackage = drv.split(package_sep, 1)
                         if drvpackage.replace("-", "_") in self._driverPackages():
@@ -126,8 +125,6 @@ class VideoDevice:
                 sec = p.getSections("Device")
                 if sec:
                     self.driver = sec[0].get("Driver")
-                    if self.driver not in self.driverlist:
-                        self.driverlist.append(self.driver)
 
                     print "Driver reported by X server is %s." % self.driver
 

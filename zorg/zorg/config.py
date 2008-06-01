@@ -189,7 +189,7 @@ def getDeviceInfo(busId):
 
     def addMonitor(output, tag):
         mon = Monitor()
-        mon.vendor = tag.getTagData("Vendor")
+        mon.vendor = tag.getTagData("Vendor") or ""
         mon.model  = tag.getTagData("Model")
         mon.hsync  = tag.getTagData("HorizSync")
         mon.vref   = tag.getTagData("VertRefresh")

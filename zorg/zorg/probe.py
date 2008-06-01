@@ -197,7 +197,6 @@ class VideoDevice:
 
 class Monitor:
     def __init__(self):
-        self.eisaid = ""
         self.vendor = ""
         self.model = "Default Monitor"
         self.hsync = "31.5-50"
@@ -420,7 +419,7 @@ def queryDDC(adapter=0):
                 break
 
     mon = Monitor()
-    mon.eisaid = edid.get("eisa_id", "")
+    mon.model = detailed.get("name", "Auto-detected Monitor")
     mon.hsync = "%s-%s" % (hsync_min, hsync_max)
     mon.vref  = "%s-%s" % (vref_min,  vref_max )
 

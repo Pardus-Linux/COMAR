@@ -10,14 +10,13 @@ Legend:
 
 
 Çomar Methods:
- - configuration setup on boot
-   - check config files
-   - check hardware changes
-   - read kernel options (xorg=...)
-   - force auto-probe if requested (e.g. with an option from GUI)
+ / configuration setup on boot
+   + check config files
+   + check hardware changes
+   + read kernel options (xorg=...)
+   + do pending jobs
    ? compatibility check between kernel and xorg driver versions (e.g. nvidia-kernel and nvidia-glx issue)
 
- - method access attributes
  - i18n support
  - DPI setup
  - INF file installation
@@ -26,10 +25,8 @@ Legend:
  - improve debug stuff (maybe a log file)
 
 Modules:
- - setup opengl headers
  - try to get preferred resolution and use it by default
  - parser to get monitor vendor/model list
- - expand vendor name from EISA ID (e.g. SAM0101 -> Samsung)
 
 Command Line Tool:
  - test option

@@ -170,23 +170,6 @@ def getDeviceInfo(busId):
             value = ""
         probeResult[key] = value
 
-    monitorsTag = cardTag.getTag("Monitors")
-    for tag in monitorsTag.tags("Monitor"):
-        mon = Monitor()
-        mon.eisaid = tag.getAttribute("id")
-        output = tag.getAttribute("output")
-        device.monitors[output] = mon
-
-        hsync = tag.getTag("HorizSync")
-        min = hsync.getAttribute("min")
-        max = hsync.getAttribute("max")
-        mon.hsync = "%s-%s" % (min, max)
-
-        vref = tag.getTag("VertRefresh")
-        min = vref.getAttribute("min")
-        max = vref.getAttribute("max")
-        mon.vref = "%s-%s" % (min, max)
-
     activeConfigTag = cardTag.getTag("ActiveConfig")
 
     driverTag = activeConfigTag.getTag("Driver")
@@ -198,12 +181,24 @@ def getDeviceInfo(busId):
     activeOutputs = []
     modes = {}
 
+    def addMonitor(output, tag):
+        mon = Monitor()
+        mon.vendor = tag.getTagData("Vendor")
+        mon.model  = tag.getTagData("Model")
+        mon.hsync  = tag.getTagData("HorizSync")
+        mon.vref   = tag.getTagData("VertRefresh")
+        device.monitors[output] = mon
+
     outputTag = activeConfigTag.getTag("Output")
     name = outputTag.firstChild().data()
     activeOutputs.append(name)
     mode = outputTag.getAttribute("mode")
     if mode:
         modes[name] = mode
+
+    monitorTag = activeConfigTag.getTag("Monitor")
+    if monitorTag:
+        addMonitor(name, monitorTag)
 
     outputTag = activeConfigTag.getTag("SecondOutput")
     if outputTag:
@@ -212,6 +207,10 @@ def getDeviceInfo(busId):
         mode = outputTag.getAttribute("mode")
         if mode:
             modes[name] = mode
+
+        monitorTag = activeConfigTag.getTag("SecondMonitor")
+        if monitorTag:
+            addMonitor(name, monitorTag)
 
     device.desktop_setup = activeConfigTag.getTagData("DesktopSetup")
 
@@ -252,22 +251,6 @@ def saveDeviceInfo(card):
         if value:
             t.insertData(value)
 
-    monitors = cardTag.insertTag("Monitors")
-    for output, monitor in card.monitors.items():
-        monitorTag = monitors.insertTag("Monitor")
-        monitorTag.setAttribute("id", monitor.eisaid)
-        monitorTag.setAttribute("output", output)
-
-        min, max = monitor.hsync.split("-")
-        hor = monitorTag.insertTag("HorizSync")
-        hor.setAttribute("min", min)
-        hor.setAttribute("max", max)
-
-        min, max = monitor.vref.split("-")
-        ver = monitorTag.insertTag("VertRefresh")
-        ver.setAttribute("min", min)
-        ver.setAttribute("max", max)
-
     config = cardTag.insertTag("ActiveConfig")
 
     driver = config.insertTag("Driver")
@@ -275,6 +258,15 @@ def saveDeviceInfo(card):
     driver.insertData(card.driver)
 
     addTag(config, "Depth", card.depth)
+    addTag(config, "DesktopSetup", card.desktop_setup)
+
+    def addMonitor(output, tagName):
+        mon = card.monitors[output]
+        monitor = config.insertTag(tagName)
+        monitor.insertTag("Vendor").insertData(mon.vendor)
+        monitor.insertTag("Model" ).insertData(mon.model )
+        monitor.insertTag("HorizSync"  ).insertData(mon.hsync)
+        monitor.insertTag("VertRefresh").insertData(mon.vref)
 
     outName = card.active_outputs[0]
     outMode = card.modes.get(outName)
@@ -283,7 +275,8 @@ def saveDeviceInfo(card):
         output.setAttribute("mode", outMode)
     output.insertData(outName)
 
-    addTag(config, "DesktopSetup", card.desktop_setup)
+    if card.monitors.has_key(outName):
+        addMonitor(outName, "Monitor")
 
     if card.desktop_setup != "single":
         outName = card.active_outputs[1]
@@ -292,6 +285,9 @@ def saveDeviceInfo(card):
         if outMode:
             output.setAttribute("mode", outMode)
         output.insertData(outName)
+
+        if card.monitors.has_key(outName):
+            addMonitor(outName, "SecondMonitor")
 
     f = file(configFile, "w")
     f.write(doc.toPrettyString())

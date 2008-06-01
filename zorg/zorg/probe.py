@@ -85,8 +85,8 @@ class VideoDevice:
         for output, mode in self.modes.items():
             info["%s-mode" % output] = mode
             if self.monitors.has_key(output):
-                info["%s-hsync" % output] = "-".join(self.monitors[output].hsync)
-                info["%s-vref" % output] = "-".join(self.monitors[output].vref)
+                info["%s-hsync" % output] = self.monitors[output].hsync
+                info["%s-vref"  % output] = self.monitors[output].vref
 
         return info
 
@@ -198,8 +198,10 @@ class VideoDevice:
 class Monitor:
     def __init__(self):
         self.eisaid = ""
-        self.hsync = ("31.5", "50")
-        self.vref = ("50", "70")
+        self.vendor = ""
+        self.model = "Default Monitor"
+        self.hsync = "31.5-50"
+        self.vref = "50-70"
 
 def pciInfo(dev, attr):
     return sysValue(sysdir, dev, attr)
@@ -419,8 +421,8 @@ def queryDDC(adapter=0):
 
     mon = Monitor()
     mon.eisaid = edid.get("eisa_id", "")
-    mon.hsync = (str(hsync_min), str(hsync_max))
-    mon.vref = (str(vref_min), str(vref_max))
+    mon.hsync = "%s-%s" % (hsync_min, hsync_max)
+    mon.vref  = "%s-%s" % (vref_min,  vref_max )
 
     return mon, res
 

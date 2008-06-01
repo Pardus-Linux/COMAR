@@ -101,8 +101,8 @@ def saveXorgConfig(card):
         monSec.set("Identifier", identifier)
 
         if card.monitors.has_key(output):
-            monSec.set("HorizSync", unquoted("%s - %s" % card.monitors[output].hsync))
-            monSec.set("VertRefresh", unquoted("%s - %s" % card.monitors[output].vref))
+            monSec.set("HorizSync",   unquoted(card.monitors[output].hsync))
+            monSec.set("VertRefresh", unquoted(card.monitors[output].vref ))
 
         if "randr12" in flags:
             secDevice.options["Monitor-%s" % output] = identifier
@@ -180,12 +180,12 @@ def getDeviceInfo(busId):
         hsync = tag.getTag("HorizSync")
         min = hsync.getAttribute("min")
         max = hsync.getAttribute("max")
-        mon.hsync = (min, max)
+        mon.hsync = "%s-%s" % (min, max)
 
         vref = tag.getTag("VertRefresh")
         min = vref.getAttribute("min")
         max = vref.getAttribute("max")
-        mon.vref = (min, max)
+        mon.vref = "%s-%s" % (min, max)
 
     activeConfigTag = cardTag.getTag("ActiveConfig")
 
@@ -258,12 +258,12 @@ def saveDeviceInfo(card):
         monitorTag.setAttribute("id", monitor.eisaid)
         monitorTag.setAttribute("output", output)
 
-        min, max = monitor.hsync
+        min, max = monitor.hsync.split("-")
         hor = monitorTag.insertTag("HorizSync")
         hor.setAttribute("min", min)
         hor.setAttribute("max", max)
 
-        min, max = monitor.vref
+        min, max = monitor.vref.split("-")
         ver = monitorTag.insertTag("VertRefresh")
         ver.setAttribute("min", min)
         ver.setAttribute("max", max)

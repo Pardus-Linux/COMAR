@@ -296,7 +296,7 @@ def saveDeviceInfo(card):
             addMonitor(outName, "SecondMonitor")
 
     f = file(configFile, "w")
-    f.write(doc.toPrettyString())
+    f.write(doc.toPrettyString().replace("\n\n", ""))
     f.close()
 
 def getKeymap():
@@ -358,4 +358,4 @@ def saveKeymap(layout, variant="basic"):
     keyboardTag.insertTag("Layout").insertData(layout)
     keyboardTag.insertTag("Variant").insertData(variant)
 
-    file(configFile, "w").write(doc.toPrettyString())
+    file(configFile, "w").write(doc.toPrettyString().replace("\n\n", ""))

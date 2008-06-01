@@ -101,14 +101,20 @@ def saveXorgConfig(card):
         monSec.set("Identifier", identifier)
 
         if card.monitors.has_key(output):
+            monSec.set("VendorName",  card.monitors[output].vendor)
+            monSec.set("ModelName",   card.monitors[output].model)
             monSec.set("HorizSync",   unquoted(card.monitors[output].hsync))
             monSec.set("VertRefresh", unquoted(card.monitors[output].vref ))
 
         if "randr12" in flags:
-            secDevice.options["Monitor-%s" % output] = identifier
+            if output != "auto":
+                #FIXME: Drivers associate the first randr output
+                #       to the monitor section in this case.
+                secDevice.options["Monitor-%s" % output] = identifier
+                monSec.options["Enable"] = "true"
+
             if card.modes.has_key(output):
                 monSec.options["PreferredMode"] = card.modes[output]
-            monSec.options["Enabled"] = "true"
 
     secScr.set("Identifier", "Screen")
     secScr.set("Device", "VideoCard")
@@ -120,7 +126,7 @@ def saveXorgConfig(card):
 
     if "no-modes-line" not in flags or "randr12" not in flags:
         output = card.active_outputs[0]
-        if card.modes.has_key(output):
+        if card.modes.get(output, "auto") != "auto":
             subsec.set("Modes", card.modes[output], "800x600", "640x480")
 
     secScr.sections = [subsec]

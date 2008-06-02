@@ -477,6 +477,9 @@
           <arg name="enabled" type="b"/>
           <arg name="limit" type="i"/>
         </method>
+        <method name="setBandwidth">
+          <arg name="limit" type="i"/>
+        </method>
         <method name="clearCache">
           <arg name="cacheDir" type="s"/>
           <arg name="limit" type="i"/>

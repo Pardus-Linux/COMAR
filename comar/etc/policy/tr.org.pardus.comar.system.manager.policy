@@ -103,7 +103,19 @@
         <description>Set PiSi package cache</description>
         <description xml:lang="tr">PiSi paket önbelleğini yaz</description>
         <message>System policy prevents setting PiSi package cache</message>
-        <message xml:lang="tr">Sistem politikası PiSi paket önbelleğini yazmayı engelliyor</message>
+        <message xml:lang="tr">Sistem politikası PiSi paket önbelleğini ayarlamayı engelliyor</message>
+        <defaults>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
+        </defaults>
+    </action>
+
+    <action id="tr.org.pardus.comar.system.manager.setbandwidth">
+        <description>Set PiSi bandwidth limit</description>
+        <description xml:lang="tr">PiSi bantgenişliği limiti </description>
+        <message>System policy prevents setting PiSi bandwidth limit</message>
+        <message xml:lang="tr">Sistem politikası PiSi bantgenişliğini ayarlamayı engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>

@@ -414,6 +414,7 @@ def queryDDC(adapter=0):
         for line in loadFile(MonitorsDB):
             l = line.split(";")
             if edid["eisa_id"].upper() == l[2].strip().upper():
+                # FIXME: Not all entries have freq ranges. Split may fail.
                 hsync_min, hsync_max = map(float, l[3].strip().split("-"))
                 vref_min, vref_max = map(float, l[4].strip().split("-"))
                 break

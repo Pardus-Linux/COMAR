@@ -127,7 +127,7 @@
             <arg name="device" type="s" direction="in"/>
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
-        <method name="deleteConnection" access_label="set">
+        <method name="deleteConnection">
             <arg name="name" type="s" direction="in"/>
         </method>
         <method name="setAddress" access_label="set">

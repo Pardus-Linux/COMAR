@@ -364,7 +364,7 @@ def queryDDC(adapter=0):
         return
 
     if edid["version"] != 1 and edid["revision"] != 3:
-        return #defaults
+        return
 
     detailed = edid["detailed_timing"]
 
@@ -410,19 +410,18 @@ def queryDDC(adapter=0):
         hsync_min, hsync_max = 31.5, 50
         vref_min, vref_max = 50, 70
 
-    if edid["eisa_id"]:
-        for line in loadFile(MonitorsDB):
-            l = line.split(";")
-            if edid["eisa_id"].upper() == l[2].strip().upper():
-                # FIXME: Not all entries have freq ranges. Split may fail.
-                hsync_min, hsync_max = map(float, l[3].strip().split("-"))
-                vref_min, vref_max = map(float, l[4].strip().split("-"))
-                break
-
     mon = Monitor()
     mon.model = detailed.get("name", "Auto-detected Monitor")
     mon.hsync = "%s-%s" % (hsync_min, hsync_max)
     mon.vref  = "%s-%s" % (vref_min,  vref_max )
+
+    if edid["eisa_id"]:
+        for line in loadFile(MonitorsDB):
+            l = line.split(";")
+            if edid["eisa_id"].upper() == l[2].strip().upper():
+                mon.hsync = l[3].strip()
+                mon.vref  = l[4].strip()
+                break
 
     return mon, res
 

@@ -248,6 +248,20 @@
             <arg name="gid" type="i" direction="in"/>
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
+        <method name="listUserAuthorizations">
+            <arg name="uid" type="i" direction="in"/>
+            <arg name="authorizations" type="a(ssiiss)" direction="out"/>
+        </method>
+        <method name="grantAuthorization">
+            <arg name="uid" type="i" direction="in"/>
+            <arg name="actionid" type="s" direction="in"/>
+            <arg name="success" type="b" direction="out"/>
+        </method>
+        <method name="revokeAuthorization">
+            <arg name="uid" type="i" direction="in"/>
+            <arg name="actionid" type="s" direction="in"/>
+            <arg name="success" type="b" direction="out"/>
+        </method>
     </interface>
     <interface name="Time.Clock">
         <method name="setDate" access_label="set">

@@ -21,6 +21,7 @@ struct Proc {
     // parent info
     struct ProcChild parent;
     const char *desc;
+    const char *locale;
     // children info
     int nr_children;
     int max_children;

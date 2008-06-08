@@ -13,8 +13,38 @@
 #include <stdio.h>
 #include <time.h>
 #include <sys/stat.h>
+#include <proc/readproc.h>
 
 #include "utility.h"
+
+//! Returns locale of a process
+char *
+get_proc_lang(pid_t pid)
+{
+    pid_t pids[2];
+    pids[0] = pid;
+    pids[1] = 0;
+
+    proc_t proc;
+    PROCTAB *ptp;
+    int i = 0;
+
+    char *lang = NULL;
+
+    ptp = openproc(PROC_FILLENV | PROC_PID, pids);
+    while(readproc(ptp, &proc)) {
+        while (proc.environ[++i]) {
+            if (strncmp(proc.environ[i - 1], "LANG", 4) == 0) {
+                lang = strsub(proc.environ[i - 1], 5, 7);
+                goto out;
+            }
+        }
+    }
+
+out:
+    closeproc(ptp);
+    return lang;
+}
 
 //! Returns part of a string
 char *

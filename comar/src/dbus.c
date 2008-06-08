@@ -156,6 +156,46 @@ dbus_signal(const char *path, const char *interface, const char *name, PyObject 
     dbus_send(msg);
 }
 
+//! Get locale of caller
+char *
+dbus_caller_locale(DBusMessage *msg)
+{
+    const char *sender = dbus_message_get_sender(msg);
+
+    DBusError err;
+    DBusConnection *conn;
+    PolKitContext *polkit_ctx;
+    PolKitCaller *polkit_clr;
+    PolKitError *perr;
+
+    dbus_error_init(&err);
+    conn = dbus_bus_get_private(DBUS_BUS_SYSTEM, &err);
+    if (dbus_error_is_set(&err)) {
+        log_error("Unable to open connection to query CK: %s\n", err.message);
+        dbus_error_free(&err);
+        return NULL;
+    }
+
+    polkit_ctx = polkit_context_new();
+    if (!polkit_context_init(polkit_ctx, &perr)) {
+        log_error("Unable to initialize PK context: %s\n", polkit_error_get_error_message(perr));
+        polkit_error_free(perr);
+        return NULL;
+    }
+
+    polkit_clr = polkit_caller_new_from_dbus_name(conn, sender, &err);
+    if (dbus_error_is_set(&err)) {
+        log_error("Unable to get caller info: %s\n", err.message);
+        dbus_error_free(&err);
+        return NULL;
+    }
+
+    pid_t pid;
+    polkit_caller_get_pid(polkit_clr, &pid);
+
+    return get_proc_lang(pid);
+}
+
 //! Creates a message from Python object and sends
 static void
 dbus_reply_object(PyObject *obj)

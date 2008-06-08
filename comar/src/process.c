@@ -7,6 +7,7 @@
 ** option) any later version. Please read the COPYING file.
 */
 
+#include <Python.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -21,6 +22,7 @@
 #include <time.h>
 
 #include "cfg.h"
+#include "dbus.h"
 #include "log.h"
 #include "process.h"
 
@@ -318,6 +320,7 @@ proc_fork(void (*child_func)(void), const char *desc, DBusConnection *bus_conn, 
         my_proc.parent.to = fdr[1];
         my_proc.parent.pid = getppid();
         my_proc.desc = desc;
+        my_proc.locale = dbus_caller_locale(bus_msg);
         my_proc.bus_conn = bus_conn;
         my_proc.bus_msg = bus_msg;
         handle_signals();

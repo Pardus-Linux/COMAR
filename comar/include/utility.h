@@ -17,3 +17,5 @@ char *load_file(const char *fname, int *sizeptr);
 int save_file(const char *fname, const char *buffer, size_t size);
 
 unsigned long time_diff(struct timeval *start, struct timeval *end);
+
+char* get_proc_lang(pid_t pid);

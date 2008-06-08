@@ -62,7 +62,8 @@ SET (SOURCES src/main.c
 SET (LIBS python2.5
           dbus-1
           polkit-dbus
-          db)
+          db
+          proc)
 
 # Include standard headers
 INCLUDE_DIRECTORIES (include/

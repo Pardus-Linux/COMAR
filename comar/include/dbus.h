@@ -7,11 +7,12 @@
 ** option) any later version. Please read the COPYING file.
 */
 
-#include <dbus/dbus.h>
 #include <Python.h>
+#include <dbus/dbus.h>
 
 void dbus_send(DBusMessage *reply);
 void dbus_signal(const char *path, const char *interface, const char *name, PyObject *obj);
 void dbus_method_call(DBusMessage* msg, DBusConnection* conn);
 void dbus_listen();
 void dbus_app_methods(const char *interface, const char *path, const char *method);
+char *dbus_caller_locale(DBusMessage *msg);

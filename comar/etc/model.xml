@@ -250,7 +250,7 @@
         </method>
         <method name="listUserAuthorizations">
             <arg name="uid" type="i" direction="in"/>
-            <arg name="authorizations" type="a(ssiiss)" direction="out"/>
+            <arg name="authorizations" type="a(siss)" direction="out"/>
         </method>
         <method name="grantAuthorization">
             <arg name="uid" type="i" direction="in"/>

@@ -504,8 +504,10 @@
           <arg name="enabled" type="b"/>
           <arg name="limit" type="i"/>
         </method>
-        <method name="setBandwidth">
-          <arg name="limit" type="i"/>
+        <method name="setConfig">
+          <arg name="category" type="s"/>
+          <arg name="name" type="s"/>
+          <arg name="value" type="s"/>
         </method>
         <method name="clearCache">
           <arg name="cacheDir" type="s"/>

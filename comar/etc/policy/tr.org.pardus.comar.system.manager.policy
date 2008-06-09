@@ -111,11 +111,11 @@
         </defaults>
     </action>
 
-    <action id="tr.org.pardus.comar.system.manager.setbandwidth">
-        <description>Set PiSi bandwidth limit</description>
-        <description xml:lang="tr">PiSi bantgenişliği limiti </description>
-        <message>System policy prevents setting PiSi bandwidth limit</message>
-        <message xml:lang="tr">Sistem politikası PiSi bantgenişliğini ayarlamayı engelliyor</message>
+    <action id="tr.org.pardus.comar.system.manager.setconfig">
+        <description>Change PiSi config</description>
+        <description xml:lang="tr">PiSi ayarı değiştirme</description>
+        <message>System policy prevents changing PiSi config</message>
+        <message xml:lang="tr">Sistem politikası PiSi ayarını değiştirmeyi engelliyor</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>

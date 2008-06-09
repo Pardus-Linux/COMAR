@@ -10,7 +10,7 @@
 # Please read the COPYING file.
 #
 
-__version__ = "0.99"
+__version__ = "0.100"
 
 __all__ = ["config",
            "consts",

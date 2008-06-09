@@ -111,4 +111,17 @@
             <allow_inactive>auth_admin_keep_always</allow_inactive>
         </defaults>
     </action>
+
+    <action id="tr.org.pardus.comar.user.manager.blockauthorization">
+        <description>Block user authorization</description>
+        <description xml:lang="tr">Kullanıcı yetkisini engelleme</description>
+        <message>System policy prevents blocking user authorizations</message>
+        <message xml:lang="tr">Sistem politikası kullanıcı yetkisi engelleme işlemini engelliyor</message>
+        <defaults>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
+        </defaults>
+    </action>
+
 </policyconfig>

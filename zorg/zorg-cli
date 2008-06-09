@@ -44,21 +44,28 @@ def safe():
         print "Failed to create a safe configuration with VESA driver."
 
 def probe(opts):
-    if link.initialConfig():
-        print "Created an initial configuration for your video device."
+    if force or not xisrunning():
+        if link.initialConfig():
+            print "Created an initial configuration for your video device."
+        else:
+            print "An error occured while creating an initial configuration."
     else:
-        print "An error occured while creating an initial configuration."
+        print "Not probing since X server is running."
 
 def setDriver(driver):
     args = {"driver": driver}
     link.setPendingConfig(args)
-    if xisrunning():
-        print "Changes cannot be applied now since X server is running."
-    else:
+
+    if force or not xisrunning():
         link.applyPendingConfig()
+        print "Driver changed to %s." % driver
+    else:
+        print "Changes will be applied when you restart your X server."
 
 def setMode(opts):
     pass
+
+force = False
 
 if __name__ == "__main__":
     parser = optparse.OptionParser(description = "%s version %s"
@@ -80,11 +87,16 @@ if __name__ == "__main__":
         dest="driver", default=None, metavar="DRIVER[%sPACKAGE]" % package_sep,
         help="set video card driver to DRIVER")
 
+    parser.add_option("-f", "--force", action="store_true",
+        dest="force", default=False,
+        help="force probing even if the X server is running")
+
     parser.add_option("-k", "--keymap", action="store", type="string",
         dest="keymap", default=None, metavar="LAYOUT[/VARIANT]",
         help="changes keyboard map")
 
     opts, args = parser.parse_args()
+    force = opts.force
 
     if opts.safe:
         safe()

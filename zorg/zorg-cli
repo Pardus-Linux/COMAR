@@ -15,6 +15,7 @@ import optparse
 import dbus
 import zorg
 from zorg.consts import package_sep
+from zorg.utils import *
 
 zorg_info = " Xorg AutoConfiguration tool"
 
@@ -49,8 +50,12 @@ def probe(opts):
         print "An error occured while creating an initial configuration."
 
 def setDriver(driver):
-    link.changeDriver(driver)
-    print "Your driver will be changed at next boot."
+    args = {"driver": driver}
+    link.setPendingConfig(args)
+    if xisrunning():
+        print "Changes cannot be applied now since X server is running."
+    else:
+        link.applyPendingConfig()
 
 def setMode(opts):
     pass

@@ -121,7 +121,7 @@ def saveXorgConfig(card):
     subsec = XorgSection("Display")
     subsec.set("Depth", atoi(card.depth))
 
-    if card.desktop_setup not in ("single", "clone"):
+    if "randr12" in flags and card.desktop_setup not in ("single", "clone"):
         out1, out2 = card.active_outputs[:2]
         if card.modes.has_key(out1) and card.modes.has_key(out2):
             w1, h1 = map(atoi, card.modes[out1].split("x"))

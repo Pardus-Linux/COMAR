@@ -121,6 +121,21 @@ def saveXorgConfig(card):
     subsec = XorgSection("Display")
     subsec.set("Depth", atoi(card.depth))
 
+    if card.desktop_setup not in ("single", "clone"):
+        out1, out2 = card.active_outputs[:2]
+        if card.modes.has_key(out1) and card.modes.has_key(out2):
+            w1, h1 = map(atoi, card.modes[out1].split("x"))
+            w2, h2 = map(atoi, card.modes[out2].split("x"))
+
+            if card.desktop_setup == "horizontal":
+                w = w1 + w2
+                h = max(h1, h2)
+            else:
+                w = max(w1, w2)
+                h = h1 + h2
+
+            subsec.set("Virtual", w, h)
+
     if "no-modes-line" not in flags or "randr12" not in flags:
         output = card.active_outputs[0]
         if card.modes.has_key(output):

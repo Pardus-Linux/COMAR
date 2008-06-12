@@ -120,6 +120,13 @@ def isVirtual():
             return True
     return False
 
+def jailEnabled():
+    if not "nojail" in getKernelOpt("xorg"):
+        if "thin" in getKernelOpt("mudur") or "jail" in getKernelOpt("xorg"):
+            print "Jail is enabled"
+            return True
+    return False
+
 def parseMode(mode):
     m = mode.split("-", 1)
     res = m.pop(0)

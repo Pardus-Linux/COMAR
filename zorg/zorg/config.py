@@ -7,7 +7,7 @@ import piksemel
 from zorg.consts import *
 from zorg.parser import *
 from zorg.probe import VideoDevice, Monitor
-from zorg.utils import atoi, backup, idsQuery
+from zorg.utils import *
 
 def saveXorgConfig(card):
     parser = XorgParser()
@@ -64,6 +64,13 @@ def saveXorgConfig(card):
         "SuspendTime" : "0",
         "OffTime" : "0"
     }
+
+    if jailEnabled():
+        jailOpts = {
+                "DontVTSwitch" : "true",
+                "DontZap" : "true"
+                }
+        secFlags.options.update(jailOpts)
 
     secKeyboard.set("Identifier", "Keyboard")
     secKeyboard.set("Driver", "kbd")

@@ -91,6 +91,11 @@ class VideoDevice:
         return info
 
     def chooseDriver(self):
+        if isVirtual():
+            print "We are in domU. Using fbdev driver."
+            self.driver = "fbdev"
+            return
+
         for line in loadFile(DriversDB):
             if line.startswith(self.vendor_id + self.product_id):
                 print "Device ID found in driver database."

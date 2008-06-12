@@ -111,6 +111,15 @@ def idsQuery(vendor, device, idsFile="/usr/share/misc/pci.ids"):
 def xisrunning():
     return os.path.exists(xorg_lock)
 
+def isVirtual():
+    # Xen detection
+    if os.path.exists("/proc/xen/capabilities"):
+        # we are in dom0, act like normal system
+        if loadFile("/proc/xen/capabilities") == []:
+            # and in domU, configure X to use fbdev if exists
+            return True
+    return False
+
 def parseMode(mode):
     m = mode.split("-", 1)
     res = m.pop(0)

@@ -388,9 +388,13 @@ def info():
         if status():
             if state == "off":
                 state = "started"
+            elif state == "conditional":
+                state = "conditional_started"
         else:
             if state == "on":
                 state = "stopped"
+            elif state == "conditional":
+                state = "conditional_stopped"
     except:
         pass
     return serviceType, serviceDesc, state

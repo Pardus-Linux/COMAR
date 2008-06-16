@@ -16,6 +16,7 @@ import optparse
 
 import dbus
 import zorg
+import zorg.probe
 from zorg.consts import package_sep
 from zorg.utils import *
 
@@ -59,6 +60,26 @@ def probe(opts):
         print "Not probing since X server is running."
 
 def setDriver(driver):
+    # shortcuts for packages
+    shortcuts = {
+            "fglrx":        "fglrx/ati-drivers",
+            "nvidia-old":   "nvidia/nvidia-drivers-old",
+            "nvidia":       "nvidia/nvidia-drivers",
+            "nvidia-new":   "nvidia/nvidia-drivers-new"
+            }
+    if shortcuts.has_key(driver):
+        driver = shortcuts[driver]
+
+    if package_sep in driver:
+        drv, pkg = driver.split(package_sep, 1)
+        if pkg.replace("-", "_") not in zorg.probe.listDriverPackages():
+            print "Package is not installed: %s" % pkg
+            sys.exit(1)
+    else:
+        if not zorg.probe.driverExists(driver):
+            print "Driver not found: %s" % driver
+            sys.exit(1)
+
     args = {"driver": driver}
     link.setPendingConfig(args)
 
@@ -67,9 +88,6 @@ def setDriver(driver):
         print "Driver changed to %s." % driver
     else:
         print "Changes will be applied when you restart your X server."
-
-def setMode(opts):
-    pass
 
 force = False
 
@@ -84,10 +102,6 @@ if __name__ == "__main__":
     parser.add_option("-p", "--probe", action="store_true",
         dest="probe", default=False,
         help="force probing all devices, even if xorg.conf exists")
-
-    parser.add_option("-m", "--mode", action="store", type="string",
-        dest="mode", default=None,
-        help="use MODE given in form <width>x<height>[-<depth>] if supported")
 
     parser.add_option("-d", "--driver", action="store", type="string",
         dest="driver", default=None, metavar="DRIVER[%sPACKAGE]" % package_sep,
@@ -114,11 +128,8 @@ if __name__ == "__main__":
     elif opts.probe:
         probe(opts)
 
-    elif opts.mode or opts.driver:
-        if opts.driver:
-            setDriver(opts.driver)
-        if opts.mode:
-            setMode(opts)
+    elif opts.driver:
+        setDriver(opts.driver)
 
     elif opts.removePending:
         link.removePendingConfig()

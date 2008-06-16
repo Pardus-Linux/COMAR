@@ -91,6 +91,10 @@ if __name__ == "__main__":
         dest="force", default=False,
         help="force probing even if the X server is running")
 
+    parser.add_option("", "--remove-pending", action="store_true",
+        dest="removePending", default=False,
+        help="remove pending configuration data")
+
     parser.add_option("-k", "--keymap", action="store", type="string",
         dest="keymap", default=None, metavar="LAYOUT[/VARIANT]",
         help="changes keyboard map")
@@ -100,15 +104,23 @@ if __name__ == "__main__":
 
     if opts.safe:
         safe()
+
     elif opts.probe:
         probe(opts)
+
     elif opts.mode or opts.driver:
         if opts.driver:
             setDriver(opts.driver)
         if opts.mode:
             setMode(opts)
+
+    elif opts.removePending:
+        link.removePendingConfig()
+        print "Pending configurations removed."
+
     elif opts.keymap:
         keymap = opts.keymap.split("/", 1)
         link.setKeymap(*keymap)
+
     else:
         parser.print_help()

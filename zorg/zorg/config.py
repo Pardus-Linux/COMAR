@@ -209,9 +209,9 @@ def getDeviceInfo(busId):
     def addMonitor(output, tag):
         mon = Monitor()
         mon.vendor = tag.getTagData("Vendor") or ""
-        mon.model  = tag.getTagData("Model")
-        mon.hsync  = tag.getTagData("HorizSync")
-        mon.vref   = tag.getTagData("VertRefresh")
+        mon.model  = tag.getTagData("Model") or "Unknown Monitor"
+        mon.hsync  = tag.getTagData("HorizSync") or mon.hsync
+        mon.vref   = tag.getTagData("VertRefresh") or mon.vref
         device.monitors[output] = mon
 
     outputTag = activeConfigTag.getTag("Output")

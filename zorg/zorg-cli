@@ -10,6 +10,8 @@
 #
 # Please read the COPYING file.
 
+import os
+import sys
 import optparse
 
 import dbus
@@ -31,6 +33,10 @@ class ComarLink:
         return getattr(self.iface, method)
 
     def _connect(self):
+        if os.getuid() != 0:
+            print "You must be root to use this tool."
+            sys.exit(1)
+
         self.bus = dbus.SystemBus()
         object = self.bus.get_object("tr.org.pardus.comar", "/package/zorg", introspect=False)
         self.iface = dbus.Interface(object, "tr.org.pardus.comar.Xorg.Display")

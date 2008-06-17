@@ -39,7 +39,7 @@ static PyObject *
 c_i18n(PyObject *self, PyObject *args)
 {
     PyObject *dict;
-    PyObject *ret;
+    PyObject *ret = NULL;
 
     if (!PyArg_ParseTuple(args, "O!", &PyDict_Type, &dict))
         return NULL;
@@ -47,7 +47,7 @@ c_i18n(PyObject *self, PyObject *args)
     if (my_proc.locale) {
         ret = PyDict_GetItemString(dict, my_proc.locale);
     }
-    else {
+    if (!ret) {
         ret = PyDict_GetItemString(dict, "en");
     }
     Py_INCREF(ret);

@@ -456,6 +456,8 @@ def registerState():
         pass
     
     if state == "on":
-        touch(os.path.join("/etc/mudur/services/enabled", script()))
+        if script() not in os.listdir("/etc/mudur/services/disabled"):
+            touch(os.path.join("/etc/mudur/services/enabled", script()))
     elif state == "conditional":
-        touch(os.path.join("/etc/mudur/services/conditional", script()))
+        if script() not in os.listdir("/etc/mudur/services/disabled"):
+            touch(os.path.join("/etc/mudur/services/conditional", script()))

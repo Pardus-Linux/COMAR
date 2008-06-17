@@ -413,15 +413,29 @@ db_remove_app(char *app)
 
     struct databases db;
     char *list, *list2, *t, *s;
+    char *list_models, *list_apps;
+    char *app_rem;
     int ret = 0;
+    int size;
+
+    size = strlen(app) + 2;
+    app_rem = malloc(size);
+    snprintf(app_rem, size, "%s|", app);
+    app_rem[size - 1] = '\0';
 
     if (open_env(&db, APP_DB | MODEL_DB)) goto out;
 
     list = get_data(db.app, app, NULL, &ret);
     if (!list) goto out;
 
+    size = strlen(list) + 2;
+    list_models = malloc(size);
+    snprintf(list_models, size, "%s|", list);
+    list_models[size - 1] = '\0';
+    free(list);
+
     // iterate over app's models
-    for (t = list; t; t = s) {
+    for (t = list_models; t; t = s) {
         s = strchr(t, '|');
         if (s) {
             *s = '\0';
@@ -431,44 +445,57 @@ db_remove_app(char *app)
         // remove app from model's application list in model.db
         list2 = get_data(db.model, t, NULL, &ret);
         if (list2) {
+            size = strlen(list2) + 2;
+            list_apps = malloc(size);
+            snprintf(list_apps, size, "%s|", list2);
+            list_apps[size - 1] = '\0';
+            free(list2);
+
             char *k;
-            int sa = strlen(app);
-            k = strstr(list2, app);
+            int sa = strlen(app_rem);
+            k = strstr(list_apps, app_rem);
             if (k) {
                 if (k[sa] == '|') ++sa;
                 memmove(k, k + sa, strlen(k) - sa + 1);
-                sa = strlen(list2);
+                sa = strlen(list_apps);
                 if (sa > 0) {
-                    if (list2[sa-1] == '|')
-                        list2[sa-1] = '\0';
+                    if (list_apps[sa-1] == '|')
+                        list_apps[sa-1] = '\0';
                 }
-                ret = put_data(db.model, t, list2, strlen(list2) + 1);
+                ret = put_data(db.model, t, list_apps, strlen(list_apps) + 1);
                 if (ret) goto out;
             }
+            free(list_apps);
         }
-        free(list2);
     }
-    free(list);
+    free(list_models);
 
     // remove app from application list in app.db
     list = get_data(db.app, "__apps__", NULL, &ret);
-    if (list) {
+    size = strlen(list) + 2;
+    list_apps = malloc(size);
+    snprintf(list_apps, size, "%s|", list);
+    list_apps[size - 1] = '\0';
+    free(list);
+
+    if (list_apps) {
         char *k;
-        int sa = strlen(app);
-        k = strstr(list, app);
+        int sa = strlen(app_rem);
+        k = strstr(list_apps, app_rem);
         if (k) {
             if (k[sa] == '|') ++sa;
             memmove(k, k + sa, strlen(k) - sa + 1);
-            sa = strlen(list);
+            sa = strlen(list_apps);
             if (sa > 0) {
-                if (list[sa-1] == '|')
-                    list[sa-1] = '\0';
+                if (list_apps[sa-1] == '|')
+                    list_apps[sa-1] = '\0';
             }
-            ret = put_data(db.app, "__apps__", list, strlen(list) + 1);
+            ret = put_data(db.app, "__apps__", list_apps, strlen(list_apps) + 1);
             if (ret) goto out;
         }
     }
-    free(list);
+    free(list_apps);
+    free(app_rem);
 
     ret = del_data(db.app, app);
     if (ret) goto out;

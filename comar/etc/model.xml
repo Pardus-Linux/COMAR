@@ -221,7 +221,6 @@
             <arg name="password" type="s" direction="in"/>
             <arg name="groups" type="as" direction="in"/>
             <arg name="grants" type="as" direction="in"/>
-            <arg name="revokes" type="as" direction="in"/>
             <arg name="blocks" type="as" direction="in"/>
             <arg name="id" type="i" direction="out"/>
         </method>

@@ -38,7 +38,7 @@ dbus_py_get_signature(PyObject *obj)
         return 'i';
     }
     else if (PyLong_Check(obj)) {
-        return 'l';
+        return 'x';
     }
     else if (PyFloat_Check(obj)) {
         return 'd';
@@ -78,7 +78,7 @@ dbus_py_get_object_signature(PyObject *obj)
         case 's':
         case 'b':
         case 'i':
-        case 'l':
+        case 'x':
         case 'd':
             size = 2;
             sign_content = malloc(size);
@@ -192,7 +192,7 @@ dbus_py_export(DBusMessageIter *iter, PyObject *obj)
             p.i32 = PyInt_AsLong(obj);
             e = dbus_message_iter_append_basic(iter, DBUS_TYPE_INT32, &p.i32);
             break;
-        case 'l':
+        case 'x':
             p.i64 = PyLong_AsLong(obj);
             e = dbus_message_iter_append_basic(iter, DBUS_TYPE_INT64, &p.i64);
             break;

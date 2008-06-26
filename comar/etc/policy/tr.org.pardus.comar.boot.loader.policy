@@ -6,8 +6,10 @@
     <action id="tr.org.pardus.comar.boot.loader.updatekernelentry">
         <description>Update kernel release on specified partition</description>
         <description xml:lang="tr">Belirli disk bölümündeki çekirdek sürümünü güncelle</description>
+	<description xml:lang="nl">Bijwerken kernel op specifieke partitie</description>
         <message>System policy prevents updating kernel</message>
         <message xml:lang="tr">Sistem politikası çekirdek güncellemeyi engelliyor</message>
+	<message xml:lang="nl">Systeembeleid voorkomt bijwerken kernel</message>
         <defaults>
             <allow_any>no</allow_any>
             <allow_active>no</allow_active>
@@ -18,8 +20,10 @@
     <action id="tr.org.pardus.comar.boot.loader.removeentry">
         <description>Remove entry from boot loader</description>
         <description xml:lang="tr">Önyükleyiciden girdi sil</description>
+	<description xml:lang="nl">Verwijder item van bootlader</description>
         <message>System policy prevents removing entry</message>
         <message xml:lang="tr">Sistem politikası girdi silmeyi engelliyor</message>
+        <message xml:lang="nl">Systeembeleid voorkomt verwijderen item van bootlader</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -30,8 +34,10 @@
     <action id="tr.org.pardus.comar.boot.loader.removeunused">
         <description>Remove unused kernel from system</description>
         <description xml:lang="tr">Sistemden kullanılmayan çekirdeği sil</description>
+ 	<description xml:lang="nl">Verwijder ongebruikte kernel van systeem</description>
         <message>System policy prevents removing unused kernels</message>
         <message xml:lang="tr">Sistem politikası kullanılmayan çekirdeği silmeyi engelliyor</message>
+	<message xml:lang="nl">Systeembeleid voorkomt verwijderen ongebruikte kernel van systeem</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -43,8 +49,10 @@
     <action id="tr.org.pardus.comar.boot.loader.set">
         <description>Edit boot loader options and add new entries</description>
         <description xml:lang="tr">Önyükleyici seçeneklerini değiştir ve yeni girdiler ekle</description>
+	<description xml:lang="nl">Bewerk bootlader en voeg nieuwe items toe</description>
         <message>System policy prevents changing bootloader settings</message>
         <message xml:lang="tr">Sistem politikası önyükleyici ayarlarını değiştirmeyi engelliyor</message>
+	<message xml:lang="nl"Systeembeleid voorkomt bewerken bootlader en voeg nieuwe items toe</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -55,8 +63,10 @@
     <action id="tr.org.pardus.comar.boot.loader.get">
         <description>View boot loader options and list entries</description>
         <description xml:lang="tr">Önyükleyici seçeneklerine bak ve girdileri listele</description>
+	<description xml:lang="nl">Bekijk bootlader opties en toon items</description>
         <message>System policy prevents viewing bootloader settings</message>
         <message xml:lang="tr">Sistem politikası önyükleyici ayarlarına bakmayı engelliyor</message>
+	<message xml:lang="nl">Systeembeleid voorkomt bekijken bootlader opties en tonen items</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>

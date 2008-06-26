@@ -6,6 +6,7 @@
     <action id="tr.org.pardus.comar.system.manager.installpackage">
         <description>Install package</description>
         <description xml:lang="tr">Paket yükle</description>
+        <description xml:lang="pl">Instalacja pakietów</description>
         <message>System policy prevents installing package</message>
         <message xml:lang="tr">Sistem politikası paket yüklemeyi engelliyor</message>
         <defaults>
@@ -18,6 +19,7 @@
     <action id="tr.org.pardus.comar.system.manager.removepackage">
         <description>Remove package</description>
         <description xml:lang="tr">Paket kaldır</description>
+        <description xml:lang="pl">Usuwanie pakietów</description>
         <message>System policy prevents removing package</message>
         <message xml:lang="tr">Sistem politikası paket kaldırmayı engelliyor</message>
         <defaults>
@@ -30,6 +32,7 @@
     <action id="tr.org.pardus.comar.system.manager.updatepackage">
         <description>Update package</description>
         <description xml:lang="tr">Paket güncelle</description>
+        <description xml:lang="pl">Aktualizowanie pakietów</description>
         <message>System policy prevents updating package</message>
         <message xml:lang="tr">Sistem politikası paket güncellemeyi engelliyor</message>
         <defaults>
@@ -42,6 +45,7 @@
     <action id="tr.org.pardus.comar.system.manager.updaterepository">
         <description>Update repository</description>
         <description xml:lang="tr">Depo güncelle</description>
+        <description xml:lang="pl">Aktualizacja repozytorium</description>
         <message>System policy prevents updating repository</message>
         <message xml:lang="tr">Sistem politikası depo güncellemeyi engelliyor</message>
         <defaults>
@@ -54,6 +58,7 @@
     <action id="tr.org.pardus.comar.system.manager.updateallrepositories">
         <description>Update all repositories</description>
         <description xml:lang="tr">Tüm depoları güncelle</description>
+        <description xml:lang="pl">Aktualizacja wszystkich repozytoriów</description>
         <message>System policy prevents updating all repositories</message>
         <message xml:lang="tr">Sistem politikası tüm depoları güncellemeyi engelliyor</message>
         <defaults>
@@ -66,6 +71,7 @@
     <action id="tr.org.pardus.comar.system.manager.addrepository">
         <description>Add repository</description>
         <description xml:lang="tr">Depo ekle</description>
+        <description xml:lang="pl">Dodawanie repozytoriów</description>
         <message>System policy prevents adding repository</message>
         <message xml:lang="tr">Sistem politikası depo eklemeyi engelliyor</message>
         <defaults>
@@ -78,6 +84,7 @@
     <action id="tr.org.pardus.comar.system.manager.removerepository">
         <description>Remove repository</description>
         <description xml:lang="tr">Depo kaldır</description>
+        <description xml:lang="pl">Usuwanie repozytoriów</description>
         <message>System policy prevents removing repository</message>
         <message>Sistem politikası depo kaldırmayı engelliyor</message>
         <defaults>
@@ -90,6 +97,7 @@
     <action id="tr.org.pardus.comar.system.manager.setrepositories">
         <description>Set repositories</description>
         <description xml:lang="tr">Depoları yaz</description>
+        <description xml:lang="pl">Ustawianie repozytoriów</description>
         <message>System policy prevents setting repositories</message>
         <message xml:lang="tr">Sistem politikası depoları yazmayı engelliyor</message>
         <defaults>
@@ -102,6 +110,7 @@
     <action id="tr.org.pardus.comar.system.manager.setcache">
         <description>Set PiSi package cache</description>
         <description xml:lang="tr">PiSi paket önbelleğini yaz</description>
+        <description xml:lang="pl">Ustawianie kesza PiSi dla pakietów</description>
         <message>System policy prevents setting PiSi package cache</message>
         <message xml:lang="tr">Sistem politikası PiSi paket önbelleğini ayarlamayı engelliyor</message>
         <defaults>
@@ -114,6 +123,7 @@
     <action id="tr.org.pardus.comar.system.manager.setconfig">
         <description>Change PiSi config</description>
         <description xml:lang="tr">PiSi ayarı değiştirme</description>
+        <description xml:lang="pl">Konfigurowanie PiSi</description>
         <message>System policy prevents changing PiSi config</message>
         <message xml:lang="tr">Sistem politikası PiSi ayarını değiştirmeyi engelliyor</message>
         <defaults>
@@ -126,6 +136,7 @@
     <action id="tr.org.pardus.comar.system.manager.clearcache">
         <description>Clear PiSi cache</description>
         <description xml:lang="tr">PiSi önbelleğini boşalt</description>
+        <description xml:lang="pl">Czyszczenie kesza PiSi</description>
         <message>System policy prevents clearing PiSi package cache</message>
         <message xml:lang="tr">Sistem politikası PiSi paket önbelleğini boşaltmayı engelliyor</message>
         <defaults>
@@ -138,6 +149,7 @@
     <action id="tr.org.pardus.comar.system.manager.takesnapshot">
         <description>Take a Snapshot of System</description>
         <description xml:lang="tr">Sistem Görüntüsünü al</description>
+        <description xml:lang="pl">Wykonywanie zrzutu systemu</description>
         <message>System policy prevents taking snapshot</message>
         <message xml:lang="tr">Sistem politikası sistem görüntüsü almayı engelliyor</message>
         <defaults>
@@ -150,6 +162,7 @@
     <action id="tr.org.pardus.comar.system.manager.takeback">
         <description>Take system back to a Snapshot</description>
         <description xml:lang="tr">Sistemi eski bir görüntüye götür</description>
+        <description xml:lang="pl">Przywracanie systemu ze zrzutu</description>
         <message>System policy prevents system snapshot operation</message>
         <message xml:lang="tr">Sistem politikası sistem görüntüsüne gitmeyi engelliyor</message>
         <defaults>

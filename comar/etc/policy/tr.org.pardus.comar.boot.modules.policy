@@ -7,6 +7,7 @@
         <description>Set module options</description>
         <description xml:lang="tr">Modül seçeneklerini değiştir</description>
 	<description xml:lang="nl">Stel module opties in</description>
+	<description xml:lang="pl">Ustawianie opcji modułów</description>
         <message>System policy prevents setting module options</message>
         <message xml:lang="tr">Sistem politikası modül seçeneklerini değiştirmeyi engelliyor</message>
         <message xml:lang="nl">Systeembeleid voorkomt module opties instellen</message>
@@ -21,6 +22,7 @@
         <description>Load kernel module</description>
         <description xml:lang="tr">Çekirdek modülünü etkinleştir</description>
         <description xml:lang="nl">Laad kernel module</description>
+        <description xml:lang="pl">Ładowanie modułów kernela</description>
         <message>System policy prevents loading kernel module</message>
         <message xml:lang="tr">Sistem politikası çekirdek modülünü etkinleştirmeyi engelliyor</message>
         <message xml:lang="nl">Systeembeleid voorkomt laden kernel module</message>
@@ -35,6 +37,7 @@
         <description>Unload kernel module</description>
         <description xml:lang="tr">Çekirdek modülünü etkisiz kıl</description>
         <description xml:lang="nl">Ontlaad kernel module</description>
+        <description xml:lang="pl">Usuwanie załadowanych modułów kernela</description>
         <message>System policy prevents unloading kernel module</message>
         <message xml:lang="tr">Sistem politikası çekirdek modülünü etkisiz kılmayı engelliyor</message>
         <message xml:lang="nl">Systeembeleid voorkomt ontladen kernel module</message>
@@ -49,6 +52,7 @@
         <description>Add autoloading kernel module</description>
         <description xml:lang="tr">Otomatik yüklenen çekirdek modülü ekle</description>
         <description xml:lang="nl">Voeg autoladen toe aan kernel module</description>
+        <description xml:lang="pl">Dodawanie modułów do automatycznego ładowania</description>
         <message>System policy prevents adding an autoloading kernel module</message>
         <message xml:lang="tr">Sistem politikası otomatik yüklenen çekirdek modülü eklenmesini engelliyor</message>
         <message xml:lang="nl">Systeembeleid voorkomt toevoegen autoladen aan kernel module</message>
@@ -63,6 +67,7 @@
         <description>Update module configuration</description>
         <description xml:lang="tr">Modül yapılandırmasını güncelle</description>
         <description xml:lang="nl">Werk module configuratie bij</description>
+        <description xml:lang="pl">Aktualizacja konfiguracji modułów</description>
         <message>System policy prevents updating module configuration</message>
         <message xml:lang="tr">Sistem politikası modül yapılandırmasını güncellemeyi engelliyor</message>
         <message xml:lang="nl">Systeembeleid voorkomt bijwerken module configuratie</message>
@@ -78,6 +83,7 @@
         <description>Get module information</description>
         <description xml:lang="tr">Modül bilgisini al</description>
         <description xml:lang="nl">Ontvang module informatie</description>
+        <description xml:lang="pl">Odczyt informacji o module</description>
         <message>System policy prevents getting module information</message>
         <message xml:lang="tr">Sistem politikası modül bilgisini almayı engelliyor</message>
         <message xml:lang="nl">Systeembeleid voorkomt ontvangen module informatie</message>
@@ -92,6 +98,7 @@
         <description>Edit autoload list</description>
         <description xml:lang="tr">Otomatik yükleme listesini değiştir</description>
         <description xml:lang="nl">Bewerk autolaad lijst</description>
+        <description xml:lang="pl">Edycja listy automatycznego ładowania modułów</description>
         <message>System policy prevents editing autoload list</message>
         <message xml:lang="tr">Sistem politikası otomatik yükleme listesini değiştirmeyi engelliyor</message>
         <message xml:lang="nl">Systeembeleid voorkomt bewerken autolaad lijst</message>
@@ -106,6 +113,7 @@
         <description>Edit module blacklist</description>
         <description xml:lang="tr">Modül karalistesini değiştir</description>
         <description xml:lang="nl">Bewerk module zwarte lijst</description>
+        <description xml:lang="pl">Edycja czarnej listy modułów</description>
         <message>System policy prevents editing module blacklist</message>
         <message xml:lang="tr">Sistem politikası modül karalistesini değiştirmeyi engelliyor</message>
         <message xml:lang="nl">Systeembeleid voorkomt bewerken module zwarte lijst</message>

@@ -7,6 +7,7 @@
         <description>Update kernel release on specified partition</description>
         <description xml:lang="tr">Belirli disk bölümündeki çekirdek sürümünü güncelle</description>
 	<description xml:lang="nl">Bijwerken kernel op specifieke partitie</description>
+	<description xml:lang="pl">Aktualizowanie wersji kernela na wskazanej partycji</description>
         <message>System policy prevents updating kernel</message>
         <message xml:lang="tr">Sistem politikası çekirdek güncellemeyi engelliyor</message>
 	<message xml:lang="nl">Systeembeleid voorkomt bijwerken kernel</message>
@@ -21,6 +22,7 @@
         <description>Remove entry from boot loader</description>
         <description xml:lang="tr">Önyükleyiciden girdi sil</description>
 	<description xml:lang="nl">Verwijder item van bootlader</description>
+	<description xml:lang="pl">Usuwanie wpisów z konfiguracji menedżera rozruchu</description>
         <message>System policy prevents removing entry</message>
         <message xml:lang="tr">Sistem politikası girdi silmeyi engelliyor</message>
         <message xml:lang="nl">Systeembeleid voorkomt verwijderen item van bootlader</message>
@@ -35,6 +37,7 @@
         <description>Remove unused kernel from system</description>
         <description xml:lang="tr">Sistemden kullanılmayan çekirdeği sil</description>
  	<description xml:lang="nl">Verwijder ongebruikte kernel van systeem</description>
+ 	<description xml:lang="pl">Usuwanie nieużywanych kerneli z systemu</description>
         <message>System policy prevents removing unused kernels</message>
         <message xml:lang="tr">Sistem politikası kullanılmayan çekirdeği silmeyi engelliyor</message>
 	<message xml:lang="nl">Systeembeleid voorkomt verwijderen ongebruikte kernel van systeem</message>
@@ -50,6 +53,7 @@
         <description>Edit boot loader options and add new entries</description>
         <description xml:lang="tr">Önyükleyici seçeneklerini değiştir ve yeni girdiler ekle</description>
 	<description xml:lang="nl">Bewerk bootlader en voeg nieuwe items toe</description>
+	<description xml:lang="pl">Edycja opcji menedżera rozruchu i dodawanie nowych wpisów</description>
         <message>System policy prevents changing bootloader settings</message>
         <message xml:lang="tr">Sistem politikası önyükleyici ayarlarını değiştirmeyi engelliyor</message>
 	<message xml:lang="nl"Systeembeleid voorkomt bewerken bootlader en voeg nieuwe items toe</message>
@@ -64,6 +68,7 @@
         <description>View boot loader options and list entries</description>
         <description xml:lang="tr">Önyükleyici seçeneklerine bak ve girdileri listele</description>
 	<description xml:lang="nl">Bekijk bootlader opties en toon items</description>
+	<description xml:lang="pl">Odczyt ustawień menedżera rozruchu</description>
         <message>System policy prevents viewing bootloader settings</message>
         <message xml:lang="tr">Sistem politikası önyükleyici ayarlarına bakmayı engelliyor</message>
 	<message xml:lang="nl">Systeembeleid voorkomt bekijken bootlader opties en tonen items</message>

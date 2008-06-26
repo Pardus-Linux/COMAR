@@ -6,6 +6,7 @@
     <action id="tr.org.pardus.comar.system.package.postinstall">
         <description>Execute post-install script of a package</description>
         <description xml:lang="tr">Bir paketin yükleme sonrası betiğini çalıştır</description>
+        <description xml:lang="pl">Wykonywanie skryptów "po instalacji" pakietów</description>
         <message>System policy prevents executing post-install script</message>
         <message xml:lang="tr">Sistem politikası yükleme sonrası betiği çalıştırmayı engelliyor</message>
         <defaults>
@@ -18,6 +19,7 @@
     <action id="tr.org.pardus.comar.system.package.preremove">
         <description>Execute pre-remove script of a package</description>
         <description xml:lang="tr">Bir paketin kaldırma öncesi betiğini çalıştır</description>
+        <description xml:lang="pl">Wykonywanie skryptów "przed usunięciem" pakietów</description>
         <message>System policy prevents executing pre-remove script</message>
         <message xml:lang="tr">Sistem politikası kaldırma öncesi betiği çalıştırmayı engelliyor</message>
         <defaults>

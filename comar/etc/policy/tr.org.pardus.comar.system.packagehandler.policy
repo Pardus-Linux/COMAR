@@ -6,6 +6,7 @@
     <action id="tr.org.pardus.comar.system.packagehandler.setuppackage">
         <description>Execute package handler setup scripts</description>
         <description xml:lang="tr">Paket işleyicisi kurulum betiklerini çalıştır</description>
+        <description xml:lang="pl">Wykonywanie skryptów pakietów</description>
         <message>System policy prevents executing package handlers' setup scripts</message>
         <message xml:lang="tr">Sistem politikası paket işleyicilerinin kurulum betiklerinin çalıştırılmasını engelliyor</message>
         <defaults>
@@ -18,6 +19,7 @@
     <action id="tr.org.pardus.comar.system.packagehandler.cleanuppackage">
         <description>Execute package handler cleanup scripts</description>
         <description xml:lang="tr">Paket işleyicisi temizlik betiklerini çalıştır</description>
+        <description xml:lang="pl">Wykonywanie skryptów porządkujących pakietów</description>
         <message>System policy prevents executing package handlers' cleanup scripts</message>
         <message xml:lang="tr">Sistem politikası paket işleyicilerinin temizlik betiklerininin çalıştırılmasını engelliyor</message>
         <defaults>

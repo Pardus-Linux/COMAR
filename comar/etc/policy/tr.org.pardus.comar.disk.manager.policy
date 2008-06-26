@@ -5,6 +5,7 @@
     <action id="tr.org.pardus.comar.disk.manager.set">
         <description>Change disk manager settings</description>
         <description xml:lang="tr">Disk yöneticisi ayarlarını değiştir</description>
+        <description xml:lang="pl">Zmiana ustawień menedżera dysków</description>
         <message>System policy prevents changing disk manager settings</message>
         <message xml:lang="tr">Sistem politikası disk yöneticisi ayarlarını değiştirmeyi engelliyor</message>
         <defaults>
@@ -17,6 +18,7 @@
     <action id="tr.org.pardus.comar.disk.manager.get">
         <description>View disk manager settings</description>
         <description xml:lang="tr">Disk yöneticisi ayarlarını görüntüle</description>
+        <description xml:lang="pl">Odczyt ustawień menedżera dysków</description>
         <message>System policy prevents viewing disk manager settings</message>
         <message xml:lang="tr">Sistem politikası disk yöneticisi ayarlarına bakmayı engelliyor</message>
         <defaults>
@@ -29,6 +31,7 @@
     <action id="tr.org.pardus.comar.disk.manager.mount">
         <description>Add and remove block devices</description>
         <description xml:lang="tr">Disk ekle ve çıkar</description>
+        <description xml:lang="pl">Dodawanie i usuwanie urządzeń blokowych</description>
         <message>System policy prevents adding and removing block devices</message>
         <message xml:lang="tr">Sistem politikası disk eklemeyi ve çıkarmayı engelliyor</message>
         <defaults>

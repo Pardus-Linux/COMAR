@@ -7,6 +7,7 @@
     <action id="tr.org.pardus.comar.time.clock.set">
         <description>Set date/time</description>
         <description xml:lang="tr">Tarih/saat değiştir</description>
+        <description xml:lang="pl">Ustawianie daty/czasu</description>
         <message>System policy prevents changing date/time</message>
         <message xml:lang="tr">Sistem politikası tarihi/saati değiştirmeyi engelliyor</message>
         <defaults>
@@ -19,6 +20,7 @@
     <action id="tr.org.pardus.comar.time.clock.get">
         <description>Get date/time</description>
         <description xml:lang="tr">Tarih/saati oku</description>
+        <description xml:lang="pl">Odczyt daty/czasu</description>
         <message>System policy prevents getting date/time info</message>
         <message xml:lang="tr">Sistem politikası tarih/saat bilgisini okumayı engelliyor</message>
         <defaults>

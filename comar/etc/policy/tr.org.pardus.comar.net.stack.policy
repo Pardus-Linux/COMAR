@@ -7,6 +7,7 @@
     <action id="tr.org.pardus.comar.net.stack.set">
         <description>Set hostname/nameserver info</description>
         <description xml:lang="tr">Makine adı/isim sunucu bilgisini değiştir</description>
+        <description xml:lang="pl">Ustawianie hostname/nameserver</description>
         <message>System policy prevents changing host/nameserver information</message>
         <message xml:lang="tr">Sistem politikası makine adı/isim sunucu bilgisini değiştirmeyi engelliyor</message>
         <defaults>
@@ -19,6 +20,7 @@
     <action id="tr.org.pardus.comar.net.stack.get">
         <description>Get hostname/nameserver info</description>
         <description xml:lang="tr">Makine adı/isim sunucu bilgisini al</description>
+        <description xml:lang="pl">Odczyt hostname/nameserver</description>
         <message>System policy prevents getting host/nameserver info</message>
         <message xml:lang="tr">Sistem politikası makine adı/isim sunucu bilgisini almayı engelliyor</message>
         <defaults>

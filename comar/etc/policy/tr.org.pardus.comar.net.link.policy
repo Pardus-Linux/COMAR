@@ -6,6 +6,7 @@
     <action id="tr.org.pardus.comar.net.link.scanremote">
         <description>Scan remote access points</description>
         <description xml:lang="tr">Uzak erişim noktalarını tara</description>
+        <description xml:lang="pl">Skanowanie punktów dostępowych</description>
         <message>System policy prevents scanning remote access points</message>
         <message xml:lang="tr">Sistem politikası uzak erişim noktalarını taramayı engelliyor</message>
         <defaults>
@@ -18,6 +19,7 @@
     <action id="tr.org.pardus.comar.net.link.deleteconnection">
         <description>Delete connection</description>
         <description xml:lang="tr">Bağlantıyı sil</description>
+        <description xml:lang="pl">Kasowanie połączenia</description>
         <message>System policy prevents removing connections</message>
         <message xml:lang="tr">Sistem politikası bağlantı silmeyi engelliyor</message>
         <defaults>
@@ -30,6 +32,7 @@
     <action id="tr.org.pardus.comar.net.link.setstate">
         <description>Set connection state</description>
         <description xml:lang="tr">Bağlantı durumunu değiştir</description>
+        <description xml:lang="pl">Ustawianie stanu połączenia</description>
         <message>System policy prevents changing connection state</message>
         <message xml:lang="tr">Sistem politikası bağlantı durumunu değiştirmeyi engelliyor</message>
         <defaults>
@@ -43,6 +46,7 @@
     <action id="tr.org.pardus.comar.net.link.set">
         <description>Set connection details</description>
         <description xml:lang="tr">Bağlantı detaylarını değiştir</description>
+        <description xml:lang="pl">Ustawianie szczegółów połączenia</description>
         <message>System policy prevents adding/editing connections</message>
         <message xml:lang="tr">Sistem politikası bağlantı eklemeyi/bağlantıda değişiklik yapmayı engelliyor</message>
         <defaults>
@@ -55,6 +59,7 @@
     <action id="tr.org.pardus.comar.net.link.get">
         <description>Get connection/device details</description>
         <description xml:lang="tr">Bağlantı/aygıt detaylarını al</description>
+        <description xml:lang="pl">Odczyt ustawień połączenia/urządzenia</description>
         <message>System policy prevents getting connection/device details</message>
         <message xml:lang="tr">Sistem politikası bağlantı/aygıt detaylarını almayı engelliyor</message>
         <defaults>

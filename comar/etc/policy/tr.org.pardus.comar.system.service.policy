@@ -5,6 +5,7 @@
     <action id="tr.org.pardus.comar.system.service.set">
         <description>Change service state</description>
         <description xml:lang="tr">Servis durumunu değiştir</description>
+        <description xml:lang="pl">Zmiana stanu usługi</description>
         <message>System policy prevents changing service state</message>
         <message xml:lang="tr">Sistem politikası servis durumunu değiştirmeyi engelliyor</message>
         <defaults>
@@ -17,6 +18,7 @@
     <action id="tr.org.pardus.comar.system.service.get">
         <description>Get service status</description>
         <description xml:lang="tr">Servis durumunu oku</description>
+        <description xml:lang="pl">Odczyt stanu usługi</description>
         <message>System policy prevents getting service status</message>
         <message xml:lang="tr">Sistem politikası servis durumunu okumayı engelliyor</message>
         <defaults>

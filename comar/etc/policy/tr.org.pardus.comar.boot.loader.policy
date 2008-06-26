@@ -56,7 +56,7 @@
 	<description xml:lang="pl">Edycja opcji menedżera rozruchu i dodawanie nowych wpisów</description>
         <message>System policy prevents changing bootloader settings</message>
         <message xml:lang="tr">Sistem politikası önyükleyici ayarlarını değiştirmeyi engelliyor</message>
-	<message xml:lang="nl"Systeembeleid voorkomt bewerken bootlader en voeg nieuwe items toe</message>
+        <message xml:lang="nl">Systeembeleid voorkomt bewerken bootlader en voeg nieuwe items toe</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>

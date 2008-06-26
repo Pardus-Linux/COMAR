@@ -6,8 +6,10 @@
         <description>Change disk manager settings</description>
         <description xml:lang="tr">Disk yöneticisi ayarlarını değiştir</description>
         <description xml:lang="pl">Zmiana ustawień menedżera dysków</description>
+	<description xml:lang="de">Festplatten-Manager-Einstellungen ändern</description>
         <message>System policy prevents changing disk manager settings</message>
         <message xml:lang="tr">Sistem politikası disk yöneticisi ayarlarını değiştirmeyi engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert die Änderung der Festplatten-Manager-Einstellungen</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -19,8 +21,10 @@
         <description>View disk manager settings</description>
         <description xml:lang="tr">Disk yöneticisi ayarlarını görüntüle</description>
         <description xml:lang="pl">Odczyt ustawień menedżera dysków</description>
+	<description xml:lang="de">Festplatten-Manager-Einstellungen ansehen</description>
         <message>System policy prevents viewing disk manager settings</message>
         <message xml:lang="tr">Sistem politikası disk yöneticisi ayarlarına bakmayı engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert die Einsicht in die Festplatten-Manager-Einstellungen</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>
@@ -32,8 +36,10 @@
         <description>Add and remove block devices</description>
         <description xml:lang="tr">Disk ekle ve çıkar</description>
         <description xml:lang="pl">Dodawanie i usuwanie urządzeń blokowych</description>
+	<description xml:lang="de">Festplatten hinzufügen und entfernen</description>
         <message>System policy prevents adding and removing block devices</message>
         <message xml:lang="tr">Sistem politikası disk eklemeyi ve çıkarmayı engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert das Hinzufügen und Entfernen der Festplatten</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>

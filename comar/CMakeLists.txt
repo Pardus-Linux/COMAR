@@ -10,7 +10,7 @@ SET (VERSION_MINOR "0")
 SET (VERSION_PATCH "0")
 
 # Uncomment this for production releases.
-SET (VERSION_SUFFIX "beta2")
+#SET (VERSION_SUFFIX "beta2")
 SET (FLAGS "-g -O0 -Werror -Wcast-align -Wno-uninitialized -Wall -fstrict-aliasing")
 
 # Uncomment this for gprof profiling

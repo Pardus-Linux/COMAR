@@ -7,8 +7,10 @@
         <description>Execute package handler setup scripts</description>
         <description xml:lang="tr">Paket işleyicisi kurulum betiklerini çalıştır</description>
         <description xml:lang="pl">Wykonywanie skryptów pakietów</description>
+	<description xml:lang="de">Ausführen des Paketsteuerer-Setup-Skripts</description>
         <message>System policy prevents executing package handlers' setup scripts</message>
         <message xml:lang="tr">Sistem politikası paket işleyicilerinin kurulum betiklerinin çalıştırılmasını engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert die Ausführung des Paketsteuerer-Setup-Skripts</message>
         <defaults>
             <allow_any>no</allow_any>
             <allow_inactive>no</allow_inactive>
@@ -20,8 +22,10 @@
         <description>Execute package handler cleanup scripts</description>
         <description xml:lang="tr">Paket işleyicisi temizlik betiklerini çalıştır</description>
         <description xml:lang="pl">Wykonywanie skryptów porządkujących pakietów</description>
+	<description xml:lang="de">Ausführen des Paketsteuerer-Säuberungs-Skripts</description>
         <message>System policy prevents executing package handlers' cleanup scripts</message>
         <message xml:lang="tr">Sistem politikası paket işleyicilerinin temizlik betiklerininin çalıştırılmasını engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert die Ausführung des Paketsteuerer-Säuberungs-Skripts</message>
         <defaults>
             <allow_any>no</allow_any>
             <allow_inactive>no</allow_inactive>

@@ -7,8 +7,10 @@
         <description>Add user</description>
         <description xml:lang="tr">Kullanıcı ekle</description>
         <description xml:lang="pl">Dodawanie użytkowników</description>
+	<description xml:lang="de">Benutzer hinzufügen</description>
         <message>System policy prevents adding new user</message>
         <message xml:lang="tr">Sistem politikası yeni kullanıcı eklemeyi engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert das Hinzufügen des neuen Benutzers</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -20,8 +22,10 @@
         <description>Change user details</description>
         <description xml:lang="tr">Kullanıcı bilgilerini değiştir</description>
         <description xml:lang="pl">Zmiana ustawień użytkownika</description>
+	<description xml:lang="de">Benutzer-Details ändern</description>
         <message>System policy prevents editing user details</message>
         <message xml:lang="tr">Sistem politikası kullanıcı bilgilerini değiştirmeyi engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert die Bearbeitung der Benutzer-Details</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -33,8 +37,10 @@
         <description>Delete user</description>
         <description xml:lang="tr">Kullanıcı sil</description>
         <description xml:lang="pl">Usuwanie użytkowników</description>
+	<description xml:lang="de">Benutzer löschen</description>
         <message>System policy prevents removing user</message>
         <message xml:lang="tr">Sistem politikası kullanıcı silmeyi engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert das Löschen des Benutzers</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -46,8 +52,10 @@
         <description>Add group</description>
         <description xml:lang="tr">Grup ekle</description>
         <description xml:lang="pl">Dodawanie grup</description>
+	<description xml:lang="de">Gruppe hinzufügen</description>
         <message>System policy prevents adding new group</message>
         <message xml:lang="tr">Sistem politikası yeni grup eklemeyi engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert das Hinzufügen der neuen Gruppe</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -59,8 +67,10 @@
         <description>Delete group</description>
         <description xml:lang="tr">Grup sil</description>
         <description xml:lang="pl">Kasowanie grup</description>
+	<description xml:lang="de">Gruppe löschen</description>
         <message>System policy prevents removing group</message>
         <message xml:lang="tr">Sistem politikası grup silmeyi engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert das Löschen der Gruppe</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -73,8 +83,10 @@
         <description>Get user/groups</description>
         <description xml:lang="tr">Kullanıcı/grupları al</description>
         <description xml:lang="pl">Odczyt grup/użytkowników</description>
+	<description xml:lang="de">Benutzer/Gruppen abrufen</description>
         <message>System policy prevents getting user/group details</message>
         <message xml:lang="tr">Sistem politikası kullanıcı/grup detaylarını almayı engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert das Abrufen der Benutzer/Gruppen</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>
@@ -86,8 +98,10 @@
         <description>List user authorizations</description>
         <description xml:lang="tr">Kullanıcı yetkilerini listele</description>
         <description xml:lang="pl">Listowanie autoryzacji użytkowników</description>
+	<description xml:lang="de">Benutzer-Berechtigungen auflisten</description>
         <message>System policy prevents listing user authorizations</message>
         <message xml:lang="tr">Sistem politikası kullanıcı yetkilerinin listelenmesini engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert die Auflistung der Benutzer-Berechtigungen</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>

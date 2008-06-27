@@ -7,8 +7,10 @@
         <description>Get display info</description>
         <description xml:lang="tr">Görüntü bilgisini al</description>
         <description xml:lang="pl">Odczyt ustawień ekranu</description>
+	<description xml:lang="de">Anzeige-Informationen abrufen</description>
         <message>System policy prevents getting display info</message>
         <message xml:lang="tr">Sistem politikası görüntü bilgisini almayı engelliyor</message>
+	<message xml:lang="de">Systmerichtlinie verhindert das Abrufen des Anzeige-Informationen</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>
@@ -20,8 +22,10 @@
         <description>Change display configuration</description>
         <description xml:lang="tr">Görüntü yapılandırmasını değiştir</description>
         <description xml:lang="pl">Zmiana ustawień ekranu</description>
+	<description xml:lang="de">Anzeige-Konfiguration ändern</description>
         <message>System policy prevents setting display configuration</message>
         <message xml:lang="tr">Sistem politikası görüntü yapılandırmasını değiştirmeyi engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert die Änderung der Anzeige-Konfiguration</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>

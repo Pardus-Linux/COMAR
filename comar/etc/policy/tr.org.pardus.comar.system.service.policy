@@ -6,8 +6,10 @@
         <description>Change service state</description>
         <description xml:lang="tr">Servis durumunu değiştir</description>
         <description xml:lang="pl">Zmiana stanu usługi</description>
+	<description xml:lang="de">Dienst-Zustand ändern</description>
         <message>System policy prevents changing service state</message>
         <message xml:lang="tr">Sistem politikası servis durumunu değiştirmeyi engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert die Änderung des Dienst-Zustandes</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -19,8 +21,10 @@
         <description>Get service status</description>
         <description xml:lang="tr">Servis durumunu oku</description>
         <description xml:lang="pl">Odczyt stanu usługi</description>
+	<description xml:lang="de">Dienst-Zustand abrufen</description>	
         <message>System policy prevents getting service status</message>
         <message xml:lang="tr">Sistem politikası servis durumunu okumayı engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert den Abruf des Dienst-Zustandes</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>

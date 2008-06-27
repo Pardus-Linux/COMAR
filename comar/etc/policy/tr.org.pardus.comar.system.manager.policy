@@ -7,8 +7,10 @@
         <description>Install package</description>
         <description xml:lang="tr">Paket yükle</description>
         <description xml:lang="pl">Instalacja pakietów</description>
+	<description xml:lang="de">Paket installieren</description>
         <message>System policy prevents installing package</message>
         <message xml:lang="tr">Sistem politikası paket yüklemeyi engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert die Installation des Pakets</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -20,8 +22,10 @@
         <description>Remove package</description>
         <description xml:lang="tr">Paket kaldır</description>
         <description xml:lang="pl">Usuwanie pakietów</description>
+	<description xml:lang="de">Paket entfernen</description>
         <message>System policy prevents removing package</message>
         <message xml:lang="tr">Sistem politikası paket kaldırmayı engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert das Entfernen des Pakets</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -33,8 +37,10 @@
         <description>Update package</description>
         <description xml:lang="tr">Paket güncelle</description>
         <description xml:lang="pl">Aktualizowanie pakietów</description>
+	<description xml:lang="de">Paket aktualisieren</description>
         <message>System policy prevents updating package</message>
         <message xml:lang="tr">Sistem politikası paket güncellemeyi engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert die Aktualisierung des Pakets</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -46,8 +52,10 @@
         <description>Update repository</description>
         <description xml:lang="tr">Depo güncelle</description>
         <description xml:lang="pl">Aktualizacja repozytorium</description>
+	<description xml:lang="de">Depo aktualisieren</description>
         <message>System policy prevents updating repository</message>
         <message xml:lang="tr">Sistem politikası depo güncellemeyi engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert die Aktualisierung des Depots</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>yes</allow_active>
@@ -59,8 +67,10 @@
         <description>Update all repositories</description>
         <description xml:lang="tr">Tüm depoları güncelle</description>
         <description xml:lang="pl">Aktualizacja wszystkich repozytoriów</description>
+	<description xml:lang="de">Alle Depots aktualisieren</description>
         <message>System policy prevents updating all repositories</message>
         <message xml:lang="tr">Sistem politikası tüm depoları güncellemeyi engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert die Aktualisierung der allen Depots</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>yes</allow_active>
@@ -72,8 +82,10 @@
         <description>Add repository</description>
         <description xml:lang="tr">Depo ekle</description>
         <description xml:lang="pl">Dodawanie repozytoriów</description>
+	<description xml:lang="de">Depot hinzufügen</description>
         <message>System policy prevents adding repository</message>
         <message xml:lang="tr">Sistem politikası depo eklemeyi engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert das Hinzufügen des Depots</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -85,8 +97,10 @@
         <description>Remove repository</description>
         <description xml:lang="tr">Depo kaldır</description>
         <description xml:lang="pl">Usuwanie repozytoriów</description>
+	<description xml:lang="de">Depot entfernen</description>
         <message>System policy prevents removing repository</message>
-        <message>Sistem politikası depo kaldırmayı engelliyor</message>
+        <message xml:lang="tr">Sistem politikası depo kaldırmayı engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert das Entfernen des Depots</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -98,8 +112,10 @@
         <description>Set repositories</description>
         <description xml:lang="tr">Depoları yaz</description>
         <description xml:lang="pl">Ustawianie repozytoriów</description>
+	<description xml:lang="de">Depots einstellen</description>
         <message>System policy prevents setting repositories</message>
         <message xml:lang="tr">Sistem politikası depoları yazmayı engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert das Einstellen des Depots</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -111,8 +127,10 @@
         <description>Set PiSi package cache</description>
         <description xml:lang="tr">PiSi paket önbelleğini yaz</description>
         <description xml:lang="pl">Ustawianie kesza PiSi dla pakietów</description>
+	<description xml:lang="de">Cache des PiSi-Pakets einstellen</description>
         <message>System policy prevents setting PiSi package cache</message>
         <message xml:lang="tr">Sistem politikası PiSi paket önbelleğini ayarlamayı engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert die Einstellung des PiSi-Paket-Caches</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -124,8 +142,10 @@
         <description>Change PiSi config</description>
         <description xml:lang="tr">PiSi ayarı değiştirme</description>
         <description xml:lang="pl">Konfigurowanie PiSi</description>
+	<description xml:lang="de">PiSi-Konfiguration ändern</description>
         <message>System policy prevents changing PiSi config</message>
         <message xml:lang="tr">Sistem politikası PiSi ayarını değiştirmeyi engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert die Änderung der PiSi-Konfiguration</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -137,8 +157,10 @@
         <description>Clear PiSi cache</description>
         <description xml:lang="tr">PiSi önbelleğini boşalt</description>
         <description xml:lang="pl">Czyszczenie kesza PiSi</description>
+	<description xml:lang="de">Den PiSi-Cache leeren</description>
         <message>System policy prevents clearing PiSi package cache</message>
         <message xml:lang="tr">Sistem politikası PiSi paket önbelleğini boşaltmayı engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert das Leeren des PiSi-Paket-Caches</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -150,8 +172,10 @@
         <description>Take a Snapshot of System</description>
         <description xml:lang="tr">Sistem Görüntüsünü al</description>
         <description xml:lang="pl">Wykonywanie zrzutu systemu</description>
+	<description xml:lang="de">Sicherungspunkt von dem jetztigen Zustand des Systems erstellen</description>
         <message>System policy prevents taking snapshot</message>
         <message xml:lang="tr">Sistem politikası sistem görüntüsü almayı engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert die Erstellung des Sicherungpunktes</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -163,8 +187,10 @@
         <description>Take system back to a Snapshot</description>
         <description xml:lang="tr">Sistemi eski bir görüntüye götür</description>
         <description xml:lang="pl">Przywracanie systemu ze zrzutu</description>
+	<description xml:lang="de">System zu einem Sicherungspunkt wiederherstellen</description>
         <message>System policy prevents system snapshot operation</message>
         <message xml:lang="tr">Sistem politikası sistem görüntüsüne gitmeyi engelliyor</message>
+	<message xml:lang="de">Systemrichtlinie verhindert den Sicherungspunkt-Vorgang </message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>

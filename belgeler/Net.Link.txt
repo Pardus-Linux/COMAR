@@ -1,0 +1,137 @@
+Net.Link
+
+    linkInfo():
+        Uygulamanın ağ bağlantısı kurmak ya da yönetmek için ihtiyaç duyduğu bilgileri sunar.
+
+        Örnek:
+
+        01 def linkInfo():
+        02    return {
+        03        "type": "wifi",
+        04        "name": _(name_msg),
+        05        "modes": "device,remote,scan,net,auto,auth",
+        06        "auth_modes": "wep,pass,WEP;wepascii,pass,WEP ASCII;wpa-psk,pass,WPA",
+        07        "remote_name": "ESS ID",
+        08    }
+
+        - type: Uygulamanın sağladığı bağlantı türünü ifade eden anahtar kelime
+                (wifi, net, ppp, ...)
+
+        - name: Bağlantı türüne ait açıklama
+
+        - modes: Profil oluştururken kullanılabilecek metodlar ve özellikler ile ilgili bilgi sunar.
+
+                 device : Bağlantı kurarken bir aygıt seçilmesi gerektiğini gösterir.
+                          setConnection(profile, device) komutu ile belirlenebilir.
+                          deviceList() komutu ile aygıt bilgisi alınabilir.
+
+                 remote : Bağlantı kurarken uzak bir bağlantı noktası adresi verilmesi gerektiğini gösterir.
+                          (ppp için telefon numarası, wifi için essid, ...)
+                          setRemote(profile, remote_address) komutu ile belirlenebilir.
+
+                 scan   : Uzak bağlantı tarama işlemi yapılabileceği anlamına gelir.
+                          scanRemote(device_id) komutu ile tarama yapılabilir.
+
+                 net    : Bağlantı kurmak için adres belirlemek gerektiğini gösterir.
+                          setAddresss(profile, mode="manual", address, mask, gateway)
+                          komutu ile adres belirlenebilir. 
+
+                 auto   : Adresin karşı taraf tarafından belirlenebileceği (DHCP gibi) anlamına gelir.
+                          setAddresss(profile, mode="auto", address="", mask="", gateway="")
+                          komutu kullanılabilir.
+
+                 auth   : Bağlantı kurarken kimlik doğrulama yapılabileceği anlamına gelir.
+                          setAuthentication(profile, authmode, user, password) komutu ile doğrulama
+                          methodu ve bilgileri belirlenebilir. Kullanılabilir modlar "auth_modes"
+                          başlığında açıklanmıştır.
+
+        - auth_modes: Kimlik doğrulama yapılabiliyorsa, kullanılabilir kimlik doğrulama
+                      metodları bu alanda belirtilir. Metodlar aşağıdaki gibi
+                      tanımlanabilir:
+                      "metod_adı,login,Metod Tanımı;metod2_adı,password,Metod 2 Türü; ..."
+
+                      2. argüman olarak "login" ya da "password" kullanılabilir. Kullanıcı adı ve
+                      parola gerekiyorsa "login", sadece parola gerekiyorsa "password" kullanılmalıdır.
+                      VPN gibi anahtar dosya isteyen bağlantılar için "keyfile" gibi bir argüman
+                      eklenmesi düşünülmektedir.
+
+        - remote_name: Uzak bağlantı noktası bilgisi isterken kullanılacak tanım.
+                       (ppp için "Telefon Numarası", wifi için "ESS ID", ...)
+
+
+    deviceList():
+        Uygulama tarafından kullanılabilen aygıt listesini verir. {"device_id": "Device Label", ...} formatında bir dictionary'dir.
+
+        Örnek:
+
+        O1 {
+        02     "pci:1106_3065_eth1": "VT6102 [Rhine-II] - VIA Technologies, Inc. (eth1)",
+        03 }
+
+
+    connections():
+        Oluşturulan profillerin listesini verir.
+
+        Örnek:
+
+        O1 [
+        02     "Ev",
+        03     "Ofis",
+        04 ]
+
+
+    connectionInfo(profile):
+        Bağlantıya ait bilgileri (kimlik doğrulama bilgisi hariç) gösterir.
+
+        Örnek:
+
+        01 {
+        02     "name": "Ev",
+        03     "device_id": "pci:1106_3065_eth1",
+        04     "device_name": "VT6102 [Rhine-II] - VIA Technologies, Inc. (eth1)",
+        05     "net_mode": "manual",
+        06     "net_address": "192.168.2.10",
+        07     "net_mask": "255.255.255.0",
+        08     "net_gateway": "192.168.2.1",
+        09     "state": "up",
+        00 }
+
+
+    scanRemote(device):
+        Bağlanılabilir uzak noktaları taramak için kullanılır.
+
+
+    setConnection(profile, device):
+        Profili bir aygıtla ilişkilendirmek için kullanılabilir.
+
+
+    deleteConnection(profile):
+        Profili silmek için kullanılabilir.
+
+
+    setAddress(profile, mode, address, mask, gateway):
+        ...
+
+
+    setRemote(profile, remote, apmac):
+        ...
+
+
+    setNameService(profile, namemode, nameserver):
+        ...
+
+
+    setAuthentication(profile, authmode, user, password):
+        ...
+
+
+    setState(profile, state):
+        ...
+
+
+    getState(profile):
+        ...
+
+
+    getAuthentication(profile):
+        ...

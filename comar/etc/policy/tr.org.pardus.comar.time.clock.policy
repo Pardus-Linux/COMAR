@@ -8,11 +8,13 @@
         <description>Set date/time</description>
         <description xml:lang="tr">Tarih/saat değiştir</description>
         <description xml:lang="fr">Établir la date/l'heure</description>
+        <description xml:lang="es">Establecer Fecha/Hora</description>
         <description xml:lang="pl">Ustawianie daty/czasu</description>
 	<description xml:lang="de">Datum/Uhrzeit einstellen</description>
         <message>System policy prevents changing date/time</message>
         <message xml:lang="tr">Sistem politikası tarihi/saati değiştirmeyi engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas d'établir la date/l'heure du système</message>
+        <message xml:lang="es">La política del sistema no permite cambiar la fecha/hora</message>
 	<message xml:lang="de">Systemrichtlinie verhindert die Änderung des Datums/der Uhrzeit</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
@@ -25,11 +27,13 @@
         <description>Get date/time</description>
         <description xml:lang="tr">Tarih/saati oku</description>
         <description xml:lang="fr">Obtenir la date/l'heure du système</description>
+        <description xml:lang="es">Obtener Fecha/Hora</description>
         <description xml:lang="pl">Odczyt daty/czasu</description>
 	<description xml:lang="de">Datum/Uhrzeit abrufen</description>
         <message>System policy prevents getting date/time info</message>
         <message xml:lang="tr">Sistem politikası tarih/saat bilgisini okumayı engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas d'obtenir la date/l'heure du système</message>
+        <message xml:lang="es">La política del sistema no permite obtener la fecha/hora del sistema</message>
 	<message xml:lang="de">Systemrichtlinie verhindert das Abrufen der Datum-/Uhrzeitinformationen</message>
         <defaults>
             <allow_any>yes</allow_any>

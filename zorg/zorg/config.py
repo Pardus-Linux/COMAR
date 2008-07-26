@@ -120,6 +120,16 @@ def saveXorgConfig(card):
             if card.modes.has_key(output):
                 monSec.options["PreferredMode"] = card.modes[output]
 
+            if card.desktop_setup in ("horizontal", "vertical"):
+                out1, out2 = card.active_outputs[:2]
+                if output == out1:
+                    if card.desktop_setup == "horizontal":
+                        pos = "LeftOf"
+                    else:
+                        pos = "Above"
+
+                    monSec.options[pos] = "Monitor[%s]" % out2
+
     secScr.set("Identifier", "Screen")
     secScr.set("Device", "VideoCard")
     secScr.set("Monitor", "Monitor[%s]" % card.active_outputs[0])

@@ -66,13 +66,13 @@ auth_self                Kendi parolasını girerek yetki alabilir
 auth_self_keep_session   Kendi parolasını bir kez girdikten sonra 
                          oturum boyunca bir daha parola girmesine 
                          gerek kalmaz
-auto_self_keep_always    Kendi parolsını bir kez girdikten sonra 
+auth_self_keep_always    Kendi parolsını bir kez girdikten sonra 
                          bir daha parola girmesine gerek kalmaz
 auth_admin               Root parolasını girerek yetki alabilir
 auth_admin_keep_session  Root parolasını bir kez girdikten sonra 
                          oturum boyunca bir daha parola girmesine 
                          gerek kalmaz
-auto_admin_keep_always   Root parolasını bir kez girdikten sonra 
+auth_admin_keep_always   Root parolasını bir kez girdikten sonra 
                          bir daha parola girmesine gerek kalmaz
 
 

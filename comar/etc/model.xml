@@ -127,6 +127,11 @@
             <arg name="device" type="s" direction="in"/>
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
+        <method name="setConnectionMode" access_label="set">
+            <arg name="name" type="s" direction="in"/>
+            <arg name="device_mode" type="s" direction="in"/>
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
         <method name="deleteConnection" access_label="set">
             <arg name="name" type="s" direction="in"/>
         </method>
@@ -136,6 +141,17 @@
             <arg name="address" type="s" direction="in"/>
             <arg name="mask" type="s" direction="in"/>
             <arg name="gateway" type="s" direction="in"/>
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+        <method name="setVpn" access_label="set">
+            <arg name="name" type="s" direction="in"/>
+            <arg name="domain" type="s" direction="in"/>
+            <arg name="port" type="s" direction="in"/>
+            <arg name="protocol" type="s" direction="in"/>
+            <arg name="ca" type="s" direction="in"/>
+            <arg name="cert" type="s" direction="in"/>
+            <arg name="key" type="s" direction="in"/>
+            <arg name="chipher" type="s" direction="in"/>
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
         <method name="setRemote" access_label="set">
@@ -198,6 +214,22 @@
             <arg name="device_id" type="s"/>
             <arg name="device_name" type="s"/>
         </signal>
+    </interface>
+    <interface name="Net.Share">
+        <method name="addBridge" access_label="set">
+            <arg name="br_name" direction="in"/>
+        </method>
+        <method name="delBridge" access_label="set">
+            <arg name="br_name" direction="in"/>
+        </method>
+        <method name="addInterface" access_label="set">
+            <arg name="br_name" direction="in"/>
+            <arg name="if_name" direction="in"/>
+        </method>
+        <method name="delInterface" access_label="set">
+            <arg name="br_name" direction="in"/>
+            <arg name="if_name" direction="in"/>
+        </method>
     </interface>
     <interface name="User.Manager">
         <method name="userList" access_label="get">

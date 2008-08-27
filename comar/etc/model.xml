@@ -216,19 +216,11 @@
         </signal>
     </interface>
     <interface name="Net.Share">
-        <method name="addBridge" access_label="set">
-            <arg name="br_name" direction="in"/>
-        </method>
-        <method name="delBridge" access_label="set">
-            <arg name="br_name" direction="in"/>
-        </method>
-        <method name="addInterface" access_label="set">
-            <arg name="br_name" direction="in"/>
-            <arg name="if_name" direction="in"/>
-        </method>
-        <method name="delInterface" access_label="set">
-            <arg name="br_name" direction="in"/>
-            <arg name="if_name" direction="in"/>
+        <method name="checkShare" access_label="set">
+            <arg name="net_addr" type="s" direction="in"/>
+            <arg name="net_mode" type="s" direction="in"/>
+            <arg name="net_mask" type="s" direction="in"/>
+            <arg name="name_srv" type="s" direction="in"/>
         </method>
     </interface>
     <interface name="User.Manager">

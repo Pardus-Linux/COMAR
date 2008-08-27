@@ -50,7 +50,7 @@ policy_check(const char *sender, const char *interface, const char *method, PolK
 
     conn = dbus_bus_get_private(DBUS_BUS_SYSTEM, &err);
     if (dbus_error_is_set(&err)) {
-        log_error("Unable to open connection to query CK: %s\n", err.message);
+        // log_error("Unable to open connection to query CK: %s\n", err.message);
         dbus_error_free(&err);
         return 0;
     }
@@ -58,7 +58,7 @@ policy_check(const char *sender, const char *interface, const char *method, PolK
     // If UID is 0, don't query PolicyKit
     uid = dbus_bus_get_unix_user(conn, sender, &err);
     if (dbus_error_is_set(&err)) {
-        log_error("Unable to get caller UID: %s\n", err.message);
+        // log_error("Unable to get caller UID: %s\n", err.message);
         dbus_error_free(&err);
         return 0;
     }
@@ -69,14 +69,14 @@ policy_check(const char *sender, const char *interface, const char *method, PolK
 
     polkit_ctx = polkit_context_new();
     if (!polkit_context_init(polkit_ctx, &perr)) {
-        log_error("Unable to initialize PK context: %s\n", polkit_error_get_error_message(perr));
+        // log_error("Unable to initialize PK context: %s\n", polkit_error_get_error_message(perr));
         polkit_error_free(perr);
         return 0;
     }
 
     polkit_clr = polkit_caller_new_from_dbus_name(conn, sender, &err);
     if (dbus_error_is_set(&err)) {
-        log_error("Unable to get caller info: %s\n", err.message);
+        // log_error("Unable to get caller info: %s\n", err.message);
         dbus_error_free(&err);
         return 0;
     }
@@ -109,7 +109,7 @@ policy_check(const char *sender, const char *interface, const char *method, PolK
     }
 
     if (!polkit_action_validate_id(action)) {
-        log_error("Unable to query CK, action is not valid: %s\n", action);
+        // log_error("Unable to query CK, action is not valid: %s\n", action);
         free(action);
         return 0;
     }

@@ -171,7 +171,18 @@
             <arg name="authmode" type="s" direction="in"/>
             <arg name="user" type="s" direction="in"/>
             <arg name="password" type="s" direction="in"/>
+            <arg name="auth" type="s" direction="in"/>
+            <arg name="anon" type="s" direction="in"/>
+            <arg name="inner" type="s" direction="in"/>
+            <arg name="ca_cert" type="s" direction="in"/>
+            <arg name="client_cert" type="s" direction="in"/>
+            <arg name="private_key" type="s" direction="in"/>
+            <arg name="private_key_passwd" type="s" direction="in"/>
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+        <method name="setChannel" access_label="set">
+            <arg name="name" type="s" direction="in"/>
+            <arg name="chan" type="s" direction="in"/>
         </method>
         <method name="setState">
             <arg name="name" type="s" direction="in"/>

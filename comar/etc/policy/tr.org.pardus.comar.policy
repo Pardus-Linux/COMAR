@@ -10,12 +10,14 @@
         <description xml:lang="es">Registrar nuevos scripts</description>
         <description xml:lang="pl">Zarejestruj nowe skrypty</description>
 	<description xml:lang="de">Neue Skripte registrieren</description>
+	<description xml:lang="sv">Registrerar nya skript</description>
         <message>System policy prevents registering scripts</message>
         <message xml:lang="tr">Sistem politikası betiklerin sisteme kaydedilmesini engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas d'enregistrer de nouveaux scripts</message>
         <message xml:lang="es">La política del sistema no permite registrar nuevos scripts</message>
 	<message xml:lang="de">Systemrichtlinie verhindert die Registrierung der Skripte</message>
         <message xml:lang="pl">Ustawienia systemu zabraniają rejestrowaniu nowych skryptów</message>
+        <message xml:lang="sv">Systempolicyn förhindrar registreringen av skript</message>
         <defaults>
             <allow_any>no</allow_any>
             <allow_active>no</allow_active>
@@ -30,12 +32,14 @@
         <description xml:lang="es">Eliminar programa</description>
         <description xml:lang="pl">Usuń aplikację</description>
 	<description xml:lang="de">Anwendung entfernen</description>
+	<description xml:lang="sv">Ta bort program</description>
         <message>System policy prevents removing applications</message>
         <message xml:lang="tr">Sistem politikası uygulamaların kaldırılmasını engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas de supprimer d'applications</message>
         <message xml:lang="es">La política del sistema no permite eliminar programas</message>
         <message xml:lang="pl">Ustawienia systemu zabraniają usuwania aplikacji</message>
 	<message xml:lang="de">Systemrichtlinie verhindert das Entfernen der Anwendungen</message>
+	<message xml:lang="sv">Systempolicyn förhindrar borttagning av program</message>
         <defaults>
             <allow_any>no</allow_any>
             <allow_active>no</allow_active>
@@ -50,12 +54,14 @@
         <description xml:lang="es">Listar programas</description>
         <description xml:lang="pl">Listuj aplikacje</description>
 	<description xml:lang="de">Anwendungen auflisten</description>
+	<description xml:lang="sv">Lista program</description>
         <message>System policy prevents listing applications</message>
         <message xml:lang="tr">Sistem politikaları uygulamaların listelenmesini engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas de lister d'applications</message>
         <message xml:lang="es">La política del sistema no permite listar programas</message>
         <message xml:lang="pl">Ustawienia systemu zabraniają listowania aplikacji</message>
 	<message xml:lang="de">Systekrichtlinie verhindert die Auflistung der Anwendungen</message>
+	<message xml:lang="sv">Systempolicyn förhindrar listning av program</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>
@@ -70,12 +76,14 @@
         <description xml:lang="es">Listar modelos</description>
         <description xml:lang="pl">Listuj modele</description>
 	<description xml:lang="de">Medelle auflisten</description>
+	<description xml:lang="sv">Lista modeller</description>
         <message>System policy prevents listing models</message>
         <message xml:lang="tr">Sistem politikası modellerin listelenmesini engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas de lister de modèles</message>
         <message xml:lang="es">La política del sistema no permite listar los modelos</message>
         <message xml:lang="pl">Ustawienia systemu zabraniają listowania modeli</message>
 	<message xml:lang="de">Systemrichtlinie verhindert die Auflistung der Modelle</message>
+	<message xml:lang="sv">Systempolicyn förhindrar listning av modeller</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>
@@ -90,12 +98,14 @@
         <description xml:lang="es">Listar modelos de programas</description>
         <description xml:lang="pl">Listuj modele aplikacji</description>
 	<description xml:lang="de">Anwendungsmodelle auflisten</description>
+	<description xml:lang="sv">Lista programmodeller</description>
         <message>System policy prevents listing application models</message>
         <message xml:lang="tr">Sistem politikası uygulama modellerinin listelenmesini engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas de lister de modèles d'application</message>
         <message xml:lang="es">La política del sistema no permite listar modelos de programas</message>
         <message xml:lang="pl">Ustawienia systemu zabraniają listowania modeli aplikacji</message>
 	<message xml:lang="de">Systemrichtlinie verhindert die Auflistung der Anwendungsmodelle</message>
+	<message xml:lang="sv">Systempolicyn förhindrar listning av programmodeller</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>
@@ -110,12 +120,14 @@
         <description xml:lang="es">Listar programas de ejemplo</description>
         <description xml:lang="pl">Listuj modelowe aplikacje</description>
 	<description xml:lang="de">Modelanwendungen auflisten</description>
+	<description xml:lang="sv">Lista modellprogram</description>
         <message>System policy prevents listing model applications</message>
         <message xml:lang="tr">Sistem politikası model uygulamaların listelenmesini engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas de lister d'applications modèles</message>
         <message xml:lang="es">La política del sistema no permite listar programas de ejemplo</message>
         <message xml:lang="pl">Ustawienia systemu zabraniają lisowania modelowych aplikacji</message>
 	<message xml:lang="de">Systemrichtlinie verhindert die Auflistung der Modelanwendungen</message>
+	<message xml:lang="sv">Systempolicyn förhindrar listning av modellprogram</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>

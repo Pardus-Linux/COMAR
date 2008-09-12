@@ -67,7 +67,7 @@
         <description xml:lang="fr">Ajouter une connexion ou établir les détails de la connexion</description>
         <description xml:lang="es">Establecer detalles de la conexión</description>
         <description xml:lang="pl">Ustawianie szczegółów połączenia</description>
-        <description xml:lang="de">Verbindungsdetails einstellen</description>
+        <description xml:lang="de">Verbindung hinzufügen oder Verbindungsdetails einstellen</description>
         <message>System policy prevents adding/editing connections</message>
         <message xml:lang="tr">Sistem politikası bağlantı eklemeyi/bağlantıda değişiklik yapmayı engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas d'établir les détails concernant la connexion</message>

@@ -93,6 +93,10 @@ c_call(PyObject *self, PyObject *args)
         tuple = PyTuple_New(0);
     }
 
+    if (timeout != -1) {
+        timeout = timeout * 1000;
+    }
+
     DBusConnection *conn;
     DBusError err;
     DBusMessage *msg, *reply;

@@ -83,8 +83,9 @@ c_call(PyObject *self, PyObject *args)
     PyObject *ret, *tuple = NULL;
     char *app, *model, *method, *interface, *path;
     int size, i;
+    int timeout = -1;
 
-    if (!PyArg_ParseTuple(args, "sss|O", &app, &model, &method, &tuple))
+    if (!PyArg_ParseTuple(args, "sss|Oi", &app, &model, &method, &tuple, &timeout))
         return NULL;
 
 
@@ -136,7 +137,7 @@ c_call(PyObject *self, PyObject *args)
         }
     }
 
-    reply = dbus_connection_send_with_reply_and_block(conn, msg, -1, &err);
+    reply = dbus_connection_send_with_reply_and_block(conn, msg, timeout, &err);
     dbus_message_unref(msg);
     dbus_connection_close(conn);
     dbus_connection_unref(conn);

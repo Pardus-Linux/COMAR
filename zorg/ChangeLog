@@ -1,2 +1,7 @@
+2008-09-24  Fatih Aşıcı  <fatih@pardus.org.tr>
+		* zorg/probe.py: Added a high timeout value for dbus calls
+		since enabling a driver package might take a long time on slow
+		machines.
+
 2008-09-17  Fatih Aşıcı  <fatih@pardus.org.tr>
 		* AUTHORS, ChangeLog: Added AUTHORS and ChangeLog.

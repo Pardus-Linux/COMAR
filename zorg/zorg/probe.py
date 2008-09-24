@@ -226,7 +226,7 @@ def call(package, model, method, *args):
         return
 
     cmethod = getattr(iface, method)
-    return cmethod(*args)
+    return cmethod(timeout=2**16-1, *args)
 
 def getKeymapList():
     return os.listdir(xkb_path)

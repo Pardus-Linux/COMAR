@@ -65,7 +65,7 @@
         <description>Add connection or set connection details</description>
         <description xml:lang="tr">Bağlantı ekle veya detaylarını değiştir</description>
         <description xml:lang="fr">Ajouter une connexion ou établir les détails de la connexion</description>
-        <description xml:lang="es">Establecer detalles de la conexión</description>
+        <description xml:lang="es">Agregar conexión o configurar detalles de una conexión</description>
         <description xml:lang="pl">Ustawianie szczegółów połączenia</description>
         <description xml:lang="de">Verbindung hinzufügen oder Verbindungsdetails einstellen</description>
         <message>System policy prevents adding/editing connections</message>

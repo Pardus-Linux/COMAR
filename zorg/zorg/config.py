@@ -180,7 +180,7 @@ def saveXorgConfig(card):
 
     if os.path.exists("/dev/input/wacom"):
         for wtype in "stylus", "eraser", "cursor", "pad":
-            secLay.set("InputDevice", "Wacom[%s]" % wtype)
+            secLay.add("InputDevice", "Wacom[%s]" % wtype)
 
     backup(xorgConf)
 

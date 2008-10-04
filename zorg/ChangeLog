@@ -1,3 +1,8 @@
+2008-10-04  Fatih Aşıcı  <fatih@pardus.org.tr>
+		* zorg/__init__.py: Bumped version to 1.1.
+		* zorg/config.py: Added support to create InputDevice
+		sections for wacom devices.
+
 2008-09-24  Fatih Aşıcı  <fatih@pardus.org.tr>
 		* zorg/probe.py: Added a high timeout value for dbus calls
 		since enabling a driver package might take a long time on slow

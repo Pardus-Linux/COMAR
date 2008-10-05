@@ -1,0 +1,4 @@
+2008-10-05  Bahadır Kandemir  <bahadir@pardus.org.tr>
+
+	* comar/service.py (startService): Check service status before starting
+	service

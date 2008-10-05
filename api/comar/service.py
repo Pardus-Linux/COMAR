@@ -235,6 +235,14 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
             args = args.split()
         cmd.extend(args)
     
+    try:
+        from csl import status
+        if status():
+            # Already running, no need to send notification, just return OK
+            return None
+    except:
+        pass
+    
     if pidfile:
         pid = _getPid(pidfile)
         if _checkPid(pid, command=command):

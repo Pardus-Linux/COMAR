@@ -413,7 +413,7 @@ def ready():
         start()
 
 def setState(state=None):
-    if state != "on" and state != "off":
+    if state not in ["on", "off", "conditional"]:
         fail("Unknown state '%s'" % state)
     
     def makeDir(_dir):
@@ -436,12 +436,18 @@ def setState(state=None):
             remove(os.path.join("/etc/mudur/services/disabled", script()))
         if os.access(os.path.join("/etc/mudur/services/conditional", script()), os.F_OK):
             remove(os.path.join("/etc/mudur/services/conditional", script()))
-    else:
+    elif state == "off":
         touch(os.path.join("/etc/mudur/services/disabled", script()))
         if os.access(os.path.join("/etc/mudur/services/enabled", script()), os.F_OK):
             remove(os.path.join("/etc/mudur/services/enabled", script()))
         if os.access(os.path.join("/etc/mudur/services/conditional", script()), os.F_OK):
             remove(os.path.join("/etc/mudur/services/conditional", script()))
+    else:
+        touch(os.path.join("/etc/mudur/services/conditional", script()))
+        if os.access(os.path.join("/etc/mudur/services/enabled", script()), os.F_OK):
+            remove(os.path.join("/etc/mudur/services/enabled", script()))
+        if os.access(os.path.join("/etc/mudur/services/disabled", script()), os.F_OK):
+            remove(os.path.join("/etc/mudur/services/disabled", script()))
     
     notify("System.Service", "Changed", (script(), state))
 

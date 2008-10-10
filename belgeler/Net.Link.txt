@@ -98,7 +98,7 @@ Net.Link
 
 
     scanRemote(device):
-        Bağlanılabilir uzak noktaları taramak için kullanılır.
+        'remote' modu destekleniyorsa bağlanılabilir uzak noktaları taramak için kullanılır.
 
 
     setConnection(profile, device):
@@ -110,11 +110,13 @@ Net.Link
 
 
     setAddress(profile, mode, address, mask, gateway):
-        ...
+        'net' modu destekleniyorsa adres girmek girme için kullanılır.
+        'auto' modu destekleniyorsa mode olarak 'auto' verilerek DHCP ayarlanabilir
 
 
     setRemote(profile, remote, apmac):
-        ...
+        'remote' modu destekleniyorsa essid ve apmac tanımlamak için kullanılır.
+        Wireless tarama ile bulunan ESSID ve MAC girilmelidir.
 
 
     setNameService(profile, namemode, nameserver):
@@ -122,16 +124,18 @@ Net.Link
 
 
     setAuthentication(profile, authmode, user, password):
-        ...
+        'auth' modu destekleniyorsa, kimlik doğrulama bilgilerini ayarlamak için kullanılır.
+        Detaylı bilgi yukarıda, 'auth_modes' tanımında bulunabilir
+
+    getAuthentication(profile):
+        Profilin kimlik doğrulama bilgilerini verir. Bu bilgiler güvenlik amacıyla
+        connectionInfo()'da bulunmaz.
 
 
     setState(profile, state):
-        ...
+        'up' ile ilgili profil bağlantısını kurar, 'down' ile kapatır.
 
 
     getState(profile):
-        ...
+        Profilin bağlantı durumunu verir.
 
-
-    getAuthentication(profile):
-        ...

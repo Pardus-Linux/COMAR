@@ -1,0 +1,36 @@
+COMAR API package offers modules for accessing COMAR over D-Bus without pain and 
+common mehtods/classess for COMAR scripts.
+
+Here're some examples for accessing COMAR:
+
+    import comar
+    link = comar.Link()
+
+    # Get a list of packages that provide system.service method
+    packages = list(link.System.Service)
+
+    # Start a service
+    link.System.Service["kdebase"].start()
+
+    # Stop all services, ignore replies from packages.
+    link.System.Service.stop(quiet=False)
+
+Async calls:
+
+    import gobject
+    import dbus.mainloop.glib
+    dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+    mainloop = gobject.MainLoop()
+
+    import comar
+    link = comar.Link()
+
+    # Make an asynchronous call to get service information
+    def handler(package, exception, result):
+        if exception:
+            print "%s error: %s" % (package, exception)
+        else:
+            print "%s result: %s" % (package, result)
+    link.System.Service.info(async=handler)
+
+    mainloop.run()

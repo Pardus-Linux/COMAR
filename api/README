@@ -13,7 +13,7 @@ Here're some examples for accessing COMAR:
     link.System.Service["kdebase"].start()
 
     # Stop all services, ignore replies from packages.
-    link.System.Service.stop(quiet=False)
+    link.System.Service.stop(quiet=True)
 
 Async calls:
 

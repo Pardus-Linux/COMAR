@@ -68,19 +68,26 @@ class Call:
                     met(dbus_interface="tr.org.pardus.comar.%s.%s" % (self.group, self.class_), reply_handler=handleResult, error_handler=handleError, *args)
             else:
                 def handlePackages(packages):
-                    for package in packages:
-                        obj = self.link.bus.get_object(self.link.address, "/package/%s" % package, introspect=False)
-                        met = getattr(obj, self.method)
-
-                        if self.quiet:
+                    if self.quiet:
+                        for package in packages:
+                            obj = self.link.bus.get_object(self.link.address, "/package/%s" % package, introspect=False)
+                            met = getattr(obj, self.method)
                             met(dbus_interface="tr.org.pardus.comar.%s.%s" % (self.group, self.class_), ignore_reply=True, *args)
-                        else:
-                            def handleResult(*result):
-                                self.async(package, None, result)
-                            def handleError(exception):
-                                self.async(package, exception, None)
+                    else:
+                        def handleResult(package):
+                            def handler(*result):
+                                return self.async(package, None, result)
+                            return handler
+                        def handleError(package):
+                            def handler(exception):
+                                return self.async(package, exception, None)
+                            return handler
 
-                            met(dbus_interface="tr.org.pardus.comar.%s.%s" % (self.group, self.class_), reply_handler=handleResult, error_handler=handleError, *args)
+                        for package in packages:
+                            obj = self.link.bus.get_object(self.link.address, "/package/%s" % package, introspect=False)
+                            met = getattr(obj, self.method)
+
+                            met(dbus_interface="tr.org.pardus.comar.%s.%s" % (self.group, self.class_), reply_handler=handleResult(package), error_handler=handleError(package), *args)
 
                 def handlePackError(exception):
                     if self.quiet:

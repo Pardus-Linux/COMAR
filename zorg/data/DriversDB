@@ -677,11 +677,11 @@
 10de00f6 nvidia/nvidia-drivers-new nv
 10de00f8 nvidia/nvidia-drivers-new nv
 10de00f9 nvidia/nvidia-drivers-new nv
-10de00fa nvidia/nvidia-drivers-new nv
-10de00fb nvidia/nvidia-drivers-new nv
-10de00fc nvidia/nvidia-drivers-new nv
-10de00fd nvidia/nvidia-drivers-new nv
-10de00fe nvidia/nvidia-drivers-new nv
+10de00fa nvidia/nvidia-drivers173 nv
+10de00fb nvidia/nvidia-drivers173 nv
+10de00fc nvidia/nvidia-drivers173 nv
+10de00fd nvidia/nvidia-drivers173 nv
+10de00fe nvidia/nvidia-drivers173 nv
 10de00ff nv
 10de0100 nvidia/nvidia-drivers-old nv
 10de0101 nvidia/nvidia-drivers-old nv
@@ -825,55 +825,55 @@
 10de02e3 nvidia/nvidia-drivers-new nv
 10de02e4 nvidia/nvidia-drivers-new nv
 10de0300 nv
-10de0301 nvidia/nvidia-drivers-new nv
-10de0302 nvidia/nvidia-drivers-new nv
-10de0308 nvidia/nvidia-drivers-new nv
-10de0309 nvidia/nvidia-drivers-new nv
-10de0311 nvidia/nvidia-drivers-new nv
-10de0312 nvidia/nvidia-drivers-new nv
+10de0301 nvidia/nvidia-drivers173 nv
+10de0302 nvidia/nvidia-drivers173 nv
+10de0308 nvidia/nvidia-drivers173 nv
+10de0309 nvidia/nvidia-drivers173 nv
+10de0311 nvidia/nvidia-drivers173 nv
+10de0312 nvidia/nvidia-drivers173 nv
 10de0313 nv
-10de0314 nvidia/nvidia-drivers-new nv
+10de0314 nvidia/nvidia-drivers173 nv
 10de0316 nv
 10de0317 nv
-10de031a nvidia/nvidia-drivers-new nv
-10de031b nvidia/nvidia-drivers-new nv
-10de031c nvidia/nvidia-drivers-new nv
+10de031a nvidia/nvidia-drivers173 nv
+10de031b nvidia/nvidia-drivers173 nv
+10de031c nvidia/nvidia-drivers173 nv
 10de031d nv
 10de031e nv
 10de031f nv
-10de0320 nvidia/nvidia-drivers-new nv
-10de0321 nvidia/nvidia-drivers-new nv
-10de0322 nvidia/nvidia-drivers-new nv
-10de0323 nvidia/nvidia-drivers-new nv
-10de0324 nvidia/nvidia-drivers-new nv
-10de0325 nvidia/nvidia-drivers-new nv
-10de0326 nvidia/nvidia-drivers-new nv
-10de0327 nvidia/nvidia-drivers-new nv
-10de0328 nvidia/nvidia-drivers-new nv
+10de0320 nvidia/nvidia-drivers173 nv
+10de0321 nvidia/nvidia-drivers173 nv
+10de0322 nvidia/nvidia-drivers173 nv
+10de0323 nvidia/nvidia-drivers173 nv
+10de0324 nvidia/nvidia-drivers173 nv
+10de0325 nvidia/nvidia-drivers173 nv
+10de0326 nvidia/nvidia-drivers173 nv
+10de0327 nvidia/nvidia-drivers173 nv
+10de0328 nvidia/nvidia-drivers173 nv
 10de0329 nv
-10de032a nvidia/nvidia-drivers-new nv
-10de032b nvidia/nvidia-drivers-new nv
-10de032c nvidia/nvidia-drivers-new nv
-10de032d nvidia/nvidia-drivers-new nv
+10de032a nvidia/nvidia-drivers173 nv
+10de032b nvidia/nvidia-drivers173 nv
+10de032c nvidia/nvidia-drivers173 nv
+10de032d nvidia/nvidia-drivers173 nv
 10de032f nv
-10de0330 nvidia/nvidia-drivers-new nv
-10de0331 nvidia/nvidia-drivers-new nv
-10de0332 nvidia/nvidia-drivers-new nv
-10de0333 nvidia/nvidia-drivers-new nv
-10de0334 nvidia/nvidia-drivers-new nv
-10de0338 nvidia/nvidia-drivers-new nv
-10de033f nvidia/nvidia-drivers-new nv
-10de0341 nvidia/nvidia-drivers-new nv
-10de0342 nvidia/nvidia-drivers-new nv
-10de0343 nvidia/nvidia-drivers-new nv
-10de0344 nvidia/nvidia-drivers-new nv
+10de0330 nvidia/nvidia-drivers173 nv
+10de0331 nvidia/nvidia-drivers173 nv
+10de0332 nvidia/nvidia-drivers173 nv
+10de0333 nvidia/nvidia-drivers173 nv
+10de0334 nvidia/nvidia-drivers173 nv
+10de0338 nvidia/nvidia-drivers173 nv
+10de033f nvidia/nvidia-drivers173 nv
+10de0341 nvidia/nvidia-drivers173 nv
+10de0342 nvidia/nvidia-drivers173 nv
+10de0343 nvidia/nvidia-drivers173 nv
+10de0344 nvidia/nvidia-drivers173 nv
 10de0345 nv
-10de0347 nvidia/nvidia-drivers-new nv
-10de0348 nvidia/nvidia-drivers-new nv
+10de0347 nvidia/nvidia-drivers173 nv
+10de0348 nvidia/nvidia-drivers173 nv
 10de0349 nv
 10de034b nv
-10de034c nvidia/nvidia-drivers-new nv
-10de034e nvidia/nvidia-drivers-new nv
+10de034c nvidia/nvidia-drivers173 nv
+10de034e nvidia/nvidia-drivers173 nv
 10de034f nv
 10de0390 nvidia/nvidia-drivers-new nv
 10de0391 nvidia/nvidia-drivers-new nv

@@ -895,6 +895,7 @@
 10de0400 nvidia/nvidia-drivers177 nv
 10de0401 nvidia/nvidia-drivers177 nv
 10de0402 nvidia/nvidia-drivers177 nv
+10de0403 nvidia/nvidia-drivers177 nv
 10de0404 nvidia/nvidia-drivers177 nv
 10de0405 nvidia/nvidia-drivers177 nv
 10de0407 nvidia/nvidia-drivers177 nv
@@ -918,6 +919,7 @@
 10de0429 nvidia/nvidia-drivers177 nv
 10de042a nvidia/nvidia-drivers177 nv
 10de042b nvidia/nvidia-drivers177 nv
+10de042c nvidia/nvidia-drivers177 nv
 10de042d nvidia/nvidia-drivers177 nv
 10de042e nvidia/nvidia-drivers177 nv
 10de042f nvidia/nvidia-drivers177 nv
@@ -938,25 +940,39 @@
 10de0610 nvidia/nvidia-drivers177 nv
 10de0611 nvidia/nvidia-drivers177 nv
 10de0612 nvidia/nvidia-drivers177 nv
+10de0613 nvidia/nvidia-drivers177 nv
+10de0614 nvidia/nvidia-drivers177 nv
 10de061a nvidia/nvidia-drivers177 nv
 10de061c nvidia/nvidia-drivers177 nv
 10de0622 nvidia/nvidia-drivers177 nv
 10de0623 nvidia/nvidia-drivers177 nv
+10de0628 nvidia/nvidia-drivers177 nv
+10de062a nvidia/nvidia-drivers177 nv
+10de062c nvidia/nvidia-drivers177 nv
+10de0640 nvidia/nvidia-drivers177 nv
 10de0647 nvidia/nvidia-drivers177 nv
 10de0648 nvidia/nvidia-drivers177 nv
 10de0649 nvidia/nvidia-drivers177 nv
 10de064b nvidia/nvidia-drivers177 nv
+10de065c nvidia/nvidia-drivers177 nv
+10de06e1 nvidia/nvidia-drivers177 nv
 10de06e4 nvidia/nvidia-drivers177 nv
 10de06e5 nvidia/nvidia-drivers177 nv
 10de06e8 nvidia/nvidia-drivers177 nv
 10de06e9 nvidia/nvidia-drivers177 nv
+10de06ea nvidia/nvidia-drivers177 nv
+10de06eb nvidia/nvidia-drivers177 nv
 10de07e0 nvidia/nvidia-drivers177
 10de07e1 nvidia/nvidia-drivers177
 10de07e3 nvidia/nvidia-drivers177
+10de0844 nvidia/nvidia-drivers177
+10de0847 nvidia/nvidia-drivers177
 10de0848 nvidia/nvidia-drivers177
 10de0849 nvidia/nvidia-drivers177
 10de084a nvidia/nvidia-drivers177
 10de084b nvidia/nvidia-drivers177
+10de084c nvidia/nvidia-drivers177
+10de084d nvidia/nvidia-drivers177
 10de084f nvidia/nvidia-drivers177
 10e09128 imstt
 10e09135 imstt

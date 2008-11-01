@@ -1,3 +1,8 @@
+2008-11-01  Fatih Aşıcı  <fatih@pardus.org.tr>
+		* data/DriversDB: Renamed nvidia packages. Added
+		new cards.
+		* zorg/__init__.py: Bumped version to 1.1.1.
+
 2008-10-04  Fatih Aşıcı  <fatih@pardus.org.tr>
 		* zorg/__init__.py: Bumped version to 1.1.
 		* zorg/config.py: Added support to create InputDevice

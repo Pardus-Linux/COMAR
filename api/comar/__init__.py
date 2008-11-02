@@ -9,9 +9,10 @@
 # option) any later version. Please read the COPYING file.
 #
 
-__version__ = '2.1.0'
+__version__ = '2.1.1'
 
 import dbus
+import os
 
 class Call:
     def __init__(self, link, group, class_=None, package=None, method=None):
@@ -60,6 +61,10 @@ class Call:
                 def handleResult(*result):
                     self.async(self.package, None, result)
                 def handleError(exception):
+                    if "policy.auth" in exception._dbus_error_name:
+                        action = exception.get_dbus_message()
+                        if self.queryPolicyKit(action):
+                            return self.call(*args, **kwargs)
                     self.async(self.package, exception, None)
 
                 if self.quiet:
@@ -106,9 +111,27 @@ class Call:
             if self.package:
                 obj = self.link.bus.get_object(self.link.address, "/package/%s" % self.package, introspect=False)
                 met = getattr(obj, self.method)
-                return met(dbus_interface="tr.org.pardus.comar.%s.%s" % (self.group, self.class_), *args)
+                try:
+                    return met(dbus_interface="tr.org.pardus.comar.%s.%s" % (self.group, self.class_), *args)
+                except dbus.DBusException, e:
+                    if "policy.auth" in e._dbus_error_name:
+                        action = e.get_dbus_message()
+                        if self.queryPolicyKit(action):
+                            return self.call(*args, **kwargs)
+                    raise dbus.DBusException, e
             else:
                 raise AttributeError, "Package name required for non-async calls."
+
+    def queryPolicyKit(self, action):
+        if "DISPLAY" not in os.environ:
+            raise Exception, "X session required to query PolKit"
+        bus = dbus.SessionBus()
+        obj = bus.get_object("org.freedesktop.PolicyKit.AuthenticationAgent", "/")
+        iface = dbus.Interface(obj, "org.freedesktop.PolicyKit.AuthenticationAgent")
+        try:
+            return iface.ObtainAuthorization(action, 0, os.getpid(), timeout=2**16-1) == 1
+        except:
+            return False
 
 
 class Link:

@@ -22,15 +22,50 @@
 #include "model.h"
 #include "utility.h"
 
+//! Finds action_id of a method
+char *
+policy_action(const char *interface, const char *method)
+{
+    char *model, *action, *t, *access_label = NULL;
+    int size, node_no;
+
+    model = (char *) strsub(interface, strlen(cfg_bus_interface) + 1, 0);
+    node_no = model_lookup_method(model, method);
+    free(model);
+
+    if (node_no > -1) {
+        access_label = model_get_method_access_label(node_no);
+    }
+
+    if (access_label) {
+        // action = interface.access_label
+        size = strlen(interface) + 1 + strlen(access_label) + 1;
+        action = malloc(size);
+        snprintf(action, size, "%s.%s", interface, access_label);
+        action[size - 1] = '\0';
+    }
+    else {
+        // action = interface.method
+        size = strlen(interface) + 1 + strlen(method) + 1;
+        action = malloc(size);
+        snprintf(action, size, "%s.%s", interface, method);
+        action[size - 1] = '\0';
+    }
+
+    for (t = action; *t != '\0'; t++) {
+        *t = tolower(*t);
+    }
+
+    return action;
+}
+
 //! Check if sender is allowed to call method
 int
-policy_check(const char *sender, const char *interface, const char *method, PolKitResult *result)
+policy_check(const char *sender, char *action, PolKitResult *result)
 {
     /*!
      *
      * @sender Bus name of the sender
-     * @interface Interface
-     * @method Method
      * @result PK result
      * @return 0 on success, 1 on error
      */
@@ -41,8 +76,7 @@ policy_check(const char *sender, const char *interface, const char *method, PolK
     PolKitCaller *polkit_clr;
     PolKitAction *polkit_act;
     PolKitError *perr;
-    int size, node_no, uid = -1;
-    char *action, *access_label = NULL, *model, *t;
+    int uid = -1;
 
     *result = (PolKitResult) POLKIT_RESULT_NO;
 
@@ -81,41 +115,13 @@ policy_check(const char *sender, const char *interface, const char *method, PolK
         return 0;
     }
 
-    model = (char *) strsub(interface, strlen(cfg_bus_interface) + 1, 0);
-    node_no = model_lookup_method(model, method);
-    free(model);
-
-    if (node_no > -1) {
-        access_label = model_get_method_access_label(node_no);
-    }
-
-    if (access_label) {
-        // action = interface.access_label
-        size = strlen(interface) + 1 + strlen(access_label) + 1;
-        action = malloc(size);
-        snprintf(action, size, "%s.%s", interface, access_label);
-        action[size - 1] = '\0';
-    }
-    else {
-        // action = interface.method
-        size = strlen(interface) + 1 + strlen(method) + 1;
-        action = malloc(size);
-        snprintf(action, size, "%s.%s", interface, method);
-        action[size - 1] = '\0';
-    }
-
-    for (t = action; *t != '\0'; t++) {
-        *t = tolower(*t);
-    }
-
     if (!polkit_action_validate_id(action)) {
         // log_error("Unable to query CK, action is not valid: %s\n", action);
-        free(action);
         return 0;
     }
+
     polkit_act = polkit_action_new();
     polkit_action_set_action_id(polkit_act, action);
-    free(action);
 
     *result = polkit_context_is_caller_authorized(polkit_ctx, polkit_act, polkit_clr, FALSE, &perr);
 

@@ -589,7 +589,10 @@ dbus_policy_check(const char *sender, const char *interface, const char *method)
 
     PolKitResult polkit_result;
 
-    if (policy_check(sender, interface, method, &polkit_result)) {
+    char *action = policy_action(interface, method);
+    printf("action: %s\n", action);
+
+    if (policy_check(sender, action, &polkit_result)) {
         log_debug(LOG_PLCY, "PolicyKit: %s.%s = %s\n", interface, method, polkit_result_to_string_representation(polkit_result));
         switch (polkit_result) {
             case POLKIT_RESULT_YES:
@@ -606,17 +609,18 @@ dbus_policy_check(const char *sender, const char *interface, const char *method)
             case POLKIT_RESULT_ONLY_VIA_ADMIN_AUTH_KEEP_ALWAYS:
             case POLKIT_RESULT_ONLY_VIA_ADMIN_AUTH_ONE_SHOT:
                 dbus_signal("/", interface, "PolicyKit", PyString_FromString("policy_auth_admin"));
-                dbus_reply_error("policy", "auth_admin", "Access denied, but can be granted via admin auth.");
+                dbus_reply_error("policy", "auth_admin", action);
                 return 0;
             case POLKIT_RESULT_ONLY_VIA_SELF_AUTH:
             case POLKIT_RESULT_ONLY_VIA_SELF_AUTH_KEEP_SESSION:
             case POLKIT_RESULT_ONLY_VIA_SELF_AUTH_KEEP_ALWAYS:
             case POLKIT_RESULT_ONLY_VIA_SELF_AUTH_ONE_SHOT:
                 dbus_signal("/", interface, "PolicyKit", PyString_FromString("policy_auth_self"));
-                dbus_reply_error("policy", "auth_self", "Access denied, but can be granted via self auth.");
+                dbus_reply_error("policy", "auth_self", action);
                 return 0;
         }
     }
+    printf("hebele: %s\n", polkit_result_to_string_representation(polkit_result));
     dbus_reply_error("core", "internal", "Unable to query PolicyKit");
     return 0;
 }

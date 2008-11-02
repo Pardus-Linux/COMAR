@@ -7,7 +7,7 @@ SET (APP_SUFFIX "")
 # Version string
 SET (VERSION_MAJOR "2")
 SET (VERSION_MINOR "0")
-SET (VERSION_PATCH "2")
+SET (VERSION_PATCH "3")
 
 # Uncomment this for production releases.
 #SET (VERSION_SUFFIX "beta2")

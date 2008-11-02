@@ -9,4 +9,5 @@
 
 #include <polkit-dbus/polkit-dbus.h>
 
-int policy_check(const char *sender, const char *interface, const char *method, PolKitResult *result);
+int policy_check(const char *sender, char *action, PolKitResult *result);
+char *policy_action(const char *interface, const char *method);

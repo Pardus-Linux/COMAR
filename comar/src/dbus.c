@@ -590,7 +590,6 @@ dbus_policy_check(const char *sender, const char *interface, const char *method)
     PolKitResult polkit_result;
 
     char *action = policy_action(interface, method);
-    printf("action: %s\n", action);
 
     if (policy_check(sender, action, &polkit_result)) {
         log_debug(LOG_PLCY, "PolicyKit: %s.%s = %s\n", interface, method, polkit_result_to_string_representation(polkit_result));
@@ -620,7 +619,6 @@ dbus_policy_check(const char *sender, const char *interface, const char *method)
                 return 0;
         }
     }
-    printf("hebele: %s\n", polkit_result_to_string_representation(polkit_result));
     dbus_reply_error("core", "internal", "Unable to query PolicyKit");
     return 0;
 }

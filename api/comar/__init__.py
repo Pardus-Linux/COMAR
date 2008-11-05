@@ -24,6 +24,9 @@ class Call:
         self.async = None
         self.quiet = False
 
+        if self.package:
+            self.package = self.package.replace("-", "_")
+
     def __getitem__(self, key):
         if not self.class_:
             raise KeyError, "Package should be selected after class"
@@ -138,6 +141,15 @@ class Link:
     def __init__(self, address="tr.org.pardus.comar"):
         self.address = address
         self.bus = dbus.SystemBus()
+
+    def listenSignals(self, model, handler):
+        def sigHandler(*args, **kwargs):
+            if "/package/" not in kwargs["path"]:
+                return
+            package = kwargs["path"].split("/package/")[1]
+            signal = kwargs["signal"]
+            handler(package, signal, args)
+        self.bus.add_signal_receiver(sigHandler, dbus_interface="tr.org.pardus.comar.%s" % model, member_keyword="signal", path_keyword="path")
 
     def __getattr__(self, name):
         if name[0] < 'A' or name[0] > 'Z':

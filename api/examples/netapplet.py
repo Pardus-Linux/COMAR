@@ -10,6 +10,7 @@ from dbus.mainloop.qt3 import DBusQtMainLoop
 from qt import *
 from kdeui import *
 from kdecore import *
+import dcopext
 
 
 class ConnectionItem(QCustomMenuItem):
@@ -55,8 +56,7 @@ class NetTray(KSystemTray):
         self.menuitems = {}
 
         # Build menus
-        menu = self.contextMenu()
-        parent.setMenu(menu)
+        self.updateMenu()
 
         # Listen Net.Link signals
         self.link.listenSignals("Net.Link", self.handleSignals)
@@ -64,6 +64,10 @@ class NetTray(KSystemTray):
         # Show yourself!
         self.updateIcon()
         self.show()
+
+    def updateMenu(self):
+        menu = self.contextMenu()
+        self.parent.setMenu(menu)
 
     def updateIcon(self):
         state = "down"
@@ -77,8 +81,12 @@ class NetTray(KSystemTray):
             if device_id not in devices:
                 devices.append(device_id)
 
+            profileName = profileInfo["name"]
             state = profileInfo["state"].split()[0]
             type_ = self.parent.info[package]["type"].split()[0]
+
+            if state == "up":
+                self.parent.updateStatus(profileName, "up")
 
             if state in ("up", "connecting"):
                 break
@@ -145,11 +153,14 @@ class NetTray(KSystemTray):
                         profile = profileInfo
                         break
                 if profile:
+                    self.parent.updateStatus(profileName, "down")
                     self.profiles.remove(profile)
         elif signal == "stateChanged":
             profileName, action, data = args
             for profileInfo in self.profiles:
                 if profileInfo["name"] == profileName:
+                    if action != "up":
+                        self.parent.updateStatus(profileName, "down")
                     if len(data):
                         profileInfo["state"] = "%s %s" % (action, data)
                     else:
@@ -186,6 +197,7 @@ class Applet:
         self.info = {}
         self.devices = {}
         self.profiles = {}
+        self.profiles_up = []
 
         # KDE configuration
         self.config = KConfig("network-appletrc")
@@ -193,6 +205,7 @@ class Applet:
         self.autoConnect = self.config.readBoolEntry("AutoConnect", True)
         self.showNotifications = self.config.readBoolEntry("ShowNotifications", True)
         self.iconPerDevice = self.config.readBoolEntry("IconPerDevice", True)
+        self.notifyKDE = self.config.readBoolEntry("NotifyKDE", True)
 
         # Load icons
         self.loadIcons()
@@ -242,6 +255,21 @@ class Applet:
             tray = NetTray(self, self.link, profiles)
             self.trays.append(tray)
 
+    def updateStatus(self, profile, status):
+        if status == "up":
+            if profile not in self.profiles_up:
+                self.profiles_up.append(profile)
+        elif status == "down":
+            if profile in self.profiles_up:
+                self.profiles_up.remove(profile)
+
+        dcop = self.app.dcopClient()
+        kded = dcopext.DCOPApp("kded", dcop)
+        if len(self.profiles_up) > 0:
+            kded.networkstatus.setNetworkStatus("COMARNetworkStatus", 8)
+        else:
+            kded.networkstatus.setNetworkStatus("COMARNetworkStatus", 3)
+
     def loadIcons(self):
         def pix(name):
             path = locate("data", "network-manager/" + name)
@@ -273,18 +301,20 @@ class Applet:
         KAction(i18n("Edit Connections..."), "configure", KShortcut.null(), self.startManager, menu).plug(menu)
         KAction(i18n("Connect Automatically"), "connect_creating", KShortcut.null(), self.scanAndConnect, menu).plug(menu)
         menu.insertSeparator(1)
-        show_notify = menu.insertItem(i18n("Show Notifications"), self.setNotify, 0, -1, 1)
+        self.show_notify = menu.insertItem(i18n("Show Notifications"), self.setNotify, 0, -1, 1)
         menu.insertSeparator(1)
-        device_mid = menu.insertItem(i18n("Icon Per Device"), self.deviceGroup, 0, -1, 1)
-        single_mid = menu.insertItem(i18n("Single Icon"), self.noGroup, 0, -1, 1)
+        self.device_mid = menu.insertItem(i18n("Icon Per Device"), self.deviceGroup, 0, -1, 1)
+        self.single_mid = menu.insertItem(i18n("Single Icon"), self.noGroup, 0, -1, 1)
 
         if self.iconPerDevice:
-            menu.setItemChecked(device_mid, True)
+            menu.setItemChecked(self.device_mid, True)
         else:
-            menu.setItemChecked(single_mid, True)
+            menu.setItemChecked(self.single_mid, True)
 
         if self.showNotifications:
-            menu.setItemChecked(show_notify, True)
+            menu.setItemChecked(self.show_notify, True)
+
+        self.menu = menu
 
     def startFirewall(self):
         os.system("firewall-config")
@@ -296,8 +326,14 @@ class Applet:
         pass
 
     def setNotify(self):
-        self.showNotifications = True
-        self.config.writeEntry("ShowNotifications", True)
+        if self.showNotifications:
+            self.showNotifications = False
+            self.config.writeEntry("ShowNotifications", False)
+            menu.setItemChecked(self.show_notify, False)
+        else:
+            self.showNotifications = True
+            self.config.writeEntry("ShowNotifications", True)
+            menu.setItemChecked(self.show_notify, True)
         self.config.sync()
 
     def deviceGroup(self):

@@ -54,6 +54,7 @@ class Call:
     def call(self, *args, **kwargs):
         self.async = kwargs.get("async", None)
         self.quiet = kwargs.get("quiet", False)
+        self.timeout = kwargs.get("timeout", 120)
         if self.async and self.quiet:
             raise Exception, "async and quiet arguments can't be used together"
         if self.async or self.quiet:
@@ -73,7 +74,7 @@ class Call:
                 if self.quiet:
                     met(dbus_interface="tr.org.pardus.comar.%s.%s" % (self.group, self.class_), ignore_reply=True, *args)
                 else:
-                    met(dbus_interface="tr.org.pardus.comar.%s.%s" % (self.group, self.class_), reply_handler=handleResult, error_handler=handleError, *args)
+                    met(dbus_interface="tr.org.pardus.comar.%s.%s" % (self.group, self.class_), reply_handler=handleResult, error_handler=handleError, timeout=self.timeout, *args)
             else:
                 def handlePackages(packages):
                     if self.quiet:
@@ -95,7 +96,7 @@ class Call:
                             obj = self.link.bus.get_object(self.link.address, "/package/%s" % package, introspect=False)
                             met = getattr(obj, self.method)
 
-                            met(dbus_interface="tr.org.pardus.comar.%s.%s" % (self.group, self.class_), reply_handler=handleResult(package), error_handler=handleError(package), *args)
+                            met(dbus_interface="tr.org.pardus.comar.%s.%s" % (self.group, self.class_), reply_handler=handleResult(package), error_handler=handleError(package), timeout=self.timeout, *args)
 
                 def handlePackError(exception):
                     if self.quiet:
@@ -109,13 +110,13 @@ class Call:
                     handlePackages(packages)
                 else:
                     obj = self.link.bus.get_object(self.link.address, "/", introspect=False)
-                    obj.listModelApplications("%s.%s" % (self.group, self.class_), dbus_interface="tr.org.pardus.comar", reply_handler=handlePackages, error_handler=handlePackError)
+                    obj.listModelApplications("%s.%s" % (self.group, self.class_), dbus_interface="tr.org.pardus.comar", reply_handler=handlePackages, error_handler=handlePackError, timeout=self.timeout)
         else:
             if self.package:
                 obj = self.link.bus.get_object(self.link.address, "/package/%s" % self.package, introspect=False)
                 met = getattr(obj, self.method)
                 try:
-                    return met(dbus_interface="tr.org.pardus.comar.%s.%s" % (self.group, self.class_), *args)
+                    return met(dbus_interface="tr.org.pardus.comar.%s.%s" % (self.group, self.class_), timeout=self.timeout, *args)
                 except dbus.DBusException, e:
                     if "policy.auth" in e._dbus_error_name:
                         action = e.get_dbus_message()

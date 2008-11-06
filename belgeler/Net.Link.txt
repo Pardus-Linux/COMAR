@@ -11,7 +11,7 @@ Net.Link Model Taslağı
         03         "type": "wifi",
         04         "name": "Wireless connection",
         05         "modes": "device,device_mode,remote,remote_scan,net,auto,auth",
-        07     }
+        06     }
 
         - type: Uygulamanın sağladığı bağlantı türünü ifade eden anahtar kelime
                 (wifi, net, ppp, ...)

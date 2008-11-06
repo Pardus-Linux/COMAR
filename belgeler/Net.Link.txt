@@ -189,7 +189,7 @@ Net.Link Model Taslağı
     setRemote(profile, remote):
         'remote' modu destekleniyorsa, uzaktaki noktanın adresini belirtmek için kullanılır.
 
-        Wireless için ESSID, PPP için telefon numarası bu şekilde belirtilebilir.
+        Wireless için ESSID, PPP için telefon numarası, VPN için host:port bu şekilde belirtilebilir. Birden fazla 
 
 
     deviceList():
@@ -251,7 +251,6 @@ Net.Link Model Taslağı
 
     setNameService(profile, namemode, nameserver):
         ...
-
 
 
     setState(profile, state):

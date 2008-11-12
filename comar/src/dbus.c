@@ -116,6 +116,16 @@ log_exception()
 
     log_error("Python Exception [%s] in (%s,%s,%ld): %s\n", eStr, dbus_message_get_interface(my_proc.bus_msg), dbus_message_get_path(my_proc.bus_msg), lineno, vStr);
 
+    PyObject *pFrame, *pCode;
+    while (pTrace != NULL && pTrace != Py_None) {
+        pFrame = PyObject_GetAttrString(pTrace, "tb_frame");
+        pCode = PyObject_GetAttrString(pFrame, "f_code");
+        log_error("    File %s, line %d, in %s()\n", PyString_AsString(PyObject_GetAttrString(pCode, "co_filename")),
+                                                     (int) PyInt_AsLong(PyObject_GetAttrString(pTrace, "tb_lineno")),
+                                                     PyString_AsString(PyObject_GetAttrString(pCode, "co_name")));
+        pTrace = PyObject_GetAttrString(pTrace, "tb_next");
+    }
+
     dbus_reply_error("python", eStr, vStr);
 }
 
@@ -590,6 +600,7 @@ dbus_policy_check(const char *sender, const char *interface, const char *method)
     PolKitResult polkit_result;
 
     char *action = policy_action(interface, method);
+    printf("action: %s\n", action);
 
     if (policy_check(sender, action, &polkit_result)) {
         log_debug(LOG_PLCY, "PolicyKit: %s.%s = %s\n", interface, method, polkit_result_to_string_representation(polkit_result));

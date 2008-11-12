@@ -1,3 +1,7 @@
+2008-11-12  Bahadır Kandemir  <bahadir@pardus.org.tr>
+
+	* comar: Print Python traceback to logfile.
+
 2008-11-02  Bahadır Kandemir  <bahadir@pardus.org.tr>
 
 	* comar: PolicyKit exceptions now return related action id.

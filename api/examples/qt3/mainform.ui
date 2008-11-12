@@ -1,0 +1,38 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>mainForm</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>mainForm</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>459</width>
+            <height>343</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Qt3 &amp; COMAR</string>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QTextEdit" row="0" column="0">
+            <property name="name">
+                <cstring>textServices</cstring>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="1" column="0">
+            <property name="name">
+                <cstring>buttonServices</cstring>
+            </property>
+            <property name="text">
+                <string>Get Services</string>
+            </property>
+        </widget>
+    </grid>
+</widget>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

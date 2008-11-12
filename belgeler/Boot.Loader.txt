@@ -1,0 +1,65 @@
+Boot Loader Model
+=================
+
+listSystems()
+-------------
+
+List operating systems supported by boot loader application.
+
+Sample output:
+
+  01 {
+  02     "linux": ("Linux", ["root", "kernel"], ["initrd", "options"]),
+  03     "xen": ("Xen", ["root", "kernel"], ["initrd", "options"]),
+  04     "windows": ("Windows", ["root"], []),
+  05     "memtest": ("Memtest", [], []),
+  06 }
+
+Key of dictionary is operating system name.
+First element of value is operating system label. Can be localized if necessary.
+Second element of value is mandatory fields.
+Third element of value is optional fields.
+
+
+getOptions()
+------------
+
+Lists boot loader options.
+
+Sample output:
+
+  01 {
+  02     "default": "0",              # Default boot enty
+  03     "timeout": "10",             # Timeout
+  04     "password": "yes",           # Password required to edit
+  05     "background": "/path/...",   # Background image
+  06     "splash": "/path/...",       # Splash image
+  07 }
+
+
+setOption(opt, value)
+---------------------
+
+
+listEntries()
+-------------
+
+
+updateKernelEntry(version, rootDisk)
+------------------------------------
+
+
+setEntry(title, osType, rootDisk, kernelPath, initrdPath, kernelOptions, isDefault, index)
+------------------------------------------------------------------------------------------
+
+
+removeEntry(title, index)
+-------------------------
+
+
+listUnused()
+------------
+
+
+removeUnused(version)
+---------------------

@@ -122,15 +122,14 @@ PolicyKit Ajanı İle Yetki İsteme
 Aşağıdaki Python kodu ile, sistemde PolicyKit-gnome kurulu ise, istenen 
 işlem için yetki istenebilir (method True/False döndürür):
 
-    def obtainAuthorization(action, winID, pid):
+    def obtainAuthorization(action, pid):
         import dbus
         bus = dbus.SessionBus()
         obj = bus.get_object("org.gnome.PolicyKit", "/")
         iface = dbus.Interface(obj, "org.freedesktop.PolicyKit.AuthenticationAgent")
-        return iface.ObtainAuthorization(action, winID, pid)
+        return iface.ObtainAuthorization(action, 0, pid)
 
-İşlem adıyla birlikte, XWindow pencere numarası ve yetki alacak uygulamanın 
-süreç numarası belirtilmelidir.
+İşlem adıyla birlikte, yetki alacak uygulamanın süreç numarası belirtilmelidir.
 
 İşlem adı, politika ayalar dosyalarının birinde tanımlı değilse, pencere/süreç 
 numarası geçersiz ise erişim denetimi daima False döndürür.

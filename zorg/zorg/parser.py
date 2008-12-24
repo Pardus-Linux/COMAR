@@ -59,7 +59,7 @@ class XorgEntry:
 def entryFormat(values):
     s = ""
     for v in values:
-        if type(v) in (str, unicode, dbus.types.String):
+        if isinstance(v, (str, unicode, dbus.types.String)):
             s += ' "%s"' % v
         else:
             s += " %s" % v

@@ -48,6 +48,8 @@ def main():
                 printUsage()
                 return 1
 
+            app = app.replace("-", "_")
+
             args = []
             if len(sys.argv) > 5:
                 args = sys.argv[5:]
@@ -73,6 +75,7 @@ def main():
                 for model in iface.listModels():
                     print model
             else:
+                app = app.replace("-", "_")
                 for model in iface.listApplicationModels(app):
                     print model
         elif cmd == 'register':
@@ -84,6 +87,7 @@ def main():
                 printUsage()
                 return 1
             script = os.path.realpath(script)
+            app = app.replace("-", "_")
             if iface.register(app, model, script):
                 print 'Registering %s/%s' % (model, app)
         elif cmd == 'remove':
@@ -92,6 +96,7 @@ def main():
             except IndexError:
                 printUsage()
                 return 1
+            app = app.replace("-", "_")
             if iface.remove(app):
                 print 'Removing %s' % app
         else:

@@ -2,7 +2,6 @@
 <!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN" "http://www.freedesktop.org/standards/PolicyKit/1.0/policyconfig.dtd">
 
 <policyconfig>
-
     <action id="tr.org.pardus.comar.net.link.scanremote">
         <description>Scan remote access points</description>
         <description xml:lang="tr">Uzak erişim noktalarını tara</description>
@@ -60,7 +59,6 @@
         </defaults>
     </action>
 
-    <!-- Access Labels -->
     <action id="tr.org.pardus.comar.net.link.set">
         <description>Add connection or set connection details</description>
         <description xml:lang="tr">Bağlantı ekle veya detaylarını değiştir</description>

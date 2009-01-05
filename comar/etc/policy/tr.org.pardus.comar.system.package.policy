@@ -9,11 +9,13 @@
         <description xml:lang="es">Ejecutar script de post-instalación de un paquete</description>
         <description xml:lang="pl">Wykonywanie skryptów "po instalacji" pakietów</description>
         <description xml:lang="de">Postinstall-Skript eines Pakets ausführen</description>
+        <description xml:lang="sv">Kör avslutande skript efter paketinstallation</description>
         <message>System policy prevents executing post-install script</message>
         <message xml:lang="tr">Sistem politikası yükleme sonrası betiği çalıştırmayı engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas d'exécuter les scripts de post-installation d'un paquet</message>
         <message xml:lang="es">La política del sistema no permite la ejecución del scripts de post-instalación de paquetes</message>
         <message xml:lang="de">Systemrichtlinie verhindert die Ausführung des Postinstall-Skripts</message>
+        <message xml:lang="sv">Systempolicyn förhindrar körning av avslutande skript efter paketinstallation</message>
         <defaults>
             <allow_any>no</allow_any>
             <allow_inactive>no</allow_inactive>
@@ -28,11 +30,13 @@
         <description xml:lang="es">Ejecutar script de pre-remove de un paquete</description>
         <description xml:lang="pl">Wykonywanie skryptów "przed usunięciem" pakietów</description>
         <description xml:lang="de">Preremove-Skript eines Pakets ausführen</description>
+        <description xml:lang="sv">Kör skript före paketborttagning</description>
         <message>System policy prevents executing pre-remove script</message>
         <message xml:lang="tr">Sistem politikası kaldırma öncesi betiği çalıştırmayı engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas d'exécuter les scripts de préparation à la suppression d'un paquet</message>
         <message xml:lang="es">La política del sistema no permite la ejecución del scripts de pre-remove de paquetes</message>
         <message xml:lang="de">Systemrichtlinie verhindert die Ausführung des Preremove-Skripts</message>
+        <message xml:lang="sv">Systempolicyn förhindrar körning av inledande skript före paketborttagning</message>
         <defaults>
             <allow_any>no</allow_any>
             <allow_inactive>no</allow_inactive>

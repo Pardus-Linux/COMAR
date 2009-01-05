@@ -9,11 +9,13 @@
         <description xml:lang="es">Obtener información del monitor</description>
         <description xml:lang="pl">Odczyt ustawień ekranu</description>
         <description xml:lang="de">Anzeige-Informationen abrufen</description>
+        <description xml:lang="sv">Visa bildskärmsinformtion</description>
         <message>System policy prevents getting display info</message>
         <message xml:lang="tr">Sistem politikası görüntü bilgisini almayı engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas d'obtenir les informations concernant l'affichage</message>
         <message xml:lang="es">La política del sistema no permite obtener información del monitor</message>
         <message xml:lang="de">Systmerichtlinie verhindert das Abrufen des Anzeige-Informationen</message>
+        <message xml:lang="sv">Systempolicyn förhindrar visning av bildskärmsinformation</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>
@@ -28,11 +30,13 @@
         <description xml:lang="es">Modificar configuración del monitor</description>
         <description xml:lang="pl">Zmiana ustawień ekranu</description>
         <description xml:lang="de">Anzeige-Konfiguration ändern</description>
+        <description xml:lang="sv">Ändra bildskärmsinställning</description>
         <message>System policy prevents setting display configuration</message>
         <message xml:lang="tr">Sistem politikası görüntü yapılandırmasını değiştirmeyi engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas de modifier la configuration de l'affichage</message>
         <message xml:lang="es">La política del sistema no permite modificar la configuracióon del monitor</message>
         <message xml:lang="de">Systemrichtlinie verhindert die Änderung der Anzeige-Konfiguration</message>
+        <message xml:lang="sv">Systempolicyn förhindrar ändring av bildskärmsinställning</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>

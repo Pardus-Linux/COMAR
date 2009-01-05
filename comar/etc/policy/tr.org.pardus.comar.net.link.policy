@@ -5,7 +5,7 @@
     <action id="tr.org.pardus.comar.net.link.scanremote">
         <description>Scan remote access points</description>
         <description xml:lang="tr">Uzak erişim noktalarını tara</description>
-	<description xml:lang="nl">Scan voor toegangspunten op afstand</description>
+        <description xml:lang="nl">Scan voor toegangspunten op afstand</description>
         <description xml:lang="fr">Rechercher les points d'accès distants</description>
         <description xml:lang="es">Buscar puntos remotos de acceso</description>
         <description xml:lang="pl">Skanowanie punktów dostępowych</description>
@@ -13,7 +13,7 @@
         <description xml:lang="sv">Skanna efter accesspunkter</description>
         <message>System policy prevents scanning remote access points</message>
         <message xml:lang="tr">Sistem politikası uzak erişim noktalarını taramayı engelliyor</message>
-	<message xml:lang="nl">Systeembeleid voorkomt scannen naar toegangspunten op afstand</message>
+        <message xml:lang="nl">Systeembeleid voorkomt scannen naar toegangspunten op afstand</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas de rechercher les points d'accès distants</message>
         <message xml:lang="es">La política del sistema no permite buscar puntos remotos de acceso</message>
         <message xml:lang="de">Systemrichtlinie verhindert die Suche nach Fernzugriffspunkten</message>
@@ -28,7 +28,7 @@
     <action id="tr.org.pardus.comar.net.link.deleteconnection">
         <description>Delete connection</description>
         <description xml:lang="tr">Bağlantıyı sil</description>
-	<description xml:lang="nl">Verwijder verbinding</description>
+        <description xml:lang="nl">Verwijder verbinding</description>
         <description xml:lang="fr">Supprimer la connexion</description>
         <description xml:lang="es">Eliminar la conexión</description>
         <description xml:lang="pl">Kasowanie połączenia</description>
@@ -36,7 +36,7 @@
         <description xml:lang="sv">Ta bort anslutning</description>
         <message>System policy prevents removing connections</message>
         <message xml:lang="tr">Sistem politikası bağlantı silmeyi engelliyor</message>
- 	<message xml:lang="nl">Systeembeleid voorkomt verwijderen verbindingen</message>
+        <message xml:lang="nl">Systeembeleid voorkomt verwijderen verbindingen</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas de supprimer la connexion</message>
         <message xml:lang="es">La política del sistema no permite eliminar la conexión</message>
         <message xml:lang="de">Systemrichtlinie verhindert das Löschen der Verbindung</message>
@@ -51,7 +51,7 @@
     <action id="tr.org.pardus.comar.net.link.setstate">
         <description>Set connection state</description>
         <description xml:lang="tr">Bağlantı durumunu değiştir</description>
-	<description xml:lang="nl">Stel verbindingsstatus in</description>
+        <description xml:lang="nl">Stel verbindingsstatus in</description>
         <description xml:lang="fr">Établir l'état de la connexion</description>
         <description xml:lang="es">Establecer estado de conexión</description>
         <description xml:lang="pl">Ustawianie stanu połączenia</description>
@@ -59,7 +59,7 @@
         <description xml:lang="sv">Sätt anslutningstillstånd</description>
         <message>System policy prevents changing connection state</message>
         <message xml:lang="tr">Sistem politikası bağlantı durumunu değiştirmeyi engelliyor</message>
-	<message xml:lang="nl">Systeembeleid voorkomt veranderen van de verbindingsstatus</message>
+        <message xml:lang="nl">Systeembeleid voorkomt veranderen van de verbindingsstatus</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas d'établir l'état de la connexion</message>
         <message xml:lang="es">La política del sistema no permite cambiar el estado de la conexión</message>
         <message xml:lang="de">Systemrichtlinie verhindert die Änderung des Verbindungszustandes</message>
@@ -74,7 +74,7 @@
     <action id="tr.org.pardus.comar.net.link.set">
         <description>Add connection or set connection details</description>
         <description xml:lang="tr">Bağlantı ekle veya detaylarını değiştir</description>
-  	<description xml:lang="nl">Toevoegen verbinding of details verbinding aanpassen</description>
+        <description xml:lang="nl">Toevoegen verbinding of details verbinding aanpassen</description>
         <description xml:lang="fr">Ajouter une connexion ou établir les détails de la connexion</description>
         <description xml:lang="es">Agregar conexión o configurar detalles de una conexión</description>
         <description xml:lang="pl">Ustawianie szczegółów połączenia</description>
@@ -82,7 +82,7 @@
         <description xml:lang="sv">Lägg till anslutning eller sätt anslutningsalternativ</description>
         <message>System policy prevents adding/editing connections</message>
         <message xml:lang="tr">Sistem politikası bağlantı eklemeyi/bağlantıda değişiklik yapmayı engelliyor</message>
-	<message xml:lang="nl">Systeembeleid voorkomt toevoegen/aanpassen verbindingen</message>
+        <message xml:lang="nl">Systeembeleid voorkomt toevoegen/aanpassen verbindingen</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas d'établir les détails concernant la connexion</message>
         <message xml:lang="es">La política del sistema no permite agregar/modificar conexiones</message>
         <message xml:lang="de">Systemrichtlinie verhindert das Hinzufügen/Bearbeiten der Verbindungen</message>
@@ -97,7 +97,7 @@
     <action id="tr.org.pardus.comar.net.link.get">
         <description>Get connection/device details</description>
         <description xml:lang="tr">Bağlantı/aygıt detaylarını al</description>
-	<description xml:lang="nl">Krijg verbinding/apparaat details</description>
+        <description xml:lang="nl">Krijg verbinding/apparaat details</description>
         <description xml:lang="fr">Obtenir les informations concernant la connexion / le périphérique</description>
         <description xml:lang="es">Obtener información de la conexión /del dispositivo</description>
         <description xml:lang="pl">Odczyt ustawień połączenia/urządzenia</description>
@@ -105,7 +105,7 @@
         <description xml:lang="sv">Hämta anslutnings- och enhetsinformation</description>
         <message>System policy prevents getting connection/device details</message>
         <message xml:lang="tr">Sistem politikası bağlantı/aygıt detaylarını almayı engelliyor</message>
-	<message xml:lang="nl">Systeembeleid voorkomt verkrijgen van verbinding/apparaat details</message>
+        <message xml:lang="nl">Systeembeleid voorkomt verkrijgen van verbinding/apparaat details</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas d'obtenir les informations concernant la connexion / le périphérique</message>
         <message xml:lang="es">La política del sistema no permite obtener detalles de la conexión / del dispositivo</message>
         <message xml:lang="de">Systemrichtlinie verhindert den Abruf der Verbindungs-/Geräte-Details</message>

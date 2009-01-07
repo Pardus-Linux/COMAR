@@ -586,18 +586,21 @@
             <arg name="device" type="s" direction="in"/>
         </method>
         <method name="listEntries" access_label="get">
-            <arg name="devices" type="a{ss}" direction="out"/>
+            <arg name="devices" type="a(s{ss})" direction="out"/>
         </method>
         <method name="addEntry" access_label="set">
             <arg name="device" type="s" direction="in"/>
             <arg name="path" type="s" direction="in"/>
+            <arg name="options" type="{ss}" direction="in"/>
         </method>
         <method name="getEntry" access_label="get">
             <arg name="device" type="s" direction="in"/>
-            <arg name="info" type="{ss}" direction="out"/>
+            <arg name="path" type="s" direction="out"/>
+            <arg name="options" type="{ss}" direction="out"/>
         </method>
         <method name="removeEntry" access_label="set">
             <arg name="device" type="s" direction="in"/>
         </method>
+        <signal name="changed"/>
     </interface>
 </comarModel>

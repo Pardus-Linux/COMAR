@@ -590,13 +590,11 @@
         </method>
         <method name="addEntry" access_label="set">
             <arg name="device" type="s" direction="in"/>
-            <arg name="path" type="s" direction="in"/>
-            <arg name="options" type="{ss}" direction="in"/>
+            <arg name="info" type="{ss}" direction="in"/>
         </method>
         <method name="getEntry" access_label="get">
             <arg name="device" type="s" direction="in"/>
-            <arg name="path" type="s" direction="out"/>
-            <arg name="options" type="{ss}" direction="out"/>
+            <arg name="info" type="{ss}" direction="out"/>
         </method>
         <method name="removeEntry" access_label="set">
             <arg name="device" type="s" direction="in"/>

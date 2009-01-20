@@ -566,7 +566,9 @@
         <signal name="takingBack"/>
     </interface>
     <interface name="Disk.Manager">
-        <method name="getDevices" access_label="get"/>
+        <method name="getDevices" access_label="get">
+            <arg name="devices" type="as" direction="out"/>
+        </method>
         <method name="getDeviceByLabel" access_label="get">
             <arg name="label" type="s" direction="in"/>
             <arg name="device" type="s" direction="out"/>
@@ -590,11 +592,15 @@
         </method>
         <method name="addEntry" access_label="set">
             <arg name="device" type="s" direction="in"/>
-            <arg name="info" type="{ss}" direction="in"/>
+            <arg name="path" type="s" direction="in"/>
+            <arg name="fsType" type="s" direction="in"/>
+            <arg name="options" type="{ss}" direction="in"/>
         </method>
         <method name="getEntry" access_label="get">
             <arg name="device" type="s" direction="in"/>
-            <arg name="info" type="{ss}" direction="out"/>
+            <arg name="path" type="s" direction="out"/>
+            <arg name="fsType" type="s" direction="out"/>
+            <arg name="options" type="{ss}" direction="out"/>
         </method>
         <method name="removeEntry" access_label="set">
             <arg name="device" type="s" direction="in"/>

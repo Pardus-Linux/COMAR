@@ -1,3 +1,6 @@
+2009-01-21  Fatih Aşıcı  <fatih@pardus.org.tr>
+		* zorg/probe.py: Fixed framebuffer device node name.
+
 2008-11-01  Fatih Aşıcı  <fatih@pardus.org.tr>
 		* data/DriversDB: Renamed nvidia packages. Added
 		new cards.

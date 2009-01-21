@@ -93,7 +93,7 @@ class VideoDevice:
     def chooseDriver(self):
         if isVirtual():
             print "We are in domU. Using fbdev driver."
-            if os.path.exists("/dev/fb/0"):
+            if os.path.exists("/dev/fb0"):
                 self.driver = "fbdev"
             return
 

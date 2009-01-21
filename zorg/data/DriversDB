@@ -881,7 +881,7 @@
 10de0393 nvidia/nvidia-drivers177 nv
 10de0394 nvidia/nvidia-drivers177 nv
 10de0395 nvidia/nvidia-drivers177 nv
-10de0397 nv
+10de0397 nvidia/nvidia-drivers180 nv
 10de0398 nvidia/nvidia-drivers177 nv
 10de0399 nvidia/nvidia-drivers177 nv
 10de039a nv
@@ -934,10 +934,14 @@
 10de05fd nvidia/nvidia-drivers177 nv
 10de05fe nvidia/nvidia-drivers177 nv
 10de0600 nvidia/nvidia-drivers177 nv
+10de0601 nvidia/nvidia-drivers180 nv
 10de0602 nvidia/nvidia-drivers177 nv
 10de0604 nvidia/nvidia-drivers177 nv
+10de0605 nvidia/nvidia-drivers180 nv
 10de0606 nvidia/nvidia-drivers177 nv
+10de0608 nvidia/nvidia-drivers180 nv
 10de0609 nvidia/nvidia-drivers177 nv
+10de060b nvidia/nvidia-drivers180 nv
 10de060c nvidia/nvidia-drivers177 nv
 10de060d nvidia/nvidia-drivers177 nv
 10de0610 nvidia/nvidia-drivers177 nv
@@ -951,12 +955,18 @@
 10de0623 nvidia/nvidia-drivers177 nv
 10de0628 nvidia/nvidia-drivers177 nv
 10de062a nvidia/nvidia-drivers177 nv
+10de062b nvidia/nvidia-drivers180 nv
 10de062c nvidia/nvidia-drivers177 nv
+10de063a nvidia/nvidia-drivers180 nv
 10de0640 nvidia/nvidia-drivers177 nv
+10de0643 nvidia/nvidia-drivers180 nv
 10de0647 nvidia/nvidia-drivers177 nv
 10de0648 nvidia/nvidia-drivers177 nv
 10de0649 nvidia/nvidia-drivers177 nv
+10de064a nvidia/nvidia-drivers180 nv
 10de064b nvidia/nvidia-drivers177 nv
+10de064c nvidia/nvidia-drivers180 nv
+10de0656 nvidia/nvidia-drivers180 nv
 10de065c nvidia/nvidia-drivers177 nv
 10de06e1 nvidia/nvidia-drivers177 nv
 10de06e4 nvidia/nvidia-drivers177 nv
@@ -971,6 +981,7 @@
 10de07e1 nvidia/nvidia-drivers177
 10de07e3 nvidia/nvidia-drivers177
 10de0844 nvidia/nvidia-drivers177
+10de0845 nvidia/nvidia-drivers180
 10de0847 nvidia/nvidia-drivers177
 10de0848 nvidia/nvidia-drivers177
 10de0849 nvidia/nvidia-drivers177
@@ -979,6 +990,8 @@
 10de084c nvidia/nvidia-drivers177
 10de084d nvidia/nvidia-drivers177
 10de084f nvidia/nvidia-drivers177
+10de0862 nvidia/nvidia-drivers180
+10de0863 nvidia/nvidia-drivers180
 10de087a nvidia/nvidia-drivers177
 10e09128 imstt
 10e09135 imstt

@@ -57,7 +57,7 @@ class XorgEntry:
 def entryFormat(values):
     s = ""
     for v in values:
-        if isinstance(v, basestring):
+        if isinstance(v, basestring) and not isinstance(v, unquoted):
             s += ' "%s"' % v
         else:
             s += " %s" % v

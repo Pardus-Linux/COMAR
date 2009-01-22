@@ -1,3 +1,7 @@
+2009-01-22  Fatih Aşıcı  <fatih@pardus.org.tr>
+		* zorg/parser.py: Fix a regression introduced with
+		type/instance changes.
+
 2009-01-21  Fatih Aşıcı  <fatih@pardus.org.tr>
 		* zorg/probe.py: Fixed framebuffer device node name.
 		* data/DriversDB: Added new PCI IDs for nvidia-180.

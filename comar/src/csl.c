@@ -223,6 +223,43 @@ c_fail(PyObject *self, PyObject *args)
     return NULL;
 }
 
+//! CSL method: model_apps(model) -> [app, app]
+static PyObject *
+c_model_apps(PyObject *self, PyObject *args)
+{
+    /*!
+     * This method can be used in CSL scripts to raise exceptions.
+     */
+
+    char *model;
+
+    if (!PyArg_ParseTuple(args, "s", &model)) {
+        return NULL;
+    }
+
+    if (model_lookup_interface(model) == -1) {
+        PyErr_SetString(PyExc_Exception, "No such model.");
+        return NULL;
+    }
+
+    char *apps;
+    PyObject *py_list = PyList_New(0);
+
+    db_get_model_apps(model, &apps);
+    if (apps != NULL) {
+        char *pch = strtok(apps, "|");
+        while (pch != NULL) {
+            if (strlen(pch) > 0) {
+                PyList_Append(py_list, PyString_FromString(pch));
+            }
+            pch = strtok(NULL, "|");
+        }
+        free(apps);
+    }
+
+    return py_list;
+}
+
 //! CSL methods
 static PyMethodDef methods[] = {
     { "script", c_script, METH_NOARGS, "Return package name" },
@@ -230,6 +267,7 @@ static PyMethodDef methods[] = {
     { "call", c_call, METH_VARARGS, "Make a syncronous comar call" },
     { "notify", c_notify, METH_VARARGS, "Emits a signal" },
     { "fail", c_fail, METH_VARARGS, "Abort script" },
+    { "model_apps", c_model_apps, METH_VARARGS, "List applications registered to model" },
     { NULL, NULL, 0, NULL }
 };
 

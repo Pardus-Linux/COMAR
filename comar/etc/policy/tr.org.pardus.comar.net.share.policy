@@ -5,9 +5,11 @@
     <action id="tr.org.pardus.comar.net.share.set">
         <description>Set bridge interfaces</description>
         <description xml:lang="tr">Köprü arabirimlerini ayarla</description>
+        <description xml:lang="nl">Stel brug interfaces in</description>
         <description xml:lang="sv">Sätt bryggade gränssnitt</description>
         <message>System policy prevents adding/deleting bridge interfaces</message>
         <message xml:lang="tr">Sistem politikası köprü arabirimi eklemeyi/kaldırmayı engelliyor</message>
+        <message xml:lang="nl">Systeembeleid voorkomt toevoegen/verwijderen brug interfaces</message> 
         <message xml:lang="sv">Systempolicyn förhindrar bryggning av gränssnitt</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>

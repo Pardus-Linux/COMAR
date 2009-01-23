@@ -5,6 +5,7 @@
     <action id="tr.org.pardus.comar.net.stack.set">
         <description>Set hostname/nameserver info</description>
         <description xml:lang="tr">Makine adı/isim sunucu bilgisini değiştir</description>
+        <description xml:lang="nl">Stel hostnaam/naamserver info in</description>
         <description xml:lang="fr">Établir les informations concernant le nom d'hôte/le serveur de nom</description>
         <description xml:lang="es">Establecer información de nombre de servidor (hostname) y servidor de nombres</description>
         <description xml:lang="pl">Ustawianie hostname/nameserver</description>
@@ -12,6 +13,7 @@
         <description xml:lang="sv">Ange information om värddatornamn och namnservrar</description>
         <message>System policy prevents changing host/nameserver information</message>
         <message xml:lang="tr">Sistem politikası makine adı/isim sunucu bilgisini değiştirmeyi engelliyor</message>
+        <message xml:lang="nl">Systeembeleid voorkomt veranderen van host/servernaam informatie</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas d'établir les informations concernant le nom d'hôte/le serveur de nom</message>
         <message xml:lang="es">La política del sistema no permite modificar información de nombre de la maquina (hostname) o servidor de nombres</message>
         <message xml:lang="de">Systemrichtlinie verhindert die Änderung der Host-/Nameserver-Informationen</message>
@@ -26,6 +28,7 @@
     <action id="tr.org.pardus.comar.net.stack.get">
         <description>Get hostname/nameserver info</description>
         <description xml:lang="tr">Makine adı/isim sunucu bilgisini al</description>
+        <description xml:lang="nl">Verkrijg hostnaam/naamserver informatie</description>
         <description xml:lang="fr">Obtenir les informations concernant le nom d'hôte/le serveur de nom</description>
         <description xml:lang="es">Obtener información de nombre de máqina (hostname) y servidor de nombres</description>
         <description xml:lang="pl">Odczyt hostname/nameserver</description>

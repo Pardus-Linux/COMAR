@@ -228,7 +228,7 @@ static PyObject *
 c_model_apps(PyObject *self, PyObject *args)
 {
     /*!
-     * This method can be used in CSL scripts to raise exceptions.
+     * This method can be used in CSL scripts to return applications provide that model.
      */
 
     char *model;
@@ -260,6 +260,26 @@ c_model_apps(PyObject *self, PyObject *args)
     return py_list;
 }
 
+//! CSL method: log_debugmessage)
+static PyObject *
+c_log_debug(PyObject *self, PyObject *args)
+{
+    /*!
+     * This method can be used in CSL scripts to log debug messages.
+     */
+
+    const char *msg;
+
+    if (!PyArg_ParseTuple(args, "s", &msg)) {
+        return NULL;
+    }
+
+    log_debug(LOG_PROC, "%s\n", msg);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
 //! CSL methods
 static PyMethodDef methods[] = {
     { "script", c_script, METH_NOARGS, "Return package name" },
@@ -268,6 +288,7 @@ static PyMethodDef methods[] = {
     { "notify", c_notify, METH_VARARGS, "Emits a signal" },
     { "fail", c_fail, METH_VARARGS, "Abort script" },
     { "model_apps", c_model_apps, METH_VARARGS, "List applications registered to model" },
+    { "log_debug", c_log_debug, METH_VARARGS, "Logs a debug message" },
     { NULL, NULL, 0, NULL }
 };
 

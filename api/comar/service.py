@@ -124,7 +124,7 @@ def _getPid(pidfile):
             raise
         return None
     # Some services put custom data after the first line
-    pid = pid.split("\n")[0]
+    pid = pid.split("\n")[0].strip()
     # Non-pid data is also seen when stopped state in some services :/
     if len(pid) == 0 or len(filter(lambda x: not x in "0123456789", pid)) > 0:
         return None

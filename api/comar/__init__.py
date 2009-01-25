@@ -12,6 +12,7 @@
 __version__ = '2.1.1'
 
 import dbus
+import locale
 import os
 
 class Call:
@@ -47,7 +48,7 @@ class Call:
     def __iter__(self):
         if self.class_:
             obj = self.link.bus.get_object(self.link.address, "/", introspect=False)
-            packages = obj.listModelApplications("%s.%s" % (self.group, self.class_), dbus_interface="tr.org.pardus.comar")
+            packages = obj.listModelApplications("%s.%s" % (self.group, self.class_), dbus_interface=self.link.interface)
             for package in packages:
                 yield unicode(package)
 
@@ -72,16 +73,16 @@ class Call:
                     self.async(self.package, exception, None)
 
                 if self.quiet:
-                    met(dbus_interface="tr.org.pardus.comar.%s.%s" % (self.group, self.class_), ignore_reply=True, *args)
+                    met(dbus_interface="%s.%s.%s" % (self.link.interface, self.group, self.class_), ignore_reply=True, *args)
                 else:
-                    met(dbus_interface="tr.org.pardus.comar.%s.%s" % (self.group, self.class_), reply_handler=handleResult, error_handler=handleError, timeout=self.timeout, *args)
+                    met(dbus_interface="%s.%s.%s" % (self.link.interface, self.group, self.class_), reply_handler=handleResult, error_handler=handleError, timeout=self.timeout, *args)
             else:
                 def handlePackages(packages):
                     if self.quiet:
                         for package in packages:
                             obj = self.link.bus.get_object(self.link.address, "/package/%s" % package, introspect=False)
                             met = getattr(obj, self.method)
-                            met(dbus_interface="tr.org.pardus.comar.%s.%s" % (self.group, self.class_), ignore_reply=True, *args)
+                            met(dbus_interface="%s.%s.%s" % (self.link.interface, self.group, self.class_), ignore_reply=True, *args)
                     else:
                         def handleResult(package):
                             def handler(*result):
@@ -96,7 +97,7 @@ class Call:
                             obj = self.link.bus.get_object(self.link.address, "/package/%s" % package, introspect=False)
                             met = getattr(obj, self.method)
 
-                            met(dbus_interface="tr.org.pardus.comar.%s.%s" % (self.group, self.class_), reply_handler=handleResult(package), error_handler=handleError(package), timeout=self.timeout, *args)
+                            met(dbus_interface="%s.%s.%s" % (self.link.interface, self.group, self.class_), reply_handler=handleResult(package), error_handler=handleError(package), timeout=self.timeout, *args)
 
                 def handlePackError(exception):
                     if self.quiet:
@@ -106,17 +107,17 @@ class Call:
 
                 if self.quiet:
                     obj = self.link.bus.get_object(self.link.address, "/", introspect=False)
-                    packages = obj.listModelApplications("%s.%s" % (self.group, self.class_), dbus_interface="tr.org.pardus.comar")
+                    packages = obj.listModelApplications("%s.%s" % (self.group, self.class_), dbus_interface=self.link.interface)
                     handlePackages(packages)
                 else:
                     obj = self.link.bus.get_object(self.link.address, "/", introspect=False)
-                    obj.listModelApplications("%s.%s" % (self.group, self.class_), dbus_interface="tr.org.pardus.comar", reply_handler=handlePackages, error_handler=handlePackError, timeout=self.timeout)
+                    obj.listModelApplications("%s.%s" % (self.group, self.class_), dbus_interface=self.link.interface, reply_handler=handlePackages, error_handler=handlePackError, timeout=self.timeout)
         else:
             if self.package:
                 obj = self.link.bus.get_object(self.link.address, "/package/%s" % self.package, introspect=False)
                 met = getattr(obj, self.method)
                 try:
-                    return met(dbus_interface="tr.org.pardus.comar.%s.%s" % (self.group, self.class_), timeout=self.timeout, *args)
+                    return met(dbus_interface="%s.%s.%s" % (self.link.interface, self.group, self.class_), timeout=self.timeout, *args)
                 except dbus.DBusException, e:
                     if "policy.auth" in e._dbus_error_name:
                         action = e.get_dbus_message()
@@ -139,9 +140,23 @@ class Call:
 
 
 class Link:
-    def __init__(self, address="tr.org.pardus.comar"):
-        self.address = address
+    def __init__(self, version="2"):
+        self.version = str(version)
+        self.address = "tr.org.pardus.comar"
+        self.interface = "tr.org.pardus.comar"
+
         self.bus = dbus.SystemBus()
+
+        if self.version == "3":
+            self.address += self.version
+            self.interface += self.version
+
+    def setLocale(self):
+        if self.version != "3":
+            return
+        lang = locale.getdefaultlocale()[0].split("_")[0]
+        obj = self.bus.get_object(self.address, '/', introspect=False)
+        obj.setLocale(lang, dbus_interface=self.interface)
 
     def listenSignals(self, model, handler):
         def sigHandler(*args, **kwargs):
@@ -150,7 +165,7 @@ class Link:
             package = kwargs["path"].split("/package/")[1]
             signal = kwargs["signal"]
             handler(package, signal, args)
-        self.bus.add_signal_receiver(sigHandler, dbus_interface="tr.org.pardus.comar.%s" % model, member_keyword="signal", path_keyword="path")
+        self.bus.add_signal_receiver(sigHandler, dbus_interface="%s.%s" % (self.interface, model), member_keyword="signal", path_keyword="path")
 
     def __getattr__(self, name):
         if name[0] < 'A' or name[0] > 'Z':

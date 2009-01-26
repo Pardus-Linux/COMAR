@@ -5,6 +5,7 @@
     <action id="tr.org.pardus.comar.system.packagehandler.setuppackage">
         <description>Execute package handler setup scripts</description>
         <description xml:lang="tr">Paket işleyicisi kurulum betiklerini çalıştır</description>
+        <description xml:lang="nl">Voer pakket afhandelings installatie uit</description>
         <description xml:lang="fr">Exécuter les scripts de configuration du gestionnaire de paquet</description>
         <description xml:lang="es">Ejecutar los scripts de configuración de paquetes</description>
         <description xml:lang="pl">Wykonywanie skryptów pakietów</description>
@@ -12,6 +13,7 @@
         <description xml:lang="sv">Kör skript för pakethanteringsinställningar</description>
         <message>System policy prevents executing package handlers' setup scripts</message>
         <message xml:lang="tr">Sistem politikası paket işleyicilerinin kurulum betiklerinin çalıştırılmasını engelliyor</message>
+        <message xml:lang="nl">Systeembeleid voorkomt uitvoeren van pakket afhandelings instellings scripts</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas d'exécuter les scripts de configuration d'un gestionnaire de paquet</message>
         <message xml:lang="es">La política del sistema no permite la ejecución de los scripts de configuración de paquetes</message>
         <message xml:lang="de">Systemrichtlinie verhindert die Ausführung des Paketsteuerer-Setup-Skripts</message>
@@ -26,6 +28,7 @@
     <action id="tr.org.pardus.comar.system.packagehandler.cleanuppackage">
         <description>Execute package handler cleanup scripts</description>
         <description xml:lang="tr">Paket işleyicisi temizlik betiklerini çalıştır</description>
+        <description xml:lang="nl">Uitvoeren pakket afhandelings opruim scrips</description>
         <description xml:lang="fr">Exécuter les scripts de nettoyage du gestionnaire de paquet</description>
         <description xml:lang="es">Ejecutar los scripts de limpieza de paquetes</description>
         <description xml:lang="pl">Wykonywanie skryptów porządkujących pakietów</description>
@@ -33,6 +36,7 @@
         <description xml:lang="sv">Kör skript för upprensning av pakethanteringsinställningar</description>
         <message>System policy prevents executing package handlers' cleanup scripts</message>
         <message xml:lang="tr">Sistem politikası paket işleyicilerinin temizlik betiklerininin çalıştırılmasını engelliyor</message>
+        <message xml:lang="nl">Systeembeleid voorkomt uivoeren pakket afhandelings opruim scripts</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas d'exécuter les scripts de nettoyage du gestionnaire de paquet</message>
         <message xml:lang="es">La política del sistema no permite la ejecución de los scripts de limpieza de paquetes</message>
         <message xml:lang="de">Systemrichtlinie verhindert die Ausführung des Paketsteuerer-Säuberungs-Skripts</message>

@@ -10,7 +10,7 @@
         <description xml:lang="es">Modificar la configuración del cortafuegos</description>
         <description xml:lang="pl">Zmiana ustawień firewalla</description>
         <description xml:lang="de">Firewallkonfiguration ändern</description>
-        <description xml:lang="sv">Redigera brandväggens inställningar </description>
+        <description xml:lang="sv">Redigera brandväggens inställningar</description>
         <message>System policy prevents changing firewall configuration</message>
         <message xml:lang="tr">Sistem politikası güvenlik duvarı yapılandırmasını değiştirmeyi engelliyor</message>
         <message xml:lang="nl">Systeembeleid voorkomt veranderen van de firewall configuratie</message>

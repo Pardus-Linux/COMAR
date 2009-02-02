@@ -66,7 +66,7 @@ class Call:
                 def handleResult(*result):
                     self.async(self.package, None, result)
                 def handleError(exception):
-                    if "policy.auth" in exception._dbus_error_name:
+                    if "policy.auth" in exception._dbus_error_name or "Comar.PolicyKit" in exception._dbus_error_name:
                         action = exception.get_dbus_message()
                         if self.queryPolicyKit(action):
                             return self.call(*args, **kwargs)
@@ -118,12 +118,12 @@ class Call:
                 met = getattr(obj, self.method)
                 try:
                     return met(dbus_interface="%s.%s.%s" % (self.link.interface, self.group, self.class_), timeout=self.timeout, *args)
-                except dbus.DBusException, e:
-                    if "policy.auth" in e._dbus_error_name:
-                        action = e.get_dbus_message()
+                except dbus.DBusException, exception:
+                    if "policy.auth" in exception._dbus_error_name or "Comar.PolicyKit" in exception._dbus_error_name:
+                        action = exception.get_dbus_message()
                         if self.queryPolicyKit(action):
                             return self.call(*args, **kwargs)
-                    raise dbus.DBusException, e
+                    raise dbus.DBusException, exception
             else:
                 raise AttributeError, "Package name required for non-async calls."
 
@@ -166,6 +166,14 @@ class Link:
             signal = kwargs["signal"]
             handler(package, signal, args)
         self.bus.add_signal_receiver(sigHandler, dbus_interface="%s.%s" % (self.interface, model), member_keyword="signal", path_keyword="path")
+
+    def register(self, app, model, script):
+        obj = self.bus.get_object(self.address, '/', introspect=False)
+        obj.register(app, model, script, dbus_interface=self.interface)
+
+    def remove(self, app):
+        obj = self.bus.get_object(self.address, '/', introspect=False)
+        obj.remove(app, dbus_interface=self.interface)
 
     def __getattr__(self, name):
         if name[0] < 'A' or name[0] > 'Z':

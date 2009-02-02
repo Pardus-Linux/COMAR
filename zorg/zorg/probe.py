@@ -155,15 +155,6 @@ class VideoDevice:
 
         self.enableDriver()
 
-        if self.vendor_id == "80ee" and self.product_id == "beef":  # VirtualBox Graphics Adapter
-            self.probe_result.update({
-                "outputs":          "default",
-                "default-modes":    "1024x768,800x600,640x480",
-                "flags":            "no-modes-line"
-                })
-            self.depth = "24"
-            return
-
         self.probe_result = call(self.package, "Xorg.Driver", "probe", self.getDict())
 
         if self.probe_result is None:

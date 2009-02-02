@@ -83,7 +83,13 @@ def saveXorgConfig(card):
     }
 
     secMouse.set("Identifier", "Mouse")
-    secMouse.set("Driver", "mouse")
+
+    if os.path.exists("/dev/vboxadd") and \
+        os.path.exists("/usr/lib/xorg/modules/input/vboxmouse_drv.so"):
+        secMouse.set("Driver", "vboxmouse")
+    else:
+        secMouse.set("Driver", "mouse")
+
     secMouse.options = {
         "CorePointer" :     "true",
     }

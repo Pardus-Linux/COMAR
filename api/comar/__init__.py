@@ -140,12 +140,16 @@ class Call:
 
 
 class Link:
-    def __init__(self, version="2"):
+    def __init__(self, version="2", socket=None):
         self.version = str(version)
         self.address = "tr.org.pardus.comar"
         self.interface = "tr.org.pardus.comar"
+        self.socket = socket
 
-        self.bus = dbus.SystemBus()
+        if not socket:
+            self.bus = dbus.SystemBus()
+        else:
+            self.bus = dbus.bus.BusConnection(address_or_type="unix:path=%s" % socket)
 
         if self.version == "3":
             self.address += self.version

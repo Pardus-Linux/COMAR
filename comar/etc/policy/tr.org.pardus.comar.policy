@@ -2,6 +2,10 @@
 <!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN" "http://www.freedesktop.org/standards/PolicyKit/1.0/policyconfig.dtd">
 
 <policyconfig>
+    <vendor>Pardus</vendor>
+    <vendor_url>http://www.pardus.org.tr</vendor_url>
+    <icon_name>applications-system</icon_name>
+
     <action id="tr.org.pardus.comar.register">
         <description>Register new scripts</description>
         <description xml:lang="tr">Yeni betikleri sisteme kaydet</description>

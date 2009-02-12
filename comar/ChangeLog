@@ -1,3 +1,7 @@
+2009-02-12  Gökçen Eraslan  <gokcen@pardus.org.tr>
+
+	* comar/etc/*.policy: Vendor name, URL and icons added to policy files.
+
 2008-11-12  Bahadır Kandemir  <bahadir@pardus.org.tr>
 
 	* comar: Print Python traceback to logfile.

@@ -140,7 +140,7 @@ class Call:
 
 
 class Link:
-    def __init__(self, version="2", socket=None):
+    def __init__(self, version="2", socket=None, alternate=False):
         self.version = str(version)
         self.address = "tr.org.pardus.comar"
         self.interface = "tr.org.pardus.comar"
@@ -151,9 +151,16 @@ class Link:
         else:
             self.bus = dbus.bus.BusConnection(address_or_type="unix:path=%s" % socket)
 
-        if self.version == "3":
-            self.address += self.version
-            self.interface += self.version
+        if alternate:
+            if self.version == "2":
+                self.address += self.version
+            elif self.version == "3":
+                self.address += self.version + ".updated"
+                self.interface += self.version
+        else:
+            if self.version == "3":
+                self.address += self.version
+                self.interface += self.version
 
     def setLocale(self):
         if self.version != "3":
@@ -171,13 +178,13 @@ class Link:
             handler(package, signal, args)
         self.bus.add_signal_receiver(sigHandler, dbus_interface="%s.%s" % (self.interface, model), member_keyword="signal", path_keyword="path")
 
-    def register(self, app, model, script):
+    def register(self, app, model, script, timeout=120):
         obj = self.bus.get_object(self.address, '/', introspect=False)
-        obj.register(app, model, script, dbus_interface=self.interface)
+        obj.register(app, model, script, dbus_interface=self.interface, timeout=timeout)
 
-    def remove(self, app):
+    def remove(self, app, timeout=120):
         obj = self.bus.get_object(self.address, '/', introspect=False)
-        obj.remove(app, dbus_interface=self.interface)
+        obj.remove(app, dbus_interface=self.interface, timeout=timeout)
 
     def __getattr__(self, name):
         if name[0] < 'A' or name[0] > 'Z':

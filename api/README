@@ -34,3 +34,14 @@ Asynchronous calls:
     link.System.Service.info(async=handler)
 
     mainloop.run()
+
+Connecting COMAR service on alternate destination:
+
+    import comar
+    link = comar.Link(alternate=True)
+
+This will simply try to connect tr.org.pardus.comar2 instead 
+of tr.org.pardus.comar
+
+COMAR 3.0's primary destination is tr.org.pardus.comar3 and 
+alternate destination is tr.org.pardus.comar3.updated

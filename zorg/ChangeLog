@@ -1,34 +1,45 @@
 2009-02-19  Fatih Aşıcı  <fatih@pardus.org.tr>
-		* zorg/hwdata.py: Copy hwdata module from display manager.
+	* zorg/hwdata.py:
+		Copy hwdata module from display manager.
 		Add vboxvideo driver to the driver list.
 
 2009-02-02  Fatih Aşıcı  <fatih@pardus.org.tr>
-		* data/DriversDB, zorg/{config,probe}.py:
+	* data/DriversDB, zorg/{config,probe}.py:
 		Add support for VirtualBox video and mouse drivers.
 
 2009-01-22  Fatih Aşıcı  <fatih@pardus.org.tr>
-		* zorg/parser.py: Fix a regression introduced with
+	* zorg/parser.py:
+		Fix a regression introduced with
 		type/instance changes.
 
 2009-01-21  Fatih Aşıcı  <fatih@pardus.org.tr>
-		* zorg/probe.py: Fixed framebuffer device node name.
-		* data/DriversDB: Added new PCI IDs for nvidia-180.
+	* zorg/probe.py:
+		Fixed framebuffer device node name.
+	* data/DriversDB:
+		Added new PCI IDs for nvidia-180.
 
 2008-11-01  Fatih Aşıcı  <fatih@pardus.org.tr>
-		* data/DriversDB: Renamed nvidia packages. Added
-		new cards.
-		* data/modprobe.d/zorg: Added new module names for nvidia.
-		* zorg/__init__.py: Bumped version to 1.1.1.
+	* data/DriversDB:
+		Renamed nvidia packages.
+		Added new cards.
+	* data/modprobe.d/zorg:
+		Added new module names for nvidia.
+	* zorg/__init__.py:
+		Bumped version to 1.1.1.
 
 2008-10-04  Fatih Aşıcı  <fatih@pardus.org.tr>
-		* zorg/__init__.py: Bumped version to 1.1.
-		* zorg/config.py: Added support to create InputDevice
-		sections for wacom devices.
+	* zorg/__init__.py:
+		Bumped version to 1.1.
+	* zorg/config.py:
+		Added support to create InputDevice sections
+		for wacom devices.
 
 2008-09-24  Fatih Aşıcı  <fatih@pardus.org.tr>
-		* zorg/probe.py: Added a high timeout value for dbus calls
-		since enabling a driver package might take a long time on slow
+	* zorg/probe.py:
+		Added a high timeout value for dbus calls since
+		enabling a driver package might take a long time on slow
 		machines.
 
 2008-09-17  Fatih Aşıcı  <fatih@pardus.org.tr>
-		* AUTHORS, ChangeLog: Added AUTHORS and ChangeLog.
+	* AUTHORS, ChangeLog:
+		Added AUTHORS and ChangeLog.

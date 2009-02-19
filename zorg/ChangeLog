@@ -1,3 +1,6 @@
+2009-02-19  Fatih Aşıcı  <fatih@pardus.org.tr>
+		* zorg/hwdata.py: Copy hwdata module from display manager.
+
 2009-02-02  Fatih Aşıcı  <fatih@pardus.org.tr>
 		* data/DriversDB, zorg/{config,probe}.py:
 		Add support for VirtualBox video and mouse drivers.

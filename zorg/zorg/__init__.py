@@ -15,6 +15,7 @@ __version__ = "1.2.2"
 __all__ = ["config",
            "consts",
            "ddc",
+           "hwdata",
            "modeline",
            "parser",
            "probe",

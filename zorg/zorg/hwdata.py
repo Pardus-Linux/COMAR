@@ -57,6 +57,8 @@ drivers = {
     "tga":          "DEC TGA chipset",
     "trident":      "Trident Blade, CyberBlade, 3DImage, ProVidia, TGUI, and Cyber9xxx cards",
     "tseng":        "Tseng Labs ET4000, ET6000, and ET6100 cards",
+    "vboxvideo/virtualbox-guest-utils":
+                    "Video driver for VirtualBox guests",
     "vesa":         "Generic VESA-compliant video cards",
     "vga":          "Generic VGA video cards",
     "via":          "VIA Unichrome (CLE266, KM400/KN400, K8M800/K8N800, PM8X0, CN400) chipsets",

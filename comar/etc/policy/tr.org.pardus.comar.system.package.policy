@@ -51,4 +51,40 @@
             <allow_active>no</allow_active>
         </defaults>
     </action>
+    <action id="tr.org.pardus.comar.system.package.postremove">
+        <description>Execute post-remove script of a package</description>
+        <description xml:lang="tr">Bir paketin kaldırma öncesi betiğini çalıştır</description>
+        <description xml:lang="fr">Exécuter les scripts de préparation à la suppression d'un paquet</description>
+        <description xml:lang="es">Ejecutar script de post-remove de un paquete</description>
+        <description xml:lang="pl">Wykonywanie skryptów "przed usunięciem" pakietów</description>
+        <description xml:lang="de">Preremove-Skript eines Pakets ausführen</description>
+        <message>System policy prevents executing post-remove script</message>
+        <message xml:lang="tr">Sistem politikası kaldırma öncesi betiği çalıştırmayı engelliyor</message>
+        <message xml:lang="fr">Le mode de gestion du système ne permet pas d'exécuter les scripts de préparation à la suppression d'un paquet</message>
+        <message xml:lang="es">La política del sistema no permite la ejecución del scripts de post-remove de paquetes</message>
+        <message xml:lang="de">Systemrichtlinie verhindert die Ausführung des Preremove-Skripts</message>
+        <defaults>
+            <allow_any>no</allow_any>
+            <allow_inactive>no</allow_inactive>
+            <allow_active>no</allow_active>
+        </defaults>
+    </action>
+    <action id="tr.org.pardus.comar.system.package.postremove">
+        <description>Execute post-remove script of a package</description>
+        <description xml:lang="tr">Bir paketin kaldırma öncesi betiğini çalıştır</description>
+        <description xml:lang="fr">Exécuter les scripts de préparation à la suppression d'un paquet</description>
+        <description xml:lang="es">Ejecutar script de post-remove de un paquete</description>
+        <description xml:lang="pl">Wykonywanie skryptów "przed usunięciem" pakietów</description>
+        <description xml:lang="de">Preremove-Skript eines Pakets ausführen</description>
+        <message>System policy prevents executing post-remove script</message>
+        <message xml:lang="tr">Sistem politikası kaldırma öncesi betiği çalıştırmayı engelliyor</message>
+        <message xml:lang="fr">Le mode de gestion du système ne permet pas d'exécuter les scripts de préparation à la suppression d'un paquet</message>
+        <message xml:lang="es">La política del sistema no permite la ejecución del scripts de post-remove de paquetes</message>
+        <message xml:lang="de">Systemrichtlinie verhindert die Ausführung des Preremove-Skripts</message>
+        <defaults>
+            <allow_any>no</allow_any>
+            <allow_inactive>no</allow_inactive>
+            <allow_active>no</allow_active>
+        </defaults>
+    </action>
 </policyconfig>

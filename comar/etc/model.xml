@@ -92,6 +92,9 @@
         <method name="preRemove">
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
+        <method name="postRemove">
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
         <signal name="Installed">
             <arg name="package" type="s"/>
         </signal>
@@ -106,6 +109,11 @@
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
         <method name="cleanupPackage">
+            <arg name="metapath" type="s" direction="in"/>
+            <arg name="filepath" type="s" direction="in"/>
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+        <method name="postCleanupPackage">
             <arg name="metapath" type="s" direction="in"/>
             <arg name="filepath" type="s" direction="in"/>
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>

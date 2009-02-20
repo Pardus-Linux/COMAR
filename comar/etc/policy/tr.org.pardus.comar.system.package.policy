@@ -53,7 +53,7 @@
     </action>
     <action id="tr.org.pardus.comar.system.package.postremove">
         <description>Execute post-remove script of a package</description>
-        <description xml:lang="tr">Bir paketin kaldırma öncesi betiğini çalıştır</description>
+        <description xml:lang="tr">Bir paketin kaldırma sonrası betiğini çalıştır</description>
         <description xml:lang="fr">Exécuter les scripts de préparation à la suppression d'un paquet</description>
         <description xml:lang="es">Ejecutar script de post-remove de un paquete</description>
         <description xml:lang="pl">Wykonywanie skryptów "przed usunięciem" pakietów</description>

@@ -4,6 +4,8 @@
             <arg name="xml_data" type="s" direction="out"/>
         </method>
     </interface>
+
+    <!-- COMAR -->
     <interface name="Comar">
         <method name="register">
             <arg name="application" type="s" direction="in"/>
@@ -33,6 +35,8 @@
             <arg name="killed_jobs" type="i" direction="out"/>
         </method>
     </interface>
+
+    <!-- Boot.Loader -->
     <interface name="Boot.Loader">
         <method name="listSystems" access_label="get">
             <arg name="systems" type="{s(sasas)}" direction="out"/>
@@ -81,6 +85,15 @@
             <arg name="changed_item" type="s"/>
         </signal>
     </interface>
+
+    <!-- Kernel -->
+    <interface name="Kernel">
+        <method name="getBestKernel" access_label="get">
+            <arg name="kernel" type="s" direction="out"/>
+        </method>
+    </interface>
+
+    <!-- System.Package -->
     <interface name="System.Package">
         <method name="postInstall">
             <arg name="fromVersion" type="s" direction="in"/>
@@ -102,6 +115,8 @@
             <arg name="package" type="s"/>
         </signal>
     </interface>
+
+    <!-- System.PackageHandler -->
     <interface name="System.PackageHandler">
         <method name="setupPackage">
             <arg name="metapath" type="s" direction="in"/>
@@ -119,6 +134,8 @@
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
     </interface>
+
+    <!-- Net.Link -->
     <interface name="Net.Link">
         <method name="linkInfo" access_label="get">
             <arg name="info" type="{ss}" direction="out"/>
@@ -234,6 +251,8 @@
             <arg name="device_name" type="s"/>
         </signal>
     </interface>
+
+    <!-- Net.Share -->
     <interface name="Net.Share">
         <method name="checkShare" access_label="set">
             <arg name="net_addr" type="s" direction="in"/>
@@ -242,6 +261,8 @@
             <arg name="name_srv" type="s" direction="in"/>
         </method>
     </interface>
+
+    <!-- User.Manager -->
     <interface name="User.Manager">
         <method name="userList" access_label="get">
             <arg name="users" type="a(iss)" direction="out"/>
@@ -313,6 +334,8 @@
             <arg name="success" type="b" direction="out"/>
         </method>
     </interface>
+
+    <!-- Time.Clock -->
     <interface name="Time.Clock">
         <method name="setDate" access_label="set">
             <arg name="year" type="i" direction="in"/>
@@ -339,6 +362,8 @@
             <arg name="zone" type="s" direction="out"/>
         </method>
     </interface>
+
+    <!-- Boot.Modules -->
     <interface name="Boot.Modules">
         <method name="listAvailable" access_label="get">
             <arg name="modules" type="as" direction="out"/>
@@ -390,6 +415,8 @@
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
     </interface>
+
+    <!-- Net.Stack -->
     <interface name="Net.Stack">
         <method name="getNameServers" access_label="get">
             <arg name="servers" type="as" direction="out"/>
@@ -412,6 +439,8 @@
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
     </interface>
+
+    <!-- Net.Filter -->
     <interface name="Net.Filter">
         <method name="setRule" access_label="set">
             <arg name="rule" type="s" direction="in"/>
@@ -443,6 +472,8 @@
             <arg name="raw" type="s"/>
         </signal>
     </interface>
+
+    <!-- System.Service -->
     <interface name="System.Service">
         <method name="ready" access_label="set">
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
@@ -473,6 +504,8 @@
             <arg name="state" type="s"/>
         </signal>
     </interface>
+
+    <!-- Xorg.Display -->
     <interface name="Xorg.Display">
         <method name="ready" access_label="set">
             <arg name="boot" type="b" direction="in"/>
@@ -509,6 +542,8 @@
             <arg name="variant" type="s" direction="in"/>
         </method>
     </interface>
+
+    <!-- Xorg.Driver -->
     <interface name="Xorg.Driver">
         <method name="enable"/>
         <method name="disable"/>
@@ -521,6 +556,8 @@
             <arg name="options" type="{ss}" direction="out"/>
         </method>
     </interface>
+
+    <!-- System.Manager -->
     <interface name="System.Manager">
         <method name="installPackage">
             <arg name="package" type="as" direction="in"/>
@@ -573,6 +610,8 @@
         <signal name="takingSnapshot"/>
         <signal name="takingBack"/>
     </interface>
+
+    <!-- Disk.Manager -->
     <interface name="Disk.Manager">
         <method name="getDevices" access_label="get">
             <arg name="devices" type="as" direction="out"/>

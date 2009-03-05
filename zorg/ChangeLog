@@ -1,3 +1,8 @@
+2009-03-05  Fatih Aşıcı  <fatih@pardus.org.tr>
+	* zorg/config.py:
+		Do not create InputDevice sections. We will use
+		new input hotplug mechanism for all input devices.
+
 2009-02-19  Fatih Aşıcı  <fatih@pardus.org.tr>
 	* zorg/hwdata.py:
 		Copy hwdata module from display manager.

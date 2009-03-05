@@ -16,8 +16,6 @@ def saveXorgConfig(card):
     secdri = XorgSection("dri")
     secFiles = XorgSection("Files")
     secFlags = XorgSection("ServerFlags")
-    secKeyboard = XorgSection("InputDevice")
-    secMouse = XorgSection("InputDevice")
     secDevice = XorgSection("Device")
     secScr = XorgSection("Screen")
     secLay = XorgSection("ServerLayout")
@@ -27,8 +25,6 @@ def saveXorgConfig(card):
         secdri,
         secFiles,
         secFlags,
-        secKeyboard,
-        secMouse,
         secDevice,
         secScr,
         secLay
@@ -71,43 +67,6 @@ def saveXorgConfig(card):
                 "DontZap" : "true"
                 }
         secFlags.options.update(jailOpts)
-
-    secKeyboard.set("Identifier", "Keyboard")
-    secKeyboard.set("Driver", "kbd")
-    xkb_layout, xkb_variant = getKeymap()
-    secKeyboard.options = {
-        "CoreKeyboard" :    "true",
-        "XkbModel" :        "pc105",
-        "XkbLayout" :       xkb_layout,
-        "XkbVariant" :      xkb_variant
-    }
-
-    secMouse.set("Identifier", "Mouse")
-
-    if os.path.exists("/dev/vboxadd") and \
-        os.path.exists("/usr/lib/xorg/modules/input/vboxmouse_drv.so"):
-        secMouse.set("Driver", "vboxmouse")
-    else:
-        secMouse.set("Driver", "mouse")
-
-    secMouse.options = {
-        "CorePointer" :     "true",
-    }
-
-    if os.path.exists("/dev/input/wacom"):
-        def addWacom(wtype):
-            wacomSec = XorgSection("InputDevice")
-            wacomSec.set("Identifier", "Wacom[%s]" % wtype)
-            wacomSec.set("Driver", "wacom")
-            wacomSec.options = {
-                "Device" :          "/dev/input/wacom",
-                "Type":             wtype,
-                "USB":              "on"
-            }
-            parser.sections.append(wacomSec)
-
-        for wtype in "stylus", "eraser", "cursor", "pad":
-            addWacom(wtype)
 
     info = card.getDict()
 
@@ -183,10 +142,6 @@ def saveXorgConfig(card):
 
     secLay.set("Identifier", "Layout")
     secLay.set("Screen", "Screen")
-
-    if os.path.exists("/dev/input/wacom"):
-        for wtype in "stylus", "eraser", "cursor", "pad":
-            secLay.add("InputDevice", "Wacom[%s]" % wtype)
 
     backup(xorgConf)
 

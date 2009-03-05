@@ -14,7 +14,6 @@ def saveXorgConfig(card):
 
     secModule = XorgSection("Module")
     secdri = XorgSection("dri")
-    secFiles = XorgSection("Files")
     secFlags = XorgSection("ServerFlags")
     secDevice = XorgSection("Device")
     secScr = XorgSection("Screen")
@@ -23,7 +22,6 @@ def saveXorgConfig(card):
     parser.sections = [
         secModule,
         secdri,
-        secFiles,
         secFlags,
         secDevice,
         secScr,
@@ -35,23 +33,6 @@ def saveXorgConfig(card):
     secModule.sections = [extmod]
 
     secdri.set("Mode", unquoted("0666"))
-
-    secFiles.set("RgbPath", "/usr/lib/X11/rgb")
-    fontPaths = (
-        "/usr/share/fonts/misc/",
-        "/usr/share/fonts/dejavu/",
-        "/usr/share/fonts/TTF/",
-        "/usr/share/fonts/freefont/",
-        "/usr/share/fonts/TrueType/",
-        "/usr/share/fonts/corefonts",
-        "/usr/share/fonts/Speedo/",
-        "/usr/share/fonts/Type1/",
-        "/usr/share/fonts/100dpi/",
-        "/usr/share/fonts/75dpi/",
-        "/usr/share/fonts/encodings/",
-    )
-    for fontPath in fontPaths:
-        secFiles.add("FontPath", fontPath)
 
     secFlags.options = {
         "AllowMouseOpenFail" : "true",

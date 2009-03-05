@@ -4,6 +4,7 @@
 		new input hotplug mechanism for all input devices.
 		- Do not create Files section. We will use
 		catalogue paths.
+		- Do not create redundant dri section.
 
 2009-02-19  Fatih Aşıcı  <fatih@pardus.org.tr>
 	* zorg/hwdata.py:

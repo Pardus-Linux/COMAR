@@ -13,7 +13,6 @@ def saveXorgConfig(card):
     parser = XorgParser()
 
     secModule = XorgSection("Module")
-    secdri = XorgSection("dri")
     secFlags = XorgSection("ServerFlags")
     secDevice = XorgSection("Device")
     secScr = XorgSection("Screen")
@@ -21,7 +20,6 @@ def saveXorgConfig(card):
 
     parser.sections = [
         secModule,
-        secdri,
         secFlags,
         secDevice,
         secScr,
@@ -31,8 +29,6 @@ def saveXorgConfig(card):
     extmod = XorgSection("extmod")
     extmod.options = {"omit xfree86-dga" : unquoted()}
     secModule.sections = [extmod]
-
-    secdri.set("Mode", unquoted("0666"))
 
     secFlags.options = {
         "AllowMouseOpenFail" : "true",

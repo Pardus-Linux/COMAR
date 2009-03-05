@@ -12,15 +12,5 @@
 
 __version__ = "1.80"
 
-__all__ = ["config",
-           "consts",
-           "ddc",
-           "hwdata",
-           "modeline",
-           "parser",
-           "probe",
-           "utils"]
-
-
 def versionString():
     return __version__

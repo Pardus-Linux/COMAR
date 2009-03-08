@@ -4,6 +4,7 @@
 xorgConf = "/etc/X11/xorg.conf"
 zorgConfigDir = "/var/lib/zorg"
 zorgConfig = "config.xml"
+zorgDataDir = "/usr/share/zorg"
 
 DriversDB = "/usr/lib/X11/DriversDB"
 MonitorsDB = "/usr/lib/X11/MonitorsDB"

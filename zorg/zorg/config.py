@@ -22,9 +22,10 @@ def saveXorgConfig(card):
         secModule,
         secFlags,
         secDevice,
-        secScr,
-        secLay
     ]
+
+    if not card.initial:
+        parser.sections.extend([secScr, secLay])
 
     extmod = XorgSection("extmod")
     extmod.options = {"omit xfree86-dga" : unquoted()}
@@ -48,12 +49,14 @@ def saveXorgConfig(card):
     info = card.getDict()
 
     secDevice.set("Identifier", "VideoCard")
-    secDevice.set("Driver", card.driver)
-    vendorName, boardName = idsQuery(card.vendor_id, card.product_id)
-    secDevice.set("VendorName", vendorName)
-    secDevice.set("BoardName", boardName)
-    secDevice.set("BusId", info["bus-id"])
-    secDevice.options.update(card.driver_options)
+    if card.driver:
+        secDevice.set("Driver", card.driver)
+        secDevice.options.update(card.driver_options)
+
+    # vendorName, boardName = idsQuery(card.vendor_id, card.product_id)
+    # secDevice.set("VendorName", vendorName)
+    # secDevice.set("BoardName", boardName)
+    # secDevice.set("BusId", info["bus-id"])
 
     flags = card.probe_result["flags"].split(",")
 
@@ -87,38 +90,39 @@ def saveXorgConfig(card):
 
                     monSec.options[pos] = "Monitor[%s]" % out2
 
-    secScr.set("Identifier", "Screen")
-    secScr.set("Device", "VideoCard")
-    secScr.set("Monitor", "Monitor[%s]" % card.active_outputs[0])
-    secScr.set("DefaultDepth", atoi(card.depth))
+    if not card.initial:
+        secScr.set("Identifier", "Screen")
+        secScr.set("Device", "VideoCard")
+        secScr.set("Monitor", "Monitor[%s]" % card.active_outputs[0])
+        secScr.set("DefaultDepth", atoi(card.depth))
 
-    subsec = XorgSection("Display")
-    subsec.set("Depth", atoi(card.depth))
+        subsec = XorgSection("Display")
+        subsec.set("Depth", atoi(card.depth))
 
-    if "randr12" in flags and card.desktop_setup not in ("single", "clone"):
-        out1, out2 = card.active_outputs[:2]
-        if card.modes.has_key(out1) and card.modes.has_key(out2):
-            w1, h1 = map(atoi, card.modes[out1].split("x"))
-            w2, h2 = map(atoi, card.modes[out2].split("x"))
+        if "randr12" in flags and card.desktop_setup not in ("single", "clone"):
+            out1, out2 = card.active_outputs[:2]
+            if card.modes.has_key(out1) and card.modes.has_key(out2):
+                w1, h1 = map(atoi, card.modes[out1].split("x"))
+                w2, h2 = map(atoi, card.modes[out2].split("x"))
 
-            if card.desktop_setup == "horizontal":
-                w = w1 + w2
-                h = max(h1, h2)
-            else:
-                w = max(w1, w2)
-                h = h1 + h2
+                if card.desktop_setup == "horizontal":
+                    w = w1 + w2
+                    h = max(h1, h2)
+                else:
+                    w = max(w1, w2)
+                    h = h1 + h2
 
-            subsec.set("Virtual", w, h)
+                subsec.set("Virtual", w, h)
 
-    if "no-modes-line" not in flags or "randr12" not in flags:
-        output = card.active_outputs[0]
-        if card.modes.has_key(output):
-            subsec.set("Modes", card.modes[output], "800x600", "640x480")
+        if "no-modes-line" not in flags or "randr12" not in flags:
+            output = card.active_outputs[0]
+            if card.modes.has_key(output):
+                subsec.set("Modes", card.modes[output], "800x600", "640x480")
 
-    secScr.sections = [subsec]
+            secScr.sections = [subsec]
 
-    secLay.set("Identifier", "Layout")
-    secLay.set("Screen", "Screen")
+        secLay.set("Identifier", "Layout")
+        secLay.set("Screen", "Screen")
 
     backup(xorgConf)
 
@@ -245,41 +249,43 @@ def saveDeviceInfo(card):
 
     config = cardTag.insertTag("ActiveConfig")
 
-    driver = config.insertTag("Driver")
-    driver.setAttribute("package", card.package)
-    driver.insertData(card.driver)
+    if card.driver:
+        driver = config.insertTag("Driver")
+        driver.setAttribute("package", card.package)
+        driver.insertData(card.driver)
 
-    addTag(config, "Depth", card.depth)
-    addTag(config, "DesktopSetup", card.desktop_setup)
+    if not card.initial:
+        addTag(config, "Depth", card.depth)
+        addTag(config, "DesktopSetup", card.desktop_setup)
 
-    def addMonitor(output, tagName):
-        mon = card.monitors[output]
-        monitor = config.insertTag(tagName)
-        monitor.insertTag("Vendor").insertData(mon.vendor)
-        monitor.insertTag("Model" ).insertData(mon.model )
-        monitor.insertTag("HorizSync"  ).insertData(mon.hsync)
-        monitor.insertTag("VertRefresh").insertData(mon.vref)
+        def addMonitor(output, tagName):
+            mon = card.monitors[output]
+            monitor = config.insertTag(tagName)
+            monitor.insertTag("Vendor").insertData(mon.vendor)
+            monitor.insertTag("Model" ).insertData(mon.model )
+            monitor.insertTag("HorizSync"  ).insertData(mon.hsync)
+            monitor.insertTag("VertRefresh").insertData(mon.vref)
 
-    outName = card.active_outputs[0]
-    outMode = card.modes.get(outName)
-    output = config.insertTag("Output")
-    if outMode:
-        output.setAttribute("mode", outMode)
-    output.insertData(outName)
-
-    if card.monitors.has_key(outName):
-        addMonitor(outName, "Monitor")
-
-    if card.desktop_setup != "single":
-        outName = card.active_outputs[1]
+        outName = card.active_outputs[0]
         outMode = card.modes.get(outName)
-        output = config.insertTag("SecondOutput")
+        output = config.insertTag("Output")
         if outMode:
             output.setAttribute("mode", outMode)
         output.insertData(outName)
 
         if card.monitors.has_key(outName):
-            addMonitor(outName, "SecondMonitor")
+            addMonitor(outName, "Monitor")
+
+        if card.desktop_setup != "single":
+            outName = card.active_outputs[1]
+            outMode = card.modes.get(outName)
+            output = config.insertTag("SecondOutput")
+            if outMode:
+                output.setAttribute("mode", outMode)
+            output.insertData(outName)
+
+            if card.monitors.has_key(outName):
+                addMonitor(outName, "SecondMonitor")
 
     f = file(configFile, "w")
     f.write(doc.toPrettyString().replace("\n\n", ""))

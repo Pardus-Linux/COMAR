@@ -5,6 +5,8 @@ import subprocess
 import time
 import sha
 
+from pardus.sysutils import get_kernel_option
+
 xorg_lock = "/tmp/.X0-lock"
 
 def atoi(s):
@@ -63,16 +65,6 @@ def getDate():
 
 def getChecksum(_data):
     return sha.sha(_data).hexdigest()
-
-def getKernelOpt(cmdopt=None):
-    if cmdopt:
-        for cmd in "".join(loadFile("/proc/cmdline")).split():
-            if cmd.startswith("%s=" % cmdopt):
-                return cmd[len(cmdopt)+1:].split(",")
-    else:
-        return "".join(loadFile("/proc/cmdline")).split()
-
-    return ""
 
 def capture(*cmd):
     a = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -137,8 +129,10 @@ def isVirtual():
     return False
 
 def jailEnabled():
-    if not "nojail" in getKernelOpt("xorg"):
-        if "thin" in getKernelOpt("mudur") or "jail" in getKernelOpt("xorg"):
+    xorg_options = get_kernel_option("xorg")
+
+    if not "nojail" in xorg_options:
+        if "thin" in get_kernel_option("mudur") or "jail" in xorg_options:
             print "Jail is enabled"
             return True
     return False

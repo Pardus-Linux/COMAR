@@ -165,4 +165,3 @@ def parseMode(mode):
             res = None
 
     return res, depth
-

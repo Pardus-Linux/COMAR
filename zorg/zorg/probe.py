@@ -2,7 +2,9 @@
 
 import os
 import dbus
+import glob
 import struct
+import fnmatch
 
 from zorg.consts import *
 from zorg.parser import *
@@ -508,3 +510,30 @@ def queryMonitor(device):
     device.monitors["default"] = monitor
     device.probe_result["default-modes"] = ",".join(modes)
     device.modes["default"] = modes[0]
+
+def modaliasMatch(modaliasFile):
+    class MatchedDevice:
+        def __init__(self):
+            self.modalias = None
+            self.sys_path = None
+            self.alias_file = None
+            self.driver = None
+
+    aliaslist = tuple(line.split()[1:] for line in loadFile(modaliasFile) if not line.startswith("#"))
+
+    for modalias in glob.glob("/sys/bus/*/devices/*/modalias"):
+        try:
+            alias = open(modalias).read().strip()
+        except IOError:
+            continue
+
+        for pattern, driver in aliaslist:
+            if fnmatch.fnmatch(alias, pattern):
+                match = MatchedDevice()
+                match.modalias = alias
+                match.sys_path = os.path.dirname(modalias)
+                match.alias_file = modaliasFile
+                match.driver = driver
+                return match
+
+    return None

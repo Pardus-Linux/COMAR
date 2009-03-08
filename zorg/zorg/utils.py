@@ -35,12 +35,28 @@ def touch(_file):
         pass
 
 def backup(_file):
-    try:
-        if os.path.exists(_file):
-            os.rename(_file, "%s-backup" % _file)
-        return True
-    except:
-        return False
+    def rename_backup(src, n):
+        if n == 4:
+            return
+
+        new_name = "%s-backup%d" % (_file, n)
+        if os.path.exists(new_name):
+            rename_backup(new_name, n+1)
+
+        try:
+            os.rename(src, new_name)
+        except IOError:
+            pass
+
+
+    if os.path.exists(_file):
+        backup_file = "%s-backup" % _file
+        if os.path.exists(backup_file):
+            rename_backup(backup_file, 2)
+        try:
+            os.rename(_file, backup_file)
+        except IOError:
+            pass
 
 def getDate():
     return time.ctime()

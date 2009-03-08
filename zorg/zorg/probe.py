@@ -58,6 +58,7 @@ class VideoDevice:
         self.driver = "vesa"
         self.package = "xorg-video"
 
+        self.initial = False
         self.probe_result = {"flags" : "", "depths" : "16,24"}
 
         self.active_outputs = ["default"]
@@ -511,7 +512,7 @@ def queryMonitor(device):
     device.probe_result["default-modes"] = ",".join(modes)
     device.modes["default"] = modes[0]
 
-def modaliasMatch(modaliasFile):
+def modaliasMatch(modaliasFile, pciId=None):
     class MatchedDevice:
         def __init__(self):
             self.modalias = None
@@ -521,7 +522,13 @@ def modaliasMatch(modaliasFile):
 
     aliaslist = tuple(line.split()[1:] for line in loadFile(modaliasFile) if not line.startswith("#"))
 
-    for modalias in glob.glob("/sys/bus/*/devices/*/modalias"):
+    # If PCI ID is given, check it only.
+    if pciId:
+        modalias_list = ["/sys/bus/pci/devices/%s/modalias" % pciId]
+    else:
+        modalias_list = glob.glob("/sys/bus/*/devices/*/modalias")
+
+    for modalias in modalias_list:
         try:
             alias = open(modalias).read().strip()
         except IOError:

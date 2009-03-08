@@ -169,8 +169,15 @@ def getDeviceInfo(busId):
     activeConfigTag = cardTag.getTag("ActiveConfig")
 
     driverTag = activeConfigTag.getTag("Driver")
-    device.driver = driverTag.firstChild().data()
-    device.package = driverTag.getAttribute("package")
+    if driverTag:
+        device.driver = driverTag.firstChild().data()
+        device.package = driverTag.getAttribute("package")
+    else:
+        device.driver = None
+
+    initial = activeConfigTag.getAttribute("initial")
+    if initial and initial == "true":
+        return device
 
     device.depth = activeConfigTag.getTagData("Depth")
 
@@ -254,7 +261,9 @@ def saveDeviceInfo(card):
         driver.setAttribute("package", card.package)
         driver.insertData(card.driver)
 
-    if not card.initial:
+    if card.initial:
+        config.setAttribute("initial", "true")
+    else:
         addTag(config, "Depth", card.depth)
         addTag(config, "DesktopSetup", card.desktop_setup)
 
@@ -287,9 +296,11 @@ def saveDeviceInfo(card):
             if card.monitors.has_key(outName):
                 addMonitor(outName, "SecondMonitor")
 
-    f = file(configFile, "w")
+    f = open(configFile, "w")
     f.write(doc.toPrettyString().replace("\n\n", ""))
-    f.close()
+
+    f = open(os.path.join(zorgConfigDir, "configured_card"), "w")
+    f.write(info["bus-id"])
 
 def getKeymap():
     layout = None

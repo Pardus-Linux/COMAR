@@ -24,7 +24,7 @@ def saveXorgConfig(card):
         secDevice,
     ]
 
-    if not card.initial:
+    if card.needsScreenSection():
         parser.sections.extend([secScr, secLay])
 
     extmod = XorgSection("extmod")
@@ -51,14 +51,10 @@ def saveXorgConfig(card):
     secDevice.set("Identifier", "VideoCard")
     if card.driver:
         secDevice.set("Driver", card.driver)
-        secDevice.options.update(card.driver_options)
 
-    # vendorName, boardName = idsQuery(card.vendor_id, card.product_id)
-    # secDevice.set("VendorName", vendorName)
-    # secDevice.set("BoardName", boardName)
-    # secDevice.set("BusId", info["bus-id"])
+    secDevice.options.update(card.driver_options)
 
-    flags = card.probe_result["flags"].split(",")
+    flags = card.flags()
 
     for output in card.active_outputs:
         identifier = "Monitor[%s]" % output
@@ -73,7 +69,7 @@ def saveXorgConfig(card):
             monSec.set("HorizSync",   unquoted(card.monitors[output].hsync))
             monSec.set("VertRefresh", unquoted(card.monitors[output].vref ))
 
-        if "randr12" in flags:
+        if "norandr" not in flags:
             secDevice.options["Monitor-%s" % output] = identifier
             monSec.options["Enable"] = "true"
 
@@ -90,31 +86,17 @@ def saveXorgConfig(card):
 
                     monSec.options[pos] = "Monitor[%s]" % out2
 
-    if not card.initial:
+    if card.needsScreenSection():
         secScr.set("Identifier", "Screen")
         secScr.set("Device", "VideoCard")
-        secScr.set("Monitor", "Monitor[%s]" % card.active_outputs[0])
+        if card.active_outputs:
+            secScr.set("Monitor", "Monitor[%s]" % card.active_outputs[0])
         secScr.set("DefaultDepth", atoi(card.depth))
 
         subsec = XorgSection("Display")
         subsec.set("Depth", atoi(card.depth))
 
-        #if "randr12" in flags and card.desktop_setup not in ("single", "clone"):
-        #    out1, out2 = card.active_outputs[:2]
-        #    if card.modes.has_key(out1) and card.modes.has_key(out2):
-        #        w1, h1 = map(atoi, card.modes[out1].split("x"))
-        #        w2, h2 = map(atoi, card.modes[out2].split("x"))
-        #
-        #        if card.desktop_setup == "horizontal":
-        #            w = w1 + w2
-        #            h = max(h1, h2)
-        #        else:
-        #            w = max(w1, w2)
-        #            h = h1 + h2
-        #
-        #        subsec.set("Virtual", w, h)
-
-        if "no-modes-line" not in flags or "randr12" not in flags:
+        if card.needsModesLine():
             output = card.active_outputs[0]
             if card.modes.has_key(output):
                 subsec.set("Modes", card.modes[output], "800x600", "640x480")

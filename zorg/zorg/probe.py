@@ -55,15 +55,15 @@ class VideoDevice:
         self.saved_vendor_id  = None
         self.saved_product_id = None
 
-        self.driver = "vesa"
-        self.package = "xorg-video"
+        self.driver = None
+        self.package = None
 
         self.initial = False
         self.probe_result = {"flags" : "", "depths" : "16,24"}
 
-        self.active_outputs = ["default"]
-        self.modes = {"default" : "800x600"}
-        self.depth = "16"
+        self.active_outputs = []
+        self.modes = {}
+        self.depth = None
         self.desktop_setup = "single"
 
         self.driver_options = {}
@@ -79,8 +79,8 @@ class VideoDevice:
     def getDict(self):
         info = {
             "bus-id" : "PCI:%d:%d:%d" % self.bus,
-            "driver" : self.driver,
-            "depth" : self.depth,
+            "driver" : self.driver or "",
+            "depth" : self.depth or "",
             "desktop-setup" : self.desktop_setup,
             "active-outputs" : ",".join(self.active_outputs),
         }
@@ -138,7 +138,7 @@ class VideoDevice:
                     print "Driver reported by X server is %s." % self.driver
 
     def query(self, withDriver=None):
-        self.package = "xorg-video"
+        self.package = None
 
         if withDriver:
             if package_sep in withDriver:
@@ -158,7 +158,8 @@ class VideoDevice:
 
         self.enableDriver()
 
-        self.probe_result = call(self.package, "Xorg.Driver", "probe", self.getDict())
+        if self.package:
+            self.probe_result = call(self.package, "Xorg.Driver", "probe", self.getDict())
 
         if self.probe_result is None:
             self.probe_result = {
@@ -175,9 +176,7 @@ class VideoDevice:
             queryMonitor(self)
 
         depthlist = self.probe_result.get("depths", "16,24").split(",")
-        self.depth = depthlist[0]
-
-        #flags = self.probe_result["flags"].split(",")
+        # self.depth = depthlist[0]
 
     def enableDriver(self):
         oldpackage = enabledPackage()
@@ -188,12 +187,27 @@ class VideoDevice:
             call(self.package, "Xorg.Driver", "enable")
 
     def requestDriverOptions(self):
+        if not self.package or self.package == "xorg-video":
+            return
         self.driver_options = call(self.package, "Xorg.Driver", "getOptions", self.getDict())
 
     def isChanged(self):
         if self.saved_vendor_id and self.saved_product_id:
             return (self.vendor_id, self.product_id) != (self.saved_vendor_id, self.saved_product_id)
         return False
+
+    def flags(self):
+        return self.probe_result["flags"].split(",")
+
+    def needsScreenSection(self):
+        flags = self.flags()
+
+        return "norandr" in flags or self.depth is not None
+
+    def needsModesLine(self):
+        flags = self.flags()
+
+        return "norandr" in flags or "no-modes-line" in flags
 
 class Monitor:
     def __init__(self):
@@ -253,7 +267,7 @@ def enabledPackage():
     try:
         return file("/var/lib/zorg/enabled_package").read()
     except IOError:
-        return "xorg-video"
+        return None
 
 def queryPCI(vendor, device):
     f = file("/usr/share/misc/pci.ids")

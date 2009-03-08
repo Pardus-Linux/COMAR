@@ -6,16 +6,12 @@ zorgConfigDir = "/var/lib/zorg"
 zorgConfig = "config.xml"
 zorgDataDir = "/usr/share/zorg"
 
-DriversDB = "/usr/lib/X11/DriversDB"
-MonitorsDB = "/usr/lib/X11/MonitorsDB"
+DriversDB = "%s/DriversDB" % zorgDataDir
+MonitorsDB = "%s/MonitorsDB" % zorgDataDir
 
 driver_path = "/usr/lib/xorg/modules/drivers"
 xkb_path = "/usr/share/X11/xkb/symbols"
 
 sysdir = "/sys/bus/pci/devices/"
-
-lcd_drivers = ["nv", "nvidia", "ati", "via", "i810",
-               "intel", "sis", "savage", "neomagic"]
-truecolor_cards = ["i810", "intel", "nv", "radeon"]
 
 package_sep = "/"

@@ -160,16 +160,13 @@ class VideoDevice:
         if self.package:
             self.probe_result = call(self.package, "Xorg.Driver", "probe", self.getDict())
 
-        if self.probe_result is None:
-            self.probe_result = {
-                "flags":        "",
-                "outputs":      "default",
-                "tv-standards": ""
-                }
+            if self.probe_result is None:
+                self.probe_result = {
+                    "flags":        "",
+                    "outputs":      "default",
+                    "tv-standards": ""
+                    }
 
-            if self.driver in truecolor_cards:
-                self.probe_result["depths"] = "24,16"
-            else:
                 self.probe_result["depths"] = "16,24"
 
         depthlist = self.probe_result.get("depths", "16,24").split(",")

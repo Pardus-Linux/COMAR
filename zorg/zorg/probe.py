@@ -173,8 +173,6 @@ class VideoDevice:
             else:
                 self.probe_result["depths"] = "16,24"
 
-            queryMonitor(self)
-
         depthlist = self.probe_result.get("depths", "16,24").split(",")
         # self.depth = depthlist[0]
 
@@ -269,23 +267,6 @@ def enabledPackage():
     except IOError:
         return None
 
-def queryPCI(vendor, device):
-    f = file("/usr/share/misc/pci.ids")
-    flag = 0
-    company = ""
-    for line in f.readlines():
-        if flag == 0:
-            if line.startswith(vendor):
-                flag = 1
-                company = line[5:].strip()
-        else:
-            if line.startswith("\t"):
-                if line.startswith("\t" + device):
-                    return company, line[6:].strip()
-            elif not line.startswith("#"):
-                flag = 0
-    return None, None
-
 def getPrimaryCard():
     devices = []
     bridges = []
@@ -369,162 +350,6 @@ def XProbe(dev):
         return
 
     return file("/var/log/xlog").readlines()
-
-def queryDDC(adapter=0):
-    from zorg import ddc
-    edid = ddc.query(adapter)
-
-    if not edid or not edid["eisa_id"]:
-        return
-
-    if edid["version"] != 1 and edid["revision"] != 3:
-        return
-
-    detailed = edid["detailed_timing"]
-
-    hsync_min, hsync_max = detailed["hsync_range"]
-    vref_min, vref_max = detailed["vref_range"]
-
-    # FIXME: When subsystem is ready, review these.
-
-    #modes = edid["standard_timings"] + edid["established_timings"]
-    modes = list(edid["standard_timings"])
-
-    m = modeline.calcFromEdid(edid)
-    if m:
-        dtmode = m["mode"] + (m["vfreq"],)
-        modes.append(dtmode)
-
-    res = set((x, y) for x, y, z in modes if x > 800 and y > 600)
-    res = list(res)
-
-    res.sort(reverse=True)
-
-    res = ["%dx%d" % (x, y) for x, y in res]
-
-    if hsync_max == 0 or vref_max == 0:
-        hfreqs = vfreqs = []
-        for w, h, vfreq in modes:
-            vals = {
-                "hPix" : w,
-                "vPix" : h,
-                "vFreq" : vfreq
-            }
-            m = modeline.ModeLine(vals)
-            hfreqs.append(m["hFreq"] / 1000.0) # in kHz
-            vfreqs.append(m["vFreq"])
-
-        if len(hfreqs) > 2 and len(vfreqs) > 2:
-            hfreqs.sort()
-            vfreqs.sort()
-            hsync_min, hsync_max = hfreqs[0], hfreqs[-1]
-            vref_min, vref_max = vfreqs[0], vfreqs[-1]
-
-    if hsync_max == 0 or vref_max == 0:
-        hsync_min, hsync_max = 31.5, 50
-        vref_min, vref_max = 50, 70
-
-    mon = Monitor()
-    mon.model = detailed.get("name", "Auto-detected Monitor")
-    mon.hsync = "%s-%s" % (hsync_min, hsync_max)
-    mon.vref  = "%s-%s" % (vref_min,  vref_max )
-
-    if edid["eisa_id"]:
-        for line in loadFile(MonitorsDB):
-            l = line.split(";")
-            if edid["eisa_id"].upper() == l[2].strip().upper():
-                mon.hsync = l[3].strip()
-                mon.vref  = l[4].strip()
-                break
-
-    return mon, res
-
-def queryPanel(card):
-    panel_w = 0
-    panel_h = 0
-
-    p = XorgParser()
-    sec = XorgSection("Device")
-    sec.set("Identifier", "Card0")
-    sec.set("Driver", card.driver)
-    p.sections.append(sec)
-
-    sec = XorgSection("Monitor")
-    sec.set("Identifier", "Monitor0")
-    p.sections.append(sec)
-
-    sec = XorgSection("Screen")
-    sec.set("Identifier", "Screen0")
-    sec.set("Device", "Card0")
-    p.sections.append(sec)
-
-    open("/tmp/xorg.conf", "w").write(p.toString())
-
-    patterns = [
-        "Panel size is",
-        "Panel Size is",
-        "Panel Size from BIOS:",
-        "Panel size: ",
-        "Panel Native Resolution is ",
-        "Panel is a ",
-        "Detected panel size via",
-        "Detected panel size via BIOS: ",
-        "Size of device LFP (local flat panel) is",
-        "Size of device LFP",
-        "Size of device DFP",
-        "Virtual screen size determined to be ",
-        "Detected LCD/plasma panel ("
-    ]
-
-    print "Running X server to query panel..."
-    a = run("/usr/bin/X", ":99", "-probeonly", "-allowMouseOpenFail", \
-            "-config", "/tmp/xorg.conf", \
-            "-logfile", "/var/log/xlog")
-    if a != 0:
-        return
-
-    f = file("/var/log/xlog")
-    for line in f.readlines():
-        for p in patterns:
-            if p in line:
-                b = line[line.find(p)+len(p):]
-                panel_w = atoi(b)
-                b = b[b.find("x")+1:]
-                panel_h = atoi(b)
-                break
-    f.close()
-
-    if panel_w or panel_h:
-        print "Panel size reported by X server is %dx%d." % (panel_w, panel_h)
-
-    if panel_w > 800 and panel_h > 600:
-        return "%dx%d" % (panel_w, panel_h)
-    else:
-        return
-
-def queryMonitor(device):
-    result = queryDDC()
-    if not result:
-        result = queryDDC(1)
-
-    modes = []
-    if result:
-        monitor, modes = result
-    else:
-        monitor = Monitor()
-
-    if not modes:
-        modes = ["800x600", "640x480"]
-
-    # check lcd panel
-    if device.driver in lcd_drivers:
-        panel_mode = queryPanel(device)
-        if panel_mode:
-            modes[:0] = [panel_mode]
-
-    device.monitors["default"] = monitor
-    device.probe_result["default-modes"] = ",".join(modes)
-    device.modes["default"] = modes[0]
 
 def modaliasMatch(modaliasFile, pciId=None):
     class MatchedDevice:

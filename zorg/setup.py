@@ -3,7 +3,7 @@
 
 import os
 
-from distutils.core import setup, Extension
+from distutils.core import setup
 from distutils.command.install import install
 
 import zorg

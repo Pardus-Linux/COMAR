@@ -9,7 +9,6 @@ import fnmatch
 from zorg.consts import *
 from zorg.parser import *
 from zorg.utils import *
-from zorg import modeline
 
 # from pci/header.h
 PCI_COMMAND             = 0x04

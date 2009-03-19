@@ -152,15 +152,7 @@ class Link:
             self.bus = dbus.bus.BusConnection(address_or_type="unix:path=%s" % socket)
 
         if alternate:
-            if self.version == "2":
-                self.address += self.version
-            elif self.version == "3":
-                self.address += self.version + ".updated"
-                self.interface += self.version
-        else:
-            if self.version == "3":
-                self.address += self.version
-                self.interface += self.version
+            self.address += "2"
 
     def setLocale(self):
         if self.version != "3":

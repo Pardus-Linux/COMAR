@@ -16,7 +16,7 @@ import shutil
 from distutils.core import setup
 from distutils.command.install import install
 
-version = "2.1.2"
+version = "2.1.3"
 
 distfiles = """
     setup.py

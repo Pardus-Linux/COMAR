@@ -86,13 +86,6 @@
         </signal>
     </interface>
 
-    <!-- Kernel -->
-    <interface name="Kernel">
-        <method name="getBestKernel" access_label="get">
-            <arg name="kernel" type="s" direction="out"/>
-        </method>
-    </interface>
-
     <!-- System.Package -->
     <interface name="System.Package">
         <method name="postInstall">

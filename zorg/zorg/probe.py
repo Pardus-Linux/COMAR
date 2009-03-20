@@ -99,7 +99,7 @@ class VideoDevice:
                 self.driver = "fbdev"
             return
 
-        for line in loadFile(DriversDB):
+        for line in loadFile(drivers_file):
             if line.startswith(self.vendor_id + self.product_id):
                 print "Device ID found in driver database."
 
@@ -231,12 +231,12 @@ def call(package, model, method, *args):
     return cmethod(timeout=2**16-1, *args)
 
 def getKeymapList():
-    return os.listdir(xkb_path)
+    return os.listdir(xkb_symbols_dir)
 
 def driverExists(name):
-    return os.path.exists(os.path.join(driver_path, "%s_drv.so" % name))
+    return os.path.exists(os.path.join(drivers_dir, "%s_drv.so" % name))
 
-def listAvailableDrivers(d = driver_path):
+def listAvailableDrivers(d = drivers_dir):
     a = []
     if os.path.exists(d):
         for drv in os.listdir(d):

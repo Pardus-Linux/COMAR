@@ -1,16 +1,19 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-xorgConf = "/etc/X11/xorg.conf"
-zorgConfigDir = "/var/lib/zorg"
-zorgConfig = "config.xml"
-zorgDataDir = "/usr/share/zorg"
+from os.path import join
 
-DriversDB = "%s/DriversDB" % zorgDataDir
-MonitorsDB = "%s/MonitorsDB" % zorgDataDir
+config_dir  = "/var/lib/zorg"
+data_dir    = "/usr/share/X11"
+modules_dir = "/usr/lib/xorg/modules"
 
-driver_path = "/usr/lib/xorg/modules/drivers"
-xkb_path = "/usr/share/X11/xkb/symbols"
+xorg_conf_file      = "/etc/X11/xorg.conf"
+config_file         = join(config_dir,  "config.xml")
+configured_bus_file = join(config_dir,  "configured_bus")
+drivers_file        = join(data_dir,    "DriversDB")
+monitors_file       = join(data_dir,    "MonitorsDB")
+xkb_symbols_dir     = join(data_dir,    "xkb/symbols")
+drivers_dir         = join(modules_dir, "drivers")
 
 sysdir = "/sys/bus/pci/devices/"
 

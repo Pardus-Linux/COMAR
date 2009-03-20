@@ -69,7 +69,7 @@ drivers = {
 def getCompatibleDriverNames(vendor_id, product_id):
     pci_id = vendor_id + product_id
     drvlist = []
-    for line in loadFile(DriversDB):
+    for line in loadFile(drivers_file):
         if line.startswith(pci_id):
             drvlist = line.rstrip("\n").split(" ")[1:]
             break
@@ -107,7 +107,7 @@ def getMonitorInfos():
     vendorList = {}
     vendor = []
 
-    for line in loadFile(MonitorsDB):
+    for line in loadFile(monitors_file):
         monitor = line.split(";")
 
         if len(monitor) == 5:

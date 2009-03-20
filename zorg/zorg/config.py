@@ -117,11 +117,10 @@ def addTag(p, name, data):
     t.insertData(data)
 
 def getDeviceInfo(busId):
-    configFile = os.path.join(zorgConfigDir, zorgConfig)
-    if not os.path.exists(configFile):
+    if not os.path.exists(config_file):
         return
 
-    doc = piksemel.parse(configFile)
+    doc = piksemel.parse(config_file)
 
     cardTag = None
     for tag in doc.tags("Card"):
@@ -206,13 +205,11 @@ def getDeviceInfo(busId):
     return device
 
 def saveDeviceInfo(card):
-    if not os.path.exists(zorgConfigDir):
-        os.mkdir(zorgConfigDir, 0755)
-
-    configFile = os.path.join(zorgConfigDir, zorgConfig)
+    if not os.path.exists(config_dir):
+        os.mkdir(config_dir, 0755)
 
     try:
-        doc = piksemel.parse(configFile)
+        doc = piksemel.parse(config_file)
     except OSError:
         doc = piksemel.newDocument("ZORG")
 
@@ -278,20 +275,18 @@ def saveDeviceInfo(card):
             if card.monitors.has_key(outName):
                 addMonitor(outName, "SecondMonitor")
 
-    f = open(configFile, "w")
+    f = open(config_file, "w")
     f.write(doc.toPrettyString().replace("\n\n", ""))
 
-    f = open(os.path.join(zorgConfigDir, "configured_card"), "w")
+    f = open(configured_bus_file, "w")
     f.write(info["bus-id"])
 
 def getKeymap():
     layout = None
     variant = "basic"
 
-    configFile = os.path.join(zorgConfigDir, zorgConfig)
-
     try:
-        doc = piksemel.parse(configFile)
+        doc = piksemel.parse(config_file)
 
         keyboard = doc.getTag("Keyboard")
         if keyboard:
@@ -324,13 +319,11 @@ def getKeymap():
     return layout, variant
 
 def saveKeymap(layout, variant="basic"):
-    if not os.path.exists(zorgConfigDir):
-        os.mkdir(zorgConfigDir, 0755)
-
-    configFile = os.path.join(zorgConfigDir, zorgConfig)
+    if not os.path.exists(config_dir):
+        os.mkdir(config_dir, 0755)
 
     try:
-        doc = piksemel.parse(configFile)
+        doc = piksemel.parse(config_file)
     except OSError:
         doc = piksemel.newDocument("ZORG")
 
@@ -343,4 +336,4 @@ def saveKeymap(layout, variant="basic"):
     keyboardTag.insertTag("Layout").insertData(layout)
     keyboardTag.insertTag("Variant").insertData(variant)
 
-    file(configFile, "w").write(doc.toPrettyString().replace("\n\n", ""))
+    file(config_file, "w").write(doc.toPrettyString().replace("\n\n", ""))

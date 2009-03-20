@@ -6,9 +6,11 @@ import glob
 import struct
 import fnmatch
 
-from zorg.consts import *
+from zorg import consts
 from zorg.parser import *
 from zorg.utils import *
+
+sysdir = "/sys/bus/pci/devices/"
 
 # from pci/header.h
 PCI_COMMAND             = 0x04
@@ -99,15 +101,15 @@ class VideoDevice:
                 self.driver = "fbdev"
             return
 
-        for line in loadFile(drivers_file):
+        for line in loadFile(consts.drivers_file):
             if line.startswith(self.vendor_id + self.product_id):
                 print "Device ID found in driver database."
 
                 driverlist = line.rstrip("\n").split(" ")[1:]
 
                 for drv in driverlist:
-                    if package_sep in drv:
-                        drvname, drvpackage = drv.split(package_sep, 1)
+                    if consts.package_sep in drv:
+                        drvname, drvpackage = drv.split(consts.package_sep, 1)
                         if drvpackage.replace("-", "_") in self._driverPackages():
                             self.driver = drvname
                             self.package = drvpackage
@@ -140,8 +142,8 @@ class VideoDevice:
         self.package = None
 
         if withDriver:
-            if package_sep in withDriver:
-                drvname, drvpackage = withDriver.split(package_sep, 1)
+            if consts.package_sep in withDriver:
+                drvname, drvpackage = withDriver.split(consts.package_sep, 1)
                 if drvpackage.replace("-", "_") in self._driverPackages():
                     self.driver = drvname
                     self.package = drvpackage
@@ -231,12 +233,12 @@ def call(package, model, method, *args):
     return cmethod(timeout=2**16-1, *args)
 
 def getKeymapList():
-    return os.listdir(xkb_symbols_dir)
+    return os.listdir(consts.xkb_symbols_dir)
 
 def driverExists(name):
-    return os.path.exists(os.path.join(drivers_dir, "%s_drv.so" % name))
+    return os.path.exists(os.path.join(consts.drivers_dir, "%s_drv.so" % name))
 
-def listAvailableDrivers(d = drivers_dir):
+def listAvailableDrivers(d = consts.drivers_dir):
     a = []
     if os.path.exists(d):
         for drv in os.listdir(d):

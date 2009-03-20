@@ -15,6 +15,4 @@ monitors_file       = join(data_dir,    "MonitorsDB")
 xkb_symbols_dir     = join(data_dir,    "xkb/symbols")
 drivers_dir         = join(modules_dir, "drivers")
 
-sysdir = "/sys/bus/pci/devices/"
-
 package_sep = "/"

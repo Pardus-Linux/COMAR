@@ -4,7 +4,7 @@ import os
 
 import piksemel
 
-from zorg.consts import *
+from zorg import consts
 from zorg.parser import *
 from zorg.probe import VideoDevice, Monitor
 from zorg.utils import *
@@ -12,11 +12,11 @@ from zorg.utils import *
 def saveXorgConfig(card):
     parser = XorgParser()
 
-    secModule = XorgSection("Module")
-    secFlags = XorgSection("ServerFlags")
-    secDevice = XorgSection("Device")
-    secScr = XorgSection("Screen")
-    secLay = XorgSection("ServerLayout")
+    secModule   = XorgSection("Module")
+    secFlags    = XorgSection("ServerFlags")
+    secDevice   = XorgSection("Device")
+    secScr      = XorgSection("Screen")
+    secLay      = XorgSection("ServerLayout")
 
     parser.sections = [
         secModule,
@@ -106,9 +106,9 @@ def saveXorgConfig(card):
         secLay.set("Identifier", "Layout")
         secLay.set("Screen", "Screen")
 
-    backup(xorgConf)
+    backup(consts.xorg_conf_file)
 
-    f = open(xorgConf, "w")
+    f = open(consts.xorg_conf_file, "w")
     f.write(parser.toString())
     f.close()
 
@@ -117,10 +117,10 @@ def addTag(p, name, data):
     t.insertData(data)
 
 def getDeviceInfo(busId):
-    if not os.path.exists(config_file):
+    if not os.path.exists(consts.config_file):
         return
 
-    doc = piksemel.parse(config_file)
+    doc = piksemel.parse(consts.config_file)
 
     cardTag = None
     for tag in doc.tags("Card"):
@@ -205,11 +205,11 @@ def getDeviceInfo(busId):
     return device
 
 def saveDeviceInfo(card):
-    if not os.path.exists(config_dir):
-        os.mkdir(config_dir, 0755)
+    if not os.path.exists(consts.config_dir):
+        os.mkdir(consts.config_dir, 0755)
 
     try:
-        doc = piksemel.parse(config_file)
+        doc = piksemel.parse(consts.config_file)
     except OSError:
         doc = piksemel.newDocument("ZORG")
 
@@ -275,10 +275,10 @@ def saveDeviceInfo(card):
             if card.monitors.has_key(outName):
                 addMonitor(outName, "SecondMonitor")
 
-    f = open(config_file, "w")
+    f = open(consts.config_file, "w")
     f.write(doc.toPrettyString().replace("\n\n", ""))
 
-    f = open(configured_bus_file, "w")
+    f = open(consts.configured_bus_file, "w")
     f.write(info["bus-id"])
 
 def getKeymap():
@@ -286,7 +286,7 @@ def getKeymap():
     variant = "basic"
 
     try:
-        doc = piksemel.parse(config_file)
+        doc = piksemel.parse(consts.config_file)
 
         keyboard = doc.getTag("Keyboard")
         if keyboard:
@@ -319,11 +319,11 @@ def getKeymap():
     return layout, variant
 
 def saveKeymap(layout, variant="basic"):
-    if not os.path.exists(config_dir):
-        os.mkdir(config_dir, 0755)
+    if not os.path.exists(consts.config_dir):
+        os.mkdir(consts.config_dir, 0755)
 
     try:
-        doc = piksemel.parse(config_file)
+        doc = piksemel.parse(consts.config_file)
     except OSError:
         doc = piksemel.newDocument("ZORG")
 
@@ -336,4 +336,5 @@ def saveKeymap(layout, variant="basic"):
     keyboardTag.insertTag("Layout").insertData(layout)
     keyboardTag.insertTag("Variant").insertData(variant)
 
-    file(config_file, "w").write(doc.toPrettyString().replace("\n\n", ""))
+    f = file(consts.config_file, "w")
+    f.write(doc.toPrettyString().replace("\n\n", ""))

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import zorg.probe
-from zorg.consts import *
+from zorg import consts
 from zorg.utils import *
 
 drivers = {
@@ -69,7 +69,7 @@ drivers = {
 def getCompatibleDriverNames(vendor_id, product_id):
     pci_id = vendor_id + product_id
     drvlist = []
-    for line in loadFile(drivers_file):
+    for line in loadFile(consts.drivers_file):
         if line.startswith(pci_id):
             drvlist = line.rstrip("\n").split(" ")[1:]
             break
@@ -88,14 +88,14 @@ def getAvailableDriverNames():
     availableDrivers = zorg.probe.listAvailableDrivers()
     availablePackages = zorg.probe.listDriverPackages()
 
-    packages = [x.split(package_sep) for x in drivers.keys() if package_sep in x]
+    packages = [x.split(consts.package_sep) for x in drivers.keys() if consts.package_sep in x]
 
     for d in availableDrivers:
         drvlist.append(d)
 
     for drv, pkg in packages:
         if pkg.replace("-", "_") in availablePackages:
-            d = drv + package_sep + pkg
+            d = drv + consts.package_sep + pkg
             drvlist.append(d)
             if drv in drvlist:
                 drvlist.remove(drv)
@@ -107,7 +107,7 @@ def getMonitorInfos():
     vendorList = {}
     vendor = []
 
-    for line in loadFile(monitors_file):
+    for line in loadFile(consts.monitors_file):
         monitor = line.split(";")
 
         if len(monitor) == 5:

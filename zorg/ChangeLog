@@ -1,3 +1,34 @@
+2009-03-20  Fatih Aşıcı  <fatih@pardus.org.tr>
+	* zorg/config.py, zorg/consts.py, zorg/hwdata.py, zorg/probe.py:
+		- Refactor variable names to increase consistency.
+		- Add configuredBus function to get last configured card by
+		zorg. This will be used at boot.
+		- Use an empty string for xkb variant as not all layouts have
+		"basic" variant.
+	* zorg/utils.py:
+		- Cleanup unused utils.
+	* setup.py:
+		- Get config and data dirs from zorg module instead of
+		hardcoding.
+
+2009-03-08  Fatih Aşıcı  <fatih@pardus.org.tr>
+	* zorg/utils.py:
+		- Improve backup function to keep last 3 backups.
+		- Use pardus-python's new get_kernel_option function. Remove
+		the internal one.
+	* zorg/config.py, zorg/consts.py, zorg/probe.py:
+		- Let Xorg decide most of the configurations. Make
+		Screen, Display, Layout and Monitor sections optional.
+		- Disable framebuffer size calculation since it tries
+		to parse mode name and mode names do not have to be in
+		format "WidthxHeight". Also drivers should be clever
+		to calcute fb size.
+		- Add a flag to indicate the initial config.
+		- Remove monitor query stuff.
+		- Cleanup unused bits.
+	* zorg/ddc, zorg/modeline.py:
+		- Remove ddc and modeline modules.
+
 2009-03-05  Fatih Aşıcı  <fatih@pardus.org.tr>
 	* zorg/config.py:
 		- Do not create InputDevice sections. We will use

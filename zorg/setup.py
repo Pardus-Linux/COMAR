@@ -7,6 +7,7 @@ from distutils.core import setup
 from distutils.command.install import install
 
 import zorg
+from zorg import consts
 
 class Install(install):
     def run(self):
@@ -15,7 +16,7 @@ class Install(install):
         if not self.root:
             self.root = "/"
 
-        target = os.path.join(self.root, "var/lib/zorg")
+        target = os.path.join(self.root, consts.config_dir)
         if not os.path.exists(target):
             os.makedirs(target, 0755)
 
@@ -27,7 +28,7 @@ setup(name="zorg",
     packages = ["zorg"],
     scripts = ["zorg-cli", "inf2mondb"],
     data_files = [
-        ("/usr/lib/X11", ["data/DriversDB", "data/MonitorsDB"]),
+        (consts.data_dir, ["data/DriversDB", "data/MonitorsDB"]),
         ("/sbin", ["zorg-loadmodule"]),
         ("/etc/modprobe.d", ["data/modprobe.d/zorg"])
     ],

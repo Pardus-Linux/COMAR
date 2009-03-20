@@ -2,9 +2,7 @@
 
 import os
 import dbus
-import glob
 import struct
-import fnmatch
 
 from zorg import consts
 from zorg.parser import *
@@ -348,36 +346,3 @@ def XProbe(dev):
         return
 
     return file("/var/log/xlog").readlines()
-
-def modaliasMatch(modaliasFile, pciId=None):
-    class MatchedDevice:
-        def __init__(self):
-            self.modalias = None
-            self.sys_path = None
-            self.alias_file = None
-            self.driver = None
-
-    aliaslist = tuple(line.split()[1:] for line in loadFile(modaliasFile) if not line.startswith("#"))
-
-    # If PCI ID is given, check it only.
-    if pciId:
-        modalias_list = ["/sys/bus/pci/devices/%s/modalias" % pciId]
-    else:
-        modalias_list = glob.glob("/sys/bus/*/devices/*/modalias")
-
-    for modalias in modalias_list:
-        try:
-            alias = open(modalias).read().strip()
-        except IOError:
-            continue
-
-        for pattern, driver in aliaslist:
-            if fnmatch.fnmatch(alias, pattern):
-                match = MatchedDevice()
-                match.modalias = alias
-                match.sys_path = os.path.dirname(modalias)
-                match.alias_file = modaliasFile
-                match.driver = driver
-                return match
-
-    return None

@@ -112,6 +112,12 @@ def saveXorgConfig(card):
     f.write(parser.toString())
     f.close()
 
+def configuredBus():
+    try:
+        return open(consts.configured_bus_file).read()
+    except IOError:
+        return ""
+
 def addTag(p, name, data):
     t = p.insertTag(name)
     t.insertData(data)

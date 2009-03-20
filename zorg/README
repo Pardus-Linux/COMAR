@@ -9,19 +9,18 @@ automate the configuration of Xorg.
 Requirements
 ------------
 
-* libx86
+* pardus-python > 0.3.3
 
 
 Installing & Running
 --------------------
 
-1. Apply the patch comar/model.xml.patch in /etc/comar
-2. Register Çomar script:
+1. Register the Çomar script comes with zorg package:
 
     hav register Xorg.Display zorg comar/xorg.display.py
 
-3. Install:
+2. Install:
 
     ./setup.py install --install-lib=/usr/lib/pardus
 
-4. Run: zorg-cli
+3. Run: zorg-cli

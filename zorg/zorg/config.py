@@ -289,7 +289,7 @@ def saveDeviceInfo(card):
 
 def getKeymap():
     layout = None
-    variant = "basic"
+    variant = ""
 
     try:
         doc = piksemel.parse(consts.config_file)
@@ -324,7 +324,7 @@ def getKeymap():
 
     return layout, variant
 
-def saveKeymap(layout, variant="basic"):
+def saveKeymap(layout, variant=""):
     if not os.path.exists(consts.config_dir):
         os.mkdir(consts.config_dir, 0755)
 
@@ -340,7 +340,8 @@ def saveKeymap(layout, variant="basic"):
 
     keyboardTag = doc.insertTag("Keyboard")
     keyboardTag.insertTag("Layout").insertData(layout)
-    keyboardTag.insertTag("Variant").insertData(variant)
+    if variant:
+        keyboardTag.insertTag("Variant").insertData(variant)
 
     f = file(consts.config_file, "w")
     f.write(doc.toPrettyString().replace("\n\n", ""))

@@ -2,8 +2,6 @@
 
 import os
 import subprocess
-import time
-import sha
 
 from pardus.sysutils import get_kernel_option
 
@@ -59,12 +57,6 @@ def backup(_file):
             os.rename(_file, backup_file)
         except IOError:
             pass
-
-def getDate():
-    return time.ctime()
-
-def getChecksum(_data):
-    return sha.sha(_data).hexdigest()
 
 def capture(*cmd):
     a = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -136,26 +128,3 @@ def jailEnabled():
             print "Jail is enabled"
             return True
     return False
-
-def parseMode(mode):
-    m = mode.split("-", 1)
-    res = m.pop(0)
-
-    try:
-        w, h = map(int, res.split("x", 1))
-    except:
-        return None, None
-
-    depth = None
-
-    if m:
-        try:
-            d = int(m[0])
-            if d in (16, 24):
-                depth = d
-            else:
-                res = None
-        except ValueError:
-            res = None
-
-    return res, depth

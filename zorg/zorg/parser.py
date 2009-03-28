@@ -72,8 +72,9 @@ class XorgSection:
         self.options = {}
 
     def entry(self, key):
+        key = key.lower()
         for entry in self.entries:
-            if entry.key == key: # Comparisons must be case-insensitive; but ignore for now
+            if entry.key.lower() == key:
                 return entry
         return None
 

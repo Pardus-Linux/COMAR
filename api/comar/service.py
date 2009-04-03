@@ -449,6 +449,7 @@ def setState(state=None):
         if os.access(os.path.join("/etc/mudur/services/disabled", script()), os.F_OK):
             remove(os.path.join("/etc/mudur/services/disabled", script()))
     
+    state = info()[2]
     notify("System.Service", "Changed", (script(), state))
 
 def registerState():

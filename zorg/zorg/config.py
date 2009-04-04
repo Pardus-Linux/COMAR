@@ -12,24 +12,18 @@ from zorg.utils import *
 def saveXorgConfig(card):
     parser = XorgParser()
 
-    secModule   = XorgSection("Module")
     secFlags    = XorgSection("ServerFlags")
     secDevice   = XorgSection("Device")
     secScr      = XorgSection("Screen")
     secLay      = XorgSection("ServerLayout")
 
     parser.sections = [
-        secModule,
         secFlags,
         secDevice,
     ]
 
     if card.needsScreenSection():
         parser.sections.extend([secScr, secLay])
-
-    extmod = XorgSection("extmod")
-    extmod.options = {"omit xfree86-dga" : unquoted()}
-    secModule.sections = [extmod]
 
     secFlags.options = {
         "AllowMouseOpenFail" : "true",

@@ -25,18 +25,9 @@ def saveXorgConfig(card):
     if card.needsScreenSection():
         parser.sections.extend([secScr, secLay])
 
-    secFlags.options = {
-        "AllowMouseOpenFail" : "true",
-        "BlankTime" : "0",
-        "StandbyTime" : "0",
-        "SuspendTime" : "0",
-        "OffTime" : "0"
-    }
-
     if jailEnabled():
         jailOpts = {
                 "DontVTSwitch" : "true",
-                "DontZap" : "true"
                 }
         secFlags.options.update(jailOpts)
 

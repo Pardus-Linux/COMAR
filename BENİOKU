@@ -13,7 +13,6 @@ api:       ÇomarAPI genel yapılandırma fonksiyonlarını içeren Python paket
 belgeler:  Belgeler ve sunumlar
 betikler:  Taslak halindeki betikler
 comar:     Çomar sistem servisi, Çomar altyapısının çekirdeği
-mudur:     Pardus açılış ve donanım tanıma sistemi
 smed:      Çomar model.xml dosyası için basit bir editör
 zorg:      Pardus grafik yapılandırma sistemi
 

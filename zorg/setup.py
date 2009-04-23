@@ -16,7 +16,7 @@ class Install(install):
         if not self.root:
             self.root = "/"
 
-        target = os.path.join(self.root, consts.config_dir)
+        target = os.path.join(self.root, consts.config_dir.lstrip("/"))
         if not os.path.exists(target):
             os.makedirs(target, 0755)
 

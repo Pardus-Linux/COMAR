@@ -30,7 +30,6 @@ setup(name="zorg",
     data_files = [
         (consts.data_dir, ["data/DriversDB", "data/MonitorsDB"]),
         ("/sbin", ["zorg-loadmodule"]),
-        ("/etc/modprobe.d", ["data/modprobe.d/zorg"])
     ],
     cmdclass = {"install": Install}
 )

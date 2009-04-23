@@ -1,3 +1,7 @@
+2009-04-23  Fatih Aşıcı  <fatih@pardus.org.tr>
+	* setup.py:
+		Do not install modprobe.d config file.
+
 2009-03-30  Fatih Aşıcı  <fatih@pardus.org.tr>
 	* data/DriversDB:
 		Prefer nvidia-drivers package for 10de:0242.

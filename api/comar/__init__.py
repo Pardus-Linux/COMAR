@@ -156,9 +156,12 @@ class Link:
 
     def setLocale(self):
         try:
-            lang = locale.getdefaultlocale()[0].split("_")[0]
-            obj = self.bus.get_object(self.address, '/', introspect=False)
-            obj.setLocale(lang, dbus_interface=self.interface)
+            code, encoding = locale.getdefaultlocale()
+            if code:
+                if "_" in code:
+                    code = code.split("_")[0]
+                obj = self.bus.get_object(self.address, '/', introspect=False)
+                obj.setLocale(code, dbus_interface=self.interface)
         except dbus.DBusException, exception:
             pass
 

@@ -155,11 +155,12 @@ class Link:
             self.address += "2"
 
     def setLocale(self):
-        if self.version != "3":
-            return
-        lang = locale.getdefaultlocale()[0].split("_")[0]
-        obj = self.bus.get_object(self.address, '/', introspect=False)
-        obj.setLocale(lang, dbus_interface=self.interface)
+        try:
+            lang = locale.getdefaultlocale()[0].split("_")[0]
+            obj = self.bus.get_object(self.address, '/', introspect=False)
+            obj.setLocale(lang, dbus_interface=self.interface)
+        except dbus.DBusException, exception:
+            pass
 
     def listenSignals(self, model, handler):
         def sigHandler(*args, **kwargs):

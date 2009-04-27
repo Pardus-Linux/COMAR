@@ -6,6 +6,9 @@ Here are some examples for accessing COMAR:
     import comar
     link = comar.Link()
 
+    # Localize strings
+    link.setLocale()
+
     # Get a list of packages that provide system.service method
     packages = list(link.System.Service)
 
@@ -24,6 +27,9 @@ Asynchronous calls:
 
     import comar
     link = comar.Link()
+
+    # Localize strings
+    link.setLocale()
 
     # Make an asynchronous call to get service information
     def handler(package, exception, result):

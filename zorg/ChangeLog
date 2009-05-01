@@ -1,3 +1,7 @@
+2009-05-01  Fatih Aşıcı  <fatih@pardus.org.tr>
+	* zorg/probe.py:
+		Implement a simplified version of getPrimaryCard.
+
 2009-04-23  Fatih Aşıcı  <fatih@pardus.org.tr>
 	* setup.py:
 		Do not install modprobe.d config file.

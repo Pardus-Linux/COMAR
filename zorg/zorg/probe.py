@@ -2,44 +2,13 @@
 
 import os
 import dbus
-import struct
+import glob
 
 from zorg import consts
 from zorg.parser import *
 from zorg.utils import *
 
 sysdir = "/sys/bus/pci/devices/"
-
-# from pci/header.h
-PCI_COMMAND             = 0x04
-PCI_COMMAND_IO          = 0x1
-PCI_COMMAND_MEMORY      = 0x2
-
-PCI_BRIDGE_CONTROL      = 0x3e
-PCI_BRIDGE_CTL_VGA      = 0x08
-
-PCI_BASE_CLASS_DISPLAY  = 0x03
-
-#PCI_BASE_CLASS_BRIDGE   = 0x06
-PCI_CLASS_BRIDGE_PCI    = 0x0604
-
-class PCIDevice:
-    def __init__(self, name):
-        self.name = name
-        self.class_ = None
-        self.bridge = None
-        self.config = None
-
-    def _readConfig(self, offset, size=1):
-        if self.config is None:
-            self.config = open(os.path.join(sysdir, self.name, "config")).read()
-
-        return self.config[offset:offset+size]
-
-    def readConfigWord(self, offset):
-        data = self._readConfig(offset, 2)
-
-        return struct.unpack("h", data)[0]
 
 class VideoDevice:
     def __init__(self, deviceDir=None, busId=None):
@@ -264,55 +233,12 @@ def enabledPackage():
         return None
 
 def getPrimaryCard():
-    devices = []
-    bridges = []
+    for boot_vga in glob.glob("%s/*/boot_vga" % sysdir):
+        if open(boot_vga).read().startswith("1"):
+            dev_path = os.path.dirname(boot_vga)
+            return os.path.basename(dev_path)
 
-    for dev in os.listdir(sysdir):
-        device = PCIDevice(dev)
-        device.class_ = int(pciInfo(dev, "class")[:6], 16)
-        devices.append(device)
-
-        if device.class_ == PCI_CLASS_BRIDGE_PCI:
-            bridges.append(device)
-
-    for dev in devices:
-        for bridge in bridges:
-            dev_path = os.path.join(sysdir, bridge.name, dev.name)
-            if os.path.exists(dev_path):
-                dev.bridge = bridge
-
-    primaryBus = None
-    for dev in devices:
-        if (dev.class_ >> 8) != PCI_BASE_CLASS_DISPLAY:
-            continue
-
-        vga_routed = True
-        bridge = dev.bridge
-        while bridge:
-            bridge_ctl = bridge.readConfigWord(PCI_BRIDGE_CONTROL)
-
-            if not (bridge_ctl & PCI_BRIDGE_CTL_VGA):
-                vga_routed = False
-                break
-
-            bridge = bridge.bridge
-
-        if vga_routed:
-            pci_cmd = dev.readConfigWord(PCI_COMMAND)
-
-            if pci_cmd & (PCI_COMMAND_IO | PCI_COMMAND_MEMORY):
-                primaryBus = dev.name
-                break
-
-    # Just to ensure that we have picked a device. Normally,
-    # primaryBus might not be None here.
-    if primaryBus is None:
-        for dev in devices:
-            if (dev.class_ >> 8) == PCI_BASE_CLASS_DISPLAY:
-                primaryBus = dev.name
-                break
-
-    return primaryBus
+    return None
 
 def XProbe(dev):
     p = XorgParser()

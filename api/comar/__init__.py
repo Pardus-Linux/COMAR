@@ -131,7 +131,10 @@ class Call:
         if "DISPLAY" not in os.environ:
             raise Exception, "X session required to query PolKit"
         bus = dbus.SessionBus()
-        obj = bus.get_object("org.freedesktop.PolicyKit.AuthenticationAgent", "/")
+        try:
+            obj = bus.get_object("org.freedesktop.PolicyKit.AuthenticationAgent", "/")
+        except dbus.DBusException, exception:
+            return False
         iface = dbus.Interface(obj, "org.freedesktop.PolicyKit.AuthenticationAgent")
         try:
             return iface.ObtainAuthorization(action, 0, os.getpid(), timeout=2**16-1) == 1

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2006-2008, TUBITAK/UEKAE
+# Copyright (C) 2006-2009, TUBITAK/UEKAE
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
@@ -10,7 +10,7 @@
 # Please read the COPYING file.
 #
 
-"""serviceutils module provides service management utils."""
+"""service module provides service management utils."""
 
 
 import os

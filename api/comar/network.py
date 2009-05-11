@@ -13,6 +13,7 @@
 """network module provides network management utils."""
 
 import os
+import subprocess
 
 from pardus import iniutils
 
@@ -107,7 +108,7 @@ def registerNameServers(profile, iface):
 def unregisterNameServers(iface):
     call(NET_STACK, "Network.Stack", "unregisterNameServers", (iface.name, [], ""))
 
-def callScript(self, name, state):
+def callScript(name, state):
     path = os.path.join("/etc/network/netlink.d", "%s.%s" % (name, state))
     if os.path.exists(path):
         try:

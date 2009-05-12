@@ -144,7 +144,7 @@ class VideoDevice:
     def enableDriver(self):
         oldpackage = enabledPackage()
         if self.package != oldpackage:
-            if oldpackage.replace("-", "_") in self._driverPackages():
+            if oldpackage and oldpackage.replace("-", "_") in self._driverPackages():
                 call(oldpackage, "Xorg.Driver", "disable")
 
             call(self.package, "Xorg.Driver", "enable")
@@ -160,7 +160,7 @@ class VideoDevice:
         return False
 
     def flags(self):
-        return self.probe_result["flags"].split(",")
+        return self.probe_result.get("flags", "").split(",")
 
     def needsScreenSection(self):
         flags = self.flags()

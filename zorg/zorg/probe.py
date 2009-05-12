@@ -147,7 +147,8 @@ class VideoDevice:
             if oldpackage and oldpackage.replace("-", "_") in self._driverPackages():
                 call(oldpackage, "Xorg.Driver", "disable")
 
-            call(self.package, "Xorg.Driver", "enable")
+            if self.package:
+                call(self.package, "Xorg.Driver", "enable")
 
     def requestDriverOptions(self):
         if not self.package or self.package == "xorg-video":

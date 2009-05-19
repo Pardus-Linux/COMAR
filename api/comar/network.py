@@ -20,6 +20,11 @@ from pardus import iniutils
 NET_PATH = "/etc/network"
 NET_STACK = "baselayout"
 
+MSG_PROFILE_NAME = {
+    "en": "Profile name is too short.",
+    "tr": "Profil ismi çok kısa.",
+}
+
 INI = iniutils.iniParser(os.path.join(NET_PATH, script()))
 
 def listProfiles():
@@ -30,6 +35,8 @@ def listProfiles():
 
 class Profile:
     def __init__(self, name):
+        if not len(name):
+            fail(_(MSG_PROFILE_NAME))
         self.name = name
         try:
             self.info = INI.getSection(name)

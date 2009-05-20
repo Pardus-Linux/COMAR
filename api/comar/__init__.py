@@ -9,7 +9,7 @@
 # option) any later version. Please read the COPYING file.
 #
 
-__version__ = '2.1.3'
+__version__ = '2.4.0'
 
 import dbus
 import locale

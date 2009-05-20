@@ -16,6 +16,9 @@ import os
 import subprocess
 
 from pardus import iniutils
+from pardus import netutils
+
+from comar.service import startService, stopService, loadConfig
 
 NET_PATH = "/etc/network"
 NET_STACK = "baselayout"
@@ -122,3 +125,28 @@ def callScript(name, state):
             subprocess.call([path])
         except:
             pass
+
+def plugCheck(device, state, wireless=False):
+    # Do nothing if ifplugd is missing
+    if not os.path.exists("/usr/sbin/ifplugd"):
+        return
+    if state == "up":
+        # Do nothing if device is missing
+        if not netutils.IF(device):
+            return
+        # Load service configuration
+        config = loadConfig("/etc/conf.d/ifplugd")
+        # Get arguments
+        if wireless:
+            args = config.get("IFPLUGD_WLAN_ARGS", "")
+        else:
+            args = config.get("IFPLUGD_ARGS", "")
+        # Start service
+        startService(command="/usr/sbin/ifplugd",
+                     args="%s -i %s" % (args, device),
+                     pidfile="/var/run/ifplugd.%s.pid" % device,
+                     detach=True,
+                     donotify=False)
+    else:
+        # Stop service
+        stopService(pidfile="/var/run/ifplugd.%s.pid" % device, donotify=False)

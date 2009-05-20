@@ -25,7 +25,7 @@ MSG_PROFILE_NAME = {
     "tr": "Profil ismi çok kısa.",
 }
 
-INI = iniutils.iniParser(os.path.join(NET_PATH, script()))
+INI = iniutils.iniParser(os.path.join(NET_PATH, script()), quiet=True)
 
 def listProfiles():
     try:

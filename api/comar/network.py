@@ -126,7 +126,7 @@ def callScript(name, state):
         except:
             pass
 
-def plugCheck(device, state, wireless=False):
+def plugService(device, state, wireless=False):
     # Do nothing if ifplugd is missing
     if not os.path.exists("/usr/sbin/ifplugd"):
         return
@@ -150,3 +150,9 @@ def plugCheck(device, state, wireless=False):
     else:
         # Stop service
         stopService(pidfile="/var/run/ifplugd.%s.pid" % device, donotify=False)
+
+def plugCheck(device):
+    # Return true if ifplugd is missing
+    if not os.path.exists("/usr/sbin/ifplugstatus"):
+        return True
+    return subprocess.call(["/usr/sbin/ifplugstatus", "-q", device]) == 2

@@ -115,8 +115,8 @@ def registerNameServers(profile, iface):
         name_servers = call(NET_STACK, "Network.Stack", "getNameServers")
     call(NET_STACK, "Network.Stack", "registerNameServers", (iface.name, name_servers, name_domain))
 
-def unregisterNameServers(iface):
-    call(NET_STACK, "Network.Stack", "unregisterNameServers", (iface.name, [], ""))
+def unregisterNameServers(ifname):
+    call(NET_STACK, "Network.Stack", "unregisterNameServers", (ifname, [], ""))
 
 def callScript(name, state):
     path = os.path.join("/etc/network/netlink.d", "%s.%s" % (name, state))

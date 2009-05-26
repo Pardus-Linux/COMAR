@@ -1,7 +1,0 @@
-#!/bin/sh
-
-kernel_module=/var/lib/zorg/kernel_module
-
-if [ -e $kernel_module ]; then
-    /sbin/modprobe --ignore-install $(cat $kernel_module) $@
-fi

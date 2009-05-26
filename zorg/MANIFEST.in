@@ -1,4 +1,0 @@
-recursive-include zorg/ddc *.h
-include zorg-loadmodule
-include data/*DB data/modprobe.d/zorg
-include AUTHORS ChangeLog COPYING README TODO

@@ -1,6 +1,0 @@
-install fglrx /sbin/zorg-loadmodule $CMDLINE_OPTS
-install nvidia /sbin/zorg-loadmodule $CMDLINE_OPTS
-install nvidia_new /sbin/zorg-loadmodule $CMDLINE_OPTS
-install nvidia_old /sbin/zorg-loadmodule $CMDLINE_OPTS
-install nvidia_173 /sbin/zorg-loadmodule $CMDLINE_OPTS
-install nvidia_177 /sbin/zorg-loadmodule $CMDLINE_OPTS

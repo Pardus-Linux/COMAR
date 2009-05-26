@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN" "http://www.freedesktop.org/standards/PolicyKit/1.0/policyconfig.dtd">
+
+<policyconfig>
+    <vendor>Pardus</vendor>
+    <vendor_url>http://www.pardus.org.tr</vendor_url>
+    <icon_name>video-display</icon_name>
+
+    <action id="tr.org.pardus.comar.xorg.display.get">
+        <description>Get display info</description>
+        <description xml:lang="tr">Görüntü bilgisini al</description>
+        <description xml:lang="fr">Obtenir les informations concernant l'affichage</description>
+        <description xml:lang="es">Obtener información del monitor</description>
+        <description xml:lang="pl">Odczyt ustawień ekranu</description>
+        <description xml:lang="de">Anzeige-Informationen abrufen</description>
+        <description xml:lang="sv">Visa bildskärmsinformtion</description>
+        <message>System policy prevents getting display info</message>
+        <message xml:lang="tr">Sistem politikası görüntü bilgisini almayı engelliyor</message>
+        <message xml:lang="fr">Le mode de gestion du système ne permet pas d'obtenir les informations concernant l'affichage</message>
+        <message xml:lang="es">La política del sistema no permite obtener información del monitor</message>
+        <message xml:lang="de">Systmerichtlinie verhindert das Abrufen des Anzeige-Informationen</message>
+        <message xml:lang="sv">Systempolicyn förhindrar visning av bildskärmsinformation</message>
+        <defaults>
+            <allow_any>yes</allow_any>
+            <allow_active>yes</allow_active>
+            <allow_inactive>yes</allow_inactive>
+        </defaults>
+    </action>
+
+    <action id="tr.org.pardus.comar.xorg.display.set">
+        <description>Change display configuration</description>
+        <description xml:lang="tr">Görüntü yapılandırmasını değiştir</description>
+        <description xml:lang="fr">Modifier la configuration de l'affichage</description>
+        <description xml:lang="es">Modificar configuración del monitor</description>
+        <description xml:lang="pl">Zmiana ustawień ekranu</description>
+        <description xml:lang="de">Anzeige-Konfiguration ändern</description>
+        <description xml:lang="sv">Ändra bildskärmsinställning</description>
+        <message>System policy prevents setting display configuration</message>
+        <message xml:lang="tr">Sistem politikası görüntü yapılandırmasını değiştirmeyi engelliyor</message>
+        <message xml:lang="fr">Le mode de gestion du système ne permet pas de modifier la configuration de l'affichage</message>
+        <message xml:lang="es">La política del sistema no permite modificar la configuracióon del monitor</message>
+        <message xml:lang="de">Systemrichtlinie verhindert die Änderung der Anzeige-Konfiguration</message>
+        <message xml:lang="sv">Systempolicyn förhindrar ändring av bildskärmsinställning</message>
+        <defaults>
+            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_active>auth_admin_keep_always</allow_active>
+            <allow_inactive>auth_admin_keep_always</allow_inactive>
+        </defaults>
+    </action>
+</policyconfig>

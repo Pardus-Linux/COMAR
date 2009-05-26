@@ -1,0 +1,50 @@
+<comarModel>
+    <interface name="Xorg.Display">
+        <method name="ready" access_label="set">
+            <arg name="boot" type="b" direction="in"/>
+            <arg name="result" type="b" direction="out"/>
+        </method>
+        <method name="initialConfig" access_label="set">
+            <arg name="result" type="b" direction="out"/>
+        </method>
+        <method name="safeConfig" access_label="set">
+            <arg name="result" type="b" direction="out"/>
+        </method>
+        <method name="activeDeviceID" access_label="get">
+            <arg name="result" type="s" direction="out"/>
+        </method>
+        <method name="changeDriver" access_label="set">
+            <arg name="driver" type="s" direction="in"/>
+        </method>
+        <method name="setupScreens" access_label="set">
+            <arg name="busId" type="s" direction="in"/>
+            <arg name="options" type="a{ss}" direction="in"/>
+            <arg name="firstScreen" type="a{ss}" direction="in"/>
+            <arg name="secondScreen" type="a{ss}" direction="in"/>
+        </method>
+        <method name="getPendingConfig" access_label="get">
+            <arg name="result" type="a{ss}" direction="out"/>
+        </method>
+        <method name="setPendingConfig" access_label="set">
+            <arg name="config" type="a{ss}" direction="in"/>
+        </method>
+        <method name="removePendingConfig" access_label="set"/>
+        <method name="applyPendingConfig" access_label="set"/>
+        <method name="setKeymap" access_label="set">
+            <arg name="layout" type="s" direction="in"/>
+            <arg name="variant" type="s" direction="in"/>
+        </method>
+    </interface>
+    <interface name="Xorg.Driver">
+        <method name="enable"/>
+        <method name="disable"/>
+        <method name="probe">
+            <arg name="device" type="a{ss}" direction="in"/>
+            <arg name="result" type="a{ss}" direction="out"/>
+        </method>
+        <method name="getOptions">
+            <arg name="device" type="a{ss}" direction="in"/>
+            <arg name="options" type="a{ss}" direction="out"/>
+        </method>
+    </interface>
+</comarModel>

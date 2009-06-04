@@ -14,6 +14,7 @@ __version__ = '2.4.1'
 import dbus
 import locale
 import os
+import subprocess
 
 class Call:
     def __init__(self, link, group, class_=None, package=None, method=None):
@@ -128,18 +129,12 @@ class Call:
                 raise AttributeError, "Package name required for non-async calls."
 
     def queryPolicyKit(self, action):
-        if "DISPLAY" not in os.environ:
-            raise Exception, "X session required to query PolKit"
-        bus = dbus.SessionBus()
-        try:
-            obj = bus.get_object("org.freedesktop.PolicyKit.AuthenticationAgent", "/")
-        except dbus.DBusException, exception:
-            return False
-        iface = dbus.Interface(obj, "org.freedesktop.PolicyKit.AuthenticationAgent")
-        try:
-            return iface.ObtainAuthorization(action, 0, os.getpid(), timeout=2**16-1) == 1
-        except:
-            return False
+        if not self.link.useAgent:
+            os.environ["POLKIT_AUTH_FORCE_TEXT"] = "1"
+        ret = subprocess.call(["/usr/bin/polkit-auth", "--obtain", action])
+        if ret == 0:
+            return True
+        return False
 
 
 class Link:
@@ -148,6 +143,7 @@ class Link:
         self.address = "tr.org.pardus.comar"
         self.interface = "tr.org.pardus.comar"
         self.socket = socket
+        self.useAgent = False
 
         if not socket:
             self.bus = dbus.SystemBus()
@@ -156,6 +152,9 @@ class Link:
 
         if alternate:
             self.address += "2"
+
+    def useAgent(self, agent=True):
+        self.useAgent = agent
 
     def setLocale(self):
         try:

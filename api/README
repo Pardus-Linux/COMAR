@@ -31,6 +31,9 @@ Asynchronous calls:
     # Localize strings
     link.setLocale()
 
+    # Use authentication agent (GUI)
+    link.useAgent()
+
     # Make an asynchronous call to get service information
     def handler(package, exception, result):
         if exception:
@@ -49,5 +52,7 @@ Connecting COMAR service on alternate destination:
 This will simply try to connect tr.org.pardus.comar2 instead 
 of tr.org.pardus.comar
 
-COMAR 3.0's primary destination is tr.org.pardus.comar3 and 
-alternate destination is tr.org.pardus.comar3.updated
+Connecting to alternative DBus server:
+
+    import comar
+    link = comar.Link(socket="/mnt/target/var/run/dbus/system_bus_socket")

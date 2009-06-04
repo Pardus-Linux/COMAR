@@ -129,7 +129,7 @@ class Call:
                 raise AttributeError, "Package name required for non-async calls."
 
     def queryPolicyKit(self, action):
-        if not self.link.useAgent:
+        if not self.link.use_agent:
             os.environ["POLKIT_AUTH_FORCE_TEXT"] = "1"
         ret = subprocess.call(["/usr/bin/polkit-auth", "--obtain", action])
         if ret == 0:
@@ -143,7 +143,7 @@ class Link:
         self.address = "tr.org.pardus.comar"
         self.interface = "tr.org.pardus.comar"
         self.socket = socket
-        self.useAgent = False
+        self.use_agent = False
 
         if not socket:
             self.bus = dbus.SystemBus()
@@ -154,7 +154,7 @@ class Link:
             self.address += "2"
 
     def useAgent(self, agent=True):
-        self.useAgent = agent
+        self.use_agent = agent
 
     def setLocale(self):
         try:

@@ -9,7 +9,7 @@
 # option) any later version. Please read the COPYING file.
 #
 
-__version__ = '2.4.2'
+__version__ = '2.4.3'
 
 import dbus
 import locale
@@ -143,7 +143,9 @@ class Link:
         self.address = "tr.org.pardus.comar"
         self.interface = "tr.org.pardus.comar"
         self.socket = socket
-        self.use_agent = False
+
+        # Auto-enable agent, if X session present.
+        self.use_agent = ("DISPLAY" in os.environ)
 
         if not socket:
             self.bus = dbus.SystemBus()

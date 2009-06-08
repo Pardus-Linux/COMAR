@@ -23,6 +23,9 @@
         <method name="setRepositories">
           <arg name="repositories" type="as" direction="in"/>
         </method>
+        <method name="setRepoActivities">
+          <arg name="repos" type="a{ss}" direction="in"/>
+        </method>
         <method name="setCache">
           <arg name="enabled" type="b"/>
           <arg name="limit" type="i"/>

@@ -165,16 +165,8 @@ handle_core_message(DBusMessage *bus_msg, const char *path, const char *iface, c
         for (i = 0; i < my_proc.nr_children; i++) {
             struct ProcChild *child = &my_proc.children[i];
             if (dbus_message_has_sender(child->bus_msg, sender)) {
-                // If child process have same sender, kill process
-                if (PyTuple_Size(py_args) == 0) {
-                    kill(child->pid, SIGINT);
-                    total++;
-                }
-                // If child process have same sender and specified method name, kill process
-                else if (PyTuple_Size(py_args) == 1 && dbus_message_has_member(child->bus_msg, PyString_AsString(PyTuple_GetItem(py_args, 0))) == 0) {
-                    kill(child->pid, SIGINT);
-                    total++;
-                }
+                kill(child->pid, SIGINT);
+                total++;
             }
         }
         // log_debug("Killed %d processes.\n", total);

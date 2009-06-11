@@ -169,6 +169,13 @@ class Link:
         except dbus.DBusException, exception:
             pass
 
+    def cancel(self, method="*"):
+        try:
+            obj = self.bus.get_object(self.address, '/', introspect=False)
+            return obj.cancel(method, dbus_interface=self.interface)
+        except dbus.DBusException, exception:
+            return 0
+
     def listenSignals(self, model, handler):
         def sigHandler(*args, **kwargs):
             if "/package/" not in kwargs["path"]:

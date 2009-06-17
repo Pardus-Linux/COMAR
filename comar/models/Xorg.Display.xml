@@ -22,6 +22,34 @@
             <arg name="firstScreen" type="a{ss}" direction="in"/>
             <arg name="secondScreen" type="a{ss}" direction="in"/>
         </method>
+        <method name="setOutput" access_label="set">
+            <arg name="output" type="s" direction="in"/>
+            <arg name="enabled" type="b" direction="in"/>
+            <arg name="ignored" type="b" direction="in"/>
+        </method>
+        <method name="setMode" access_label="set">
+            <arg name="output" type="s" direction="in"/>
+            <arg name="resolution" type="s" direction="in"/>
+            <arg name="rate" type="s" direction="in"/>
+        </method>
+        <method name="setOrientation" access_label="set">
+            <arg name="output" type="s" direction="in"/>
+            <arg name="rotation" type="s" direction="in"/>
+            <arg name="reflection" type="s" direction="in"/>
+        </method>
+        <method name="setPosition" access_label="set">
+            <arg name="output" type="s" direction="in"/>
+            <arg name="position" type="s" direction="in"/>
+            <arg name="arg" type="s" direction="in"/>
+        </method>
+        <method name="setMonitor" access_label="set">
+            <arg name="output" type="s" direction="in"/>
+            <arg name="vendor" type="s" direction="in"/>
+            <arg name="model" type="s" direction="in"/>
+            <arg name="horizSync" type="s" direction="in"/>
+            <arg name="vertRefresh" type="s" direction="in"/>
+        </method>
+        <method name="syncConfigs" access_label="set"/>
         <method name="getPendingConfig" access_label="get">
             <arg name="result" type="a{ss}" direction="out"/>
         </method>

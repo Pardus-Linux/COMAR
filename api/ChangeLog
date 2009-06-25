@@ -1,3 +1,6 @@
+2009-06-25  Bahadır Kandemir  <bahadir@pardus.org.tr>
+	* api: listRunning(all=True) method for listing running method calls
+
 2009-06-11  Bahadır Kandemir  <bahadir@pardus.org.tr>
 	* api: Cancel method
 

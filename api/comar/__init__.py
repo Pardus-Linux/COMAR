@@ -176,6 +176,18 @@ class Link:
         except dbus.DBusException, exception:
             return 0
 
+    def listRunning(self, all=True):
+        methods = []
+        try:
+            obj = self.bus.get_object(self.address, '/', introspect=False)
+            methods = obj.listRunning(all, dbus_interface=self.interface)
+        except dbus.DBusException, exception:
+            return methods
+        for index, method in enumerate(methods):
+            if method.startswith("%s." % self.interface):
+                methods[index] = method[len("%s." % self.interface):]
+        return methods
+
     def listenSignals(self, model, handler):
         def sigHandler(*args, **kwargs):
             if "/package/" not in kwargs["path"]:

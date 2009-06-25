@@ -172,6 +172,18 @@ handle_core_message(DBusMessage *bus_msg, const char *path, const char *iface, c
         // log_debug("Killed %d processes.\n", total);
         bus_reply_object(bus_msg, PyInt_FromLong((long) total), "i");
     }
+    else if (strcmp(method, "listRunning") == 0) {
+        int i;
+        PyObject *py_list = PyList_New(0);
+        // Iterate over all child processes
+        for (i = 0; i < my_proc.nr_children; i++) {
+            struct ProcChild *child = &my_proc.children[i];
+            if (PyTuple_GetItem(py_args, 0) == Py_True || dbus_message_has_sender(child->bus_msg, sender)) {
+                PyList_Append(py_list, PyString_FromFormat("%s.%s", dbus_message_get_interface(child->bus_msg), dbus_message_get_member(child->bus_msg)));
+            }
+        }
+        bus_reply_object(bus_msg, py_list, "as");
+    }
 }
 
 static DBusHandlerResult
@@ -194,7 +206,7 @@ filter_func(DBusConnection *conn, DBusMessage *bus_msg, void *data)
                 log_debug("Got message '%s.%s' from '%s'\n", iface, method, sender);
                 if (strcmp(config_interface, iface) == 0 && strcmp(path, "/") == 0) {
                     // "setLocale" and "cancel" methods are handled in main process
-                    if (strcmp(method, "setLocale") == 0 || strcmp(method, "cancel") == 0) {
+                    if (strcmp(method, "setLocale") == 0 || strcmp(method, "cancel") == 0 || strcmp(method, "listRunning") == 0) {
                         handle_core_message(bus_msg, path, iface, method, sender, py_args);
                     }
                     else {

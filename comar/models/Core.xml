@@ -25,6 +25,10 @@
             <arg name="method_name" type="s" direction="in"/>
             <arg name="killed_calls" type="i" direction="out"/>
         </method>
+        <method name="listRunning" action_id="">
+            <arg name="all" type="b" direction="in"/>
+            <arg name="methods" type="as" direction="out"/>
+        </method>
         <method name="setLocale" action_id="">
             <arg name="locale" type="s" direction="in"/>
         </method>

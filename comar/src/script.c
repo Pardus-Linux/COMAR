@@ -337,7 +337,18 @@ c_i18n(PyObject *self, PyObject *args)
         return NULL;
     }
 
-    return PyDict_GetItemString(py_dict, sender_language());
+    PyObject *py_lang = PyString_FromString(sender_language());
+    if (!PyDict_Contains(py_dict, py_lang)) {
+        py_lang = PyString_FromString("en");
+    }
+
+    if (PyDict_Contains(py_dict, py_lang)) {
+        return PyDict_GetItem(py_dict, py_lang);
+    }
+    else {
+        PyErr_Format(PyExc_COMAR_Script, "Script is lack of default ('en') locale string.");
+        return NULL;
+    }
 }
 
 //! Signal emitter method, used in scripts

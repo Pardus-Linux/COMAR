@@ -40,7 +40,7 @@
         <description xml:lang="sv">Visa brandväggens inställningar</description>
         <message>System policy prevents viewing firewall configuration</message>
         <message xml:lang="tr">Sistem politikası güvenlik duvarı yapılandırmasına bakmayı engelliyor</message>
-        <message xml:lang="tr">Systeembeleid voorkomt bekijken firwall configuratie</message>
+        <message xml:lang="nl">Systeembeleid voorkomt bekijken firwall configuratie</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas de voir la configuration du pare-feu</message>
         <message xml:lang="es">La política del sistema no permite ver la configuración del cortafuegos</message>
         <message xml:lang="de">Systemrichtlinie verhindert die Einsicht der Firewallkonfiguration</message>

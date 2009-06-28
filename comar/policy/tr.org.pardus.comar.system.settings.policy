@@ -9,8 +9,10 @@
     <action id="tr.org.pardus.comar.system.settings.set">
         <description>Change system settings</description>
         <description xml:lang="tr">Sistem ayarlarını değiştir</description>
+        <description xml:lang="sv">Ändra systeminställningar</description>
         <message>System policy prevents changing system settings</message>
         <message xml:lang="tr">Sistem politikası sistem ayarlarını değiştirmeyi engelliyor</message>
+        <message xml:lang="sv">Systempolicyn förhindrar ändring av systeminställningar</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>

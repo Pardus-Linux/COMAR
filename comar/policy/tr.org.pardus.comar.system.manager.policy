@@ -177,8 +177,10 @@
     <action id="tr.org.pardus.comar.system.manager.setrepoactivities">
         <description>Set repositories' activation status</description>
         <description xml:lang="tr">Depoların aktiflik durumunu yaz</description>
+        <description xml:lang="sv">Anpassa förrådens aktiveringsstatus</description>
         <message>System policy prevents setting repositories' activity status</message>
         <message xml:lang="tr">Sistem politikası depoların aktiflik durumlarını yazmayı engelliyor</message>
+        <message xml:lang="sv">Systempolicyn förhindrar anpassning av förrådens aktiveringsstatus</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>

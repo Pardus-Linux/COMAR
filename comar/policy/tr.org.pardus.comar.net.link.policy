@@ -124,8 +124,10 @@
     <action id="tr.org.pardus.comar.net.link.getauth">
         <description>Get authentication details</description>
         <description xml:lang="tr">Kimlik doğrulama detaylarını al</description>
+        <description xml:lang="sv">Visa autentiseringsinformation</description>
         <message>System policy prevents getting authentication details</message>
         <message xml:lang="tr">Sistem politikası kimlik doğrulama detaylarını almayı engelliyor</message>
+        <message xml:lang="sv">Systempolicyn förhindrar visning av autentiseringsinformation</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>

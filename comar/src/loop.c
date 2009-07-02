@@ -158,7 +158,7 @@ handle_core_message(DBusMessage *bus_msg, const char *path, const char *iface, c
         bus_reply_object(bus_msg, Py_True, "b");
     }
     else if (strcmp(method, "cancel") == 0) {
-        // log_debug("Cancel requested: %s\n", PyString_AsString(PyObject_Repr(py_args)));
+        log_debug("Cancel requested.\n");
         int i;
         int total = 0;
         // Iterate over all child processes
@@ -169,7 +169,7 @@ handle_core_message(DBusMessage *bus_msg, const char *path, const char *iface, c
                 total++;
             }
         }
-        // log_debug("Killed %d processes.\n", total);
+        log_debug("Killed %d processes.\n", total);
         bus_reply_object(bus_msg, PyInt_FromLong((long) total), "i");
     }
     else if (strcmp(method, "listRunning") == 0) {

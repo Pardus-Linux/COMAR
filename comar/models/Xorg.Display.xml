@@ -13,8 +13,11 @@
         <method name="activeDeviceID" access_label="get">
             <arg name="result" type="s" direction="out"/>
         </method>
-        <method name="changeDriver" access_label="set">
+        <method name="setDriver" access_label="set">
             <arg name="driver" type="s" direction="in"/>
+        </method>
+        <method name="setDepth" access_label="set">
+            <arg name="depth" type="i" direction="in"/>
         </method>
         <method name="setupScreens" access_label="set">
             <arg name="busId" type="s" direction="in"/>

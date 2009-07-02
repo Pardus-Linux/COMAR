@@ -13,6 +13,9 @@
         <method name="activeDeviceID" access_label="get">
             <arg name="result" type="s" direction="out"/>
         </method>
+        <method name="listDrivers" access_label="get">
+            <arg name="drivers" type="as" direction="out"/>
+        </method>
         <method name="setDriver" access_label="set">
             <arg name="driver" type="s" direction="in"/>
         </method>
@@ -72,6 +75,9 @@
         <method name="probe">
             <arg name="device" type="a{ss}" direction="in"/>
             <arg name="result" type="a{ss}" direction="out"/>
+        </method>
+        <method name="getInfo">
+            <arg name="info" type="a{ss}" direction="out"/>
         </method>
         <method name="getOptions">
             <arg name="device" type="a{ss}" direction="in"/>

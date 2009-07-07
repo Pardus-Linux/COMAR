@@ -57,7 +57,7 @@
     <interface name="Xorg.Driver">
         <method name="enable"/>
         <method name="disable"/>
-        <method name="getInfo">
+        <method name="getInfo" access_label="get">
             <arg name="info" type="a{ss}" direction="out"/>
         </method>
         <method name="getDeviceOptions">

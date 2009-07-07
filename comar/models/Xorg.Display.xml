@@ -22,12 +22,6 @@
         <method name="setDepth" access_label="set">
             <arg name="depth" type="i" direction="in"/>
         </method>
-        <method name="setupScreens" access_label="set">
-            <arg name="busId" type="s" direction="in"/>
-            <arg name="options" type="a{ss}" direction="in"/>
-            <arg name="firstScreen" type="a{ss}" direction="in"/>
-            <arg name="secondScreen" type="a{ss}" direction="in"/>
-        </method>
         <method name="setOutput" access_label="set">
             <arg name="output" type="s" direction="in"/>
             <arg name="enabled" type="b" direction="in"/>
@@ -58,15 +52,6 @@
         <method name="syncConfigs" access_label="set"/>
         <method name="getPendingConfig" access_label="get">
             <arg name="result" type="a{ss}" direction="out"/>
-        </method>
-        <method name="setPendingConfig" access_label="set">
-            <arg name="config" type="a{ss}" direction="in"/>
-        </method>
-        <method name="removePendingConfig" access_label="set"/>
-        <method name="applyPendingConfig" access_label="set"/>
-        <method name="setKeymap" access_label="set">
-            <arg name="layout" type="s" direction="in"/>
-            <arg name="variant" type="s" direction="in"/>
         </method>
     </interface>
     <interface name="Xorg.Driver">

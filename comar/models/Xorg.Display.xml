@@ -72,10 +72,6 @@
     <interface name="Xorg.Driver">
         <method name="enable"/>
         <method name="disable"/>
-        <method name="probe">
-            <arg name="device" type="a{ss}" direction="in"/>
-            <arg name="result" type="a{ss}" direction="out"/>
-        </method>
         <method name="getInfo">
             <arg name="info" type="a{ss}" direction="out"/>
         </method>

@@ -79,9 +79,10 @@
         <method name="getInfo">
             <arg name="info" type="a{ss}" direction="out"/>
         </method>
-        <method name="getOptions">
-            <arg name="device" type="a{ss}" direction="in"/>
-            <arg name="options" type="a{ss}" direction="out"/>
+        <method name="getDeviceOptions">
+            <arg name="busId" type="s" direction="in"/>
+            <arg name="options" type="a{ss}" direction="in"/>
+            <arg name="result" type="a{ss}" direction="out"/>
         </method>
     </interface>
 </comarModel>

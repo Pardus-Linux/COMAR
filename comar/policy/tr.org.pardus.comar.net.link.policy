@@ -15,6 +15,7 @@
         <description xml:lang="pl">Skanowanie punktów dostępowych</description>
         <description xml:lang="de">Fernzugriffspunkte suchen</description>
         <description xml:lang="sv">Skanna efter accesspunkter</description>
+        <description xml:lang="it">Scansiona access point remoti</description>
         <message>System policy prevents scanning remote access points</message>
         <message xml:lang="tr">Sistem politikası uzak erişim noktalarını taramayı engelliyor</message>
         <message xml:lang="nl">Systeembeleid voorkomt scannen naar toegangspunten op afstand</message>
@@ -22,6 +23,7 @@
         <message xml:lang="es">La política del sistema no permite buscar puntos remotos de acceso</message>
         <message xml:lang="de">Systemrichtlinie verhindert die Suche nach Fernzugriffspunkten</message>
         <message xml:lang="sv">Systempolicyn förhindrar skannandet efter accesspunkter</message>
+        <message xml:lang="it">Le politiche di gestione del sistema non permettono di scansionare gli access point remoti</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>
@@ -38,6 +40,7 @@
         <description xml:lang="pl">Kasowanie połączenia</description>
         <description xml:lang="de">Verbindung löschen</description>
         <description xml:lang="sv">Ta bort anslutning</description>
+        <description xml:lang="it">Rimuovi connessione</description>
         <message>System policy prevents removing connections</message>
         <message xml:lang="tr">Sistem politikası bağlantı silmeyi engelliyor</message>
         <message xml:lang="nl">Systeembeleid voorkomt verwijderen verbindingen</message>
@@ -45,6 +48,7 @@
         <message xml:lang="es">La política del sistema no permite eliminar la conexión</message>
         <message xml:lang="de">Systemrichtlinie verhindert das Löschen der Verbindung</message>
         <message xml:lang="sv">Systempolicyn förhindrar borttagning av anslutning</message>
+        <message xml:lang="it">Le politiche di gestione del sistema non permettono di eliminare la connessione</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -61,6 +65,7 @@
         <description xml:lang="pl">Ustawianie stanu połączenia</description>
         <description xml:lang="de">Verbindungszustand einstellen</description>
         <description xml:lang="sv">Sätt anslutningstillstånd</description>
+        <description xml:lang="it">Imposta stato della connessione</description>
         <message>System policy prevents changing connection state</message>
         <message xml:lang="tr">Sistem politikası bağlantı durumunu değiştirmeyi engelliyor</message>
         <message xml:lang="nl">Systeembeleid voorkomt veranderen van de verbindingsstatus</message>
@@ -68,6 +73,7 @@
         <message xml:lang="es">La política del sistema no permite cambiar el estado de la conexión</message>
         <message xml:lang="de">Systemrichtlinie verhindert die Änderung des Verbindungszustandes</message>
         <message xml:lang="sv">Systempolicyn förhindrar redigering av anslutningstillstånd</message>
+        <message xml:lang="it">Le politiche di gestione del sistema non permettono di impostare lo stato della connessione</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -84,6 +90,7 @@
         <description xml:lang="pl">Ustawianie szczegółów połączenia</description>
         <description xml:lang="de">Verbindung hinzufügen oder Verbindungsdetails einstellen</description>
         <description xml:lang="sv">Lägg till anslutning eller sätt anslutningsalternativ</description>
+        <description xml:lang="it">Aggiungi una connessione o modificane i dettagli</description>
         <message>System policy prevents adding/editing connections</message>
         <message xml:lang="tr">Sistem politikası bağlantı eklemeyi/bağlantıda değişiklik yapmayı engelliyor</message>
         <message xml:lang="nl">Systeembeleid voorkomt toevoegen/aanpassen verbindingen</message>
@@ -91,6 +98,7 @@
         <message xml:lang="es">La política del sistema no permite agregar/modificar conexiones</message>
         <message xml:lang="de">Systemrichtlinie verhindert das Hinzufügen/Bearbeiten der Verbindungen</message>
         <message xml:lang="sv">Systempolicyn förhindrar redigering/tillägg av anslutning</message>
+        <message xml:lang="it">Le politiche di gestione del sistema non permettono di aggiungere o modificare connessioni</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -107,6 +115,7 @@
         <description xml:lang="pl">Odczyt ustawień połączenia/urządzenia</description>
         <description xml:lang="de">Verbindungs-/Geräte-Details abrufen</description>
         <description xml:lang="sv">Hämta anslutnings- och enhetsinformation</description>
+        <description xml:lang="it">Ottieni informazioni sulla connessione o sul dispositivo</description>
         <message>System policy prevents getting connection/device details</message>
         <message xml:lang="tr">Sistem politikası bağlantı/aygıt detaylarını almayı engelliyor</message>
         <message xml:lang="nl">Systeembeleid voorkomt verkrijgen van verbinding/apparaat details</message>
@@ -114,6 +123,7 @@
         <message xml:lang="es">La política del sistema no permite obtener detalles de la conexión / del dispositivo</message>
         <message xml:lang="de">Systemrichtlinie verhindert den Abruf der Verbindungs-/Geräte-Details</message>
         <message xml:lang="sv">Systempolicyn förhindrar visning av anslutnings- och enhetsinformation</message>
+        <message xml:lang="it">Le politiche di gestione del sistema non permettono di ottenere informazioni sulla connessione o sul dispositivo</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>
@@ -125,9 +135,11 @@
         <description>Get authentication details</description>
         <description xml:lang="tr">Kimlik doğrulama detaylarını al</description>
         <description xml:lang="sv">Visa autentiseringsinformation</description>
+        <description xml:lang="it">Ottieni informazioni sull'autenticazione</description>
         <message>System policy prevents getting authentication details</message>
         <message xml:lang="tr">Sistem politikası kimlik doğrulama detaylarını almayı engelliyor</message>
         <message xml:lang="sv">Systempolicyn förhindrar visning av autentiseringsinformation</message>
+        <message xml:lang="it">Le politiche di gestione del sistema non permettono di ottenere informazioni sull'autenticazione</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>

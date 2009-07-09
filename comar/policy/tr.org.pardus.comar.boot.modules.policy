@@ -15,6 +15,7 @@
         <description xml:lang="pl">Ustawianie opcji modułów</description>
         <description xml:lang="de">Modul-Optionen einstellen</description>
         <description xml:lang="sv">Sätt modulinställningar</description>
+        <description xml:lang="it">Modifica impostazioni moduli</description>
         <message>System policy prevents setting module options</message>
         <message xml:lang="tr">Sistem politikası modül seçeneklerini değiştirmeyi engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas d'établir les options du module</message>
@@ -22,6 +23,7 @@
         <message xml:lang="nl">Systeembeleid voorkomt module opties instellen</message>
         <message xml:lang="de">Systemrichtlinie verhindert die Änderung der Modul-Optionen</message>
         <message xml:lang="sv">Systempolicyn förhindrar redigering av modulinställningar</message>
+        <message xml:lang="it">Le politiche di gestione di sistema non permettono di modificare le impostazioni dei moduli</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -38,6 +40,7 @@
         <description xml:lang="pl">Ładowanie modułów kernela</description>
         <description xml:lang="de">Kernel-Modul laden</description>
         <description xml:lang="sv">Ladda kärnmodul</description>
+        <description xml:lang="it">Carica modulo del kernel</description>
         <message>System policy prevents loading kernel module</message>
         <message xml:lang="tr">Sistem politikası çekirdek modülünü etkinleştirmeyi engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas de charger le module</message>
@@ -45,6 +48,7 @@
         <message xml:lang="nl">Systeembeleid voorkomt laden kernel module</message>
         <message xml:lang="de">Systemrichtlinie verhindert das Laden des Kernel-Moduls</message>
         <message xml:lang="sv">Systempolicyn förhindrar laddning av kärnmoduler</message>
+        <message xml:lang="it">Le politiche di gestione del sistema non permettono di caricare un modulo del kernel</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -61,6 +65,7 @@
         <description xml:lang="pl">Usuwanie załadowanych modułów kernela</description>
         <description xml:lang="de">Kernel-Modul entladen</description>
         <description xml:lang="sv">Frigör kärnmodul</description>
+        <description xml:lang="it">Smonta modulo del kernel</description>
         <message>System policy prevents unloading kernel module</message>
         <message xml:lang="tr">Sistem politikası çekirdek modülünü etkisiz kılmayı engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas de décharger le module</message>
@@ -68,6 +73,7 @@
         <message xml:lang="nl">Systeembeleid voorkomt ontladen kernel module</message>
         <message xml:lang="de">Systemrichtlinie verhindert die Entladung des Kernel-Moduls</message>
         <message xml:lang="sv">Systempolicyn förhindrar frigörandet av kärnmoduler</message>
+        <message xml:lang="it">Le politiche di gestione del sistema non permettono di smontare un modulo del kernel</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -84,6 +90,7 @@
         <description xml:lang="pl">Dodawanie modułów do automatycznego ładowania</description>
         <description xml:lang="de">Automatisches Laden des Kernel-Moduls hinzufügen</description>
         <description xml:lang="sv">Lägg till automatisk laddning av kärnmodul</description>
+        <description xml:lang="it">Attivare il caricamento automatico del modulo</description>
         <message>System policy prevents adding an autoloading kernel module</message>
         <message xml:lang="tr">Sistem politikası otomatik yüklenen çekirdek modülü eklenmesini engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas d'activer le chargement automatique du module</message>
@@ -91,6 +98,7 @@
         <message xml:lang="nl">Systeembeleid voorkomt toevoegen autoladen aan kernel module</message>
         <message xml:lang="de">Systemrichtlinie verhindert das Hinzufügen des Automatisches Ladens des Kernel-Moduls</message>
         <message xml:lang="sv">Systempolicyn förhindrar tillägg av automatiskt laddande kärnmodul</message>
+        <message xml:lang="it">Le politiche di gestione del sistema non permettono di caricare il modulo automaticamente</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -107,6 +115,7 @@
         <description xml:lang="pl">Aktualizacja konfiguracji modułów</description>
         <description xml:lang="de">Modulkonfiguration aktualisieren</description>
         <description xml:lang="sv">Uppdatera modulinställning</description>
+        <description xml:lang="it">Aggiorna configurazione moduli</description>
         <message>System policy prevents updating module configuration</message>
         <message xml:lang="tr">Sistem politikası modül yapılandırmasını güncellemeyi engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet la mise à jour de la configuration du module</message>
@@ -114,6 +123,7 @@
         <message xml:lang="nl">Systeembeleid voorkomt bijwerken module configuratie</message>
         <message xml:lang="de">Systemrichtlinie verhindert die Aktualisierung der Modulkonfiguration</message>
         <message xml:lang="sv">Systempolicyn förhindrar uppdatering av modulinställning</message>
+        <message xml:lang="it">Le politiche di gestione del sistema non permettono di aggiornare la configurazione dei moduli</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -130,6 +140,7 @@
         <description xml:lang="pl">Odczyt informacji o module</description>
         <description xml:lang="de">Modulinformation abrufen</description>
         <description xml:lang="sv">Hämta modulinformation</description>
+        <description xml:lang="it">Ottieni informazioni sul modulo</description>
         <message>System policy prevents getting module information</message>
         <message xml:lang="tr">Sistem politikası modül bilgisini almayı engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas d'obtenir les informations concernant le module</message>
@@ -137,6 +148,7 @@
         <message xml:lang="nl">Systeembeleid voorkomt ontvangen module informatie</message>
         <message xml:lang="de">Systemrichtlinie verhindert das Abrufen der Modulinformation</message>
         <message xml:lang="sv">Systempolicyn förhindrar hämtning av modulinformation</message>
+        <message xml:lang="it">Le politiche di gestione del sistema non permettono di ottenere informazioni sui moduli</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>
@@ -153,6 +165,7 @@
         <description xml:lang="pl">Edycja listy automatycznego ładowania modułów</description>
         <description xml:lang="de">Auto-Laden-Liste bearbeiten</description>
         <description xml:lang="sv">Redigera lista för automatisk laddning</description>
+        <description xml:lang="it">Modifica lista di caricamento automatico</description>
         <message>System policy prevents editing autoload list</message>
         <message xml:lang="tr">Sistem politikası otomatik yükleme listesini değiştirmeyi engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas d'éditer la liste de chargement automatique</message>
@@ -160,6 +173,7 @@
         <message xml:lang="nl">Systeembeleid voorkomt bewerken autolaad lijst</message>
         <message xml:lang="de">Systemrichtlinie verhindert die Bearbeitung der Auto-Laden-Liste</message>
         <message xml:lang="sv">Systempolicyn förhindrar redigering av lista för automatisk laddning</message>
+        <message xml:lang="it">Le politiche di gestione del sistema non permettono di modificare la lista di caricamento automatico</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -176,6 +190,7 @@
         <description xml:lang="pl">Edycja czarnej listy modułów</description>
         <description xml:lang="de">Modul-Blacklist bearbeiten</description>
         <description xml:lang="sv">Redigera svartlistade moduler</description>
+        <description xml:lang="it">Modifica la lista nera dei moduli</description>
         <message>System policy prevents editing module blacklist</message>
         <message xml:lang="tr">Sistem politikası modül karalistesini değiştirmeyi engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas d'éditer la liste noire des modules</message>
@@ -183,6 +198,7 @@
         <message xml:lang="nl">Systeembeleid voorkomt bewerken module zwarte lijst</message>
         <message xml:lang="de">Systemrichtlinie verhindert die Bearbeitung der Modul-Blacklist</message>
         <message xml:lang="sv">Systempolicyn förhindrar redigering av svartlistade moduler</message>
+        <message xml:lang="it">Le politiche di gestione del sistema non permettono di modificare la lista nera dei moduli</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>

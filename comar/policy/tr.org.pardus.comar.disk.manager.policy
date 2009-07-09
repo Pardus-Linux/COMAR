@@ -15,6 +15,7 @@
         <description xml:lang="pl">Zmiana ustawień menedżera dysków</description>
         <description xml:lang="de">Festplatten-Manager-Einstellungen ändern</description>
         <description xml:lang="sv">Ändra Hårddiskhanterarens inställningar</description>
+        <description xml:lang="it">Cambia impostazioni del gestore dei dischi</description>
         <message>System policy prevents changing disk manager settings</message>
         <message xml:lang="tr">Sistem politikası disk yöneticisi ayarlarını değiştirmeyi engelliyor</message>
         <message xml:lang="nl">Systeembeleid vookomt veranderingen in schijfbeheer instellingen</message>
@@ -22,6 +23,7 @@
         <message xml:lang="es">La política no del sistema no permite modificar la configuración de administrador de particiones</message>
         <message xml:lang="de">Systemrichtlinie verhindert die Änderung der Festplatten-Manager-Einstellungen</message>
         <message xml:lang="sv">Systempolicyn förhindrar ändring av Hårddiskhanterarens inställningar</message>
+        <message xml:lang="it">Le politiche di gestione di sistema non permettono di modificare le impostazioni del gestore dei dischi</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>
@@ -38,6 +40,7 @@
         <description xml:lang="pl">Odczyt ustawień menedżera dysków</description>
         <description xml:lang="de">Festplatten-Manager-Einstellungen ansehen</description>
         <description xml:lang="sv">Visa Hårddiskhanterarens inställningar</description>
+        <description xml:lang="it">Vedi impostazioni del gestore dei dischi</description>
         <message>System policy prevents viewing disk manager settings</message>
         <message xml:lang="tr">Sistem politikası disk yöneticisi ayarlarına bakmayı engelliyor</message>
         <message xml:lang="nl">Systeembeleid voorkomt bekijken van de schijfbeheer instellingen</message>
@@ -45,6 +48,7 @@
         <message xml:lang="es">La política no del sistema no permite ver la configuración de administrador de particiones</message>
         <message xml:lang="de">Systemrichtlinie verhindert die Einsicht in die Festplatten-Manager-Einstellungen</message>
         <message xml:lang="sv">Systempolicyn förhindrar visning av Hårddiskhanterarens inställningar</message>
+        <message xml:lang="it">Le politiche di gestione del sistema non permettono di vedere le impostazioni del gestore dei dischi</message>
         <defaults>
             <allow_any>yes</allow_any>
             <allow_active>yes</allow_active>

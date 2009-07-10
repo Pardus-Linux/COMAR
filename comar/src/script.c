@@ -50,7 +50,7 @@ PyObject *PyExc_PolicyKit;
 int
 script_init()
 {
-    Py_Initialize();
+    Py_InitializeEx(0);
 
     // Initialize exceptions
     PyExc_COMAR_Internal = PyErr_NewException("Comar.Internal", NULL, NULL);

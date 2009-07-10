@@ -98,6 +98,36 @@ proc_finish(void)
     exit(0);
 }
 
+static void
+handle_sigterm(int signum)
+{
+}
+
+void
+handle_signals(void)
+{
+    struct sigaction act;
+    struct sigaction ign;
+    struct sigaction dfl;
+
+    act.sa_handler = handle_sigterm;
+    /*! initialize and empty a signal set. Signals are to be blocked while executing handle_sigterm */
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = 0; /*!< special flags */
+
+    ign.sa_handler = SIG_IGN;
+    sigemptyset(&ign.sa_mask);
+    ign.sa_flags = 0;
+
+    dfl.sa_handler = SIG_DFL;
+    sigemptyset(&dfl.sa_mask);
+    dfl.sa_flags = 0;
+
+    sigaction(SIGTERM, &act, NULL);
+    sigaction(SIGPIPE, &ign, NULL);
+    sigaction(SIGINT, &dfl, NULL);
+}
+
 struct ProcChild *
 proc_fork(void (*child_func)(DBusMessage *msg), DBusMessage *msg)
 {
@@ -120,6 +150,8 @@ proc_fork(void (*child_func)(DBusMessage *msg), DBusMessage *msg)
         my_proc.parent.pid = getppid();
 
         my_proc.bus_msg = msg;
+
+        handle_signals();
 
         child_func(msg);
         close(pfd[0]);

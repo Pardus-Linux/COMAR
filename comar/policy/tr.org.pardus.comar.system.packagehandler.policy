@@ -59,12 +59,14 @@
         <description xml:lang="pl">Wykonywanie skryptów porządkujących pakietów</description>
         <description xml:lang="de">Ausführen des Paketsteuerer-Säuberungs-Skripts</description>
         <description xml:lang="sv">Kör post-upprensningsskript för pakethanteraren</description>
+        <description xml:lang="nl">Voer post-wissen script pakkethandler uit</description>
         <message>System policy prevents executing package handlers' cleanup scripts</message>
         <message xml:lang="tr">Sistem politikası paket işleyicilerinin temizlik betiklerininin çalıştırılmasını engelliyor</message>
         <message xml:lang="fr">Le mode de gestion du système ne permet pas d'exécuter les scripts de nettoyage du gestionnaire de paquet</message>
         <message xml:lang="es">La política del sistema no permite la ejecución de los scripts de limpieza de paquetes</message>
         <message xml:lang="de">Systemrichtlinie verhindert die Ausführung des Paketsteuerer-Säuberungs-Skripts</message>
         <message xml:lang="sv">Systempolicyn förhindrar körning av skript för upprensning av pakethanteraren</message>
+        <message xml:lang="nl">Systeembeleid voorkomt uitvoeren post-wissen script pakkethandler</message>
         <defaults>
             <allow_any>no</allow_any>
             <allow_inactive>no</allow_inactive>

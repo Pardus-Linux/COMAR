@@ -136,10 +136,12 @@
         <description xml:lang="tr">Kimlik doğrulama detaylarını al</description>
         <description xml:lang="sv">Visa autentiseringsinformation</description>
         <description xml:lang="it">Ottieni informazioni sull'autenticazione</description>
+        <description xml:lang="nl">Authenticatie details ophalen</description>
         <message>System policy prevents getting authentication details</message>
         <message xml:lang="tr">Sistem politikası kimlik doğrulama detaylarını almayı engelliyor</message>
         <message xml:lang="sv">Systempolicyn förhindrar visning av autentiseringsinformation</message>
         <message xml:lang="it">Le politiche di gestione del sistema non permettono di ottenere informazioni sull'autenticazione</message>
+        <message xml:lang="nl">Systeembeleid voorkomt authenticatie details ophalen</message>
         <defaults>
             <allow_any>auth_admin_keep_always</allow_any>
             <allow_active>auth_admin_keep_always</allow_active>

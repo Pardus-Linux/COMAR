@@ -66,6 +66,7 @@ class AccessPoint:
         self.mac = ""
         self.encryption = "none"
         self.qual = ""
+        self.qual_max = "100"
         self.protocol = ""
         self.channel = ""
         if id:
@@ -83,6 +84,7 @@ class AccessPoint:
             "mac": self.mac,
             "encryption": self.encryption,
             "quality": self.qual,
+            "quality_max": self.qual_max,
             "protocol": self.protocol,
             "channel": self.channel,
         }

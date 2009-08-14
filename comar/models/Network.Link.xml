@@ -6,6 +6,12 @@
         <method name="authMethods" action_id="">
             <arg name="info" type="a(ss)" direction="out"/>
         </method>
+        <!-- Will be needed by ModemManager backend for PIN checking
+        <method name="PINRequired" action_id="">
+            <arg name="device" type="s" direction="in"/>
+            <arg name="result" type="s" direction="out"/>
+        </method>
+        -->
         <method name="authParameters" action_id="">
             <arg name="info" type="a(sss)" direction="out"/>
         </method>

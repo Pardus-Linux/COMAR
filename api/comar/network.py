@@ -24,8 +24,8 @@ NET_PATH = "/etc/network"
 NET_STACK = "baselayout"
 
 MSG_PROFILE_NAME = {
-    "en": "Profile name is too short.",
-    "tr": "Profil ismi çok kısa.",
+    "en": "You have to enter a profile name to create a connection",
+    "tr": "Bağlantı yaratmak için profil ismi girmelisiniz",
 }
 
 INI = iniutils.iniParser(os.path.join(NET_PATH, script()), quiet=True)

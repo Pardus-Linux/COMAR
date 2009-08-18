@@ -10,7 +10,7 @@ def listModelApplications(model):
     if not os.path.exists(scriptDir):
         return apps
     for i in os.listdir(scriptDir):
-        if not i.startswith("."):
+        if i.endswith(".py"):
             apps.append(i[:-3])
     return apps
 

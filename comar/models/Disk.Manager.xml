@@ -39,6 +39,9 @@
         <method name="removeEntry" access_label="set">
             <arg name="device" type="s" direction="in"/>
         </method>
+        <method name="refreshPartitionTable" access_label="set">
+            <arg name="device" type="s" direction="in"/>
+        </method>
         <signal name="changed"/>
     </interface>
 </comarModel>

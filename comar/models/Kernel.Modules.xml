@@ -1,5 +1,5 @@
 <comarModel>
-    <interface name="Boot.Modules">
+    <interface name="Kernel.Modules">
         <method name="listAvailable" access_label="get">
             <arg name="modules" type="as" direction="out"/>
         </method>

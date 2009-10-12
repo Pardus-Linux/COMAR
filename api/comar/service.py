@@ -48,22 +48,22 @@ def loadConfig(filename=None):
 
 def is_on():
     state = "off"
-    
+
     def makeDir(_dir):
         if not os.access(_dir, os.W_OK):
             os.makedirs(_dir)
-    
+
     makeDir("/etc/mudur/services/enabled")
     makeDir("/etc/mudur/services/disabled")
     makeDir("/etc/mudur/services/conditional")
-    
+
     if os.access(os.path.join("/etc/mudur/services/enabled", script()), os.F_OK):
         state = "on"
     elif os.access(os.path.join("/etc/mudur/services/disabled", script()), os.F_OK):
         state = "off"
     elif os.access(os.path.join("/etc/mudur/services/conditional", script()), os.F_OK):
         state = "conditional"
-    
+
     return state
 
 def loadEnvironment():
@@ -80,18 +80,18 @@ def loadEnvironment():
 class Config(dict):
     def __init__(self):
         self.first_time = True
-    
+
     def __load(self):
         self.first_time = False
         conf = loadConfig()
         for item in conf:
             self[item] = conf[item]
-    
+
     def __check(self, func, args):
         if self.first_time:
             self.__load()
         return func(self, *args)
-    
+
     __getitem__ = lambda self, item: self.__check(dict.__getitem__, [item])
     __str__ = lambda self: self.__check(dict.__str__, [])
     __len__ = lambda self: self.__check(dict.__len__, [])
@@ -104,7 +104,7 @@ config = Config()
 
 def startDependencies(*services):
     """Start other needed services.
-    
+
     Arguments are service names.
     """
     for service in services:
@@ -199,14 +199,14 @@ def _changeUID(chuid):
     else:
         c_gid = cpw.pw_gid
         c_group = grp.getgrgid(cpw.pw_gid).gr_name
-    
+
     c_groups = []
     for item in grp.getgrall():
         if c_user in item.gr_mem:
             c_groups.append(item.gr_gid)
     if c_gid not in c_groups:
         c_groups.append(c_gid)
-    
+
     os.setgid(c_gid)
     os.setgroups(c_groups)
     os.setuid(c_uid)
@@ -215,7 +215,7 @@ def _changeUID(chuid):
 
 def startService(command, args=None, pidfile=None, makepid=False, nice=None, detach=False, chuid=None, donotify=False):
     """Start given service.
-    
+
     command:  Path to the service executable.
     args:     Optional arguments to the service executable.
     pidfile:  Process ID of the service is kept in this file when running.
@@ -234,7 +234,7 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
         if isinstance(args, basestring):
             args = args.split()
         cmd.extend(args)
-    
+
     try:
         from csl import status
         if status():
@@ -242,13 +242,13 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
             return None
     except:
         pass
-    
+
     if pidfile:
         pid = _getPid(pidfile)
         if _checkPid(pid, command=command):
             # Already running, no need to send notification, just return OK
             return None
-    
+
     def fork_handler():
         if detach:
             # Set umask to a sane value
@@ -274,7 +274,7 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
             file(pidfile, "w").write("%d\n" % os.getpid())
         if chuid:
             _changeUID(chuid)
-    
+
     popen = subprocess.Popen(cmd, close_fds=True, preexec_fn=fork_handler, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if detach:
         if donotify:
@@ -297,7 +297,7 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
 
 def stopService(pidfile=None, command=None, args=None, chuid=None, user=None, name=None, signalno=None, donotify=False):
     """Stop given service.
-    
+
     pidfile:   Process ID of the service is kept in this file when running.
     command:   Stop processes running this executable.
     args:      Execute command with these args instead of killing with [signalno]
@@ -311,17 +311,17 @@ def stopService(pidfile=None, command=None, args=None, chuid=None, user=None, na
     """
     if signalno is None:
         signalno = signal.SIGTERM
-    
+
     if command and args is not None:
         cmd = [ command ]
         if args:
             if isinstance(args, basestring):
                 args = args.split()
             cmd.extend(args)
-        
+
         if chuid:
             _changeUID(chuid)
-        
+
         popen = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         ret = execReply(popen.wait())
         ret.stdout, ret.stderr = popen.communicate()
@@ -334,7 +334,7 @@ def stopService(pidfile=None, command=None, args=None, chuid=None, user=None, na
                     err = "Unable to stop: " + str(ret.stderr)
                 fail(err)
         return ret
-    
+
     if pidfile:
         user_uid = None
         if user:
@@ -369,7 +369,7 @@ def stopService(pidfile=None, command=None, args=None, chuid=None, user=None, na
 
 def isServiceRunning(pidfile=None, command=None):
     """Return if given service is currently running.
-    
+
     pidfile:   Process ID of the service is kept in this file when running.
     command:   Check processes running this executable.
     """
@@ -415,21 +415,21 @@ def ready():
 def setState(state=None):
     if state not in ["on", "off", "conditional"]:
         fail("Unknown state '%s'" % state)
-    
+
     def makeDir(_dir):
         if not os.access(_dir, os.W_OK):
             os.makedirs(_dir)
-    
+
     def touch(_file):
         file(_file, "w").close()
-    
+
     def remove(_file):
         os.unlink(_file)
-    
+
     makeDir("/etc/mudur/services/enabled")
     makeDir("/etc/mudur/services/disabled")
     makeDir("/etc/mudur/services/conditional")
-    
+
     if state == "on":
         touch(os.path.join("/etc/mudur/services/enabled", script()))
         if os.access(os.path.join("/etc/mudur/services/disabled", script()), os.F_OK):
@@ -448,27 +448,27 @@ def setState(state=None):
             remove(os.path.join("/etc/mudur/services/enabled", script()))
         if os.access(os.path.join("/etc/mudur/services/disabled", script()), os.F_OK):
             remove(os.path.join("/etc/mudur/services/disabled", script()))
-    
+
     notify("System.Service", "Changed", (script(), state))
 
 def registerState():
     def makeDir(_dir):
         if not os.access(_dir, os.W_OK):
             os.makedirs(_dir)
-    
+
     def touch(_file):
         file(_file, "w").close()
-    
+
     makeDir("/etc/mudur/services/enabled")
     makeDir("/etc/mudur/services/conditional")
-    
+
     state = None
     try:
         from csl import serviceDefault
         state = serviceDefault
     except:
         pass
-    
+
     if state == "on":
         if script() not in os.listdir("/etc/mudur/services/disabled"):
             touch(os.path.join("/etc/mudur/services/enabled", script()))

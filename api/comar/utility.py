@@ -17,7 +17,7 @@ import subprocess
 
 class execReply(int):
     def __init__(self, value):
-        int.__init__(self, value)
+        super(execReply, self).__init__(value)
         self.stdout = None
         self.stderr = None
 

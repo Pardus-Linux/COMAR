@@ -29,7 +29,7 @@ def synchronized(func):
     """
     class Handler:
         def handler(self, *args, **kwargs):
-            lock = FileLock("/var/lock/subsys/%s" % script())
+            lock = FileLock("/var/lock/subsys/%s.comar" % script())
             lock.lock()
             self.myfunc(*args, **kwargs)
             lock.unlock()

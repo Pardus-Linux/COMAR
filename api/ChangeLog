@@ -1,3 +1,6 @@
+2009-11-02  Bahadır Kandemir  <bahadir@pardus.org.tr>
+	* api: Added .comar suffix to lock files.
+
 2009-06-25  Bahadır Kandemir  <bahadir@pardus.org.tr>
 	* api: listRunning(all=True) method for listing running method calls
 

@@ -138,6 +138,7 @@ pydbus_export_item(DBusMessageIter *iter, PyObject *obj, char *signature)
 
     int e = 0;
     int i = 0;
+    Py_ssize_t pos = 0;
 
     union {
         const char *s;
@@ -171,8 +172,8 @@ pydbus_export_item(DBusMessageIter *iter, PyObject *obj, char *signature)
                 // Get key and value signatures
                 sign_key = strsub(signature, 2, 3);
                 sign_value = strsub(signature, 3, strlen(signature) - 1);
-                i = 0; // Go to first index
-                while (PyDict_Next(obj, &i, &key, &value)) {
+                pos = 0; // Go to first index
+                while (PyDict_Next(obj, &pos, &key, &value)) {
                     e = dbus_message_iter_open_container(&sub, DBUS_TYPE_DICT_ENTRY, NULL, &sub_dict);
                     if (pydbus_export_item(&sub_dict, key, sign_key) != 0 || pydbus_export_item(&sub_dict, value, sign_value) != 0) {
                         return -1;

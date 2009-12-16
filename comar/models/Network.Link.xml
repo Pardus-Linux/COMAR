@@ -8,7 +8,7 @@
         </method>
         <method name="PINRequired" action_id="">
             <arg name="device" type="s" direction="in"/>
-            <arg name="result" type="s" direction="out"/>
+            <arg name="result" type="b" direction="out"/>
         </method>
         <method name="sendPIN" action_id="">
             <arg name="device" type="s" direction="in"/>

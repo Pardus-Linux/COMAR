@@ -1822,8 +1822,9 @@ iks_load (const char *fname, iks **xptr)
 				if (len < FILE_IO_BUF_SIZE) {
 					if (0 == feof (f)) {
 						ret = IKS_FILE_RWERR;
-						len = 0;
+						break;
 					}
+					if (len == 0) ret = IKS_OK;
 					done = 1;
 				}
 				if (len > 0) {

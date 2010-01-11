@@ -641,7 +641,11 @@ sax_core (iksparser *prs, char *buf, int len)
 				}
 				if ((c & mask) == 0) return IKS_BADXML;
 				prs->uni_len = 1;
-				if (stack_old == -1) stack_old = pos;
+				if (stack_old == -1
+					&& (prs->context == C_TAG
+						|| prs->context == C_ATTRIBUTE_1
+						|| prs->context == C_VALUE_APOS
+						|| prs->context == C_VALUE_QUOT)) stack_old = pos;
 				goto cont;
 			}
 		}
@@ -714,6 +718,7 @@ sax_core (iksparser *prs, char *buf, int len)
 					stack_old = -1;
 					STACK_PUSH_END;
 					re = 1;
+					break;
 				}
 				if (stack_old == -1) stack_old = pos;
 				break;
@@ -1138,6 +1143,50 @@ iks_insert (iks *x, const char *name)
 }
 
 iks *
+iks_insert_sibling (iks *x, const char *name)
+{
+    iks *y;
+
+    if (!x) return NULL;
+    y = iks_new_within(name, x->s);
+    if (!y) return NULL;
+
+	if (x->next) {
+		x->next->prev = y;
+	} else {
+		IKS_TAG_LAST_CHILD(x->parent) = y;
+	}
+	y->next = x->next;
+	x->next = y;
+	y->parent = x->parent;
+	y->prev = x;
+
+	return y;
+}
+
+iks *
+iks_prepend(iks *x, const char *name)
+{
+	iks *y;
+
+	if (!x) return NULL;
+	y = iks_new_within(name, x->s);
+	if (!y) return NULL;
+
+	if (x->prev) {
+		x->prev->next = y;
+	} else {
+		IKS_TAG_CHILDREN(x->parent) = y;
+	}
+	y->prev = x->prev;
+	x->prev = y;
+	y->parent = x->parent;
+	y->next = x;
+
+	return y;
+}
+
+iks *
 iks_insert_cdata (iks *x, const char *data, size_t len)
 {
 	iks *y;
@@ -1157,6 +1206,80 @@ iks_insert_cdata (iks *x, const char *data, size_t len)
 		if (!IKS_CDATA_CDATA (y)) return NULL;
 		IKS_CDATA_LEN (y) = len;
 	}
+	return y;
+}
+
+iks *
+iks_set_cdata(iks *x, const char *data, size_t len)
+{
+	iks *y;
+
+	if (!x || !data) return NULL;
+	if (len == 0) len = strlen(data);
+
+	while (1) {
+		y = iks_child(x);
+		if (!y) break;
+		iks_hide(y);
+	}
+
+	y = iks_insert_cdata(x, data, len);
+	return y;
+}
+
+iks *
+iks_prepend_cdata(iks *x, const char *data, size_t len)
+{
+	iks *y;
+
+	if (!x || !data) return NULL;
+	if (len == 0) len = strlen (data);
+
+	y = iks_new_within(NULL, x->s);
+	if (!y) return NULL;
+	y->type = IKS_CDATA;
+	IKS_CDATA_CDATA(y) = iks_stack_strdup(x->s, data, len);
+	if (!IKS_CDATA_CDATA (y)) return NULL;
+	IKS_CDATA_LEN (y) = len;
+
+	if (x->prev) {
+		x->prev->next = y;
+	} else {
+		IKS_TAG_CHILDREN(x->parent) = y;
+	}
+	y->prev = x->prev;
+	x->prev = y;
+	y->parent = x->parent;
+	y->next = x;
+
+	return y;
+}
+
+iks *
+iks_append_cdata(iks *x, const char *data, size_t len)
+{
+	iks *y;
+
+	if (!x || !data) return NULL;
+	if (len == 0) len = strlen (data);
+
+	y = iks_new_within(NULL, x->s);
+	if (!y) return NULL;
+	y->type = IKS_CDATA;
+	IKS_CDATA_CDATA(y) = iks_stack_strdup(x->s, data, len);
+	if (!IKS_CDATA_CDATA (y)) return NULL;
+	IKS_CDATA_LEN (y) = len;
+
+	if (x->next) {
+		x->next->prev = y;
+	} else {
+		IKS_TAG_LAST_CHILD(x->parent) = y;
+	}
+	y->next = x->next;
+	x->next = y;
+	y->parent = x->parent;
+	y->prev = x;
+
 	return y;
 }
 
@@ -1590,9 +1713,9 @@ iks_string (ikstack *s, iks *x)
 					*t++ = ' ';
 					t = my_strcat (t, IKS_ATTRIB_NAME (y), 0);
 					*t++ = '=';
-					*t++ = '\'';
+					*t++ = '"';
 					t = escape (t, IKS_ATTRIB_VALUE (y), strlen (IKS_ATTRIB_VALUE (y)));
-					*t++ = '\'';
+					*t++ = '"';
 					y = y->next;
 				}
 				if (IKS_TAG_CHILDREN (x)) {
@@ -1729,6 +1852,8 @@ tagHook (struct dom_data *data, char *name, char **atts, int type)
 	}
 	if (IKS_CLOSE == type || IKS_SINGLE == type) {
 		x = iks_parent (data->current);
+		if (iks_strcmp(IKS_TAG_NAME(data->current), name) != 0)
+			return IKS_BADXML;
 		if (x)
 			data->current = x;
 		else {

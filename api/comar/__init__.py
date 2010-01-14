@@ -61,7 +61,7 @@ class Call:
             raise Exception, "async and quiet arguments can't be used together"
         if self.async or self.quiet:
             if self.package:
-                obj = self.link.bus.get_object(self.link.address, "/package/%s" % self.package, introspect=False)
+                obj = self.link.bus.get_object(self.link.address, "/package/%s" % self.package)
                 met = getattr(obj, self.method)
 
                 def handleResult(*result):
@@ -81,7 +81,7 @@ class Call:
                 def handlePackages(packages):
                     if self.quiet:
                         for package in packages:
-                            obj = self.link.bus.get_object(self.link.address, "/package/%s" % package, introspect=False)
+                            obj = self.link.bus.get_object(self.link.address, "/package/%s" % package)
                             met = getattr(obj, self.method)
                             met(dbus_interface="%s.%s.%s" % (self.link.interface, self.group, self.class_), ignore_reply=True, *args)
                     else:
@@ -95,7 +95,7 @@ class Call:
                             return handler
 
                         for package in packages:
-                            obj = self.link.bus.get_object(self.link.address, "/package/%s" % package, introspect=False)
+                            obj = self.link.bus.get_object(self.link.address, "/package/%s" % package)
                             met = getattr(obj, self.method)
 
                             met(dbus_interface="%s.%s.%s" % (self.link.interface, self.group, self.class_), reply_handler=handleResult(package), error_handler=handleError(package), timeout=self.timeout, *args)
@@ -115,7 +115,7 @@ class Call:
                     obj.listModelApplications("%s.%s" % (self.group, self.class_), dbus_interface=self.link.interface, reply_handler=handlePackages, error_handler=handlePackError, timeout=self.timeout)
         else:
             if self.package:
-                obj = self.link.bus.get_object(self.link.address, "/package/%s" % self.package, introspect=False)
+                obj = self.link.bus.get_object(self.link.address, "/package/%s" % self.package)
                 met = getattr(obj, self.method)
                 try:
                     return met(dbus_interface="%s.%s.%s" % (self.link.interface, self.group, self.class_), timeout=self.timeout, *args)

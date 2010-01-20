@@ -23,9 +23,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar tillägg av användare</message>
         <message xml:lang="nl">Systeembeleid voorkomt gebruiker toevoegen</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -46,9 +46,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar ändring av användare</message>
         <message xml:lang="nl">Systeembeleid voorkomt gebruikerdetails wijzigen</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -69,9 +69,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar borttagning av användare</message>
         <message xml:lang="nl">Systeembeleid voorkomt gebruiker verwijderen</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -92,9 +92,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar tillägg av grupp</message>
         <message xml:lang="nl">Systeembeleid voorkomt groep toevoegen</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -115,9 +115,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar borttagning av grupp</message>
         <message xml:lang="nl">Systeembeleid voorkomt groep verwijderen</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -161,9 +161,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar visning av användarbehörighet</message>
         <message xml:lang="nl">Systeembeleid voorkomt gebruikerautorisaties weergeven</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 </policyconfig>

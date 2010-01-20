@@ -23,9 +23,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar installation av paket</message>
         <message xml:lang="nl">Systeembeleid vookomt pakket installeren</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -46,9 +46,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar borttagning av paket</message>
         <message xml:lang="nl">Systeembeleid voorkomt pakket verwijderen</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -69,9 +69,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar uppdatering av paket</message>
         <message xml:lang="nl">Systeembeleid voorkomt pakket opwaarderen</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -92,9 +92,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar uppdatering av förråd</message>
         <message xml:lang="nl">Systeembeleid voorkomt repository opwaarderen</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_any>auth_admin_keep</allow_any>
             <allow_active>yes</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -115,9 +115,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar uppdatering av alla förråd</message>
         <message xml:lang="nl">Systeembeleid voorkomt alle repositories opwaarderen</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
+            <allow_any>auth_admin_keep</allow_any>
             <allow_active>yes</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -138,9 +138,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar tillägg av förråd</message>
         <message xml:lang="nl">Systeembeleid voorkomt repository toevoegen</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -161,9 +161,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar borttagning av förråd</message>
         <message xml:lang="nl">Systeembeleid voorkomt repository verwijderen</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -184,9 +184,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar anpassning av förråd</message>
         <message xml:lang="nl">Systeembeleid voorkomt repository instellen</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -200,9 +200,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar anpassning av förrådens aktiveringsstatus</message>
         <message xml:lang="nl">Systeembeleid voorkomt activeringsstatus repositories instellen</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -223,9 +223,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar anpassning av Pisis paketcache</message>
         <message xml:lang="nl">Systeembeleid voorkomt PiSi-pakketbuffer instellen</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -246,9 +246,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar ändring av Pisis konfiguration</message>
         <message xml:lang="nl">Systeembeleid voorkomt PiSi-configuratie wijzigen</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -269,9 +269,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar rensning av Pisis cache</message>
                 <message xml:lang="nl">Systeembeleid voorkomt PiSi-buffer wissen</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -292,9 +292,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar skapandet av en ögonblicksbild</message>
                 <message xml:lang="nl">Systeembeleid voorkomt momentopname van systeem maken</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -315,9 +315,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar ögonblicksbildsåtgärden</message>
                 <message xml:lang="nl">Systeembeleid voorkomt systeem teugzetten naar momentopname</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 </policyconfig>

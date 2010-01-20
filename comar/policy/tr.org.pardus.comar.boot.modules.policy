@@ -25,9 +25,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar redigering av modulinställningar</message>
         <message xml:lang="it">Le politiche di gestione di sistema non permettono di modificare le impostazioni dei moduli</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -50,9 +50,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar laddning av kärnmoduler</message>
         <message xml:lang="it">Le politiche di gestione del sistema non permettono di caricare un modulo del kernel</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -75,9 +75,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar frigörandet av kärnmoduler</message>
         <message xml:lang="it">Le politiche di gestione del sistema non permettono di smontare un modulo del kernel</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -100,9 +100,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar tillägg av automatiskt laddande kärnmodul</message>
         <message xml:lang="it">Le politiche di gestione del sistema non permettono di caricare il modulo automaticamente</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -125,9 +125,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar uppdatering av modulinställning</message>
         <message xml:lang="it">Le politiche di gestione del sistema non permettono di aggiornare la configurazione dei moduli</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -175,9 +175,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar redigering av lista för automatisk laddning</message>
         <message xml:lang="it">Le politiche di gestione del sistema non permettono di modificare la lista di caricamento automatico</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -200,9 +200,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar redigering av svartlistade moduler</message>
         <message xml:lang="it">Le politiche di gestione del sistema non permettono di modificare la lista nera dei moduli</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 </policyconfig>

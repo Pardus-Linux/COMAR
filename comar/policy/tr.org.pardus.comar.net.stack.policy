@@ -25,9 +25,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar redigering av värddatornamn och namnserver</message>
         <message xml:lang="it">Le politiche di gestione del sistema non permettono di impostare il nome dell'host o il server DNS</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 

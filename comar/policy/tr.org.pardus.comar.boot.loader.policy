@@ -50,9 +50,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar borttagning av post</message>
         <message xml:lang="it">Le politiche di gestione del sistema non permettono di eliminare la voce</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -75,9 +75,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar borttagning av oanvända kärnor</message>
         <message xml:lang="it">Le politiche di gestione del sistema non permettono di eliminare i kernel inutilizzati</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 
@@ -100,9 +100,9 @@
         <message xml:lang="sv">Systempolicyn förhindrar redigering av starthanterarens inställningar</message>
         <message xml:lang="it">Le politiche di gestione di sistema non permettono di modificare le impostazioni del bootloader</message>
         <defaults>
-            <allow_any>auth_admin_keep_always</allow_any>
-            <allow_active>auth_admin_keep_always</allow_active>
-            <allow_inactive>auth_admin_keep_always</allow_inactive>
+            <allow_any>auth_admin_keep</allow_any>
+            <allow_active>auth_admin_keep</allow_active>
+            <allow_inactive>auth_admin_keep</allow_inactive>
         </defaults>
     </action>
 

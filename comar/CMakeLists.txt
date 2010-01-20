@@ -53,7 +53,7 @@ INCLUDE_DIRECTORIES (include/
                      /usr/include/python2.6
                      /usr/include/dbus-1.0
                      /usr/lib/dbus-1.0/include
-                     /usr/include/PolicyKit)
+                     /usr/include/polkit-1)
 
 # Compile comar from specified sources
 ADD_EXECUTABLE (comar ${SOURCES})
@@ -86,8 +86,9 @@ INSTALL (FILES
 # Install policies
 # Install PK policies
 INSTALL (DIRECTORY
-         policy
-         DESTINATION /usr/share/PolicyKit
+         policy/
+         DESTINATION /usr/share/polkit-1/actions
+         FILES_MATCHING_PATTERN "*.policy"
          PATTERN ".svn" EXCLUDE)
 
 # Install system bus policy under /etc/dbus-1/system.d/

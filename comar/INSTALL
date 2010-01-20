@@ -1,13 +1,13 @@
 Requirements
-============
+=============
 
     Python 2.5
     DBus
-    PolicyKit
+    polkit
 
 
-Installination
-==============
+Installation
+=============
 
 Build:
 

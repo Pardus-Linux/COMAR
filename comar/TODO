@@ -13,7 +13,7 @@
     - Numeric type tests
     - Raise an exception on conversion error
 - Make hav.py use COMAR API
-? Switch to PolicyKit 0.90
+? Switch to polkit 0.96
 
 ----------------------------------------------------------------------
 

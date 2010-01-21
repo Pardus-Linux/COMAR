@@ -46,14 +46,16 @@ SET (SOURCES src/main.c
 # Set standard libraries
 SET (LIBS python2.6
           dbus-1
-          polkit-dbus)
+          polkit-gobject-1)
 
 # Include standard headers
 INCLUDE_DIRECTORIES (include/
                      /usr/include/python2.6
                      /usr/include/dbus-1.0
                      /usr/lib/dbus-1.0/include
-                     /usr/include/polkit-1)
+                     /usr/include/polkit-1
+                     /usr/include/glib-2.0
+                     /usr/lib/glib-2.0/include)
 
 # Compile comar from specified sources
 ADD_EXECUTABLE (comar ${SOURCES})
@@ -83,12 +85,11 @@ INSTALL (FILES
          config/tr.org.pardus.comar2.service
          DESTINATION /usr/share/dbus-1/system-services/)
 
-# Install policies
-# Install PK policies
+# Install polkit policies
 INSTALL (DIRECTORY
          policy/
          DESTINATION /usr/share/polkit-1/actions
-         FILES_MATCHING_PATTERN "*.policy"
+         FILES_MATCHING PATTERN "*.policy"
          PATTERN ".svn" EXCLUDE)
 
 # Install system bus policy under /etc/dbus-1/system.d/

@@ -29,8 +29,8 @@
 #define POLICY_H
 
 #include <dbus/dbus.h>
-#include <polkit-dbus/polkit-dbus.h>
+#include <polkit/polkit.h>
 
-int policy_check(const char *sender, const char *action, PolKitResult *result);
+int policy_check(const char *sender, const char *action_id, int *result);
 
 #endif /* POLICY_H */

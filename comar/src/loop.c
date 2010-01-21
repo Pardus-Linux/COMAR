@@ -77,9 +77,9 @@ message_execute(DBusMessage *msg, const char *app, const char *model, const char
         const char *sender = dbus_message_get_sender(my_proc.bus_msg);
 
         if (strcmp(action_id, "") != 0) {
-            PolKitResult result;
+            int result;
             if (policy_check(sender, action_id, &result) == 0) {
-                if (result != POLKIT_RESULT_YES) {
+                if (!result) {
                     bus_reply_error(msg, "Comar.PolicyKit", action_id);
                     return;
                 }

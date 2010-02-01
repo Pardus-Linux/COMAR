@@ -251,14 +251,11 @@ bus_execute2(DBusConnection *conn, const char *destination, const char *path, co
     }
 
     dbus_error_init(&err);
-    printf("******* 1\n");
     reply = dbus_connection_send_with_reply_and_block(conn, msg, timeout, &err);
-    printf("******* 2\n");
     dbus_message_unref(msg);
 
     // Unable to call method, raise an exception
     if (dbus_error_is_set(&err)) {
-        printf("******* 2.1\n");
         PyErr_Format(PyExc_DBus, "Unable to call method: %s", err.message);
         dbus_error_free(&err);
         return NULL;
@@ -269,9 +266,7 @@ bus_execute2(DBusConnection *conn, const char *destination, const char *path, co
     switch (dbus_message_get_type(reply)) {
         case DBUS_MESSAGE_TYPE_METHOD_RETURN:
             // Method returned a reply
-            printf("******* 3\n");
             ret = pydbus_import(reply);
-            printf("******* 3.1\n");
             if (ret && PyTuple_Size(ret) == 1) {
                 ret = PyTuple_GetItem(ret, 0);
             }
@@ -279,9 +274,7 @@ bus_execute2(DBusConnection *conn, const char *destination, const char *path, co
             return ret;
         case DBUS_MESSAGE_TYPE_ERROR:
             // Method retuned an error, raise an exception
-            printf("******* 4\n");
             PyErr_SetString(PyExc_DBus, dbus_message_get_error_name(reply));
-            printf("******* 4.1\n");
             dbus_message_unref(reply);
             return NULL;
     }

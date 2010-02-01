@@ -79,7 +79,7 @@ message_execute(DBusMessage *msg, const char *app, const char *model, const char
         if (strcmp(action_id, "") != 0) {
             int result;
             if (policy_check(sender, action_id, &result) == 0) {
-                if (!result) {
+                if (result != POLICY_YES) {
                     bus_reply_error(msg, "Comar.PolicyKit", action_id);
                     return;
                 }

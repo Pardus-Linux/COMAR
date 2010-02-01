@@ -29,8 +29,12 @@
 #define POLICY_H
 
 #include <dbus/dbus.h>
-#include <polkit/polkit.h>
+#include <Python.h>
 
-int policy_check(const char *sender, const char *action_id, int *result);
+#define POLICY_YES 1
+#define POLICY_AUTH 0
+#define POLICY_NO -1
+
+int policy_check(const char *sender, const char *action, int *result);
 
 #endif /* POLICY_H */

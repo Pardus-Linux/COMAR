@@ -45,17 +45,13 @@ SET (SOURCES src/main.c
 
 # Set standard libraries
 SET (LIBS python2.6
-          dbus-1
-          polkit-gobject-1)
+          dbus-1)
 
 # Include standard headers
 INCLUDE_DIRECTORIES (include/
                      /usr/include/python2.6
                      /usr/include/dbus-1.0
-                     /usr/lib/dbus-1.0/include
-                     /usr/include/polkit-1
-                     /usr/include/glib-2.0
-                     /usr/lib/glib-2.0/include)
+                     /usr/lib/dbus-1.0/include)
 
 # Compile comar from specified sources
 ADD_EXECUTABLE (comar ${SOURCES})

@@ -25,97 +25,65 @@
  */
 
 #include "log.h"
+#include "bus.h"
 #include "policy.h"
-
-static int is_authorized;
-
-static void check_authorization_cb(PolkitAuthority *authority, GAsyncResult *res, GMainLoop *loop)
-{
-    GError *error;
-    PolkitAuthorizationResult *result;
-
-    error = NULL;
-
-    /* A PolKitAuthorizationResult or NULL if error is set. Free with g_object_free() */
-    log_info("finish the async auth.\n");
-    result = polkit_authority_check_authorization_finish(authority, res, &error);
-    if (error != NULL)
-    {
-        log_error("Error checking authorization: %s\n", error->message);
-        g_error_free(error);
-    }
-    else
-        /* Set global result */
-        is_authorized = polkit_authorization_result_get_is_authorized(result);
-
-    log_info("quitting loop, is authorized: %d\n", is_authorized);
-    /*g_object_free(result);*/
-    g_main_loop_quit(loop);
-    log_info("callback returns.\n");
-}
-
 
 //! Check if sender is allowed to call method
 int
-policy_check(const char *sender, const char *action_id, int *result)
+policy_check(const char *sender, const char *action, int *result)
 {
     /*!
      *
      * @sender Bus name of the sender
-     * @result polkit result
+     * @result PK result
      * @return 0 on success, 1 on error
      */
 
-    /* polkit-1 stuff */
-    PolkitAuthority *pk_authority;
-    PolkitSubject *pk_subject;
-    GMainLoop *loop;
+    DBusConnection *conn;
+    DBusError err;
+    int uid = -1;
 
-    g_type_init();
-    /*g_thread_init(NULL);*/
+    *result = POLICY_NO;
 
-    /*int uid = -1;*/
-    is_authorized = 0;
+    dbus_error_init(&err);
 
-    /* FIXME: Could not find out how to get uid for sender */
-    /*uid = dbus_bus_get_unix_user(conn, sender, &err);*/
+    conn = dbus_bus_get_private(DBUS_BUS_SYSTEM, &err);
+    if (dbus_error_is_set(&err)) {
+        log_error("Unable to open DBus connection to query PolicyKit: %s\n", err.message);
+        dbus_error_free(&err);
+        return -1;
+    }
 
-    /* Always authorized
-    if (uid == 0 && (result=1))
+    // If UID is 0, don't query PolicyKit
+    uid = dbus_bus_get_unix_user(conn, sender, &err);
+    if (dbus_error_is_set(&err)) {
+        log_error("Unable to get caller UID: %s\n", err.message);
+        dbus_error_free(&err);
+        return -1;
+    }
+    if (uid == 0) {
+        *result = POLICY_YES;
         return 0;
-    */
+    }
 
-    /* Create loop */
-    loop = g_main_loop_new(NULL, FALSE);
+    PyObject *subject = PyTuple_New(2);
+    PyTuple_SetItem(subject, 0, PyString_FromString("system-bus-name"));
+    PyObject *details = PyDict_New();
+    PyDict_SetItemString(details, "name", PyString_FromString(sender));
+    PyTuple_SetItem(subject, 1, details);
 
-    /* Get authority */
-    log_info("Creating authority.\n");
-    pk_authority = polkit_authority_get();
+    PyObject *details2 = PyDict_New();
 
-    /* Create PolkitSubject */
-    log_info("Creating subject from: %s\n", sender);
-    pk_subject = polkit_system_bus_name_new((const gchar*) sender);
+    PyObject *obj = PyTuple_New(5);
+    PyTuple_SetItem(obj, 0, subject);
+    PyTuple_SetItem(obj, 1, PyString_FromString(action));
+    PyTuple_SetItem(obj, 2, details2);
+    PyTuple_SetItem(obj, 3, PyInt_FromLong((long) 0));
+    PyTuple_SetItem(obj, 4, PyString_FromString("abc"));
 
-    /* Asynchronously check for authorization */
-    log_info("async check authorization.\n");
-    polkit_authority_check_authorization(pk_authority,
-                                         pk_subject,
-                                         action_id,
-                                         NULL, /* PolkitDetails */
-                                         POLKIT_CHECK_AUTHORIZATION_FLAGS_ALLOW_USER_INTERACTION, /* FIXME */
-                                         NULL, /* cancellable */
-                                         (GAsyncReadyCallback) check_authorization_cb,
-                                         loop);
-
-    log_info("running loop.\n");
-    g_main_loop_run(loop);
-    g_object_unref(pk_authority);
-    g_object_unref(pk_subject);
-    g_main_loop_unref(loop);
-
-    /* Set result */
-    *result = is_authorized;
-    log_info("returning 0 with result: %d\n", *result);
+    printf("DEB: %s\n", PyString_AsString(PyObject_Repr(obj)));
+    PyObject *ret = bus_execute2(conn, "org.freedesktop.PolicyKit1", "/org/freedesktop/PolicyKit1/Authority", "org.freedesktop.PolicyKit1.Authority", "CheckAuthorization", obj, 25, "(sa{sv})sa{ss}us");
+    printf("DEB: %s\n", PyString_AsString(PyObject_Repr(ret)));
 
     return 0;
 }

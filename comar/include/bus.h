@@ -39,5 +39,7 @@ void bus_reply_object(DBusMessage *bus_msg, PyObject *py_obj, char *signature);
 void bus_reply_unknown_method(DBusMessage *bus_msg);
 int bus_signal(const char *path, const char *interface, const char *member, PyObject *obj, char *signature);
 PyObject *bus_call(const char *path, const char *interface, const char *member, PyObject *obj, int timeout, const char *lang, char *signature);
+PyObject * bus_execute(DBusConnection *conn, const char *path, const char *interface, const char *member, PyObject *obj, int timeout, char *signature);
+PyObject *bus_execute2(DBusConnection *conn, const char *destination, const char *path, const char *interface, const char *member, PyObject *obj, int timeout, char *signature);
 
 #endif /* BUS_H */

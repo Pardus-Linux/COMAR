@@ -38,7 +38,6 @@
 #include "config.h"
 #include "log.h"
 #include "process.h"
-#include "policy.h"
 #include "pydbus.h"
 #include "script.h"
 #include "utils.h"
@@ -211,6 +210,78 @@ bus_execute(DBusConnection *conn, const char *path, const char *interface, const
         case DBUS_MESSAGE_TYPE_ERROR:
             // Method retuned an error, raise an exception
             PyErr_SetString(PyExc_DBus, dbus_message_get_error_name(reply));
+            dbus_message_unref(reply);
+            return NULL;
+    }
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+//! Calls a method and returns reply.
+PyObject *
+bus_execute2(DBusConnection *conn, const char *destination, const char *path, const char *interface, const char *member, PyObject *obj, int timeout, char *signature)
+{
+    DBusMessage *msg, *reply;
+    DBusMessageIter iter;
+    DBusError err;
+
+    msg = dbus_message_new_method_call(destination, path, interface, member);
+    dbus_message_iter_init_append(msg, &iter);
+
+    // If signature is not null, append Python object to message
+    if (strcmp(signature, "") != 0) {
+        PyObject *py_tuple;
+        if (!PyTuple_Check(obj)) {
+            py_tuple = PyTuple_New(1);
+            PyTuple_SetItem(py_tuple, 0, obj);
+        }
+        else {
+            py_tuple = obj;
+        }
+        if (pydbus_export(&iter, py_tuple, signature) != 0) {
+            return NULL;
+        }
+    }
+
+    // -1 means "use DBus default timeout
+    // Else, multiply it with 1000, because DBus wants time in microseconds.
+    if (timeout != -1) {
+        timeout *= 1000;
+    }
+
+    dbus_error_init(&err);
+    printf("******* 1\n");
+    reply = dbus_connection_send_with_reply_and_block(conn, msg, timeout, &err);
+    printf("******* 2\n");
+    dbus_message_unref(msg);
+
+    // Unable to call method, raise an exception
+    if (dbus_error_is_set(&err)) {
+        printf("******* 2.1\n");
+        PyErr_Format(PyExc_DBus, "Unable to call method: %s", err.message);
+        dbus_error_free(&err);
+        return NULL;
+    }
+
+    PyObject *ret;
+
+    switch (dbus_message_get_type(reply)) {
+        case DBUS_MESSAGE_TYPE_METHOD_RETURN:
+            // Method returned a reply
+            printf("******* 3\n");
+            ret = pydbus_import(reply);
+            printf("******* 3.1\n");
+            if (ret && PyTuple_Size(ret) == 1) {
+                ret = PyTuple_GetItem(ret, 0);
+            }
+            dbus_message_unref(reply);
+            return ret;
+        case DBUS_MESSAGE_TYPE_ERROR:
+            // Method retuned an error, raise an exception
+            printf("******* 4\n");
+            PyErr_SetString(PyExc_DBus, dbus_message_get_error_name(reply));
+            printf("******* 4.1\n");
             dbus_message_unref(reply);
             return NULL;
     }

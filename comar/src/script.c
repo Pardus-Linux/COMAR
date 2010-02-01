@@ -44,7 +44,7 @@ PyObject *PyExc_COMAR_Invalid;
 PyObject *PyExc_COMAR_Script;
 PyObject *PyExc_COMAR_Missing;
 PyObject *PyExc_DBus;
-PyObject *PyExc_polkit;
+PyObject *PyExc_PolicyKit;
 
 //! Initializes Python VM
 int
@@ -58,7 +58,7 @@ script_init()
     PyExc_COMAR_Script = PyErr_NewException("Comar.Script", NULL, NULL);
     PyExc_COMAR_Missing = PyErr_NewException("Comar.Missing", NULL, NULL);
     PyExc_DBus = PyErr_NewException("Comar.DBus", NULL, NULL);
-    PyExc_polkit = PyErr_NewException("Comar.PolicyKit", NULL, NULL);
+    PyExc_PolicyKit = PyErr_NewException("Comar.PolicyKit", NULL, NULL);
 
     // Load model definitions
     PyObject *py_models;
@@ -513,7 +513,7 @@ py_execute(const char *app, const char *model, const char *method, PyObject *py_
      * @method Method
      * @py_args Arguments
      * @py_ret Pointer to returned value
-     * @return 0 on success, -1 on missing file, -2 on Python error, -3 on access denied, -4 on polkit error
+     * @return 0 on success, -1 on missing file, -2 on Python error, -3 on access denied, -4 on PolicyKit error
      *
      */
 
@@ -619,20 +619,20 @@ py_execute(const char *app, const char *model, const char *method, PyObject *py_
         return -2;
     }
     else {
-        // Check if polkit action defined at runtime
+        // Check if PolicyKit action defined at runtime
         if (PyObject_HasAttrString(py_func, "policy_action_id")) {
             const char *action_id = PyString_AsString(PyObject_GetAttrString(py_func, "policy_action_id"));
             const char *sender = dbus_message_get_sender(my_proc.bus_msg);
-            int result;
 
+            int result;
             if (policy_check(sender, action_id, &result) == 0) {
-                if (!result) {
-                    PyErr_Format(PyExc_polkit, action_id);
+                if (result != POLICY_YES) {
+                    PyErr_Format(PyExc_PolicyKit, action_id);
                     return -3;
                 }
             }
             else {
-                PyErr_Format(PyExc_polkit, "error");
+                PyErr_Format(PyExc_PolicyKit, "error");
                 return -4;
             }
         }

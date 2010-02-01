@@ -128,11 +128,11 @@ db_validate_model(iks *xml, char *filename)
     return 0;
 }
 
-//! Gets polkit action ID of a method
+//! Gets PolicyKit action ID of a method
 char *
 db_action_id(char *iface_name, iks *met)
 {
-    // If necessary, get polkit action ID from XML
+    // If necerssary, get PolicyKit action ID from XML
     char *action_id = iks_find_attrib(met, "action_id");
     if (action_id) {
         return action_id;
@@ -196,7 +196,7 @@ db_load_model(iks *xml, PyObject **py_models)
                 PyTuple_SetItem(py_tuple, 0, PyInt_FromLong((long) 1));
             }
 
-            // Second argument is polkit action ID
+            // Second argument is PolicyKit action ID
             char *action_id = db_action_id(iface_name, met);
             PyTuple_SetItem(py_tuple, 1, PyString_FromString(action_id));
 

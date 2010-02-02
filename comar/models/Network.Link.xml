@@ -16,6 +16,7 @@
             <arg name="result" type="s" direction="out"/>
         </method>
         <method name="authParameters" action_id="">
+            <arg name="name" type="s" direction="in"/>
             <arg name="info" type="a(sss)" direction="out"/>
         </method>
         <method name="setAuthMethod" action_id="tr.org.pardus.comar.net.link.set">

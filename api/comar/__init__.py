@@ -129,18 +129,7 @@ class Call:
                 raise AttributeError, "Package name required for non-async calls."
 
     def queryPolicyKit(self, action):
-        bus = dbus.SessionBus()
-        try:
-            obj = bus.get_object("org.freedesktop.PolicyKit1.AuthenticationAgent", "/")
-        except dbus.DBusException, exception:
-            print exception
-            return False
-        iface = dbus.Interface(obj, "org.freedesktop.PolicyKit1.AuthenticationAgent")
-        try:
-            return iface.ObtainAuthorization(action, 0, os.getpid(), timeout=2**16-1) == 1
-        except dbus.DBusException, exception:
-            print exception
-            return False
+        return False
 
 
 class Link:

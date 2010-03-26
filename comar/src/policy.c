@@ -81,7 +81,7 @@ policy_check(const char *sender, const char *action, int *result)
     PyTuple_SetItem(obj, 3, PyInt_FromLong((long) 1));
     PyTuple_SetItem(obj, 4, PyString_FromString("abc"));
 
-    PyObject *ret = bus_execute2(conn, "org.freedesktop.PolicyKit1", "/org/freedesktop/PolicyKit1/Authority", "org.freedesktop.PolicyKit1.Authority", "CheckAuthorization", obj, 25, "(sa{sv})sa{ss}us");
+    PyObject *ret = bus_execute2(conn, "org.freedesktop.PolicyKit1", "/org/freedesktop/PolicyKit1/Authority", "org.freedesktop.PolicyKit1.Authority", "CheckAuthorization", obj, -1, "(sa{sv})sa{ss}us");
 
     if (PyTuple_GetItem(ret, 0) == Py_True) {
         *result = POLICY_YES;

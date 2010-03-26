@@ -4,7 +4,7 @@
 <policyconfig>
     <vendor>Pardus</vendor>
     <vendor_url>http://www.pardus.org.tr</vendor_url>
-    <icon_name>preferences-desktop-default-applications</icon_name>
+    <icon_name>package</icon_name>
 
     <action id="tr.org.pardus.comar.system.manager.installpackage">
         <description>Install package</description>

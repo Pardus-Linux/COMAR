@@ -4,7 +4,7 @@
 <policyconfig>
     <vendor>Pardus</vendor>
     <vendor_url>http://www.pardus.org.tr</vendor_url>
-    <icon_name>preferences-system-time</icon_name>
+    <icon_name>date</icon_name>
 
     <action id="tr.org.pardus.comar.time.clock.set">
         <description>Set date/time</description>

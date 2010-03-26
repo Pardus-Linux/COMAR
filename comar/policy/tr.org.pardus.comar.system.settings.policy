@@ -4,7 +4,7 @@
 <policyconfig>
     <vendor>Pardus</vendor>
     <vendor_url>http://www.pardus.org.tr</vendor_url>
-    <icon_name>preferences-other</icon_name>
+    <icon_name>preferences-system</icon_name>
 
     <action id="tr.org.pardus.comar.system.settings.set">
         <description>Change system settings</description>

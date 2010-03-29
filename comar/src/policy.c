@@ -26,6 +26,7 @@
 
 #include "log.h"
 #include "bus.h"
+#include "script.h"
 #include "policy.h"
 
 //! Check if sender is allowed to call method
@@ -82,6 +83,13 @@ policy_check(const char *sender, const char *action, int *result)
     PyTuple_SetItem(obj, 4, PyString_FromString("abc"));
 
     PyObject *ret = bus_execute2(conn, "org.freedesktop.PolicyKit1", "/org/freedesktop/PolicyKit1/Authority", "org.freedesktop.PolicyKit1.Authority", "CheckAuthorization", obj, -1, "(sa{sv})sa{ss}us");
+
+    if (!ret) {
+        char *eStr, *vStr;
+        py_catch(&eStr, &vStr, 1);
+        *result = POLICY_NO;
+        return 0;
+    }
 
     if (PyTuple_GetItem(ret, 0) == Py_True) {
         *result = POLICY_YES;

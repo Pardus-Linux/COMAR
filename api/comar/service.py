@@ -21,6 +21,7 @@ import pwd
 import grp
 import signal
 import time
+import shlex
 
 from comar.utility import *
 
@@ -232,7 +233,7 @@ def startService(command, args=None, pidfile=None, makepid=False, nice=None, det
     cmd = [ command ]
     if args:
         if isinstance(args, basestring):
-            args = args.split()
+            args = shlex.split(args)
         cmd.extend(args)
 
     try:
@@ -316,7 +317,7 @@ def stopService(pidfile=None, command=None, args=None, chuid=None, user=None, na
         cmd = [ command ]
         if args:
             if isinstance(args, basestring):
-                args = args.split()
+                args = shlex.split(args)
             cmd.extend(args)
 
         if chuid:

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2005-2009, TUBITAK/UEKAE
+ * Copyright (c) 2005-2010, TUBITAK/UEKAE
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,7 +28,7 @@
 #define CONFIG_H
 
 #ifndef VERSION
-#define VERSION "2.9.99"
+#define VERSION "3.0.0"
 #endif
 
 #ifndef DBUS_SERVER_ADDRESS
@@ -60,7 +60,7 @@
 #endif
 
 #ifndef WWW_BUGS
-#define WWW_BUGS "http://bugzilla.pardus.org.tr"
+#define WWW_BUGS "http://bugs.pardus.org.tr"
 #endif
 
 extern char *config_server_address;

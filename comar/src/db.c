@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2005-2009, TUBITAK/UEKAE
+ * Copyright (c) 2005-2010, TUBITAK/UEKAE
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation

@@ -12,10 +12,10 @@
         <method name="getDate" access_label="get">
             <arg name="date" type="s" direction="out"/>
         </method>
-        <method name="loadFromHW" access_label="get">
+        <method name="loadFromHW">
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
-        <method name="saveToHW" access_label="set">
+        <method name="saveToHW">
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
         <method name="setTimeZone" access_label="set">

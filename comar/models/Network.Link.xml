@@ -16,7 +16,7 @@
             <arg name="result" type="s" direction="out"/>
         </method>
         <method name="authParameters" action_id="">
-            <arg name="name" type="s" direction="in"/>
+            <arg name="method" type="s" direction="in"/>
             <arg name="info" type="a(sss)" direction="out"/>
         </method>
         <method name="setAuthMethod" action_id="tr.org.pardus.comar.net.link.set">
@@ -52,6 +52,7 @@
             <arg name="remotes" type="aa{sv}" direction="out"/>
         </method>
         <method name="setRemote" action_id="tr.org.pardus.comar.net.link.set">
+            <arg name="name" type="s" direction="in"/>
             <arg name="remote" type="s" direction="in"/>
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>

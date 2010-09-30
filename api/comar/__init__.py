@@ -9,7 +9,7 @@
 # option) any later version. Please read the COPYING file.
 #
 
-__version__ = '2.4.6'
+__version__ = '2.4.7'
 
 import dbus
 import locale
@@ -74,7 +74,7 @@ class Call:
                     self.async(self.package, exception, None)
 
                 if self.quiet:
-                    met(dbus_interface="%s.%s.%s" % (self.link.interface, self.group, self.class_), ignore_reply=True, *args)
+                    met(dbus_interface="%s.%s.%s" % (self.link.interface, self.group, self.class_), *args)
                 else:
                     met(dbus_interface="%s.%s.%s" % (self.link.interface, self.group, self.class_), reply_handler=handleResult, error_handler=handleError, timeout=self.timeout, *args)
             else:
@@ -83,7 +83,7 @@ class Call:
                         for package in packages:
                             obj = self.link.bus.get_object(self.link.address, "/package/%s" % package)
                             met = getattr(obj, self.method)
-                            met(dbus_interface="%s.%s.%s" % (self.link.interface, self.group, self.class_), ignore_reply=True, *args)
+                            met(dbus_interface="%s.%s.%s" % (self.link.interface, self.group, self.class_), *args)
                     else:
                         def handleResult(package):
                             def handler(*result):

@@ -7,6 +7,14 @@
             <arg name="label" type="s" direction="in"/>
             <arg name="device" type="s" direction="out"/>
         </method>
+        <method name="isMounted" access_label="get">
+            <arg name="device" type="s" direction="in"/>
+            <arg name="path" type="s" direction="out"/>
+        </method>
+        <method name="getFSType" access_label="get">
+            <arg name="part" type="s" direction="in"/>
+            <arg name="type" type="s" direction="out"/>
+        </method>
         <method name="getDeviceParts" access_label="get">
             <arg name="device" type="s" direction="in"/>
             <arg name="parts" type="as" direction="out"/>

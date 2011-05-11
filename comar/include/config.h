@@ -64,7 +64,7 @@
 #endif
 
 extern char *config_server_address;
-extern char *config_unique_address;
+extern const char *config_unique_address;
 extern char *config_service_name;
 extern char *config_interface;
 extern char *config_dir_data;

@@ -39,7 +39,7 @@
 char *config_server_address = DBUS_SERVER_ADDRESS;
 
 //! D-Bus unique address
-char *config_unique_address;
+const char *config_unique_address;
 
 //! D-Bus service name
 char *config_service_name = DBUS_SERVICE_NAME;

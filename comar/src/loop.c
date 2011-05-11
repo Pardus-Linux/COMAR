@@ -196,6 +196,10 @@ filter_func(DBusConnection *conn, DBusMessage *bus_msg, void *data)
 
     PyObject *py_args = pydbus_import(bus_msg);
 
+    if (!dbus_message_has_destination(bus_msg, config_unique_address)) {
+        return DBUS_HANDLER_RESULT_HANDLED;
+    }
+
     switch (dbus_message_get_type(bus_msg)) {
         case DBUS_MESSAGE_TYPE_METHOD_CALL:
             if (my_proc.nr_children > MAX_PROC) {
@@ -320,6 +324,7 @@ loop_exec()
         return -1;
     }
 
+    config_unique_address = dbus_bus_get_unique_name(bus_conn);
     log_debug("Connected to D-Bus, unique id is %s\n", dbus_bus_get_unique_name(bus_conn));
 
     // Request a name (example: com.server.test)

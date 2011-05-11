@@ -24,6 +24,15 @@
  *
  */
 
+#include "bus.h"
+#include "config.h"
+#include "log.h"
+#include "process.h"
+#include "policy.h"
+#include "pydbus.h"
+#include "script.h"
+#include "utils.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,15 +43,6 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <dirent.h>
-
-#include "bus.h"
-#include "config.h"
-#include "log.h"
-#include "process.h"
-#include "policy.h"
-#include "pydbus.h"
-#include "script.h"
-#include "utils.h"
 
 #define MAX_FDS 1024
 #define MAX_PROC 500

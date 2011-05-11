@@ -24,8 +24,6 @@
  *
  */
 
-#include <string.h>
-
 #include "bus.h"
 #include "config.h"
 #include "db.h"
@@ -34,6 +32,8 @@
 #include "policy.h"
 #include "process.h"
 #include "utils.h"
+
+#include <string.h>
 
 //! Core dictionary
 PyObject *py_core;

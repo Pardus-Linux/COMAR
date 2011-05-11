@@ -28,8 +28,8 @@
 #ifndef POLICY_H
 #define POLICY_H
 
-#include <dbus/dbus.h>
 #include <Python.h>
+#include <dbus/dbus.h>
 
 #define POLICY_YES 1
 #define POLICY_AUTH 0

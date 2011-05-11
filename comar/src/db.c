@@ -24,18 +24,18 @@
  *
  */
 
-#include <Python.h>
-#include <dbus/dbus.h>
-#include <dirent.h>
-#include <unistd.h>
-#include <sys/file.h>
-#include <sys/stat.h>
-
 #include "config.h"
 #include "iksemel.h"
 #include "script.h"
 #include "log.h"
 #include "utils.h"
+
+#include <dirent.h>
+#include <unistd.h>
+#include <sys/file.h>
+#include <sys/stat.h>
+
+#include <dbus/dbus.h>
 
 //! Validates model file
 int

@@ -30,8 +30,8 @@
 #define TYPES_BASIC "sbixd"
 #define TYPES_CONTAINER "arD"
 
-#include <dbus/dbus.h>
 #include <Python.h>
+#include <dbus/dbus.h>
 
 char *get_obj_sign(PyObject *obj);
 

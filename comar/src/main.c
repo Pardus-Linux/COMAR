@@ -24,17 +24,16 @@
  *
  */
 
-#include <Python.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
 #include "config.h"
 #include "log.h"
 #include "loop.h"
 #include "process.h"
 #include "script.h"
 #include "utils.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 int
 main(int argc, char *argv[])

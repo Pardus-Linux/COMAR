@@ -24,12 +24,13 @@
  *
  */
 
+#include "config.h"
+#include "process.h"
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <time.h>
 
-#include "config.h"
-#include "process.h"
 
 //! Puts time into file
 void

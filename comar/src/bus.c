@@ -24,6 +24,13 @@
  *
  */
 
+#include "config.h"
+#include "log.h"
+#include "process.h"
+#include "pydbus.h"
+#include "script.h"
+#include "utils.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,12 +42,7 @@
 #include <unistd.h>
 #include <dirent.h>
 
-#include "config.h"
-#include "log.h"
-#include "process.h"
-#include "pydbus.h"
-#include "script.h"
-#include "utils.h"
+
 
 //! DBus connection
 DBusConnection *bus_conn;

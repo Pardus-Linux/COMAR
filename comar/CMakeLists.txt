@@ -7,6 +7,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 # Python is required
 FIND_PACKAGE(PythonLibs)
 
+FIND_PACKAGE(PkgConfig)
+PKG_CHECK_MODULES (DBUS REQUIRED dbus-1)
+
 # Application name
 SET (APP_NAME "comar")
 SET (APP_SUFFIX "3")
@@ -53,8 +56,7 @@ SET (LIBS ${PYTHON_LIBRARIES}
 # Include standard headers
 INCLUDE_DIRECTORIES (include/
                      ${PYTHON_INCLUDE_DIRS}
-                     /usr/include/dbus-1.0
-                     /usr/lib/dbus-1.0/include)
+                     ${DBUS_INCLUDE_DIRS})
 
 # Compile comar from specified sources
 ADD_EXECUTABLE (comar ${SOURCES})

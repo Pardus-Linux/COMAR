@@ -196,7 +196,8 @@ filter_func(DBusConnection *conn, DBusMessage *bus_msg, void *data)
 
     PyObject *py_args = pydbus_import(bus_msg);
 
-    if (!dbus_message_has_destination(bus_msg, config_unique_address)) {
+    if (!dbus_message_has_destination(bus_msg, config_unique_address)
+        && strncmp(dbus_message_get_destination(bus_msg), DBUS_SERVICE_NAME, strlen(DBUS_SERVICE_NAME))) {
         return DBUS_HANDLER_RESULT_HANDLED;
     }
 

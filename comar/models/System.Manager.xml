@@ -3,6 +3,9 @@
         <method name="installPackage">
             <arg name="package" type="s" direction="in"/>
         </method>
+        <method name="reinstallPackage" access_label="installpackage">
+            <arg name="package" type="s" direction="in"/>
+        </method>
         <method name="updatePackage">
             <arg name="package" type="s" direction="in"/>
         </method>

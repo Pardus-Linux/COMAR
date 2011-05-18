@@ -54,6 +54,16 @@
             <arg name="uid" type="i" direction="in"/>
             <arg name="authorizations" type="a(sissb)" direction="out"/>
         </method>
+        <method name="listUserAuthorizationsByCategory" access_label="get">
+            <arg name="uid" type="i" direction="in"/>
+            <arg name="name" type="s" direction="in"/>
+            <arg name="authorizations" type="a(sissb)" direction="out"/>
+        </method>
+        <method name="getNegativeValue" access_label="get">
+            <arg name="uid" type="i" direction="in"/>
+            <arg name="aid" type="s" direction="in"/>
+            <arg name="negative" type="i" direction="out"/>
+        </method>
         <method name="grantAuthorization" access_label="setuser">
             <arg name="uid" type="i" direction="in"/>
             <arg name="actionid" type="s" direction="in"/>

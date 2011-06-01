@@ -122,6 +122,8 @@ handle_message(DBusMessage *msg)
     const char *iface = dbus_message_get_interface(msg);
     const char *path = dbus_message_get_path(msg);
 
+    log_debug("Forked new process for '%s.%s' - '%s'\n", iface, method, path);
+
     if (method == NULL || path == NULL || method == NULL) {
         bus_reply_unknown_method(msg);
     }

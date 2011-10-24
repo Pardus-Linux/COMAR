@@ -16,7 +16,7 @@ SET (APP_SUFFIX "3")
 
 # Uncomment this for production releases.
 SET (VERSION_SUFFIX "")
-SET (FLAGS "-g -O0 -Werror -Wcast-align -Wno-uninitialized -Wall -fstrict-aliasing")
+SET (FLAGS "-g -O0 -Wcast-align -Wno-uninitialized -Wall -fstrict-aliasing")
 
 # Uncomment this for gprof profiling
 # SET (FLAGS "-g -O0 -Werror -Wcast-align -Wno-uninitialized -Wall -fstrict-aliasing -fprofile-arcs -ftest-coverage")

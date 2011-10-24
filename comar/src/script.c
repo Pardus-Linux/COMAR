@@ -332,6 +332,7 @@ static PyObject *
 c_i18n(PyObject *self, PyObject *args)
 {
     PyObject *py_dict;
+    PyObject *py_value;
 
     if (!PyArg_ParseTuple(args, "O!", &PyDict_Type, &py_dict)) {
         return NULL;
@@ -343,10 +344,12 @@ c_i18n(PyObject *self, PyObject *args)
     }
 
     if (PyDict_Contains(py_dict, py_lang)) {
-        return PyDict_GetItem(py_dict, py_lang);
+        py_value = PyDict_GetItem(py_dict, py_lang);
+        Py_INCREF(py_value);
+        return py_value;
     }
     else {
-        PyErr_Format(PyExc_COMAR_Script, "Script is lack of default ('en') locale string.");
+        PyErr_Format(PyExc_COMAR_Script, "'en' locale string should be provided by default in COMAR scripts.");
         return NULL;
     }
 }
